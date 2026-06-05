@@ -10,9 +10,13 @@ import {
   ActivityIndicator,
   Alert,
   StyleSheet,
+  useColorScheme,
+  Pressable,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors } from "../../../src/theme";
+import { Card } from "../../../shared/ui/Card";
 import { updateJobPosting } from "../services/companies.service";
 import { getPipeline } from "../../pipeline/services/pipeline.service";
 import { useCompany } from "./CompanyLayout";
@@ -30,7 +34,6 @@ const seniorityOptions = [
 const jobTypeOptions = [
   { label: "Full Time", value: "full_time" },
   { label: "Part Time", value: "part_time" },
-  
 ];
 
 const workLocationOptions = [
@@ -39,7 +42,35 @@ const workLocationOptions = [
   { label: "Hybrid", value: "hybrid" },
 ];
 
-function PickerDropdown({ options, selected, onSelect, placeholder }) {
+function useTheme() {
+  const scheme = useColorScheme();
+  const isDark = scheme === "dark";
+  return {
+    isDark,
+    background: isDark ? "#0b1120" : colors.gray[50],
+    surface: isDark ? "#152032" : colors.white,
+    card: isDark ? "#152032" : colors.white,
+    border: isDark ? "#1e3048" : colors.gray[100],
+    foreground: isDark ? "#e2e8f0" : colors.gray[900],
+    muted: isDark ? "#8899b4" : colors.gray[500],
+    mutedForeground: isDark ? "#94a3b8" : colors.gray[600],
+    primary: "#01497c",
+    primaryLight: isDark ? "#1a3a5c" : "#01497c15",
+    accent: colors.accent,
+    success: colors.emerald[500],
+    successBg: isDark ? "#064e3b" : colors.emerald[50],
+    successText: isDark ? "#6ee7b7" : colors.emerald[700],
+    danger: colors.red[500],
+    grayBg: isDark ? "#1e293b" : colors.gray[100],
+    grayText: isDark ? "#94a3b8" : colors.gray[500],
+    chipBg: isDark ? "#1a3a5c" : colors.darkAmethyst[50],
+    chipBorder: isDark ? "#1e5080" : colors.darkAmethyst[200],
+    chipText: isDark ? "#89c2d9" : colors.darkAmethyst[700],
+    overlay: "rgba(0,0,0,0.5)",
+  };
+}
+
+function PickerDropdown({ options, selected, onSelect, placeholder, theme, accessibilityLabel }) {
   const [visible, setVisible] = useState(false);
   const displayValue = selected
     ? options.find((o) => o.value === selected)?.label || placeholder
@@ -48,18 +79,23 @@ function PickerDropdown({ options, selected, onSelect, placeholder }) {
   return (
     <View>
       <TouchableOpacity
-        style={styles.selectField}
+        style={[styles.selectField, { backgroundColor: theme.surface, borderColor: theme.border }]}
         onPress={() => setVisible(true)}
+        accessibilityRole="button"
+        accessibilityLabel={accessibilityLabel || placeholder}
+        accessibilityHint={`Select ${placeholder?.toLowerCase()}`}
       >
         <Text
           style={[
             styles.selectFieldText,
-            !selected && styles.selectFieldPlaceholder,
+            { color: theme.foreground },
+            !selected && { color: theme.muted },
           ]}
+          numberOfLines={1}
         >
           {displayValue}
         </Text>
-        <Text style={styles.selectArrow}>▼</Text>
+        <Ionicons name="chevron-down" size={14} color={theme.muted} />
       </TouchableOpacity>
 
       <Modal
@@ -68,17 +104,12 @@ function PickerDropdown({ options, selected, onSelect, placeholder }) {
         animationType="fade"
         onRequestClose={() => setVisible(false)}
       >
-        <View style={styles.modalOverlay}>
-          <TouchableOpacity
-            style={StyleSheet.absoluteFill}
-            activeOpacity={1}
-            onPress={() => setVisible(false)}
-          />
-          <View
-            style={styles.modalContent}
-            onStartShouldSetResponder={() => true}
+        <Pressable style={styles.modalOverlay} onPress={() => setVisible(false)}>
+          <Pressable
+            style={[styles.modalContent, { backgroundColor: theme.surface }]}
+            onPress={() => {}}
           >
-            <Text style={styles.modalTitle}>{placeholder}</Text>
+            <Text style={[styles.modalTitle, { color: theme.foreground }]}>{placeholder}</Text>
             <FlatList
               data={options}
               keyExtractor={(item) => item.value}
@@ -86,32 +117,40 @@ function PickerDropdown({ options, selected, onSelect, placeholder }) {
                 <TouchableOpacity
                   style={[
                     styles.modalOption,
-                    selected === item.value && styles.modalOptionSelected,
+                    selected === item.value && { backgroundColor: theme.primaryLight },
                   ]}
                   onPress={() => {
                     onSelect(item.value);
                     setVisible(false);
                   }}
+                  accessibilityRole="button"
+                  accessibilityLabel={item.label}
                 >
                   <Text
                     style={[
                       styles.modalOptionText,
-                      selected === item.value && styles.modalOptionTextSelected,
+                      { color: theme.foreground },
+                      selected === item.value && { color: theme.primary, fontWeight: "600" },
                     ]}
                   >
                     {item.label}
                   </Text>
+                  {selected === item.value && (
+                    <Ionicons name="checkmark" size={18} color={theme.primary} />
+                  )}
                 </TouchableOpacity>
               )}
             />
-          </View>
-        </View>
+          </Pressable>
+        </Pressable>
       </Modal>
     </View>
   );
 }
 
 export default function JobPostings() {
+  const insets = useSafeAreaInsets();
+  const theme = useTheme();
   const { jobs } = useCompany();
   const [searchQuery, setSearchQuery] = useState("");
   const [localJobs, setLocalJobs] = useState(jobs);
@@ -249,455 +288,500 @@ export default function JobPostings() {
     const status = getJobStatus(job);
     const applicantCount = job.applications?.[0]?.count || 0;
     const isPublished = status === "Published";
-    const accentColor = isPublished ? colors.emerald[500] : colors.gray[400];
 
     return (
       <TouchableOpacity
-        style={[styles.jobListItem, isSelected && styles.jobListItemSelected]}
+        style={[
+          styles.jobListItem,
+          { backgroundColor: theme.card, borderColor: isSelected ? theme.primary : theme.border },
+          isSelected && { backgroundColor: theme.primaryLight },
+        ]}
         onPress={() => {
           setSelectedJobId(job.id);
           setIsEditing(false);
           setShowList(false);
         }}
         activeOpacity={0.7}
+        accessibilityRole="button"
+        accessibilityLabel={`${job.title}, ${isPublished ? "Active" : "Closed"}, ${applicantCount} applicants`}
+        accessibilityHint="Opens job details"
       >
         <View style={styles.jobListItemContent}>
           <View style={styles.jobListTopRow}>
             <Text
-              style={[
-                styles.jobListTitle,
-                isSelected && styles.jobListTitleSelected,
-              ]}
+              style={[styles.jobListTitle, { color: theme.foreground }]}
               numberOfLines={1}
             >
               {job.title}
             </Text>
-            <View style={[styles.jobStatusBadge, { backgroundColor: isPublished ? colors.emerald[50] : colors.gray[100] }]}>
-              <Text style={[styles.jobStatusText, { color: isPublished ? colors.emerald[700] : colors.gray[500] }]}>
+            <View
+              style={[
+                styles.jobStatusBadge,
+                { backgroundColor: isPublished ? theme.successBg : theme.grayBg },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.jobStatusText,
+                  { color: isPublished ? theme.successText : theme.grayText },
+                ]}
+              >
                 {isPublished ? "Active" : "Closed"}
               </Text>
             </View>
           </View>
           <View style={styles.jobListMeta}>
-            <Ionicons name="briefcase-outline" size={11} color={colors.gray[400]} />
-            <Text style={styles.jobListMetaText}>{job.seniority_level || "Any"}</Text>
-            <View style={styles.jobMetaDivider} />
-            <Ionicons name="location-outline" size={11} color={colors.gray[400]} />
-            <Text style={styles.jobListMetaText}>{job.work_location || "Remote"}</Text>
-            <View style={styles.jobMetaDivider} />
-            <Ionicons name="people-outline" size={11} color={colors.gray[400]} />
-            <Text style={styles.jobListMetaText}>{applicantCount} applicant{applicantCount !== 1 ? "s" : ""}</Text>
+            <Ionicons name="briefcase-outline" size={11} color={theme.muted} />
+            <Text style={[styles.jobListMetaText, { color: theme.muted }]}>{job.seniority_level || "Any"}</Text>
+            <View style={[styles.jobMetaDivider, { backgroundColor: theme.muted }]} />
+            <Ionicons name="location-outline" size={11} color={theme.muted} />
+            <Text style={[styles.jobListMetaText, { color: theme.muted }]}>{job.work_location || "Remote"}</Text>
+            <View style={[styles.jobMetaDivider, { backgroundColor: theme.muted }]} />
+            <Ionicons name="people-outline" size={11} color={theme.muted} />
+            <Text style={[styles.jobListMetaText, { color: theme.muted }]}>{applicantCount} applicant{applicantCount !== 1 ? "s" : ""}</Text>
           </View>
         </View>
-        <Ionicons name="chevron-forward" size={16} color={colors.gray[300]} />
+        <Ionicons name="chevron-forward" size={16} color={theme.muted} />
       </TouchableOpacity>
     );
   };
 
   if (!showList && selectedJob) {
     return (
-      <ScrollView style={styles.detailContainer} contentContainerStyle={styles.detailContent}>
-        <TouchableOpacity
-          style={styles.backToList}
-          onPress={() => setShowList(true)}
-        >
-          <Ionicons name="chevron-back" size={20} color={colors.primary} />
-          <Text style={styles.backText}>Back to jobs</Text>
-        </TouchableOpacity>
+      <View style={[styles.detailContainer, { backgroundColor: theme.background, paddingTop: insets.top }]}>
+        <ScrollView contentContainerStyle={styles.detailContent}>
+          <TouchableOpacity
+            style={styles.backToList}
+            onPress={() => setShowList(true)}
+            accessibilityRole="button"
+            accessibilityLabel="Back to jobs list"
+          >
+            <Ionicons name="chevron-back" size={20} color={theme.primary} />
+            <Text style={[styles.backText, { color: theme.primary }]}>Back to jobs</Text>
+          </TouchableOpacity>
 
-        {/* Header */}
-        <View style={styles.detailHeader}>
-          <View style={styles.detailHeaderLeft}>
+          {/* Header */}
+          <View style={styles.detailHeader}>
+            <View style={styles.detailHeaderLeft}>
+              {isEditing ? (
+                <TextInput
+                  style={[styles.editTitleInput, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.foreground }]}
+                  value={editForm.title}
+                  onChangeText={(t) => setEditForm({ ...editForm, title: t })}
+                  accessibilityLabel="Job title input"
+                />
+              ) : (
+                <Text style={[styles.detailTitle, { color: theme.foreground }]}>{selectedJob.title}</Text>
+              )}
+              <Text style={[styles.detailSubtitle, { color: theme.muted }]}>
+                {selectedJob.seniority_level || "Any"} ·{" "}
+                {selectedJob.work_location || "Any"} ·{" "}
+                {selectedJob.job_type?.replace(/_/g, "-") || "Full-time"}
+              </Text>
+            </View>
+            <View style={styles.detailHeaderActions}>
+              {isEditing ? (
+                <>
+                  <TouchableOpacity
+                    style={[styles.actionBtnOutline, { borderColor: theme.border, backgroundColor: theme.surface }]}
+                    onPress={handleCancelEdit}
+                    accessibilityRole="button"
+                    accessibilityLabel="Cancel editing"
+                  >
+                    <Text style={[styles.actionBtnOutlineText, { color: theme.foreground }]}>Cancel</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.actionBtnPrimary, { backgroundColor: theme.primary }]}
+                    onPress={handleSave}
+                    disabled={saving}
+                    accessibilityRole="button"
+                    accessibilityLabel={saving ? "Saving job" : "Save job changes"}
+                  >
+                    <Text style={styles.actionBtnPrimaryText}>
+                      {saving ? "Saving..." : "Save"}
+                    </Text>
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <TouchableOpacity
+                  style={[styles.actionBtnOutline, { borderColor: theme.border, backgroundColor: theme.surface }]}
+                  onPress={handleEditClick}
+                  accessibilityRole="button"
+                  accessibilityLabel="Edit job details"
+                >
+                  <Text style={[styles.actionBtnOutlineText, { color: theme.foreground }]}>Edit</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+
+          {/* Info Grid */}
+          <Card style={[styles.infoGrid, { backgroundColor: theme.card, borderColor: theme.border }]}>
+            <View style={styles.infoItem}>
+              <View style={styles.infoLabelRow}>
+                <Ionicons name="layers-outline" size={14} color={theme.primary} />
+                <Text style={[styles.infoLabel, { color: theme.muted }]}>SENIORITY LEVEL</Text>
+              </View>
+              {isEditing ? (
+                <PickerDropdown
+                  options={seniorityOptions}
+                  selected={editForm.seniority_level}
+                  onSelect={(val) => setEditForm({ ...editForm, seniority_level: val })}
+                  placeholder="Select level"
+                  theme={theme}
+                  accessibilityLabel="Seniority level selector"
+                />
+              ) : (
+                <Text style={[styles.infoValue, { color: theme.foreground }]}>
+                  {selectedJob.seniority_level || "N/A"}
+                </Text>
+              )}
+            </View>
+            <View style={styles.infoItem}>
+              <View style={styles.infoLabelRow}>
+                <Ionicons name="location-outline" size={14} color={theme.primary} />
+                <Text style={[styles.infoLabel, { color: theme.muted }]}>LOCATION</Text>
+              </View>
+              {isEditing ? (
+                <PickerDropdown
+                  options={workLocationOptions}
+                  selected={editForm.work_location}
+                  onSelect={(val) => setEditForm({ ...editForm, work_location: val })}
+                  placeholder="Select location"
+                  theme={theme}
+                  accessibilityLabel="Work location selector"
+                />
+              ) : (
+                <Text style={[styles.infoValue, { color: theme.foreground }]}>
+                  {selectedJob.work_location || "N/A"}
+                </Text>
+              )}
+            </View>
+            <View style={styles.infoItem}>
+              <View style={styles.infoLabelRow}>
+                <Ionicons name="briefcase-outline" size={14} color={theme.primary} />
+                <Text style={[styles.infoLabel, { color: theme.muted }]}>TYPE</Text>
+              </View>
+              {isEditing ? (
+                <PickerDropdown
+                  options={jobTypeOptions}
+                  selected={editForm.job_type}
+                  onSelect={(val) => setEditForm({ ...editForm, job_type: val })}
+                  placeholder="Select type"
+                  theme={theme}
+                  accessibilityLabel="Job type selector"
+                />
+              ) : (
+                <Text style={[styles.infoValue, { color: theme.foreground }]}>
+                  {selectedJob.job_type?.replace(/_/g, "-") || "N/A"}
+                </Text>
+              )}
+            </View>
+            <View style={styles.infoItem}>
+              <View style={styles.infoLabelRow}>
+                <Ionicons name="cash-outline" size={14} color={theme.primary} />
+                <Text style={[styles.infoLabel, { color: theme.muted }]}>SALARY</Text>
+              </View>
+              {isEditing ? (
+                <View style={styles.salaryEditRow}>
+                  <TextInput
+                    style={[styles.editInfoInput, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.foreground }]}
+                    value={String(editForm.salary_min || "")}
+                    onChangeText={(t) => setEditForm({ ...editForm, salary_min: t })}
+                    placeholder="Min"
+                    placeholderTextColor={theme.muted}
+                    keyboardType="numeric"
+                    accessibilityLabel="Minimum salary"
+                  />
+                  <Text style={[styles.salaryDash, { color: theme.muted }]}>-</Text>
+                  <TextInput
+                    style={[styles.editInfoInput, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.foreground }]}
+                    value={String(editForm.salary_max || "")}
+                    onChangeText={(t) => setEditForm({ ...editForm, salary_max: t })}
+                    placeholder="Max"
+                    placeholderTextColor={theme.muted}
+                    keyboardType="numeric"
+                    accessibilityLabel="Maximum salary"
+                  />
+                </View>
+              ) : (
+                <Text style={[styles.infoValue, { color: theme.foreground }]}>
+                  {selectedJob.salary_min
+                    ? `$${selectedJob.salary_min.toLocaleString()}`
+                    : "N/A"}{" "}
+                  -{" "}
+                  {selectedJob.salary_max
+                    ? `$${selectedJob.salary_max.toLocaleString()}`
+                    : "N/A"}
+                </Text>
+              )}
+            </View>
+            <View style={styles.infoItem}>
+              <View style={styles.infoLabelRow}>
+                <Ionicons name="calendar-outline" size={14} color={theme.primary} />
+                <Text style={[styles.infoLabel, { color: theme.muted }]}>PUBLISHED</Text>
+              </View>
+              <Text style={[styles.infoValue, { color: theme.foreground }]}>
+                {formatDate(selectedJob.created_at)}
+              </Text>
+            </View>
+            <View style={styles.infoItem}>
+              <View style={styles.infoLabelRow}>
+                <Ionicons name="flash-outline" size={14} color={theme.primary} />
+                <Text style={[styles.infoLabel, { color: theme.muted }]}>AI SHORTLIST</Text>
+              </View>
+              <Text style={[styles.infoValue, { color: theme.foreground }]}>
+                {selectedJob.shortlist_entries?.[0]?.count || 0} strong fits
+              </Text>
+            </View>
+          </Card>
+
+          {/* Content Cards */}
+          <Card style={[styles.contentCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
+            <Text style={[styles.contentCardTitle, { color: theme.foreground }]}>Job summary</Text>
             {isEditing ? (
               <TextInput
-                style={styles.editTitleInput}
-                value={editForm.title}
-                onChangeText={(t) =>
-                  setEditForm({ ...editForm, title: t })
-                }
+                style={[styles.editTextArea, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.mutedForeground }]}
+                value={editForm.description || ""}
+                onChangeText={(t) => setEditForm({ ...editForm, description: t })}
+                multiline
+                numberOfLines={4}
+                textAlignVertical="top"
+                accessibilityLabel="Job description input"
               />
             ) : (
-              <Text style={styles.detailTitle}>{selectedJob.title}</Text>
+              <Text style={[styles.contentCardBody, { color: theme.mutedForeground }]}>
+                {selectedJob.description || "No description provided."}
+              </Text>
             )}
-            <Text style={styles.detailSubtitle}>
-              {selectedJob.seniority_level || "Any"} ·{" "}
-              {selectedJob.work_location || "Any"} ·{" "}
-              {selectedJob.job_type?.replace(/_/g, "-") || "Full-time"}
-            </Text>
-          </View>
-          <View style={styles.detailHeaderActions}>
-            {isEditing ? (
-              <>
-                <TouchableOpacity
-                  style={styles.actionBtnOutline}
-                  onPress={handleCancelEdit}
-                >
-                  <Text style={styles.actionBtnOutlineText}>Cancel</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.actionBtnPrimary}
-                  onPress={handleSave}
-                  disabled={saving}
-                >
-                  <Text style={styles.actionBtnPrimaryText}>
-                    {saving ? "Saving..." : "Save"}
-                  </Text>
-                </TouchableOpacity>
-              </>
-            ) : (
-              <TouchableOpacity
-                style={styles.actionBtnOutline}
-                onPress={handleEditClick}
-              >
-                <Text style={styles.actionBtnOutlineText}>Edit</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        </View>
+          </Card>
 
-        {/* Info Grid */}
-        <View style={styles.infoGrid}>
-          <View style={styles.infoItem}>
-            <View style={styles.infoLabelRow}>
-              <Ionicons name="layers-outline" size={14} color={colors.primary} />
-              <Text style={styles.infoLabel}>SENIORITY LEVEL</Text>
-            </View>
-            {isEditing ? (
-              <PickerDropdown
-                options={seniorityOptions}
-                selected={editForm.seniority_level}
-                onSelect={(val) => setEditForm({ ...editForm, seniority_level: val })}
-                placeholder="Select level"
-              />
-            ) : (
-              <Text style={styles.infoValue}>
-                {selectedJob.seniority_level || "N/A"}
-              </Text>
-            )}
-          </View>
-          <View style={styles.infoItem}>
-            <View style={styles.infoLabelRow}>
-              <Ionicons name="location-outline" size={14} color={colors.primary} />
-              <Text style={styles.infoLabel}>LOCATION</Text>
-            </View>
-            {isEditing ? (
-              <PickerDropdown
-                options={workLocationOptions}
-                selected={editForm.work_location}
-                onSelect={(val) => setEditForm({ ...editForm, work_location: val })}
-                placeholder="Select location"
-              />
-            ) : (
-              <Text style={styles.infoValue}>
-                {selectedJob.work_location || "N/A"}
-              </Text>
-            )}
-          </View>
-          <View style={styles.infoItem}>
-            <View style={styles.infoLabelRow}>
-              <Ionicons name="briefcase-outline" size={14} color={colors.primary} />
-              <Text style={styles.infoLabel}>TYPE</Text>
-            </View>
-            {isEditing ? (
-              <PickerDropdown
-                options={jobTypeOptions}
-                selected={editForm.job_type}
-                onSelect={(val) => setEditForm({ ...editForm, job_type: val })}
-                placeholder="Select type"
-              />
-            ) : (
-              <Text style={styles.infoValue}>
-                {selectedJob.job_type?.replace(/_/g, "-") || "N/A"}
-              </Text>
-            )}
-          </View>
-          <View style={styles.infoItem}>
-            <View style={styles.infoLabelRow}>
-              <Ionicons name="cash-outline" size={14} color={colors.primary} />
-              <Text style={styles.infoLabel}>SALARY</Text>
-            </View>
-            {isEditing ? (
-              <View style={styles.salaryEditRow}>
-                <TextInput
-                  style={styles.editInfoInput}
-                  value={String(editForm.salary_min || "")}
-                  onChangeText={(t) =>
-                    setEditForm({ ...editForm, salary_min: t })
-                  }
-                  placeholder="Min"
-                  keyboardType="numeric"
-                />
-                <Text style={styles.salaryDash}>-</Text>
-                <TextInput
-                  style={styles.editInfoInput}
-                  value={String(editForm.salary_max || "")}
-                  onChangeText={(t) =>
-                    setEditForm({ ...editForm, salary_max: t })
-                  }
-                  placeholder="Max"
-                  keyboardType="numeric"
-                />
-              </View>
-            ) : (
-              <Text style={styles.infoValue}>
-                {selectedJob.salary_min
-                  ? `$${selectedJob.salary_min.toLocaleString()}`
-                  : "N/A"}{" "}
-                -{" "}
-                {selectedJob.salary_max
-                  ? `$${selectedJob.salary_max.toLocaleString()}`
-                  : "N/A"}
-              </Text>
-            )}
-          </View>
-          <View style={styles.infoItem}>
-            <View style={styles.infoLabelRow}>
-              <Ionicons name="calendar-outline" size={14} color={colors.primary} />
-              <Text style={styles.infoLabel}>PUBLISHED</Text>
-            </View>
-            <Text style={styles.infoValue}>
-              {formatDate(selectedJob.created_at)}
-            </Text>
-          </View>
-          <View style={styles.infoItem}>
-            <View style={styles.infoLabelRow}>
-              <Ionicons name="flash-outline" size={14} color={colors.primary} />
-              <Text style={styles.infoLabel}>AI SHORTLIST</Text>
-            </View>
-            <Text style={styles.infoValue}>
-              {selectedJob.shortlist_entries?.[0]?.count || 0} strong fits
-            </Text>
-          </View>
-        </View>
-
-        {/* Content Cards */}
-        <View style={styles.contentCard}>
-          <Text style={styles.contentCardTitle}>Job summary</Text>
-          {isEditing ? (
-            <TextInput
-              style={styles.editTextArea}
-              value={editForm.description || ""}
-              onChangeText={(t) =>
-                setEditForm({ ...editForm, description: t })
-              }
-              multiline
-              numberOfLines={4}
-              textAlignVertical="top"
-            />
-          ) : (
-            <Text style={styles.contentCardBody}>
-              {selectedJob.description || "No description provided."}
-            </Text>
-          )}
-        </View>
-
-        {/* Responsibilities */}
-          <View style={styles.contentCard}>
-            <Text style={styles.contentCardTitle}>Responsibilities</Text>
+          {/* Responsibilities */}
+          <Card style={[styles.contentCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
+            <Text style={[styles.contentCardTitle, { color: theme.foreground }]}>Responsibilities</Text>
             {isEditing ? (
               <View style={styles.editList}>
                 {(editForm.responsibilities || []).map((resp, i) => (
                   <View key={i} style={styles.editListItem}>
                     <TouchableOpacity
-                      onPress={() =>
-                        removeArrayItem(i, "responsibilities")
-                      }
+                      onPress={() => removeArrayItem(i, "responsibilities")}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Remove responsibility: ${resp}`}
                     >
-                      <Text style={styles.removeItem}>✕</Text>
+                      <Ionicons name="close-circle-outline" size={18} color={theme.muted} />
                     </TouchableOpacity>
                     <TextInput
-                      style={styles.editListItemInput}
+                      style={[styles.editListItemInput, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.foreground }]}
                       value={resp}
                       onChangeText={(t) => {
                         const newArr = [...editForm.responsibilities];
                         newArr[i] = t;
-                        setEditForm({
-                          ...editForm,
-                          responsibilities: newArr,
-                        });
+                        setEditForm({ ...editForm, responsibilities: newArr });
                       }}
                     />
                   </View>
                 ))}
                 <TextInput
-                  style={styles.editListAdd}
+                  style={[styles.editListAdd, { backgroundColor: theme.card, borderColor: theme.border, color: theme.mutedForeground }]}
                   placeholder="Type and press Enter to add..."
-                  placeholderTextColor={colors.gray[400]}
-                  onSubmitEditing={(e) =>
-                    handleArrayInputSubmit(e, "responsibilities")
-                  }
+                  placeholderTextColor={theme.muted}
+                  onSubmitEditing={(e) => handleArrayInputSubmit(e, "responsibilities")}
+                  accessibilityLabel="Add new responsibility"
                 />
               </View>
             ) : (
               (selectedJob.responsibilities || []).length > 0 ? (
                 selectedJob.responsibilities.map((resp, i) => (
                   <View key={i} style={styles.listItem}>
-                    <Text style={styles.checkIcon}>✓</Text>
-                    <Text style={styles.listItemText}>{resp}</Text>
+                    <Ionicons name="checkmark-circle" size={16} color={theme.success} />
+                    <Text style={[styles.listItemText, { color: theme.mutedForeground }]}>{resp}</Text>
                   </View>
                 ))
               ) : (
-                <Text style={styles.noContent}>None specified.</Text>
+                <Text style={[styles.noContent, { color: theme.muted }]}>None specified.</Text>
               )
             )}
-          </View>
+          </Card>
 
           {/* Requirements */}
-          <View style={styles.contentCard}>
-            <Text style={styles.contentCardTitle}>Requirements</Text>
+          <Card style={[styles.contentCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
+            <Text style={[styles.contentCardTitle, { color: theme.foreground }]}>Requirements</Text>
             {isEditing ? (
               <View style={styles.editList}>
                 {(editForm.requirements || []).map((req, i) => (
                   <View key={i} style={styles.editListItem}>
                     <TouchableOpacity
                       onPress={() => removeArrayItem(i, "requirements")}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Remove requirement: ${req}`}
                     >
-                      <Text style={styles.removeItem}>✕</Text>
+                      <Ionicons name="close-circle-outline" size={18} color={theme.muted} />
                     </TouchableOpacity>
                     <TextInput
-                      style={styles.editListItemInput}
+                      style={[styles.editListItemInput, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.foreground }]}
                       value={req}
                       onChangeText={(t) => {
                         const newArr = [...editForm.requirements];
                         newArr[i] = t;
-                        setEditForm({
-                          ...editForm,
-                          requirements: newArr,
-                        });
+                        setEditForm({ ...editForm, requirements: newArr });
                       }}
                     />
                   </View>
                 ))}
                 <TextInput
-                  style={styles.editListAdd}
+                  style={[styles.editListAdd, { backgroundColor: theme.card, borderColor: theme.border, color: theme.mutedForeground }]}
                   placeholder="Type and press Enter to add..."
-                  placeholderTextColor={colors.gray[400]}
-                  onSubmitEditing={(e) =>
-                    handleArrayInputKeyDown(e, "requirements")
-                  }
+                  placeholderTextColor={theme.muted}
+                  onSubmitEditing={(e) => handleArrayInputSubmit(e, "requirements")}
+                  accessibilityLabel="Add new requirement"
                 />
               </View>
             ) : (
               (selectedJob.requirements || []).length > 0 ? (
                 selectedJob.requirements.map((req, i) => (
                   <View key={i} style={styles.listItem}>
-                    <Text style={styles.checkIcon}>✓</Text>
-                    <Text style={styles.listItemText}>{req}</Text>
+                    <Ionicons name="checkmark-circle" size={16} color={theme.success} />
+                    <Text style={[styles.listItemText, { color: theme.mutedForeground }]}>{req}</Text>
                   </View>
                 ))
               ) : (
-                <Text style={styles.noContent}>None specified.</Text>
+                <Text style={[styles.noContent, { color: theme.muted }]}>None specified.</Text>
               )
             )}
-          </View>
+          </Card>
 
-        {/* Skills */}
-        <View style={styles.contentCard}>
-          <Text style={styles.contentCardTitle}>Skills</Text>
-          <View style={styles.skillsWrap}>
-            {isEditing ? (
-              <View style={styles.editSkillsWrap}>
-                {(editForm.skills || []).map((skill, i) => (
-                  <View key={i} style={styles.skillChip}>
-                    <Text style={styles.skillChipText}>{skill}</Text>
-                    <TouchableOpacity
-                      onPress={() => removeArrayItem(i, "skills")}
-                    >
-                      <Text style={styles.removeChip}>✕</Text>
-                    </TouchableOpacity>
-                  </View>
-                ))}
-                <TextInput
-                  style={styles.addSkillInput}
-                  placeholder="Add skill..."
-                  placeholderTextColor={colors.gray[400]}
-                  onSubmitEditing={(e) =>
-                    handleArrayInputKeyDown(e, "skills")
-                  }
-                />
+          {/* Skills */}
+          <Card style={[styles.contentCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
+            <Text style={[styles.contentCardTitle, { color: theme.foreground }]}>Skills</Text>
+            <View style={styles.skillsWrap}>
+              {isEditing ? (
+                <View style={styles.editSkillsWrap}>
+                  {(editForm.skills || []).map((skill, i) => (
+                    <View key={i} style={[styles.skillChip, { backgroundColor: theme.chipBg, borderColor: theme.chipBorder }]}>
+                      <Text style={[styles.skillChipText, { color: theme.chipText }]}>{skill}</Text>
+                      <TouchableOpacity
+                        onPress={() => removeArrayItem(i, "skills")}
+                        accessibilityRole="button"
+                        accessibilityLabel={`Remove skill: ${skill}`}
+                      >
+                        <Ionicons name="close" size={14} color={theme.chipText} />
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+                  <TextInput
+                    style={[styles.addSkillInput, { backgroundColor: theme.card, borderColor: theme.border, color: theme.mutedForeground }]}
+                    placeholder="Add skill..."
+                    placeholderTextColor={theme.muted}
+                    onSubmitEditing={(e) => handleArrayInputSubmit(e, "skills")}
+                    accessibilityLabel="Add new skill"
+                  />
+                </View>
+              ) : (
+                (selectedJob.skills || []).length > 0 ? (
+                  selectedJob.skills.map((skill, i) => (
+                    <View key={i} style={[styles.skillChip, { backgroundColor: theme.chipBg, borderColor: theme.chipBorder }]}>
+                      <Text style={[styles.skillChipText, { color: theme.chipText }]}>{skill}</Text>
+                    </View>
+                  ))
+                ) : (
+                  <Text style={[styles.noContent, { color: theme.muted }]}>None specified.</Text>
+                )
+              )}
+            </View>
+          </Card>
+
+          {/* Pipeline Preview */}
+          <Card style={[styles.contentCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
+            <Text style={[styles.pipelineHeaderLabel, { color: theme.primary }]}>
+              HIRING PIPELINE
+            </Text>
+            <Text style={[styles.pipelineTitle, { color: theme.foreground }]}>
+              {selectedJob.title} Pipeline
+            </Text>
+            <Text style={[styles.pipelineSubtitle, { color: theme.muted }]}>
+              {loadingStages
+                ? "Loading stages..."
+                : `${pipelineStages.length} stages`}
+            </Text>
+
+            {loadingStages ? (
+              <View style={styles.pipelineLoading}>
+                <ActivityIndicator size="small" color={theme.primary} />
+                <Text style={[styles.pipelineLoadingText, { color: theme.muted }]}>Loading pipeline...</Text>
+              </View>
+            ) : pipelineStages.length === 0 ? (
+              <View style={[styles.emptyPipeline, { borderColor: theme.border }]}>
+                <Ionicons name="git-network-outline" size={32} color={theme.muted} />
+                <Text style={[styles.emptyPipelineText, { color: theme.muted }]}>No stages defined for this pipeline.</Text>
               </View>
             ) : (
-              (selectedJob.skills || []).length > 0 ? (
-                selectedJob.skills.map((skill, i) => (
-                  <View key={i} style={styles.skillChip}>
-                    <Text style={styles.skillChipText}>{skill}</Text>
+              <ScrollView
+                horizontal
+                style={styles.pipelineScroll}
+                showsHorizontalScrollIndicator={false}
+              >
+                {pipelineStages.map((stage, idx) => (
+                  <View key={stage.id} style={[styles.stageCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+                    <View style={[styles.stageNumber, { backgroundColor: theme.primaryLight }]}>
+                      <Text style={[styles.stageNumberText, { color: theme.primary }]}>{idx + 1}</Text>
+                    </View>
+                    <Text style={styles.stageMeta}>
+                      <Text style={[styles.stageLabel, { color: theme.muted }]}>Stage {idx + 1}</Text>
+                    </Text>
+                    <Text style={[styles.stageName, { color: theme.foreground }]} numberOfLines={2}>
+                      {stage.name}
+                    </Text>
+                    <View style={styles.stageBadges}>
+                      <View style={[styles.weightBadge, { backgroundColor: theme.grayBg }]}>
+                        <Text style={[styles.weightBadgeText, { color: theme.grayText }]}>
+                          {Math.round((stage.weight || 0) * 100)}%
+                        </Text>
+                      </View>
+                      <View style={[styles.aiBadge, { backgroundColor: theme.chipBg, borderColor: theme.chipBorder }]}>
+                        <Text style={[styles.aiBadgeText, { color: theme.chipText }]}>AI</Text>
+                      </View>
+                    </View>
                   </View>
-                ))
-              ) : (
-                <Text style={styles.noContent}>None specified.</Text>
-              )
+                ))}
+              </ScrollView>
             )}
-          </View>
-        </View>
-
-        {/* Pipeline Preview */}
-        <View style={styles.contentCard}>
-          <Text style={styles.pipelineHeaderLabel}>
-            HIRING PIPELINE FOR THIS JOB
-          </Text>
-          <Text style={styles.pipelineTitle}>
-            {selectedJob.title} Pipeline
-          </Text>
-          <Text style={styles.pipelineSubtitle}>
-            {loadingStages
-              ? "Loading stages..."
-              : `${pipelineStages.length} stages`}
-          </Text>
-
-          {loadingStages ? (
-            <ActivityIndicator
-              size="small"
-              color={colors.darkAmethyst[600]}
-              style={{ marginTop: 16 }}
-            />
-          ) : pipelineStages.length === 0 ? (
-            <View style={styles.emptyPipeline}>
-              <Text style={styles.emptyPipelineText}>
-                No stages defined for this pipeline.
-              </Text>
-            </View>
-          ) : (
-            <ScrollView
-              horizontal
-              style={styles.pipelineScroll}
-              showsHorizontalScrollIndicator={false}
-            >
-              {pipelineStages.map((stage, idx) => (
-                <View key={stage.id} style={styles.stageCard}>
-                  <Text style={styles.stageLabel}>Stage {idx + 1}</Text>
-                  <Text style={styles.stageName} numberOfLines={1}>
-                    {stage.name}
-                  </Text>
-                  <View style={styles.stageBadges}>
-                    <View style={styles.weightBadge}>
-                      <Text style={styles.weightBadgeText}>
-                        {Math.round((stage.weight || 0) * 100)}%
-                      </Text>
-                    </View>
-                    <View style={styles.aiBadge}>
-                      <Text style={styles.aiBadgeText}>AI</Text>
-                    </View>
-                  </View>
-                </View>
-              ))}
-            </ScrollView>
-          )}
-        </View>
-      </ScrollView>
+          </Card>
+        </ScrollView>
+      </View>
     );
   }
 
   return (
-    <View style={styles.listContainer}>
-      <View style={styles.listHeader}>
-        <View>
-          <Text style={styles.listHeaderLabel}>OPEN ROLES</Text>
-          <Text style={styles.listHeaderHint}>Click to view details</Text>
+    <View style={[styles.listContainer, { backgroundColor: theme.background, paddingTop: insets.top }]}>
+      {/* Search + Header */}
+      <View style={[styles.listHeader, { borderBottomColor: theme.border }]}>
+        <Text style={[styles.listHeaderLabel, { color: theme.muted }]}>OPEN ROLES</Text>
+        <View style={styles.searchRow}>
+          <View style={[styles.searchInputWrap, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+            <Ionicons name="search-outline" size={16} color={theme.muted} />
+            <TextInput
+              style={[styles.searchInput, { color: theme.foreground }]}
+              placeholder="Search jobs..."
+              placeholderTextColor={theme.muted}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              accessibilityLabel="Search job postings"
+            />
+            {searchQuery.length > 0 && (
+              <TouchableOpacity
+                onPress={() => setSearchQuery("")}
+                accessibilityRole="button"
+                accessibilityLabel="Clear search"
+              >
+                <Ionicons name="close-circle" size={16} color={theme.muted} />
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
       </View>
 
       {/* Tabs */}
-      <View style={styles.tabRow}>
+      <View style={[styles.tabRow, { borderBottomColor: theme.border }]}>
         {TABS.map((tab, i) => {
           const count = tabCounts[tab];
           const isActive = activeTab === tab;
@@ -706,17 +790,20 @@ export default function JobPostings() {
               key={tab}
               style={styles.tab}
               onPress={() => setActiveTab(tab)}
+              accessibilityRole="tab"
+              accessibilityLabel={`${tab} jobs tab, ${count} jobs`}
+              accessibilityState={{ selected: isActive }}
             >
-              <Text style={[styles.tabText, isActive && styles.tabTextActive]}>
+              <Text style={[styles.tabText, { color: isActive ? theme.primary : theme.muted }, isActive && styles.tabTextActive]}>
                 {tab}
               </Text>
-              <View style={[styles.tabCountBadge, isActive && styles.tabCountBadgeActive]}>
-                <Text style={[styles.tabCountText, isActive && styles.tabCountTextActive]}>
+              <View style={[styles.tabCountBadge, { backgroundColor: isActive ? theme.primary : theme.grayBg }]}>
+                <Text style={[styles.tabCountText, { color: isActive ? "#fff" : theme.grayText }]}>
                   {count}
                 </Text>
               </View>
               {i < TABS.length - 1 && (
-                <Text style={styles.tabSeparator}>·</Text>
+                <Text style={[styles.tabSeparator, { color: theme.muted }]}>·</Text>
               )}
             </TouchableOpacity>
           );
@@ -730,7 +817,13 @@ export default function JobPostings() {
         renderItem={renderJobListItem}
         contentContainerStyle={styles.jobList}
         ListEmptyComponent={
-          <Text style={styles.emptyList}>No jobs found.</Text>
+          <View style={styles.emptyContainer}>
+            <Ionicons name="briefcase-outline" size={48} color={theme.muted} />
+            <Text style={[styles.emptyText, { color: theme.muted }]}>No jobs found</Text>
+            <Text style={[styles.emptyHint, { color: theme.muted }]}>
+              {searchQuery ? "Try a different search term" : "Create a new job posting to get started"}
+            </Text>
+          </View>
         }
       />
     </View>
@@ -740,26 +833,39 @@ export default function JobPostings() {
 const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
-    backgroundColor: colors.white,
   },
   listHeader: {
     paddingHorizontal: 16,
     paddingTop: 16,
     paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: colors.gray[100],
   },
   listHeaderLabel: {
     fontSize: 10,
     fontWeight: "600",
-    color: colors.gray[400],
     letterSpacing: 1,
     textTransform: "uppercase",
+    marginBottom: 10,
   },
-  listHeaderHint: {
-    fontSize: 12,
-    color: colors.gray[500],
-    marginTop: 2,
+  searchRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  searchInputWrap: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    height: 40,
+    gap: 8,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 14,
+    paddingVertical: 0,
   },
   tabRow: {
     flexDirection: "row",
@@ -767,7 +873,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: colors.gray[100],
   },
   tab: {
     flexDirection: "row",
@@ -777,35 +882,24 @@ const styles = StyleSheet.create({
   tabText: {
     fontSize: 13,
     fontWeight: "500",
-    color: colors.gray[400],
   },
   tabTextActive: {
-    color: colors.primary,
     fontWeight: "600",
   },
   tabSeparator: {
     fontSize: 16,
-    color: colors.gray[300],
     marginHorizontal: 8,
   },
   tabCountBadge: {
-    backgroundColor: colors.gray[200],
     borderRadius: 10,
     paddingHorizontal: 6,
     paddingVertical: 1,
     minWidth: 18,
     alignItems: "center",
   },
-  tabCountBadgeActive: {
-    backgroundColor: colors.primary,
-  },
   tabCountText: {
     fontSize: 10,
     fontWeight: "600",
-    color: colors.gray[500],
-  },
-  tabCountTextActive: {
-    color: colors.white,
   },
   jobList: {
     padding: 16,
@@ -814,15 +908,9 @@ const styles = StyleSheet.create({
   jobListItem: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.white,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: colors.gray[100],
     paddingRight: 12,
-  },
-  jobListItemSelected: {
-    borderColor: colors.darkAmethyst[200],
-    backgroundColor: colors.darkAmethyst[50],
   },
   jobListItemContent: {
     flex: 1,
@@ -838,12 +926,8 @@ const styles = StyleSheet.create({
   jobListTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: colors.gray[800],
     flex: 1,
     marginRight: 8,
-  },
-  jobListTitleSelected: {
-    color: colors.primary,
   },
   jobStatusBadge: {
     paddingHorizontal: 8,
@@ -861,24 +945,30 @@ const styles = StyleSheet.create({
   },
   jobListMetaText: {
     fontSize: 12,
-    color: colors.gray[500],
   },
   jobMetaDivider: {
     width: 3,
     height: 3,
     borderRadius: 1.5,
-    backgroundColor: colors.gray[300],
   },
-  emptyList: {
-    textAlign: "center",
-    padding: 24,
+  emptyContainer: {
+    alignItems: "center",
+    paddingTop: 60,
+    gap: 8,
+  },
+  emptyText: {
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  emptyHint: {
     fontSize: 13,
-    color: colors.gray[500],
+    textAlign: "center",
+    paddingHorizontal: 40,
   },
+
   // Detail styles
   detailContainer: {
     flex: 1,
-    backgroundColor: colors.gray[50],
   },
   detailContent: {
     padding: 16,
@@ -892,56 +982,51 @@ const styles = StyleSheet.create({
   backText: {
     fontSize: 14,
     fontWeight: "500",
-    color: colors.primary,
     marginLeft: 2,
   },
   detailHeader: {
     marginBottom: 14,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
   },
   detailHeaderLeft: {
-    marginBottom: 8,
+    flex: 1,
+    marginRight: 12,
   },
   detailTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "700",
-    color: colors.gray[900],
   },
   editTitleInput: {
     fontSize: 20,
     fontWeight: "700",
-    color: colors.gray[900],
-    backgroundColor: colors.gray[50],
     borderWidth: 1,
-    borderColor: colors.gray[200],
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 6,
   },
   detailSubtitle: {
     fontSize: 13,
-    color: colors.gray[500],
     marginTop: 4,
     textTransform: "capitalize",
   },
   detailHeaderActions: {
     flexDirection: "row",
-    gap: 10,
+    gap: 8,
+    paddingTop: 4,
   },
   actionBtnOutline: {
     borderWidth: 1,
-    borderColor: colors.gray[200],
     paddingHorizontal: 16,
     paddingVertical: 9,
     borderRadius: 8,
-    backgroundColor: colors.white,
   },
   actionBtnOutlineText: {
     fontSize: 13,
     fontWeight: "500",
-    color: colors.gray[700],
   },
   actionBtnPrimary: {
-    backgroundColor: colors.darkAmethyst[600],
     paddingHorizontal: 16,
     paddingVertical: 9,
     borderRadius: 8,
@@ -949,19 +1034,20 @@ const styles = StyleSheet.create({
   actionBtnPrimaryText: {
     fontSize: 13,
     fontWeight: "500",
-    color: colors.white,
+    color: "#fff",
   },
+
   // Info grid
   infoGrid: {
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.gray[100],
     borderRadius: 14,
-    padding: 16,
+    borderWidth: 1,
     marginBottom: 14,
+    padding: 16,
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 17,
+    elevation: 0,
+    shadowOpacity: 0,
   },
   infoItem: {
     width: "47%",
@@ -975,84 +1061,61 @@ const styles = StyleSheet.create({
   infoLabel: {
     fontSize: 10,
     fontWeight: "700",
-    color: colors.gray[500],
     letterSpacing: 0.5,
     textTransform: "uppercase",
   },
   infoValue: {
     fontSize: 15,
     fontWeight: "600",
-    color: colors.gray[900],
     textTransform: "capitalize",
   },
   editInfoInput: {
-    backgroundColor: colors.gray[50],
     borderWidth: 1,
-    borderColor: colors.gray[200],
     borderRadius: 6,
     paddingHorizontal: 8,
     paddingVertical: 4,
     fontSize: 13,
-    color: colors.gray[900],
+    flex: 1,
   },
   selectField: {
     borderWidth: 1,
-    borderColor: colors.gray[200],
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: colors.gray[50],
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
   selectFieldText: {
     fontSize: 13,
-    color: colors.gray[900],
     flex: 1,
-  },
-  selectFieldPlaceholder: {
-    color: colors.gray[400],
-  },
-  selectArrow: {
-    fontSize: 10,
-    color: colors.gray[400],
-    marginLeft: 4,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.4)",
     justifyContent: "center",
     alignItems: "center",
   },
   modalContent: {
     width: "80%",
     maxHeight: "60%",
-    backgroundColor: colors.white,
     borderRadius: 16,
     padding: 20,
   },
   modalTitle: {
     fontSize: 16,
     fontWeight: "700",
-    color: colors.gray[900],
     marginBottom: 12,
   },
   modalOption: {
     paddingVertical: 14,
     paddingHorizontal: 12,
     borderRadius: 8,
-  },
-  modalOptionSelected: {
-    backgroundColor: colors.primary + "15",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   modalOptionText: {
     fontSize: 15,
-    color: colors.gray[800],
-  },
-  modalOptionTextSelected: {
-    color: colors.primary,
-    fontWeight: "600",
   },
   salaryEditRow: {
     flexDirection: "row",
@@ -1061,36 +1124,31 @@ const styles = StyleSheet.create({
   },
   salaryDash: {
     fontSize: 13,
-    color: colors.gray[400],
   },
-  // content cards
+
+  // Content cards
   contentCard: {
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.gray[100],
     borderRadius: 14,
-    padding: 16,
+    borderWidth: 1,
     marginBottom: 14,
+    padding: 16,
+    elevation: 0,
+    shadowOpacity: 0,
   },
   contentCardTitle: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: "700",
-    color: colors.gray[900],
     marginBottom: 10,
   },
   contentCardBody: {
     fontSize: 14,
-    color: colors.gray[600],
     lineHeight: 20,
   },
   editTextArea: {
-    backgroundColor: colors.gray[50],
     borderWidth: 1,
-    borderColor: colors.gray[200],
     borderRadius: 8,
     padding: 10,
     fontSize: 13,
-    color: colors.gray[600],
     textAlignVertical: "top",
     minHeight: 80,
   },
@@ -1100,21 +1158,15 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 8,
   },
-  checkIcon: {
-    fontSize: 13,
-    color: colors.darkAmethyst[500],
-    marginTop: 1,
-  },
   listItemText: {
     fontSize: 14,
-    color: colors.gray[600],
     flex: 1,
     lineHeight: 20,
   },
   noContent: {
     fontSize: 13,
-    color: colors.gray[400],
   },
+
   // Edit list
   editList: {
     gap: 6,
@@ -1124,32 +1176,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 6,
   },
-  removeItem: {
-    fontSize: 14,
-    color: colors.gray[400],
-  },
   editListItemInput: {
     flex: 1,
-    backgroundColor: colors.gray[50],
     borderWidth: 1,
-    borderColor: colors.gray[200],
     borderRadius: 6,
     paddingHorizontal: 8,
     paddingVertical: 4,
     fontSize: 13,
-    color: colors.gray[900],
   },
   editListAdd: {
-    backgroundColor: colors.white,
     borderWidth: 1,
-    borderColor: colors.gray[200],
     borderRadius: 6,
     paddingHorizontal: 10,
     paddingVertical: 6,
     fontSize: 13,
-    color: colors.gray[500],
     marginTop: 4,
   },
+
   // Skills
   skillsWrap: {
     flexDirection: "row",
@@ -1165,9 +1208,7 @@ const styles = StyleSheet.create({
   skillChip: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.darkAmethyst[50],
     borderWidth: 1,
-    borderColor: colors.darkAmethyst[200],
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 20,
@@ -1176,28 +1217,20 @@ const styles = StyleSheet.create({
   skillChipText: {
     fontSize: 13,
     fontWeight: "500",
-    color: colors.darkAmethyst[700],
-  },
-  removeChip: {
-    fontSize: 12,
-    color: colors.darkAmethyst[400],
   },
   addSkillInput: {
-    backgroundColor: colors.white,
     borderWidth: 1,
-    borderColor: colors.gray[200],
     borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 6,
     fontSize: 13,
-    color: colors.gray[500],
     minWidth: 100,
   },
+
   // Pipeline
   pipelineHeaderLabel: {
     fontSize: 10,
     fontWeight: "700",
-    color: colors.darkAmethyst[600],
     letterSpacing: 1,
     textTransform: "uppercase",
     marginBottom: 4,
@@ -1205,49 +1238,67 @@ const styles = StyleSheet.create({
   pipelineTitle: {
     fontSize: 16,
     fontWeight: "700",
-    color: colors.gray[900],
   },
   pipelineSubtitle: {
     fontSize: 12,
-    color: colors.gray[500],
     marginBottom: 16,
   },
   pipelineScroll: {
     marginTop: 8,
   },
+  pipelineLoading: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    paddingVertical: 24,
+  },
+  pipelineLoadingText: {
+    fontSize: 13,
+  },
   emptyPipeline: {
     borderWidth: 2,
     borderStyle: "dashed",
-    borderColor: colors.gray[200],
     borderRadius: 12,
     padding: 24,
     alignItems: "center",
+    gap: 8,
   },
   emptyPipelineText: {
     fontSize: 13,
-    color: colors.gray[500],
+    textAlign: "center",
   },
   stageCard: {
-    width: 220,
+    width: 200,
     borderWidth: 1,
-    borderColor: colors.gray[200],
     borderRadius: 12,
     padding: 14,
-    backgroundColor: colors.white,
     marginRight: 12,
+  },
+  stageNumber: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  stageNumberText: {
+    fontSize: 13,
+    fontWeight: "700",
   },
   stageLabel: {
     fontSize: 10,
     fontWeight: "700",
-    color: colors.gray[400],
     letterSpacing: 1,
     textTransform: "uppercase",
+  },
+  stageMeta: {
     marginBottom: 6,
   },
   stageName: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: "700",
-    color: colors.gray[900],
     marginBottom: 10,
   },
   stageBadges: {
@@ -1255,7 +1306,6 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   weightBadge: {
-    backgroundColor: colors.gray[100],
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 4,
@@ -1263,12 +1313,9 @@ const styles = StyleSheet.create({
   weightBadgeText: {
     fontSize: 11,
     fontWeight: "600",
-    color: colors.gray[600],
   },
   aiBadge: {
-    backgroundColor: colors.darkAmethyst[50],
     borderWidth: 1,
-    borderColor: colors.darkAmethyst[100],
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 4,
@@ -1276,6 +1323,5 @@ const styles = StyleSheet.create({
   aiBadgeText: {
     fontSize: 11,
     fontWeight: "600",
-    color: colors.darkAmethyst[600],
   },
 });
