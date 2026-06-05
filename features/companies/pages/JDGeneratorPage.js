@@ -88,7 +88,7 @@ function PickerDropdown({ options, selected, onSelect, placeholder, error }) {
 }
 
 export default function JDGeneratorPage() {
-  const { company } = useCompany();
+  const { company, reload: reloadCompany } = useCompany();
   const { profile } = useUser();
   const { createJob } = useJobs();
 
@@ -205,6 +205,7 @@ export default function JDGeneratorPage() {
         salary_max: aiResult.salary_max || null,
       });
       setPublished(true);
+      reloadCompany();
     } catch (err) {
       setPublishError(err.message);
     } finally {

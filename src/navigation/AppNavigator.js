@@ -1,3 +1,7 @@
+// ============================================================================
+// Imports — React Native, Navigation, UI primitives, context providers,
+// and all screen components used across the app.
+// ============================================================================
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
@@ -17,7 +21,6 @@ import ResetPasswordPage from '../../features/auth/pages/ResetPasswordPage';
 import JobsPage from '../../features/jobs/pages/JobsPage';
 import JobDetailsPage from '../../features/jobs/pages/JobDetailsPage';
 import ShortlistsPage from '../../features/shortlist/pages/ShortlistsPage';
-import CompanyLayout from '../../features/companies/pages/CompanyLayout';
 import { CompanyProvider } from '../../features/companies/pages/CompanyLayout';
 import CompanyProfile from '../../features/companies/pages/CompanyProfile';
 import JDGeneratorPage from '../../features/companies/pages/JDGeneratorPage';
@@ -27,9 +30,20 @@ import RecruiterScreen from '../../features/recruiter/pages/RecruiterScreen';
 import PipelineCandidatesPage from '../../features/recruiter/pages/PipelineCandidatesPage';
 import InterviewPage from '../../features/interview/pages/InterviewPage';
 
+// ============================================================================
+// Stack Navigator Instances
+// AuthStack handles unauthenticated flows; RootStack wraps the entire app
+// and is used for session-gated navigation.
+// ============================================================================
 const AuthStack = createNativeStackNavigator();
 const RootStack = createNativeStackNavigator();
 
+// ============================================================================
+// Authentication Navigator
+// Handles all unauthenticated user flows including login, registration,
+// password recovery, and password reset screens. All headers are hidden
+// since each auth page manages its own header/logo layout.
+// ============================================================================
 function AuthNavigator() {
   return (
     <AuthStack.Navigator screenOptions={{ headerShown: false }}>
@@ -41,6 +55,13 @@ function AuthNavigator() {
   );
 }
 
+// ============================================================================
+// Custom Header Component
+// Renders a primary-colored header bar with a hamburger menu toggle, the
+// current screen title, and safe-area-aware top padding. The menu button
+// triggers the AnimatedSidebar via the SidebarContext toggle function.
+// Used as the header for every role-based main screen.
+// ============================================================================
 function Header({ title }) {
   const insets = useSafeAreaInsets();
   const { toggle } = useSidebar();
@@ -75,6 +96,12 @@ const headerStyles = StyleSheet.create({
   },
 });
 
+// ============================================================================
+// Screen Title Utility
+// Maps internal route names to human-readable header titles. Falls back to
+// the raw route name if no mapping exists (for screens like JobDetails or
+// Interview that have their own header configuration).
+// ============================================================================
 function getScreenTitle(routeName) {
   const titles = {
     JobsTab: 'Explore Jobs',
@@ -89,6 +116,18 @@ function getScreenTitle(routeName) {
   return titles[routeName] || routeName;
 }
 
+// ============================================================================
+// Main Screens — Role-Based Navigation
+// Reads the current user's role from UserContext and conditionally renders
+// either the applicant or recruiter screen stack. Each stack uses the custom
+// Header component with the side menu toggle. Recruiters additionally get a
+// CompanyProvider wrapper so all recruiter child screens can access and
+// mutate company data.
+//
+// Applicant stack:  JobsTab -> ApplicantHome
+// Recruiter stack:  RecruiterHome -> CompanyProfile -> JDGenerator ->
+//                   JobPostings -> Shortlists -> Pipeline
+// ============================================================================
 function MainScreens() {
   const { profile } = useUser();
   const isApplicant = profile?.role === USER_ROLE.applicant;
@@ -124,6 +163,15 @@ function MainScreens() {
   );
 }
 
+// ============================================================================
+// Root Navigator — Session Gating & Top-Level Navigation
+// Reads session + loading state from UserContext. While auth state is being
+// resolved it shows a full-screen loader. If no session exists it renders
+// the Auth (unauthenticated) stack. Once authenticated it renders the
+// role-based Main screens plus JobDetails and Interview as modal/push
+// screens with a default header (no side menu). The AnimatedSidebar overlay
+// is rendered outside the navigator so it floats above all screens.
+// ============================================================================
 function RootNavigator() {
   const { session, loading } = useUser();
 
@@ -173,6 +221,15 @@ function RootNavigator() {
   );
 }
 
+// ============================================================================
+// App Entry Point — Provider Hierarchy & Navigation Container
+// Wraps the entire navigation tree inside UserProvider (auth state) and
+// SidebarProvider (sidebar open/close state). NavigationContainer from
+// React Navigation manages the navigation state and linking.
+//
+// Provider nesting order (outer -> inner):
+//   UserProvider > SidebarProvider > NavigationContainer
+// ============================================================================
 export default function AppNavigator() {
   return (
     <UserProvider>
@@ -185,6 +242,9 @@ export default function AppNavigator() {
   );
 }
 
+// ============================================================================
+// Shared Styles
+// ============================================================================
 const styles = StyleSheet.create({
   loadingContainer: {
     flex: 1,
