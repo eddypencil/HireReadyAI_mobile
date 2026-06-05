@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   FlatList,
+  Modal,
   ActivityIndicator,
   Alert,
   StyleSheet,
@@ -16,7 +17,99 @@ import { updateJobPosting } from "../services/companies.service";
 import { getPipeline } from "../../pipeline/services/pipeline.service";
 import { useCompany } from "./CompanyLayout";
 
-const TABS = ["Open", "All", "Closed"];
+const TABS = ["All", "Open", "Closed"];
+
+const seniorityOptions = [
+  { label: "Junior", value: "junior" },
+  { label: "Mid", value: "mid" },
+  { label: "Senior", value: "senior" },
+  { label: "Lead", value: "lead" },
+  { label: "Principal", value: "principal" },
+];
+
+const jobTypeOptions = [
+  { label: "Full Time", value: "full_time" },
+  { label: "Part Time", value: "part_time" },
+  
+];
+
+const workLocationOptions = [
+  { label: "On-site", value: "on_site" },
+  { label: "Remote", value: "remote" },
+  { label: "Hybrid", value: "hybrid" },
+];
+
+function PickerDropdown({ options, selected, onSelect, placeholder }) {
+  const [visible, setVisible] = useState(false);
+  const displayValue = selected
+    ? options.find((o) => o.value === selected)?.label || placeholder
+    : placeholder;
+
+  return (
+    <View>
+      <TouchableOpacity
+        style={styles.selectField}
+        onPress={() => setVisible(true)}
+      >
+        <Text
+          style={[
+            styles.selectFieldText,
+            !selected && styles.selectFieldPlaceholder,
+          ]}
+        >
+          {displayValue}
+        </Text>
+        <Text style={styles.selectArrow}>▼</Text>
+      </TouchableOpacity>
+
+      <Modal
+        visible={visible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <TouchableOpacity
+            style={StyleSheet.absoluteFill}
+            activeOpacity={1}
+            onPress={() => setVisible(false)}
+          />
+          <View
+            style={styles.modalContent}
+            onStartShouldSetResponder={() => true}
+          >
+            <Text style={styles.modalTitle}>{placeholder}</Text>
+            <FlatList
+              data={options}
+              keyExtractor={(item) => item.value}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={[
+                    styles.modalOption,
+                    selected === item.value && styles.modalOptionSelected,
+                  ]}
+                  onPress={() => {
+                    onSelect(item.value);
+                    setVisible(false);
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.modalOptionText,
+                      selected === item.value && styles.modalOptionTextSelected,
+                    ]}
+                  >
+                    {item.label}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        </View>
+      </Modal>
+    </View>
+  );
+}
 
 export default function JobPostings() {
   const { jobs } = useCompany();
@@ -63,6 +156,12 @@ export default function JobPostings() {
     return Date.parse(job.closed_at) < Date.now() ? "Closed" : "Published";
   };
 
+  const tabCounts = useMemo(() => {
+    const open = localJobs.filter(j => getJobStatus(j) === "Published").length;
+    const closed = localJobs.filter(j => getJobStatus(j) === "Closed").length;
+    return { Open: open, All: localJobs.length, Closed: closed };
+  }, [localJobs]);
+
   const filteredJobs = useMemo(() => {
     return localJobs.filter((job) => {
       const status = getJobStatus(job);
@@ -96,8 +195,8 @@ export default function JobPostings() {
         description: editForm.description,
         job_type: editForm.job_type,
         work_location: editForm.work_location,
-        salary_min: editForm.salary_min,
-        salary_max: editForm.salary_max,
+        salary_min: editForm.salary_min ? Number(editForm.salary_min) : null,
+        salary_max: editForm.salary_max ? Number(editForm.salary_max) : null,
         seniority_level: editForm.seniority_level,
         responsibilities: editForm.responsibilities,
         requirements: editForm.requirements,
@@ -110,7 +209,8 @@ export default function JobPostings() {
         )
       );
       setIsEditing(false);
-    } catch {
+    } catch (err) {
+      console.error("Failed to update job:", err);
       Alert.alert("Error", "Failed to update job details.");
     } finally {
       setSaving(false);
@@ -126,14 +226,13 @@ export default function JobPostings() {
     });
   };
 
-  const handleArrayInputKeyDown = (e, field) => {
-    if (e.nativeEvent.key === "Enter" && e.nativeEvent.text.trim()) {
-      const value = e.nativeEvent.text.trim();
+  const handleArrayInputSubmit = (e, field) => {
+    const text = e.nativeEvent.text;
+    if (text.trim()) {
       setEditForm((prev) => ({
         ...prev,
-        [field]: [...(prev[field] || []), value],
+        [field]: [...(prev[field] || []), text.trim()],
       }));
-      e.target.value = "";
     }
   };
 
@@ -264,12 +363,11 @@ export default function JobPostings() {
               <Text style={styles.infoLabel}>SENIORITY LEVEL</Text>
             </View>
             {isEditing ? (
-              <TextInput
-                style={styles.editInfoInput}
-                value={editForm.seniority_level || ""}
-                onChangeText={(t) =>
-                  setEditForm({ ...editForm, seniority_level: t })
-                }
+              <PickerDropdown
+                options={seniorityOptions}
+                selected={editForm.seniority_level}
+                onSelect={(val) => setEditForm({ ...editForm, seniority_level: val })}
+                placeholder="Select level"
               />
             ) : (
               <Text style={styles.infoValue}>
@@ -283,12 +381,11 @@ export default function JobPostings() {
               <Text style={styles.infoLabel}>LOCATION</Text>
             </View>
             {isEditing ? (
-              <TextInput
-                style={styles.editInfoInput}
-                value={editForm.work_location || ""}
-                onChangeText={(t) =>
-                  setEditForm({ ...editForm, work_location: t })
-                }
+              <PickerDropdown
+                options={workLocationOptions}
+                selected={editForm.work_location}
+                onSelect={(val) => setEditForm({ ...editForm, work_location: val })}
+                placeholder="Select location"
               />
             ) : (
               <Text style={styles.infoValue}>
@@ -302,12 +399,11 @@ export default function JobPostings() {
               <Text style={styles.infoLabel}>TYPE</Text>
             </View>
             {isEditing ? (
-              <TextInput
-                style={styles.editInfoInput}
-                value={editForm.job_type || ""}
-                onChangeText={(t) =>
-                  setEditForm({ ...editForm, job_type: t })
-                }
+              <PickerDropdown
+                options={jobTypeOptions}
+                selected={editForm.job_type}
+                onSelect={(val) => setEditForm({ ...editForm, job_type: val })}
+                placeholder="Select type"
               />
             ) : (
               <Text style={styles.infoValue}>
@@ -428,7 +524,7 @@ export default function JobPostings() {
                   placeholder="Type and press Enter to add..."
                   placeholderTextColor={colors.gray[400]}
                   onSubmitEditing={(e) =>
-                    handleArrayInputKeyDown(e, "responsibilities")
+                    handleArrayInputSubmit(e, "responsibilities")
                   }
                 />
               </View>
@@ -602,22 +698,29 @@ export default function JobPostings() {
 
       {/* Tabs */}
       <View style={styles.tabRow}>
-        {TABS.map((tab) => (
-          <TouchableOpacity
-            key={tab}
-            style={[styles.tab, activeTab === tab && styles.tabActive]}
-            onPress={() => setActiveTab(tab)}
-          >
-            <Text
-              style={[
-                styles.tabText,
-                activeTab === tab && styles.tabTextActive,
-              ]}
+        {TABS.map((tab, i) => {
+          const count = tabCounts[tab];
+          const isActive = activeTab === tab;
+          return (
+            <TouchableOpacity
+              key={tab}
+              style={styles.tab}
+              onPress={() => setActiveTab(tab)}
             >
-              {tab}
-            </Text>
-          </TouchableOpacity>
-        ))}
+              <Text style={[styles.tabText, isActive && styles.tabTextActive]}>
+                {tab}
+              </Text>
+              <View style={[styles.tabCountBadge, isActive && styles.tabCountBadgeActive]}>
+                <Text style={[styles.tabCountText, isActive && styles.tabCountTextActive]}>
+                  {count}
+                </Text>
+              </View>
+              {i < TABS.length - 1 && (
+                <Text style={styles.tabSeparator}>·</Text>
+              )}
+            </TouchableOpacity>
+          );
+        })}
       </View>
 
       {/* Job List */}
@@ -660,29 +763,49 @@ const styles = StyleSheet.create({
   },
   tabRow: {
     flexDirection: "row",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    gap: 6,
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: colors.gray[100],
-    backgroundColor: colors.gray[50],
   },
   tab: {
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: 6,
-  },
-  tabActive: {
-    backgroundColor: colors.darkAmethyst[50],
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
   },
   tabText: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: "500",
-    color: colors.gray[500],
+    color: colors.gray[400],
   },
   tabTextActive: {
-    color: colors.darkAmethyst[700],
+    color: colors.primary,
     fontWeight: "600",
+  },
+  tabSeparator: {
+    fontSize: 16,
+    color: colors.gray[300],
+    marginHorizontal: 8,
+  },
+  tabCountBadge: {
+    backgroundColor: colors.gray[200],
+    borderRadius: 10,
+    paddingHorizontal: 6,
+    paddingVertical: 1,
+    minWidth: 18,
+    alignItems: "center",
+  },
+  tabCountBadgeActive: {
+    backgroundColor: colors.primary,
+  },
+  tabCountText: {
+    fontSize: 10,
+    fontWeight: "600",
+    color: colors.gray[500],
+  },
+  tabCountTextActive: {
+    color: colors.white,
   },
   jobList: {
     padding: 16,
@@ -871,6 +994,65 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     fontSize: 13,
     color: colors.gray[900],
+  },
+  selectField: {
+    borderWidth: 1,
+    borderColor: colors.gray[200],
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: colors.gray[50],
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  selectFieldText: {
+    fontSize: 13,
+    color: colors.gray[900],
+    flex: 1,
+  },
+  selectFieldPlaceholder: {
+    color: colors.gray[400],
+  },
+  selectArrow: {
+    fontSize: 10,
+    color: colors.gray[400],
+    marginLeft: 4,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    width: "80%",
+    maxHeight: "60%",
+    backgroundColor: colors.white,
+    borderRadius: 16,
+    padding: 20,
+  },
+  modalTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: colors.gray[900],
+    marginBottom: 12,
+  },
+  modalOption: {
+    paddingVertical: 14,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+  },
+  modalOptionSelected: {
+    backgroundColor: colors.primary + "15",
+  },
+  modalOptionText: {
+    fontSize: 15,
+    color: colors.gray[800],
+  },
+  modalOptionTextSelected: {
+    color: colors.primary,
+    fontWeight: "600",
   },
   salaryEditRow: {
     flexDirection: "row",

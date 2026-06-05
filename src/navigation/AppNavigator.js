@@ -24,6 +24,7 @@ import ShortlistsPage from '../../features/shortlist/pages/ShortlistsPage';
 import { CompanyProvider } from '../../features/companies/pages/CompanyLayout';
 import CompanyProfile from '../../features/companies/pages/CompanyProfile';
 import JDGeneratorPage from '../../features/companies/pages/JDGeneratorPage';
+import JDGeneratorResultPage from '../../features/companies/pages/JDGeneratorResultPage';
 import JobPostings from '../../features/companies/pages/JobPostings';
 import ApplicantPage from '../../features/applicant/pages/ApplicantPage';
 import RecruiterScreen from '../../features/recruiter/pages/RecruiterScreen';
@@ -109,6 +110,7 @@ function getScreenTitle(routeName) {
     RecruiterHome: 'Dashboard',
     CompanyProfile: 'Company Profile',
     JDGenerator: 'JD Generator',
+    JDGeneratorResult: 'Generated JD',
     JobPostings: 'Job Postings',
     Shortlists: 'Shortlists',
     Pipeline: 'Pipeline',
@@ -155,6 +157,7 @@ function MainScreens() {
         <RootStack.Screen name="RecruiterHome" component={RecruiterScreen} />
         <RootStack.Screen name="CompanyProfile" component={CompanyProfile} />
         <RootStack.Screen name="JDGenerator" component={JDGeneratorPage} />
+        <RootStack.Screen name="JDGeneratorResult" component={JDGeneratorResultPage} />
         <RootStack.Screen name="JobPostings" component={JobPostings} />
         <RootStack.Screen name="Shortlists" component={ShortlistsPage} />
         <RootStack.Screen name="Pipeline" component={PipelineCandidatesPage} />
