@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     color: colors.darkAmethyst[400],
   },
   linkHighlight: {
-    color: colors.darkAmethyst[600],
+    color: colors.darkAmethyst[200],
     fontWeight: '600',
   },
 });

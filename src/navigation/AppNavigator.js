@@ -3,7 +3,7 @@
 // and all screen components used across the app.
 // ============================================================================
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, StatusBar, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
@@ -30,6 +30,7 @@ import ApplicantPage from '../../features/applicant/pages/ApplicantPage';
 import RecruiterScreen from '../../features/recruiter/pages/RecruiterScreen';
 import PipelineCandidatesPage from '../../features/recruiter/pages/PipelineCandidatesPage';
 import InterviewPage from '../../features/interview/pages/InterviewPage';
+import ApplyJobPage from '../../features/applications/pages/ApplyJobPage';
 
 // ============================================================================
 // Stack Navigator Instances
@@ -204,6 +205,17 @@ function RootNavigator() {
           options={{
             headerShown: true,
             headerTitle: 'Job Details',
+            headerStyle: { backgroundColor: colors.primary },
+            headerTintColor: colors.white,
+            // headerStatusBarHeight: Platform.OS === 'android' ? StatusBar.currentHeight : 44,
+          }}
+        />
+        <RootStack.Screen
+          name="Apply"
+          component={ApplyJobPage}
+          options={{
+            headerShown: true,
+            headerTitle: 'Apply for Job',
             headerStyle: { backgroundColor: colors.primary },
             headerTintColor: colors.white,
           }}

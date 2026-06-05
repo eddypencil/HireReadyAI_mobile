@@ -110,7 +110,7 @@ export default function JobCard({ job }) {
             style={styles.bookmarkButton}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <Ionicons name="heart-outline" size={16} color={colors.darkAmethyst[300]} />
+            <Ionicons name="bookmark-outline" size={16} color={colors.darkAmethyst[300]} />
           </TouchableOpacity>
           <Text style={styles.dateText}>{formatRelativeTime(job.created_at)}</Text>
         </View>
