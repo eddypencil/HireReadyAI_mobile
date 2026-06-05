@@ -29,6 +29,8 @@ import JobPostings from '../../features/companies/pages/JobPostings';
 import ApplicantPage from '../../features/applicant/pages/ApplicantPage';
 import RecruiterScreen from '../../features/recruiter/pages/RecruiterScreen';
 import PipelineCandidatesPage from '../../features/recruiter/pages/PipelineCandidatesPage';
+import PipelinesPage from '../../features/pipeline/pages/PipelinesPage';
+import PipelineBuilderPage from '../../features/pipeline/pages/PipelineBuilderPage';
 import InterviewPage from '../../features/interview/pages/InterviewPage';
 import ApplyJobPage from '../../features/applications/pages/ApplyJobPage';
 
@@ -115,6 +117,8 @@ function getScreenTitle(routeName) {
     JobPostings: 'Job Postings',
     Shortlists: 'Shortlists',
     Pipeline: 'Pipeline',
+    PipelinesPage: 'Pipelines',
+    PipelineBuilder: 'Pipeline Builder',
   };
   return titles[routeName] || routeName;
 }
@@ -162,6 +166,8 @@ function MainScreens() {
         <RootStack.Screen name="JobPostings" component={JobPostings} />
         <RootStack.Screen name="Shortlists" component={ShortlistsPage} />
         <RootStack.Screen name="Pipeline" component={PipelineCandidatesPage} />
+        <RootStack.Screen name="PipelinesPage" component={PipelinesPage} />
+        <RootStack.Screen name="PipelineBuilder" component={PipelineBuilderPage} />
       </RootStack.Navigator>
     </CompanyProvider>
   );

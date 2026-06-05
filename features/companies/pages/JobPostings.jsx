@@ -14,6 +14,7 @@ import {
   Pressable,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors } from "../../../src/theme";
 import { Card } from "../../../shared/ui/Card";
@@ -151,6 +152,7 @@ function PickerDropdown({ options, selected, onSelect, placeholder, theme, acces
 export default function JobPostings() {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
+  const navigation = useNavigation();
   const { jobs } = useCompany();
   const [searchQuery, setSearchQuery] = useState("");
   const [localJobs, setLocalJobs] = useState(jobs);
@@ -745,6 +747,16 @@ export default function JobPostings() {
                 ))}
               </ScrollView>
             )}
+
+            <TouchableOpacity
+              style={[styles.editPipelineBtn, { backgroundColor: theme.primaryLight, borderColor: theme.chipBorder }]}
+              onPress={() => navigation.navigate("PipelineBuilder", { jobId: selectedJob.id })}
+              accessibilityRole="button"
+              accessibilityLabel="Edit pipeline stages"
+            >
+              <Ionicons name="build-outline" size={16} color={theme.primary} />
+              <Text style={[styles.editPipelineBtnText, { color: theme.primary }]}>Edit Pipeline</Text>
+            </TouchableOpacity>
           </Card>
         </ScrollView>
       </View>
@@ -1322,6 +1334,21 @@ const styles = StyleSheet.create({
   },
   aiBadgeText: {
     fontSize: 11,
+    fontWeight: "600",
+  },
+  editPipelineBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    marginTop: 16,
+  },
+  editPipelineBtnText: {
+    fontSize: 13,
     fontWeight: "600",
   },
 });
