@@ -27,7 +27,7 @@ export default function StageCard({
         ) : (
           <>
             <TouchableOpacity
-              onPress={(e) => { e.stopPropagation(); onMoveUp(stage.id); }}
+              onPress={(e) => { e.stopPropagation(); onMoveUp(stage.id, -1); }}
               disabled={isFirst}
               style={styles.moveBtn}
             >
@@ -38,7 +38,7 @@ export default function StageCard({
               />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={(e) => { e.stopPropagation(); onMoveDown(stage.id); }}
+              onPress={(e) => { e.stopPropagation(); onMoveDown(stage.id, 1); }}
               disabled={isLast}
               style={styles.moveBtn}
             >

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import {
   View,
   Text,
@@ -10,8 +10,10 @@ import {
   FlatList,
   StyleSheet,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { STAGE_TYPE_OPTIONS } from "../constants/stageLibrary";
 import { colors } from "../../../src/theme";
+import WeightSlider from "../../../shared/ui/Slider";
 
 const DEBOUNCE_MS = 400;
 
@@ -85,33 +87,30 @@ function PickerDropdown({ options, selected, onSelect, placeholder, disabled }) 
   );
 }
 
-import { Ionicons } from "@expo/vector-icons";
 
 export default function StageDetailsPanel({ stage, stages, onUpdate }) {
   const [form, setForm] = useState({
     name: "",
     stage_type: "",
-    weight: 1,
+    weight: 0.1,
     description: "",
+    num_questions: 0,
   });
-  const weightDebounceRef = useRef(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
     if (stage) {
       setForm({
         name: stage.name || "",
         stage_type: stage.stage_type || "",
-        weight: stage.weight ?? 1,
+        weight: stage.weight ?? 0.1,
         description: stage.description || "",
+        num_questions: stage.num_questions || 0,
       });
+      setHasChanges(false);
     }
   }, [stage?.id]);
-
-  useEffect(() => {
-    return () => {
-      if (weightDebounceRef.current) clearTimeout(weightDebounceRef.current);
-    };
-  }, []);
 
   const totalOtherWeights = useMemo(() => {
     return (stages || [])
@@ -139,20 +138,28 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
     );
   }
 
-  const handleImmediateChange = (field, value) => {
+  const handleChange = (field, value) => {
     const updated = { ...form, [field]: value };
     setForm(updated);
-    onUpdate(stage.id, updated);
+    setHasChanges(true);
   };
 
-  const handleWeightChange = (value) => {
-    const numVal = parseFloat(value);
-    setForm((prev) => ({ ...prev, weight: numVal }));
+  const handleWeightChange = useCallback((value) => {
+    setForm((prev) => ({ ...prev, weight: parseFloat(value) }));
+    setHasChanges(true);
+  }, []);
 
-    if (weightDebounceRef.current) clearTimeout(weightDebounceRef.current);
-    weightDebounceRef.current = setTimeout(() => {
-      onUpdate(stage.id, { ...form, weight: numVal });
-    }, DEBOUNCE_MS);
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      const { order_index, ...updateData } = form;
+      await onUpdate(stage.id, updateData);
+      setHasChanges(false);
+    } catch (err) {
+      console.error("Failed to save stage:", err);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -180,7 +187,7 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
           <TextInput
             style={[styles.input, stage.is_locked && styles.fieldDisabled]}
             value={form.name}
-            onChangeText={(t) => handleImmediateChange("name", t)}
+            onChangeText={(t) => handleChange("name", t)}
             editable={!stage.is_locked}
             placeholder="Stage name"
             placeholderTextColor={colors.gray[400]}
@@ -197,7 +204,7 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
                 : []),
             ]}
             selected={form.stage_type}
-            onSelect={(val) => handleImmediateChange("stage_type", val)}
+            onSelect={(val) => handleChange("stage_type", val)}
             placeholder="Select type..."
             disabled={stage.is_locked}
           />
@@ -208,40 +215,11 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
             <Text style={styles.fieldLabel}>Weight</Text>
             <Text style={styles.weightValue}>{weightPct}%</Text>
           </View>
-          <View style={styles.sliderContainer}>
-            <View style={styles.sliderTrack}>
-              <View
-                style={[
-                  styles.sliderFill,
-                  { width: `${(form.weight / Math.max(maxAllowedWeight, 0.01)) * 100}%` },
-                ]}
-              />
-            </View>
-            <View style={styles.sliderLabels}>
-              {[0, 25, 50, 75, 100].map((pct) => {
-                const val = (pct / 100) * maxAllowedWeight;
-                return (
-                  <TouchableOpacity
-                    key={pct}
-                    onPress={() => handleWeightChange(val.toFixed(2))}
-                    style={[
-                      styles.sliderDot,
-                      Math.round(form.weight * 100) === Math.round(val * 100) && styles.sliderDotActive,
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.sliderDotLabel,
-                        Math.round(form.weight * 100) === Math.round(val * 100) && styles.sliderDotLabelActive,
-                      ]}
-                    >
-                      {pct}%
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          </View>
+          <WeightSlider
+            value={form.weight ?? 0}
+            maxValue={maxAllowedWeight}
+            onChange={handleWeightChange}
+          />
         </View>
 
         <View style={styles.fieldGroup}>
@@ -249,12 +227,25 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
           <TextInput
             style={[styles.textArea, stage.is_locked && styles.fieldDisabled]}
             value={form.description}
-            onChangeText={(t) => handleImmediateChange("description", t)}
+            onChangeText={(t) => handleChange("description", t)}
             editable={!stage.is_locked}
             multiline
             numberOfLines={3}
             textAlignVertical="top"
             placeholder="Describe what happens in this stage..."
+            placeholderTextColor={colors.gray[400]}
+          />
+        </View>
+
+        <View style={styles.fieldGroup}>
+          <Text style={styles.fieldLabel}>Number of Questions</Text>
+          <TextInput
+            style={[styles.input, stage.is_locked && styles.fieldDisabled]}
+            value={String(form.num_questions || 0)}
+            onChangeText={(t) => handleChange("num_questions", parseInt(t) || 0)}
+            editable={!stage.is_locked}
+            keyboardType="numeric"
+            placeholder="Enter number of questions..."
             placeholderTextColor={colors.gray[400]}
           />
         </View>
@@ -270,6 +261,23 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
             )
           )}
         </View>
+      </View>
+
+      <View style={styles.saveFooter}>
+        <TouchableOpacity
+          onPress={handleSave}
+          disabled={!hasChanges || stage.is_locked || isSaving}
+          style={[
+            styles.saveButton,
+            (!hasChanges || stage.is_locked) && styles.saveButtonDisabled,
+          ]}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="save-outline" size={16} color={(!hasChanges || stage.is_locked) ? colors.gray[400] : colors.white} />
+          <Text style={[styles.saveButtonText, (!hasChanges || stage.is_locked) && styles.saveButtonTextDisabled]}>
+            {isSaving ? "Saving..." : "Save Changes"}
+          </Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -439,41 +447,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: colors.darkAmethyst[600],
   },
-  sliderContainer: {
-    gap: 8,
-  },
-  sliderTrack: {
-    height: 6,
-    backgroundColor: colors.gray[200],
-    borderRadius: 3,
-    overflow: "hidden",
-  },
-  sliderFill: {
-    height: "100%",
-    backgroundColor: colors.darkAmethyst[600],
-    borderRadius: 3,
-  },
-  sliderLabels: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  sliderDot: {
-    paddingHorizontal: 4,
-    paddingVertical: 6,
-    borderRadius: 4,
-  },
-  sliderDotActive: {
-    backgroundColor: colors.darkAmethyst[50],
-  },
-  sliderDotLabel: {
-    fontSize: 10,
-    color: colors.gray[400],
-    fontWeight: "500",
-  },
-  sliderDotLabelActive: {
-    color: colors.darkAmethyst[600],
-    fontWeight: "700",
-  },
+
   textArea: {
     borderWidth: 1,
     borderColor: colors.gray[200],
@@ -513,5 +487,32 @@ const styles = StyleSheet.create({
     height: 16,
     borderRadius: 8,
     backgroundColor: colors.gray[200],
+  },
+  saveFooter: {
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderTopWidth: 1,
+    borderTopColor: colors.gray[100],
+    backgroundColor: colors.white,
+  },
+  saveButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    backgroundColor: colors.darkAmethyst[600],
+    paddingVertical: 12,
+    borderRadius: 10,
+  },
+  saveButtonDisabled: {
+    backgroundColor: colors.gray[200],
+  },
+  saveButtonText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: colors.white,
+  },
+  saveButtonTextDisabled: {
+    color: colors.gray[400],
   },
 });

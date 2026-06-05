@@ -16,8 +16,11 @@ import StageCard from "./StageCard";
 import StageDetailsPanel from "./StageDetailsPanel";
 import { colors } from "../../../src/theme";
 
-const SCREEN_WIDTH = Dimensions.get("window").width;
+const WINDOW = Dimensions.get("window");
+const SCREEN_WIDTH = WINDOW.width;
+const SCREEN_HEIGHT = WINDOW.height;
 const IS_DESKTOP = SCREEN_WIDTH >= 1024;
+const BOTTOM_SHEET_HEIGHT = Math.min(SCREEN_HEIGHT * 0.75, 560);
 
 export default function PipelineBuilder({
   job,
@@ -146,16 +149,6 @@ export default function PipelineBuilder({
 
       {renderCanvas()}
 
-      {selectedStage && (
-        <TouchableOpacity
-          onPress={() => setDetailsOpen(true)}
-          style={styles.settingsBtn}
-        >
-          <Text style={styles.settingsBtnText}>Settings</Text>
-          <Ionicons name="settings-outline" size={18} color={colors.white} />
-        </TouchableOpacity>
-      )}
-
       <Modal
         visible={libraryOpen}
         transparent
@@ -188,13 +181,14 @@ export default function PipelineBuilder({
         animationType="slide"
         onRequestClose={() => setDetailsOpen(false)}
       >
-        <View style={styles.drawerOverlay}>
+        <View style={styles.bottomSheetOverlay}>
           <TouchableOpacity
-            style={styles.drawerBackdrop}
+            style={styles.bottomSheetBackdrop}
             onPress={() => setDetailsOpen(false)}
           />
-          <View style={styles.drawerRight}>
-            <View style={styles.drawerHeader}>
+          <View style={styles.bottomSheetContainer}>
+            <View style={styles.bottomSheetHandle} />
+            <View style={styles.bottomSheetHeader}>
               <Text style={styles.detailsHeaderTitle} numberOfLines={1}>
                 {selectedStage?.name || "Stage Settings"}
               </Text>
@@ -270,28 +264,38 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: colors.gray[600],
   },
-  settingsBtn: {
-    position: "absolute",
-    right: 12,
-    bottom: 12,
-    zIndex: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    backgroundColor: colors.darkAmethyst[600],
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 4,
+  bottomSheetOverlay: {
+    flex: 1,
+    justifyContent: "flex-end",
   },
-  settingsBtnText: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: colors.white,
+  bottomSheetBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.3)",
+  },
+  bottomSheetContainer: {
+    height: BOTTOM_SHEET_HEIGHT,
+    backgroundColor: colors.white,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    overflow: "hidden",
+  },
+  bottomSheetHandle: {
+    width: 36,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: colors.gray[300],
+    alignSelf: "center",
+    marginTop: 10,
+    marginBottom: 4,
+  },
+  bottomSheetHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.gray[100],
   },
 
   // Canvas

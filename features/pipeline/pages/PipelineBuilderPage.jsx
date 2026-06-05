@@ -21,6 +21,7 @@ export default function PipelineBuilderPage() {
     handleUpdateStage,
     handleDeleteStage,
     moveStage,
+    handleReorderStages,
   } = usePipeline(jobId);
 
   if (loading) {

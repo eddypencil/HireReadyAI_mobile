@@ -270,7 +270,7 @@ export default function RecruiterScreen() {
           ))}
         </View>
 
-        {/* Pipeline Summary */}
+        {/* Pipeline Summary
         {pipelineStages.length > 0 && (
           <>
             <Text style={[styles.sectionTitle, { color: theme.foreground }]}>Pipeline Summary</Text>
@@ -295,7 +295,7 @@ export default function RecruiterScreen() {
               </View>
             </Card>
           </>
-        )}
+        )} */}
 
         {/* Application Trend */}
         {trendData.length > 0 && (
