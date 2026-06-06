@@ -91,35 +91,7 @@ export default function CompanyProfile() {
         </View>
       </View>
 
-      {/* Competency Framework Card */}
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Competency Framework</Text>
-        <Text style={styles.cardSubtitle}>
-          Upload your grading framework for AI analysis.
-        </Text>
-
-        <TouchableOpacity style={styles.uploadArea} onPress={handleFilePick}>
-          <Text style={styles.uploadIcon}>UPLOAD</Text>
-          <Text style={styles.uploadText}>
-            Click to upload your framework file
-          </Text>
-          <Text style={styles.uploadHint}>PDF or DOCX up to 25MB</Text>
-        </TouchableOpacity>
-
-        {frameworkFile && (
-          <View style={styles.fileRow}>
-            <View style={styles.fileInfo}>
-              <Text style={styles.fileIcon}>F</Text>
-              <Text style={styles.fileName} numberOfLines={1}>
-                {frameworkFile}
-              </Text>
-            </View>
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>Active & Indexed</Text>
-            </View>
-          </View>
-        )}
-      </View>
+      
 
       {/* Team Members Card */}
       <View style={styles.card}>

@@ -25,12 +25,13 @@ import { useCompany } from "./CompanyLayout";
 const TABS = ["All", "Open", "Closed"];
 
 const seniorityOptions = [
+  { label: "intern", value: "intern" },
   { label: "Junior", value: "junior" },
   { label: "Mid", value: "mid" },
   { label: "Senior", value: "senior" },
   { label: "Lead", value: "lead" },
-  { label: "Principal", value: "principal" },
 ];
+
 
 const jobTypeOptions = [
   { label: "Full Time", value: "full_time" },
