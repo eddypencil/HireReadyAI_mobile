@@ -7,6 +7,8 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { fetchJobById, fetchSimilarJobs } from '../services/jobs.service';
 import { colors } from '../../../src/theme';
+import { useUser } from '../../auth/context/user.context';
+import { supabase } from '../../../shared/services/supabase';
 
 function formatJobType(type) {
   return type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
@@ -16,11 +18,14 @@ export default function JobDetailsPage() {
   const route = useRoute();
   const navigation = useNavigation();
   const { id } = route.params;
+  const { profile } = useUser();
+
 
   const [job, setJob] = useState(null);
   const [similarJobs, setSimilarJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [hasApplied, setHasApplied] = useState(false);
 
   useEffect(() => {
     async function loadJob() {
@@ -37,6 +42,23 @@ export default function JobDetailsPage() {
     }
     loadJob();
   }, [id]);
+
+  useEffect(() => {
+  if (!id || !profile?.id) return;
+
+  async function checkApplication() {
+    const { data } = await supabase
+      .from('applications')
+      .select('id')
+      .eq('job_id', id)
+      .eq('candidate_profile_id', profile.id)
+      .maybeSingle();
+
+    setHasApplied(!!data);
+  }
+
+  checkApplication();
+}, [id, profile?.id]);
 
   if (loading) {
     return (
@@ -145,11 +167,16 @@ export default function JobDetailsPage() {
         
         <View style={styles.actions}>
           <TouchableOpacity
-            style={styles.applyButton}
-            activeOpacity={0.8}
-            onPress={() => navigation.navigate('Apply', { jobId: job.id })}
+            style={[styles.applyButton, hasApplied && styles.applyButtonDisabled]}
+            activeOpacity={hasApplied ? 1 : 0.8}
+            onPress={() => {
+              if (hasApplied) return;
+              navigation.navigate('Apply', { jobId: job.id });
+            }}
           >
-            <Text style={styles.applyButtonText}>Apply Now</Text>
+            <Text style={styles.applyButtonText}>
+              {hasApplied ? 'Applied' : 'Apply Now'}
+            </Text>
           </TouchableOpacity>
 
           
@@ -401,6 +428,11 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontSize: 15,
     fontWeight: '600',
+  },
+  applyButtonDisabled: {
+    backgroundColor: colors.gray[300],
+    shadowOpacity: 0,
+    elevation: 0,
   },
   bookmarkButton: {
     width: 48,

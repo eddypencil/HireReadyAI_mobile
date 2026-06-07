@@ -12,6 +12,7 @@ import { supabase } from '../../../shared/services/supabase';
 import QuestionCard from '../components/apply/QuestionCard';
 import { colors } from '../../../src/theme';
 import * as DocumentPicker from 'expo-document-picker';
+import * as FileSystem from 'expo-file-system/legacy';
 
 const STEPS = ['Info', 'Resume', 'Questions'];
 
@@ -121,12 +122,21 @@ export default function ApplyJobPage() {
 
   const uploadResume = async (file) => {
     const fileName = `${Date.now()}-${file.name}`;
-    const response = await fetch(file.uri);
-    const blob = await response.blob();
-    const { error } = await supabase.storage.from('resumes').upload(fileName, blob, {
-      contentType: 'application/pdf',
+
+    const base64 = await FileSystem.readAsStringAsync(file.uri, {
+      encoding: 'base64',
     });
+
+    const byteArray = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+
+    const { error } = await supabase.storage
+      .from('resumes')
+      .upload(fileName, byteArray, {
+        contentType: 'application/pdf',
+      });
+
     if (error) throw error;
+
     const { data } = supabase.storage.from('resumes').getPublicUrl(fileName);
     return data.publicUrl;
   };
@@ -187,7 +197,7 @@ export default function ApplyJobPage() {
       Alert.alert(
         'Application Submitted!',
         'Your application has been submitted successfully.',
-        [{ text: 'OK', onPress: () => navigation.navigate('JobsTab') }]
+        [{ text: 'OK', onPress: () => navigation.navigate('Main', { screen: 'JobsTab' }) }]
       );
     } catch (err) {
       console.error('Submit error:', err);
