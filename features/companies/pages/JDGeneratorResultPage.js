@@ -13,6 +13,7 @@ import { supabase } from "../../../shared/services/supabase";
 import { useJobs } from "../../jobs/hooks/useJobs";
 import { useCompany } from "./CompanyLayout";
 import { useUser } from "../../auth/context/user.context";
+import { seedAnchorStages } from "../../recruiter/services/candidatesPipline.service";
 
 export default function JDGeneratorResultPage({ route }) {
   const params = route.params;
@@ -64,7 +65,7 @@ export default function JDGeneratorResultPage({ route }) {
     setPublishing(true);
     setPublishError(null);
     try {
-      await createJob({
+      const newJob = await createJob({
         company_id: company.id,
         created_by_profile_id: profile?.id || null,
         title: params.title,
@@ -79,6 +80,11 @@ export default function JDGeneratorResultPage({ route }) {
         salary_min: aiResult.salary_min || null,
         salary_max: aiResult.salary_max || null,
       });
+
+      if (newJob?.id) {
+        await seedAnchorStages(newJob.id);
+      }
+
       setPublished(true);
       reloadCompany();
     } catch (err) {
