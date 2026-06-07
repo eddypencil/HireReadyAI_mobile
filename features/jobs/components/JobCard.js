@@ -96,7 +96,7 @@ export default function JobCard({ job }) {
                 {job.responsibilities.slice(0, 2).map((item, i) => (
                   <View key={i} style={styles.bulletRow}>
                     <View style={styles.bullet} />
-                    <Text style={styles.bulletText}>{item}</Text>
+                    <Text style={styles.bulletText} numberOfLines={1} ellipsizeMode="tail">{item}</Text>
                   </View>
                 ))}
               </View>
