@@ -8,6 +8,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useUser } from '../../auth/context/user.context';
 import { fetchQuestionsByJobId, createApplication } from '../services/application.service';
+import { triggerCvReview } from '../services/cv-review.service';
 import { supabase } from '../../../shared/services/supabase';
 import QuestionCard from '../components/apply/QuestionCard';
 import { colors } from '../../../src/theme';
@@ -192,7 +193,23 @@ export default function ApplyJobPage() {
         applied_at: new Date().toISOString(),
       };
 
-      await createApplication(payload);
+      const application = await createApplication(payload);
+
+      let cvText = '';
+      if (cvUrl) {
+        try {
+          const { data: pdfData, error: pdfError } = await supabase.functions.invoke('extract-pdf-text', {
+            body: { cvFileUrl: cvUrl },
+          });
+          console.log("[extract-pdf-text] response:", pdfData, "error:", pdfError);
+          if (pdfData?.text) cvText = pdfData.text;
+        } catch (err) {
+          console.error('[extract-pdf-text] invocation failed:', err);
+        }
+      }
+
+      console.log("[triggerCvReview] cvText length:", cvText.trim().length, "preview:", cvText.trim().slice(0, 200));
+      triggerCvReview(application.id, cvText.trim());
 
       Alert.alert(
         'Application Submitted!',
