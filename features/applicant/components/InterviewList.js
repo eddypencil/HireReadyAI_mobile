@@ -241,7 +241,7 @@ export default function InterviewList({ applications }) {
             </View>
             <View>
               <Text style={{ fontSize: 14, fontWeight: "700", color: colors.foreground }}>
-                State Managment
+                Status Managment
               </Text>
               <Text style={{ fontSize: 11, color: colors.mutedForeground, marginTop: 1 }}>
                 Track your interview stages
@@ -285,7 +285,7 @@ export default function InterviewList({ applications }) {
           </View>
           <View>
             <Text style={{ fontSize: 14, fontWeight: "700", color: colors.foreground }}>
-              Interview Process
+              Status Management
             </Text>
             <Text style={{ fontSize: 11, color: colors.mutedForeground, marginTop: 1 }}>
               Track your interview stages

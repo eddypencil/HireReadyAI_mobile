@@ -47,8 +47,6 @@ export default function JDGeneratorResultPage({ route }) {
           experienceYears: params.experienceYears,
           companyName: company?.name || "",
           companyIndustry: company?.industry || "",
-          salaryMin: params.salaryMin ? Number(params.salaryMin) : null,
-          salaryMax: params.salaryMax ? Number(params.salaryMax) : null,
         },
       });
       if (invokeError) throw new Error(invokeError.message);
@@ -77,8 +75,8 @@ export default function JDGeneratorResultPage({ route }) {
         responsibilities: aiResult.responsibilities,
         requirements: aiResult.requirements,
         skills: aiResult.skills,
-        salary_min: aiResult.salary_min || null,
-        salary_max: aiResult.salary_max || null,
+        salary_min: params.salaryMin ? Number(params.salaryMin) : null,
+        salary_max: params.salaryMax ? Number(params.salaryMax) : null,
       });
 
       if (newJob?.id) {
@@ -174,8 +172,8 @@ export default function JDGeneratorResultPage({ route }) {
           <View style={styles.salaryDisplay}>
             <Ionicons name="cash-outline" size={14} color={colors.darkAmethyst[500]} />
             <Text style={styles.salaryDisplayText}>
-              {aiResult?.salary_min && aiResult?.salary_max
-                ? `${aiResult.salary_min.toLocaleString()} – ${aiResult.salary_max.toLocaleString()} EGP`
+              {params.salaryMin && params.salaryMax
+                ? `${Number(params.salaryMin).toLocaleString()} – ${Number(params.salaryMax).toLocaleString()} EGP`
                 : "Salary: Confidential"}
             </Text>
           </View>

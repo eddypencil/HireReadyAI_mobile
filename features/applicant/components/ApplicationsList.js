@@ -356,12 +356,18 @@ export default function ApplicationsList({ applications, onViewJob }) {
                     borderColor: colors.border,
                     borderRadius: 8,
                     paddingVertical: 6,
+                    backgroundColor: colors.darkAmethyst[600],
+                    shadowColor: colors.darkAmethyst[600],
+                    shadowOffset: { width: 0, height: 4 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 8,
+                    elevation: 4,
                   }}
                 >
-                  <Text style={{ fontSize: 12, fontWeight: "600", color: colors.primary }}>
+                  <Text style={{ fontSize: 12, fontWeight: "600", color: colors.white }}>
                     View Job
                   </Text>
-                  <Ionicons name="arrow-forward" size={12} color={colors.primary} />
+                  <Ionicons name="arrow-forward" size={12} color={colors.white} />
                 </TouchableOpacity>
               </View>
             );
