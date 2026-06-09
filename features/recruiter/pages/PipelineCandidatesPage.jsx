@@ -1,221 +1,262 @@
+import { useState, useEffect, useMemo } from 'react';
 import {
   ScrollView,
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+  ActivityIndicator,
+  Modal,
+  Alert,
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import { useCompany } from '../../../features/companies/pages/CompanyLayout';
+import {
+  getPipelineCandidates,
+  getJobStages,
+  moveToStage,
+  getStageByTypeAndJob,
+  autoAdvanceToShortlist,
+} from '../services/candidatesPipline.service';
+import { colors } from '../../../src/theme';
 
-const T = {
-  primary: "#01497c",
-  sidebar: "#012a4a",
-  accent: "#468faf",
-  surface: "#eef7fa",
-  border: "#cfe7f2",
-  foreground: "#012a4a",
-  muted: "#2a6f97",
-  white: "#ffffff",
+const STAGE_TYPE_COLORS = {
+  cv_review: '#6b7280',
+  shortlist: '#f59e0b',
+  screening: '#f59e0b',
+  assessment_test: '#8b5cf6',
+  coding_test: '#8b5cf6',
+  video_interview: '#3b82f6',
+  technical_interview: '#3b82f6',
+  hr_interview: '#3b82f6',
+  manager_interview: '#ec4899',
+  ai_screening: '#8b5cf6',
+  offer: '#10b981',
+  default: '#6b7280',
 };
 
-const STAGES = [
-  { key: "applied", label: "Applied", color: "#6b7280" },
-  { key: "screening", label: "Screening", color: "#f59e0b" },
-  { key: "interview", label: "Interview", color: "#3b82f6" },
-  { key: "assessment", label: "Assessment", color: "#8b5cf6" },
-  { key: "final", label: "Final", color: "#ec4899" },
-  { key: "hired", label: "Hired", color: "#10b981" },
-];
+function getInitials(name = '') {
+  return (name || '').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || '?';
+}
 
-const DUMMY_CANDIDATES = {
-  applied: [
-    {
-      id: "1",
-      name: "Alice Johnson",
-      role: "Frontend Developer",
-      score: 92,
-      initials: "AJ",
-    },
-    {
-      id: "2",
-      name: "Bob Smith",
-      role: "Backend Engineer",
-      score: 78,
-      initials: "BS",
-    },
-    {
-      id: "3",
-      name: "Carol Lee",
-      role: "UX Designer",
-      score: 85,
-      initials: "CL",
-    },
-  ],
-  screening: [
-    {
-      id: "4",
-      name: "David Kim",
-      role: "DevOps Engineer",
-      score: 88,
-      initials: "DK",
-    },
-    {
-      id: "5",
-      name: "Eva Martinez",
-      role: "Data Scientist",
-      score: 72,
-      initials: "EM",
-    },
-  ],
-  interview: [
-    {
-      id: "6",
-      name: "Frank Wilson",
-      role: "Product Manager",
-      score: 91,
-      initials: "FW",
-    },
-  ],
-  assessment: [
-    {
-      id: "7",
-      name: "Grace Chen",
-      role: "Full Stack Dev",
-      score: 95,
-      initials: "GC",
-    },
-    {
-      id: "8",
-      name: "Henry Brown",
-      role: "Mobile Engineer",
-      score: 69,
-      initials: "HB",
-    },
-    {
-      id: "9",
-      name: "Iris Davis",
-      role: "QA Engineer",
-      score: 81,
-      initials: "ID",
-    },
-  ],
-  final: [
-    {
-      id: "10",
-      name: "Jack Taylor",
-      role: "Engineering Lead",
-      score: 96,
-      initials: "JT",
-    },
-  ],
-  hired: [
-    {
-      id: "11",
-      name: "Karen White",
-      role: "Design Lead",
-      score: 98,
-      initials: "KW",
-    },
-  ],
-};
+function useTheme() {
+  return {
+    background: colors.surface,
+    surface: colors.white,
+    card: colors.white,
+    border: colors.border,
+    foreground: colors.foreground,
+    muted: colors.mutedForeground,
+    primary: colors.primary,
+    accent: colors.accent,
+    primaryLight: colors.primary + '18',
+  };
+}
 
-function getScoreColor(score) {
-  if (score >= 90) return { bg: "#d4edda", text: "#155724" };
-  if (score >= 75) return { bg: "#d1ecf1", text: "#0c5460" };
-  if (score >= 60) return { bg: "#fff3cd", text: "#856404" };
-  return { bg: "#f8d7da", text: "#721c24" };
+function CandidateCard({ candidate, stageColor, onTap, onMove }) {
+  const app = typeof candidate.application_stages === 'object' && !Array.isArray(candidate.application_stages)
+    ? candidate
+    : candidate;
+  const name = app.profiles?.full_name || 'Unknown';
+  const score = app.composite_score;
+  const initials = getInitials(name);
+
+  const scoreColor = score >= 80 ? { bg: '#d4edda', text: '#155724' }
+    : score >= 60 ? { bg: '#d1ecf1', text: '#0c5460' }
+    : { bg: '#fff3cd', text: '#856404' };
+
+  return (
+    <TouchableOpacity
+      style={styles.candidateCard}
+      activeOpacity={0.8}
+      onPress={() => onTap(app)}
+      onLongPress={() => onMove(app)}
+      delayLongPress={400}
+    >
+      <View style={styles.candidateTop}>
+        <View style={[styles.avatar, { backgroundColor: stageColor }]}>
+          <Text style={styles.avatarText}>{initials}</Text>
+        </View>
+        <View style={styles.candidateInfo}>
+          <Text style={styles.candidateName} numberOfLines={1}>{name}</Text>
+          <Text style={styles.candidateRole} numberOfLines={1}>{app.job_postings?.title || ''}</Text>
+        </View>
+      </View>
+      {score != null && (
+        <View style={[styles.scoreBadge, { backgroundColor: scoreColor.bg }]}>
+          <Text style={[styles.scoreText, { color: scoreColor.text }]}>{Math.round(score)}</Text>
+        </View>
+      )}
+    </TouchableOpacity>
+  );
 }
 
 export default function PipelineCandidatesPage() {
+  const insets = useSafeAreaInsets();
+  const theme = useTheme();
+  const navigation = useNavigation();
+  const { company, jobs } = useCompany();
+
+  const [candidates, setCandidates] = useState([]);
+  const [stages, setStages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedJobId, setSelectedJobId] = useState(null);
+  const [showJobPicker, setShowJobPicker] = useState(false);
+  const [moveTarget, setMoveTarget] = useState(null);
+  const [moving, setMoving] = useState(false);
+
+  useEffect(() => {
+    if (jobs.length > 0 && !selectedJobId) {
+      setSelectedJobId(jobs[0].id);
+    }
+  }, [jobs]);
+
+  useEffect(() => {
+    if (!selectedJobId) return;
+    fetchData();
+  }, [selectedJobId]);
+
+  async function fetchData() {
+    setLoading(true);
+    try {
+      const { data: stagesData, error: stagesErr } = await getJobStages(selectedJobId);
+      if (stagesErr) throw stagesErr;
+      setStages(stagesData || []);
+
+      const { data: candidatesData, error: candErr } = await getPipelineCandidates(company?.id);
+      if (candErr) throw candErr;
+      setCandidates((candidatesData || []).filter(c => c.job_postings?.id === selectedJobId));
+    } catch (err) {
+      console.error('Pipeline fetch error:', err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const candidatesByStage = useMemo(() => {
+    const map = {};
+    stages.forEach(s => { map[s.id] = []; });
+    candidates.forEach(c => {
+      const stageId = c.current_stage_id;
+      if (stageId && map[stageId]) {
+        map[stageId].push(c);
+      }
+    });
+    return map;
+  }, [stages, candidates]);
+
+  const handleCandidateTap = (candidate) => {
+    navigation.navigate('CandidateProfile', { applicationId: candidate.id });
+  };
+
+  const handleMoveCandidate = async (candidate) => {
+    setMoveTarget(candidate);
+  };
+
+  const executeMove = async (targetStageId) => {
+    if (!moveTarget) return;
+    setMoving(true);
+    try {
+      const { error } = await moveToStage(moveTarget.id, targetStageId);
+      if (error) {
+        Alert.alert('Cannot move', error.message);
+      } else {
+        fetchData();
+      }
+    } catch (err) {
+      Alert.alert('Error', err.message);
+    } finally {
+      setMoving(false);
+      setMoveTarget(null);
+    }
+  };
+
+  const handleAutoAdvance = async () => {
+    try {
+      const result = await autoAdvanceToShortlist(selectedJobId, 70);
+      if (result.advancedCount > 0) {
+        Alert.alert('Auto-Advance', `${result.advancedCount} candidate(s) advanced to shortlist`);
+        fetchData();
+      } else {
+        Alert.alert('Auto-Advance', 'No candidates met the threshold');
+      }
+    } catch (err) {
+      Alert.alert('Error', err.message);
+    }
+  };
+
+  const selectedJob = jobs.find(j => j.id === selectedJobId);
+
+  if (loading && candidates.length === 0) {
+    return (
+      <View style={[styles.container, styles.centered, { backgroundColor: theme.background }]}>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={[styles.loadingText, { color: theme.muted }]}>Loading pipeline...</Text>
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.headerGradient}>
-          <Ionicons
-            name="git-network-outline"
-            size={28}
-            color={T.white}
-            style={styles.headerIcon}
-          />
-          <Text style={styles.headerTitle}>Candidate Pipeline</Text>
-          <Text style={styles.headerSubtitle}>
-            Drag and drop to move candidates
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      {/* Job Selector Header */}
+      <View style={[styles.headerBar, { paddingTop: insets.top + 12 }]}>
+        <TouchableOpacity style={styles.jobSelector} onPress={() => setShowJobPicker(true)}>
+          <Ionicons name="briefcase-outline" size={18} color={colors.white} />
+          <Text style={styles.jobSelectorText} numberOfLines={1}>
+            {selectedJob?.title || 'Select a job'}
           </Text>
-        </View>
+          <Ionicons name="chevron-down" size={16} color={colors.white} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.autoAdvanceBtn} onPress={handleAutoAdvance}>
+          <Ionicons name="flash-outline" size={16} color={colors.white} />
+        </TouchableOpacity>
       </View>
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.boardScroll}
-      >
+      {/* Pipeline Info */}
+      <View style={styles.infoBar}>
+        <Ionicons name="git-network-outline" size={16} color={colors.primary} />
+        <Text style={styles.infoText}>
+          {candidates.length} candidate{candidates.length !== 1 ? 's' : ''} in pipeline
+        </Text>
+        <Text style={styles.infoHint}>Long-press a card to move stages</Text>
+      </View>
+
+      {/* Kanban Board */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.boardScroll}>
         <View style={styles.board}>
-          {STAGES.map((stage) => {
-            const candidates = DUMMY_CANDIDATES[stage.key] || [];
+          {stages.map((stage) => {
+            const stageCandidates = candidatesByStage[stage.id] || [];
+            const stageColor = STAGE_TYPE_COLORS[stage.stage_type] || STAGE_TYPE_COLORS.default;
             return (
-              <View key={stage.key} style={styles.column}>
+              <View key={stage.id} style={styles.column}>
                 <View style={styles.columnHeader}>
-                  <View
-                    style={[styles.stageDot, { backgroundColor: stage.color }]}
-                  />
-                  <Text style={styles.columnTitle}>{stage.label}</Text>
+                  <View style={[styles.stageDot, { backgroundColor: stageColor }]} />
+                  <Text style={[styles.columnTitle, { color: theme.foreground }]} numberOfLines={1}>
+                    {stage.name}
+                  </Text>
                   <View style={styles.countBadge}>
-                    <Text style={styles.countText}>{candidates.length}</Text>
+                    <Text style={styles.countText}>{stageCandidates.length}</Text>
                   </View>
                 </View>
 
-                <ScrollView
-                  style={styles.columnBody}
-                  showsVerticalScrollIndicator={false}
-                >
-                  {candidates.length === 0 ? (
+                <ScrollView style={styles.columnBody} showsVerticalScrollIndicator={false}>
+                  {stageCandidates.length === 0 ? (
                     <View style={styles.emptyColumn}>
-                      <Ionicons
-                        name="move-outline"
-                        size={24}
-                        color={T.border}
-                      />
-                      <Text style={styles.emptyColumnText}>Drop here</Text>
+                      <Ionicons name="move-outline" size={24} color={theme.border} />
+                      <Text style={[styles.emptyColumnText, { color: theme.border }]}>Drop here</Text>
                     </View>
                   ) : (
-                    candidates.map((candidate) => {
-                      const sc = getScoreColor(candidate.score);
-                      return (
-                        <TouchableOpacity
-                          key={candidate.id}
-                          style={styles.candidateCard}
-                          activeOpacity={0.8}
-                        >
-                          <View style={styles.candidateTop}>
-                            <View style={styles.avatar}>
-                              <Text style={styles.avatarText}>
-                                {candidate.initials}
-                              </Text>
-                            </View>
-                            <View style={styles.candidateInfo}>
-                              <Text style={styles.candidateName}>
-                                {candidate.name}
-                              </Text>
-                              <Text style={styles.candidateRole}>
-                                {candidate.role}
-                              </Text>
-                            </View>
-                          </View>
-                          <View
-                            style={[
-                              styles.scoreBadge,
-                              { backgroundColor: sc.bg },
-                            ]}
-                          >
-                            <Text
-                              style={[styles.scoreText, { color: sc.text }]}
-                            >
-                              {candidate.score}
-                            </Text>
-                          </View>
-                        </TouchableOpacity>
-                      );
-                    })
+                    stageCandidates.map((candidate) => (
+                      <CandidateCard
+                        key={candidate.id}
+                        candidate={candidate}
+                        stageColor={stageColor}
+                        onTap={handleCandidateTap}
+                        onMove={handleMoveCandidate}
+                      />
+                    ))
                   )}
                 </ScrollView>
               </View>
@@ -223,149 +264,269 @@ export default function PipelineCandidatesPage() {
           })}
         </View>
       </ScrollView>
+
+      {/* Job Picker Modal */}
+      <Modal visible={showJobPicker} transparent animationType="slide" onRequestClose={() => setShowJobPicker(false)}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Select a Job</Text>
+              <TouchableOpacity onPress={() => setShowJobPicker(false)}>
+                <Ionicons name="close" size={24} color={colors.foreground} />
+              </TouchableOpacity>
+            </View>
+            <ScrollView>
+              {jobs.map(job => (
+                <TouchableOpacity
+                  key={job.id}
+                  style={[styles.jobOption, job.id === selectedJobId && styles.jobOptionActive]}
+                  onPress={() => { setSelectedJobId(job.id); setShowJobPicker(false); }}
+                >
+                  <Ionicons
+                    name={job.id === selectedJobId ? 'radio-button-on' : 'radio-button-off'}
+                    size={20}
+                    color={job.id === selectedJobId ? colors.primary : colors.gray[400]}
+                  />
+                  <View style={styles.jobOptionInfo}>
+                    <Text style={[styles.jobOptionTitle, job.id === selectedJobId && { color: colors.primary }]}>
+                      {job.title}
+                    </Text>
+                    {job.department && (
+                      <Text style={styles.jobOptionDept}>{job.department}</Text>
+                    )}
+                  </View>
+                </TouchableOpacity>
+              ))}
+              {jobs.length === 0 && (
+                <Text style={styles.emptyJobsText}>No jobs available. Create one first.</Text>
+              )}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Move to Stage Modal */}
+      <Modal visible={!!moveTarget} transparent animationType="fade" onRequestClose={() => setMoveTarget(null)}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.moveModal}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>
+                Move {moveTarget?.profiles?.full_name || 'candidate'}
+              </Text>
+              <TouchableOpacity onPress={() => setMoveTarget(null)}>
+                <Ionicons name="close" size={24} color={colors.foreground} />
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.moveSubtitle}>Select target stage:</Text>
+            {moving ? (
+              <ActivityIndicator size="small" color={colors.primary} style={{ marginVertical: 20 }} />
+            ) : (
+              <ScrollView>
+                {stages.filter(s => !s.is_locked && s.id !== moveTarget?.current_stage_id).map(stage => {
+                  const stageColor = STAGE_TYPE_COLORS[stage.stage_type] || STAGE_TYPE_COLORS.default;
+                  return (
+                    <TouchableOpacity
+                      key={stage.id}
+                      style={styles.moveOption}
+                      onPress={() => executeMove(stage.id)}
+                    >
+                      <View style={[styles.moveDot, { backgroundColor: stageColor }]} />
+                      <Text style={styles.moveOptionText}>{stage.name}</Text>
+                      <Ionicons name="chevron-forward" size={18} color={colors.gray[400]} />
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+            )}
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  container: { flex: 1 },
+  centered: { justifyContent: 'center', alignItems: 'center' },
+  loadingText: { marginTop: 12, fontSize: 14 },
+  headerBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.primary,
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+    gap: 8,
+  },
+  jobSelector: {
     flex: 1,
-    backgroundColor: T.surface,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 8,
   },
-  header: {
-    backgroundColor: T.sidebar,
-    paddingTop: 60,
-    paddingBottom: 24,
-    paddingHorizontal: 24,
+  jobSelectorText: {
+    flex: 1,
+    fontSize: 15,
+    fontWeight: '600',
+    color: colors.white,
   },
-  headerGradient: {
-    alignItems: "center",
+  autoAdvanceBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  headerIcon: {
-    marginBottom: 6,
+  infoBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    gap: 6,
+    backgroundColor: colors.white,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
   },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: "800",
-    color: T.white,
-  },
-  headerSubtitle: {
+  infoText: {
     fontSize: 13,
-    color: T.accent,
-    marginTop: 2,
-  },
-  boardScroll: {
+    fontWeight: '600',
+    color: colors.primary,
     flex: 1,
   },
+  infoHint: {
+    fontSize: 11,
+    color: colors.mutedForeground,
+  },
+  boardScroll: { flex: 1 },
   board: {
-    flexDirection: "row",
+    flexDirection: 'row',
     paddingHorizontal: 16,
     paddingVertical: 20,
     gap: 14,
-    alignItems: "flex-start",
+    alignItems: 'flex-start',
   },
-  column: {
-    width: 240,
-    maxHeight: "100%",
-  },
+  column: { width: 240, maxHeight: '100%' },
   columnHeader: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 12,
     paddingHorizontal: 4,
   },
-  stageDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    marginRight: 8,
-  },
-  columnTitle: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: T.foreground,
-    flex: 1,
-  },
+  stageDot: { width: 10, height: 10, borderRadius: 5, marginRight: 8 },
+  columnTitle: { fontSize: 14, fontWeight: '700', flex: 1 },
   countBadge: {
-    backgroundColor: T.surface,
+    backgroundColor: colors.surface,
     borderRadius: 10,
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderWidth: 1,
-    borderColor: T.border,
+    borderColor: colors.border,
   },
-  countText: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: T.muted,
-  },
-  columnBody: {
-    maxHeight: 500,
-  },
+  countText: { fontSize: 12, fontWeight: '700', color: colors.primary },
+  columnBody: { maxHeight: 500 },
   emptyColumn: {
     borderWidth: 2,
-    borderStyle: "dashed",
-    borderColor: T.border,
+    borderStyle: 'dashed',
+    borderColor: colors.border,
     borderRadius: 12,
     padding: 32,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  emptyColumnText: {
-    fontSize: 12,
-    color: T.border,
-    marginTop: 6,
-  },
+  emptyColumnText: { fontSize: 12, marginTop: 6 },
   candidateCard: {
-    backgroundColor: T.white,
+    backgroundColor: colors.white,
     borderRadius: 12,
     padding: 14,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: T.border,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    borderColor: colors.border,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
-  candidateTop: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-  },
+  candidateTop: { flexDirection: 'row', alignItems: 'center', flex: 1 },
   avatar: {
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: T.primary,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginRight: 10,
   },
-  avatarText: {
-    color: T.white,
-    fontSize: 12,
-    fontWeight: "700",
-  },
-  candidateInfo: {
-    flex: 1,
-  },
-  candidateName: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: T.foreground,
-  },
-  candidateRole: {
-    fontSize: 11,
-    color: T.muted,
-    marginTop: 1,
-  },
+  avatarText: { color: colors.white, fontSize: 12, fontWeight: '700' },
+  candidateInfo: { flex: 1 },
+  candidateName: { fontSize: 13, fontWeight: '700', color: colors.foreground },
+  candidateRole: { fontSize: 11, color: colors.mutedForeground, marginTop: 1 },
   scoreBadge: {
     borderRadius: 8,
     paddingHorizontal: 8,
     paddingVertical: 4,
   },
-  scoreText: {
-    fontSize: 12,
-    fontWeight: "800",
+  scoreText: { fontSize: 12, fontWeight: '800' },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'flex-end',
   },
+  modalContent: {
+    backgroundColor: colors.white,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: '70%',
+    paddingBottom: 40,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  modalTitle: { fontSize: 17, fontWeight: '700', color: colors.foreground },
+  jobOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    gap: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  jobOptionActive: { backgroundColor: colors.primary + '08' },
+  jobOptionInfo: { flex: 1 },
+  jobOptionTitle: { fontSize: 15, fontWeight: '600', color: colors.foreground },
+  jobOptionDept: { fontSize: 12, color: colors.mutedForeground, marginTop: 2 },
+  emptyJobsText: { textAlign: 'center', padding: 30, color: colors.gray[400], fontSize: 14 },
+  moveModal: {
+    backgroundColor: colors.white,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: '60%',
+    paddingBottom: 40,
+  },
+  moveSubtitle: {
+    fontSize: 13,
+    color: colors.mutedForeground,
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 8,
+  },
+  moveOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    gap: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  moveDot: { width: 12, height: 12, borderRadius: 6 },
+  moveOptionText: { flex: 1, fontSize: 15, fontWeight: '500', color: colors.foreground },
 });

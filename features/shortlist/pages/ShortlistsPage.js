@@ -14,9 +14,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../../../src/theme';
 import { useJobs } from '../../jobs/hooks/useJobs';
 import { useShortlistData } from '../hooks/useShortlistData';
+import { useUser } from '../../../features/auth/context/user.context';
+import { useCompany } from '../../../features/companies/pages/CompanyLayout';
 import ShortlistInsightsBar from '../components/ShortlistInsightsBar';
 import ShortlistCandidateCard from '../components/ShortlistCandidateCard';
 import ShortlistDetailPanel from '../components/ShortlistDetailPanel';
+import OfferEmailModal from '../components/OfferEmailModal';
 
 const SORT_OPTIONS = [
   { key: 'consensus', label: 'Consensus' },
@@ -26,6 +29,8 @@ const SORT_OPTIONS = [
 
 export default function ShortlistsPage() {
   const { jobs } = useJobs();
+  const { user } = useUser();
+  const { company } = useCompany();
 
   const {
     selectedJobId,
@@ -51,6 +56,22 @@ export default function ShortlistsPage() {
   const [search, setSearch] = useState('');
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [showJobPicker, setShowJobPicker] = useState(false);
+  const [showOfferModal, setShowOfferModal] = useState(false);
+  const [offerAction, setOfferAction] = useState('offer');
+  const [offerCandidate, setOfferCandidate] = useState(null);
+
+  const handleAdvance = (applicationId) => {
+    const entry = sortedEntries.find((e) => e.applications.id === applicationId);
+    if (!entry) return;
+    setOfferCandidate(entry);
+    setOfferAction('offer');
+    setShowOfferModal(true);
+  };
+
+  const handleOfferSuccess = () => {
+    setShowOfferModal(false);
+    setOfferCandidate(null);
+  };
 
   const filteredEntries = useMemo(() => {
     return sortedEntries.filter((entry) => {
@@ -184,7 +205,7 @@ export default function ShortlistsPage() {
             onClose={() => setIsPanelOpen(false)}
             onCastVote={castVote}
             onReject={rejectApplication}
-            onAdvanceToOffer={advanceToOffer}
+            onAdvanceToOffer={handleAdvance}
             onPostNote={postNote}
             isOverlay={true}
           />
@@ -237,6 +258,24 @@ export default function ShortlistsPage() {
           </View>
         </TouchableOpacity>
       </Modal>
+
+      {/* Offer Email Modal */}
+      {offerCandidate && (
+        <OfferEmailModal
+          visible={showOfferModal}
+          onClose={() => { setShowOfferModal(false); setOfferCandidate(null); }}
+          candidateName={offerCandidate.applications.profiles?.full_name || ''}
+          candidateEmail=""
+          recruiterName={user?.user_metadata?.full_name || user?.email?.split('@')[0] || ''}
+          recruiterEmail={user?.email || ''}
+          applicationId={offerCandidate.applications.id}
+          jobId={selectedJobId}
+          jobTitle={selectedJob?.title || ''}
+          companyName={company?.name || ''}
+          action={offerAction}
+          onSuccess={handleOfferSuccess}
+        />
+      )}
     </View>
   );
 }
