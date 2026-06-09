@@ -1,7 +1,9 @@
 {
   "expo": {
+    "scheme": "hirereadyai",
     "name": "HireReadyAI",
-    "slug": "HireReadyAI",
+    "slug": "hirereadyai",
+    "owner": "eddypencils-team",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -20,13 +22,20 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.eddypencilsteam.hirereadyai"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-secure-store"
-    ]
+      "expo-secure-store",
+      "expo-web-browser"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "ed2b328b-7094-468a-a093-caca399d2c21"
+      }
+    }
   }
 }

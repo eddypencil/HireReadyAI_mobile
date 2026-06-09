@@ -9,9 +9,10 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import FormField from '../../../shared/ui/FormField';
-import { signIn } from '../services/auth.service';
+import { signIn, signInWithGithub } from '../services/auth.service';
 import { colors } from '../../../src/theme';
 
 export default function LoginPage() {
@@ -19,6 +20,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [githubLoading, setGithubLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useLayoutEffect(() => {
@@ -38,6 +40,20 @@ export default function LoginPage() {
       setError(err.message || 'Invalid email or password. Please try again.');
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleGithubSignIn() {
+    setError(null);
+    setGithubLoading(true);
+    try {
+      await signInWithGithub();
+    } catch (err) {
+      if (err.message !== 'GitHub sign-in was cancelled') {
+        setError(err.message || 'GitHub sign-in failed. Please try again.');
+      }
+    } finally {
+      setGithubLoading(false);
     }
   }
 
@@ -97,6 +113,28 @@ export default function LoginPage() {
               <ActivityIndicator color={colors.white} size="small" />
             ) : (
               <Text style={styles.buttonText}>Sign In</Text>
+            )}
+          </TouchableOpacity>
+
+          <View style={styles.divider}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>or continue with</Text>
+            <View style={styles.dividerLine} />
+          </View>
+
+          <TouchableOpacity
+            style={[styles.githubButton, githubLoading && styles.buttonDisabled]}
+            onPress={handleGithubSignIn}
+            disabled={githubLoading}
+            activeOpacity={0.8}
+          >
+            {githubLoading ? (
+              <ActivityIndicator color={colors.darkAmethyst[950]} size="small" />
+            ) : (
+              <>
+                <Ionicons name="logo-github" size={20} color={colors.darkAmethyst[950]} />
+                <Text style={styles.githubButtonText}>Continue with GitHub</Text>
+              </>
             )}
           </TouchableOpacity>
 
@@ -197,6 +235,37 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: colors.white,
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 12,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: colors.darkAmethyst[700],
+  },
+  dividerText: {
+    marginHorizontal: 12,
+    fontSize: 12,
+    color: colors.darkAmethyst[400],
+  },
+  githubButton: {
+    height: 48,
+    backgroundColor: colors.white,
+    borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    borderWidth: 1,
+    borderColor: colors.darkAmethyst[200],
+  },
+  githubButtonText: {
+    color: colors.darkAmethyst[950],
     fontSize: 15,
     fontWeight: '600',
   },

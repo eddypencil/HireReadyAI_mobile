@@ -1,3 +1,5 @@
+import * as WebBrowser from "expo-web-browser";
+import { makeRedirectUri } from "expo-auth-session";
 import { supabase } from "../../../shared/services/supabase";
 
 export const signIn = async (email, password) => {
@@ -29,6 +31,41 @@ export const signUp = async (email, password, fullName, role) => {
   }
 
   return authData;
+};
+
+export const signInWithGithub = async () => {
+  const redirectUrl = makeRedirectUri({ scheme: "hirereadyai", path: "auth/callback" });
+  console.log("OAuth redirect URL:", redirectUrl);
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "github",
+    options: {
+      redirectTo: redirectUrl,
+      skipBrowserRedirect: true,
+    },
+  });
+  if (error) throw error;
+
+  const result = await WebBrowser.openAuthSessionAsync(data.url, redirectUrl);
+
+  if (result.type === "success") {
+    const fragment = result.url.split("#")[1] || "";
+    const params = {};
+    fragment.split("&").forEach((pair) => {
+      const [key, val] = pair.split("=");
+      if (key) params[decodeURIComponent(key)] = decodeURIComponent(val || "");
+    });
+    if (params.access_token && params.refresh_token) {
+      await supabase.auth.setSession({
+        access_token: params.access_token,
+        refresh_token: params.refresh_token,
+      });
+    }
+  } else if (result.type === "cancel") {
+    throw new Error("GitHub login was cancelled");
+  } else {
+    throw new Error("GitHub login failed");
+  }
 };
 
 export const signOut = async () => {
