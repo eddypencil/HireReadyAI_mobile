@@ -130,7 +130,7 @@ export function CompanyProvider({ children }) {
     >
       {loading ? (
         <View style={styles.centered}>
-          <ActivityIndicator size="small" color={colors.primary} />
+          <ActivityIndicator size="small" color={c.primary} />
         </View>
       ) : (
         children
@@ -195,22 +195,24 @@ export default function CompanyLayout() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.gray[50] },
-  content: { padding: 20 },
-  centered: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: colors.white },
-  loadingText: { marginTop: 8, fontSize: 13, color: colors.gray[500] },
-  errorText: { color: colors.red[500], fontSize: 14, textAlign: "center" },
-  header: { marginBottom: 24 },
-  welcome: { fontSize: 14, color: colors.gray[500] },
-  companyName: { fontSize: 26, fontWeight: "700", color: colors.foreground, marginTop: 2 },
-  statsRow: { flexDirection: "row", gap: 12, marginBottom: 28 },
-  statCard: { flex: 1, backgroundColor: colors.white, borderRadius: 14, padding: 18, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4, elevation: 2 },
-  statNumber: { fontSize: 28, fontWeight: "800", color: colors.primary },
-  statLabel: { fontSize: 12, color: colors.gray[500], marginTop: 2 },
-  sectionTitle: { fontSize: 13, fontWeight: "700", color: colors.gray[600], textTransform: "uppercase", letterSpacing: 1, marginBottom: 12 },
-  navCard: { flexDirection: "row", alignItems: "center", backgroundColor: colors.white, borderRadius: 12, padding: 16, marginBottom: 10, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 3, elevation: 1 },
-  navIconWrap: { width: 40, height: 40, borderRadius: 10, backgroundColor: colors.surface, justifyContent: "center", alignItems: "center" },
-  navTextWrap: { flex: 1, marginLeft: 14 },
-  navLabel: { fontSize: 15, fontWeight: "600", color: colors.gray[900] },
-});
+function createStyles(c) {
+  return StyleSheet.create({
+    container: { flex: 1, backgroundColor: c.gray[50] },
+    content: { padding: 20 },
+    centered: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: c.white },
+    loadingText: { marginTop: 8, fontSize: 13, color: c.gray[500] },
+    errorText: { color: c.red[500], fontSize: 14, textAlign: "center" },
+    header: { marginBottom: 24 },
+    welcome: { fontSize: 14, color: c.gray[500] },
+    companyName: { fontSize: 26, fontWeight: "700", color: c.foreground, marginTop: 2 },
+    statsRow: { flexDirection: "row", gap: 12, marginBottom: 28 },
+    statCard: { flex: 1, backgroundColor: c.white, borderRadius: 14, padding: 18, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4, elevation: 2 },
+    statNumber: { fontSize: 28, fontWeight: "800", color: c.primary },
+    statLabel: { fontSize: 12, color: c.gray[500], marginTop: 2 },
+    sectionTitle: { fontSize: 13, fontWeight: "700", color: c.gray[600], textTransform: "uppercase", letterSpacing: 1, marginBottom: 12 },
+    navCard: { flexDirection: "row", alignItems: "center", backgroundColor: c.white, borderRadius: 12, padding: 16, marginBottom: 10, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 3, elevation: 1 },
+    navIconWrap: { width: 40, height: 40, borderRadius: 10, backgroundColor: c.surface, justifyContent: "center", alignItems: "center" },
+    navTextWrap: { flex: 1, marginLeft: 14 },
+    navLabel: { fontSize: 15, fontWeight: "600", color: c.gray[900] },
+  });
+}

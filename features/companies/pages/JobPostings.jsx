@@ -26,7 +26,14 @@ import { useCompany } from "./CompanyLayout";
 
 const TABS = ["All", "Open", "Closed"];
 
-function PickerDropdown({ options, selected, onSelect, placeholder, theme, accessibilityLabel }) {
+function PickerDropdown({
+  options,
+  selected,
+  onSelect,
+  placeholder,
+  theme,
+  accessibilityLabel,
+}) {
   const [visible, setVisible] = useState(false);
   const displayValue = selected
     ? options.find((o) => o.value === selected)?.label || placeholder
@@ -35,7 +42,10 @@ function PickerDropdown({ options, selected, onSelect, placeholder, theme, acces
   return (
     <View>
       <TouchableOpacity
-        style={[styles.selectField, { backgroundColor: theme.surface, borderColor: theme.border }]}
+        style={[
+          styles.selectField,
+          { backgroundColor: theme.surface, borderColor: theme.border },
+        ]}
         onPress={() => setVisible(true)}
         accessibilityRole="button"
         accessibilityLabel={accessibilityLabel || placeholder}
@@ -60,12 +70,17 @@ function PickerDropdown({ options, selected, onSelect, placeholder, theme, acces
         animationType="fade"
         onRequestClose={() => setVisible(false)}
       >
-        <Pressable style={styles.modalOverlay} onPress={() => setVisible(false)}>
+        <Pressable
+          style={styles.modalOverlay}
+          onPress={() => setVisible(false)}
+        >
           <Pressable
             style={[styles.modalContent, { backgroundColor: theme.surface }]}
             onPress={() => {}}
           >
-            <Text style={[styles.modalTitle, { color: theme.foreground }]}>{placeholder}</Text>
+            <Text style={[styles.modalTitle, { color: theme.foreground }]}>
+              {placeholder}
+            </Text>
             <FlatList
               data={options}
               keyExtractor={(item) => item.value}
@@ -73,7 +88,9 @@ function PickerDropdown({ options, selected, onSelect, placeholder, theme, acces
                 <TouchableOpacity
                   style={[
                     styles.modalOption,
-                    selected === item.value && { backgroundColor: theme.primaryLight },
+                    selected === item.value && {
+                      backgroundColor: theme.primaryLight,
+                    },
                   ]}
                   onPress={() => {
                     onSelect(item.value);
@@ -86,13 +103,20 @@ function PickerDropdown({ options, selected, onSelect, placeholder, theme, acces
                     style={[
                       styles.modalOptionText,
                       { color: theme.foreground },
-                      selected === item.value && { color: theme.primary, fontWeight: "600" },
+                      selected === item.value && {
+                        color: theme.primary,
+                        fontWeight: "600",
+                      },
                     ]}
                   >
                     {item.label}
                   </Text>
                   {selected === item.value && (
-                    <Ionicons name="checkmark" size={18} color={theme.primary} />
+                    <Ionicons
+                      name="checkmark"
+                      size={18}
+                      color={theme.primary}
+                    />
                   )}
                 </TouchableOpacity>
               )}
@@ -116,8 +140,8 @@ export default function JobPostings() {
     card: c.card,
     border: c.border,
     foreground: c.foreground,
-    muted: c['muted-foreground'],
-    mutedForeground: c['muted-foreground'],
+    muted: c["muted-foreground"],
+    mutedForeground: c["muted-foreground"],
     primary: c.primary,
     primaryLight: `${c.primary}26`,
     accent: c.accent,
@@ -125,9 +149,9 @@ export default function JobPostings() {
     successBg: `${c.success}1a`,
     successText: c.success,
     danger: c.destructive,
-    grayBg: c['surface-muted'],
-    grayText: c['muted-foreground'],
-    chipBg: c['surface-muted'],
+    grayBg: c["surface-muted"],
+    grayText: c["muted-foreground"],
+    chipBg: c["surface-muted"],
     chipBorder: c.border,
     chipText: c.primary,
     overlay: `${c.foreground}66`,
@@ -146,24 +170,33 @@ export default function JobPostings() {
   const [pipelineStages, setPipelineStages] = useState([]);
   const [loadingStages, setLoadingStages] = useState(false);
 
-  const seniorityOptions = useMemo(() => [
-    { label: t("companies.seniority_intern"), value: "intern" },
-    { label: t("companies.seniority_junior"), value: "junior" },
-    { label: t("companies.seniority_mid"), value: "mid" },
-    { label: t("companies.seniority_senior"), value: "senior" },
-    { label: t("companies.seniority_lead"), value: "lead" },
-  ], [t]);
+  const seniorityOptions = useMemo(
+    () => [
+      { label: t("companies.seniority_intern"), value: "intern" },
+      { label: t("companies.seniority_junior"), value: "junior" },
+      { label: t("companies.seniority_mid"), value: "mid" },
+      { label: t("companies.seniority_senior"), value: "senior" },
+      { label: t("companies.seniority_lead"), value: "lead" },
+    ],
+    [t],
+  );
 
-  const jobTypeOptions = useMemo(() => [
-    { label: t("companies.full_time"), value: "full_time" },
-    { label: t("companies.part_time"), value: "part_time" },
-  ], [t]);
+  const jobTypeOptions = useMemo(
+    () => [
+      { label: t("companies.full_time"), value: "full_time" },
+      { label: t("companies.part_time"), value: "part_time" },
+    ],
+    [t],
+  );
 
-  const workLocationOptions = useMemo(() => [
-    { label: t("companies.on_site"), value: "on_site" },
-    { label: t("companies.remote"), value: "remote" },
-    { label: t("companies.hybrid"), value: "hybrid" },
-  ], [t]);
+  const workLocationOptions = useMemo(
+    () => [
+      { label: t("companies.on_site"), value: "on_site" },
+      { label: t("companies.remote"), value: "remote" },
+      { label: t("companies.hybrid"), value: "hybrid" },
+    ],
+    [t],
+  );
 
   useEffect(() => {
     setLocalJobs(jobs);
@@ -174,7 +207,7 @@ export default function JobPostings() {
 
   const selectedJob = useMemo(
     () => localJobs.find((j) => j.id === selectedJobId) || localJobs[0],
-    [localJobs, selectedJobId]
+    [localJobs, selectedJobId],
   );
 
   useEffect(() => {
@@ -197,8 +230,10 @@ export default function JobPostings() {
   };
 
   const tabCounts = useMemo(() => {
-    const open = localJobs.filter(j => getJobStatus(j) === "Published").length;
-    const closed = localJobs.filter(j => getJobStatus(j) === "Closed").length;
+    const open = localJobs.filter(
+      (j) => getJobStatus(j) === "Published",
+    ).length;
+    const closed = localJobs.filter((j) => getJobStatus(j) === "Closed").length;
     return { Open: open, All: localJobs.length, Closed: closed };
   }, [localJobs]);
 
@@ -245,8 +280,8 @@ export default function JobPostings() {
       const updatedJob = await updateJobPosting(selectedJobId, updates);
       setLocalJobs((prev) =>
         prev.map((job) =>
-          job.id === selectedJobId ? { ...job, ...updatedJob } : job
-        )
+          job.id === selectedJobId ? { ...job, ...updatedJob } : job,
+        ),
       );
       setIsEditing(false);
     } catch (err) {
@@ -294,7 +329,10 @@ export default function JobPostings() {
       <TouchableOpacity
         style={[
           styles.jobListItem,
-          { backgroundColor: theme.card, borderColor: isSelected ? theme.primary : theme.border },
+          {
+            backgroundColor: theme.card,
+            borderColor: isSelected ? theme.primary : theme.border,
+          },
           isSelected && { backgroundColor: theme.primaryLight },
         ]}
         onPress={() => {
@@ -304,7 +342,11 @@ export default function JobPostings() {
         }}
         activeOpacity={0.7}
         accessibilityRole="button"
-        accessibilityLabel={t("companies.job_accessibility_label", { title: job.title, status: isPublished ? t("companies.active") : t("companies.closed"), count: applicantCount })}
+        accessibilityLabel={t("companies.job_accessibility_label", {
+          title: job.title,
+          status: isPublished ? t("companies.active") : t("companies.closed"),
+          count: applicantCount,
+        })}
         accessibilityHint={t("companies.opens_job_details")}
       >
         <View style={styles.jobListItemContent}>
@@ -318,7 +360,9 @@ export default function JobPostings() {
             <View
               style={[
                 styles.jobStatusBadge,
-                { backgroundColor: isPublished ? theme.successBg : theme.grayBg },
+                {
+                  backgroundColor: isPublished ? theme.successBg : theme.grayBg,
+                },
               ]}
             >
               <Text
@@ -333,13 +377,23 @@ export default function JobPostings() {
           </View>
           <View style={styles.jobListMeta}>
             <Ionicons name="briefcase-outline" size={11} color={theme.muted} />
-            <Text style={[styles.jobListMetaText, { color: theme.muted }]}>{job.seniority_level || t("companies.any")}</Text>
-            <View style={[styles.jobMetaDivider, { backgroundColor: theme.muted }]} />
+            <Text style={[styles.jobListMetaText, { color: theme.muted }]}>
+              {job.seniority_level || t("companies.any")}
+            </Text>
+            <View
+              style={[styles.jobMetaDivider, { backgroundColor: theme.muted }]}
+            />
             <Ionicons name="location-outline" size={11} color={theme.muted} />
-            <Text style={[styles.jobListMetaText, { color: theme.muted }]}>{job.work_location || t("companies.remote")}</Text>
-            <View style={[styles.jobMetaDivider, { backgroundColor: theme.muted }]} />
+            <Text style={[styles.jobListMetaText, { color: theme.muted }]}>
+              {job.work_location || t("companies.remote")}
+            </Text>
+            <View
+              style={[styles.jobMetaDivider, { backgroundColor: theme.muted }]}
+            />
             <Ionicons name="people-outline" size={11} color={theme.muted} />
-            <Text style={[styles.jobListMetaText, { color: theme.muted }]}>{t("companies.applicant_count", { count: applicantCount })}</Text>
+            <Text style={[styles.jobListMetaText, { color: theme.muted }]}>
+              {t("companies.applicant_count", { count: applicantCount })}
+            </Text>
           </View>
         </View>
         <Ionicons name="chevron-forward" size={16} color={theme.muted} />
@@ -349,431 +403,826 @@ export default function JobPostings() {
 
   if (!showList && selectedJob) {
     return (
-      <View style={[styles.detailContainer, { backgroundColor: theme.background, paddingTop: insets.top }]}>
+      <View
+        style={[
+          styles.detailContainer,
+          { backgroundColor: theme.background, paddingTop: insets.top },
+        ]}
+      >
         <KeyboardAvoidingView
           style={{ flex: 1 }}
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
-        <ScrollView contentContainerStyle={styles.detailContent}>
-          <TouchableOpacity
-            style={styles.backToList}
-            onPress={() => setShowList(true)}
-            accessibilityRole="button"
-            accessibilityLabel={t("companies.back_to_jobs_accessible")}
-          >
-            <Ionicons name="chevron-back" size={20} color={theme.primary} />
-            <Text style={[styles.backText, { color: theme.primary }]}>{t("companies.back_to_jobs")}</Text>
-          </TouchableOpacity>
-
-          {/* Header */}
-          <View style={styles.detailHeader}>
-            <View style={styles.detailHeaderLeft}>
-              {isEditing ? (
-                <TextInput
-                  style={[styles.editTitleInput, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.foreground }]}
-                  value={editForm.title}
-                  onChangeText={(t) => setEditForm({ ...editForm, title: t })}
-                  accessibilityLabel={t("companies.job_title_input")}
-                />
-              ) : (
-                <Text style={[styles.detailTitle, { color: theme.foreground }]}>{selectedJob.title}</Text>
-              )}
-              <Text style={[styles.detailSubtitle, { color: theme.muted }]}>
-                {selectedJob.seniority_level || t("companies.any")} ·{" "}
-                {selectedJob.work_location || t("companies.any")} ·{" "}
-                {selectedJob.job_type?.replace(/_/g, "-") || t("companies.full_time")}
+          <ScrollView contentContainerStyle={styles.detailContent}>
+            <TouchableOpacity
+              style={styles.backToList}
+              onPress={() => setShowList(true)}
+              accessibilityRole="button"
+              accessibilityLabel={t("companies.back_to_jobs_accessible")}
+            >
+              <Ionicons name="chevron-back" size={20} color={theme.primary} />
+              <Text style={[styles.backText, { color: theme.primary }]}>
+                {t("companies.back_to_jobs")}
               </Text>
-            </View>
-            <View style={styles.detailHeaderActions}>
-              {isEditing ? (
-                <>
-                  <TouchableOpacity
-                    style={[styles.actionBtnOutline, { borderColor: theme.border, backgroundColor: theme.surface }]}
-                    onPress={handleCancelEdit}
-                    accessibilityRole="button"
-                    accessibilityLabel={t("companies.cancel_editing")}
+            </TouchableOpacity>
+
+            {/* Header */}
+            <View style={styles.detailHeader}>
+              <View style={styles.detailHeaderLeft}>
+                {isEditing ? (
+                  <TextInput
+                    style={[
+                      styles.editTitleInput,
+                      {
+                        backgroundColor: theme.surface,
+                        borderColor: theme.border,
+                        color: theme.foreground,
+                      },
+                    ]}
+                    value={editForm.title}
+                    onChangeText={(t) => setEditForm({ ...editForm, title: t })}
+                    accessibilityLabel={t("companies.job_title_input")}
+                  />
+                ) : (
+                  <Text
+                    style={[styles.detailTitle, { color: theme.foreground }]}
                   >
-                    <Text style={[styles.actionBtnOutlineText, { color: theme.foreground }]}>{t("companies.cancel")}</Text>
-                  </TouchableOpacity>
+                    {selectedJob.title}
+                  </Text>
+                )}
+                <Text style={[styles.detailSubtitle, { color: theme.muted }]}>
+                  {selectedJob.seniority_level || t("companies.any")} ·{" "}
+                  {selectedJob.work_location || t("companies.any")} ·{" "}
+                  {selectedJob.job_type?.replace(/_/g, "-") ||
+                    t("companies.full_time")}
+                </Text>
+              </View>
+              <View style={styles.detailHeaderActions}>
+                {isEditing ? (
+                  <>
+                    <TouchableOpacity
+                      style={[
+                        styles.actionBtnOutline,
+                        {
+                          borderColor: theme.border,
+                          backgroundColor: theme.surface,
+                        },
+                      ]}
+                      onPress={handleCancelEdit}
+                      accessibilityRole="button"
+                      accessibilityLabel={t("companies.cancel_editing")}
+                    >
+                      <Text
+                        style={[
+                          styles.actionBtnOutlineText,
+                          { color: theme.foreground },
+                        ]}
+                      >
+                        {t("companies.cancel")}
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[
+                        styles.actionBtnPrimary,
+                        { backgroundColor: theme.primary },
+                      ]}
+                      onPress={handleSave}
+                      disabled={saving}
+                      accessibilityRole="button"
+                      accessibilityLabel={
+                        saving
+                          ? t("companies.saving_accessible")
+                          : t("companies.save_accessible")
+                      }
+                    >
+                      <Text style={styles.actionBtnPrimaryText}>
+                        {saving ? t("companies.saving") : t("companies.save")}
+                      </Text>
+                    </TouchableOpacity>
+                  </>
+                ) : (
                   <TouchableOpacity
-                    style={[styles.actionBtnPrimary, { backgroundColor: theme.primary }]}
-                    onPress={handleSave}
-                    disabled={saving}
+                    style={[
+                      styles.actionBtnOutline,
+                      {
+                        borderColor: theme.border,
+                        backgroundColor: theme.surface,
+                      },
+                    ]}
+                    onPress={handleEditClick}
                     accessibilityRole="button"
-                    accessibilityLabel={saving ? t("companies.saving_accessible") : t("companies.save_accessible")}
+                    accessibilityLabel={t("companies.edit_job")}
                   >
-                    <Text style={styles.actionBtnPrimaryText}>
-                      {saving ? t("companies.saving") : t("companies.save")}
+                    <Text
+                      style={[
+                        styles.actionBtnOutlineText,
+                        { color: theme.foreground },
+                      ]}
+                    >
+                      {t("companies.edit")}
                     </Text>
                   </TouchableOpacity>
-                </>
-              ) : (
-                <TouchableOpacity
-                  style={[styles.actionBtnOutline, { borderColor: theme.border, backgroundColor: theme.surface }]}
-                  onPress={handleEditClick}
-                  accessibilityRole="button"
-                  accessibilityLabel={t("companies.edit_job")}
-                >
-                  <Text style={[styles.actionBtnOutlineText, { color: theme.foreground }]}>{t("companies.edit")}</Text>
-                </TouchableOpacity>
-              )}
+                )}
+              </View>
             </View>
-          </View>
 
-          {/* Info Grid */}
-          <Card style={[styles.infoGrid, { backgroundColor: theme.card, borderColor: theme.border }]}>
-            <View style={styles.infoItem}>
-              <View style={styles.infoLabelRow}>
-                <Ionicons name="layers-outline" size={14} color={theme.primary} />
-                <Text style={[styles.infoLabel, { color: theme.muted }]}>{t("companies.seniority_level_label")}</Text>
-              </View>
-              {isEditing ? (
-                <PickerDropdown
-                  options={seniorityOptions}
-                  selected={editForm.seniority_level}
-                  onSelect={(val) => setEditForm({ ...editForm, seniority_level: val })}
-                  placeholder={t("companies.select_level")}
-                  theme={theme}
-                  accessibilityLabel={t("companies.seniority_selector")}
-                />
-              ) : (
-                <Text style={[styles.infoValue, { color: theme.foreground }]}>
-                  {selectedJob.seniority_level || t("companies.na")}
-                </Text>
-              )}
-            </View>
-            <View style={styles.infoItem}>
-              <View style={styles.infoLabelRow}>
-                <Ionicons name="location-outline" size={14} color={theme.primary} />
-                <Text style={[styles.infoLabel, { color: theme.muted }]}>{t("companies.location_label")}</Text>
-              </View>
-              {isEditing ? (
-                <PickerDropdown
-                  options={workLocationOptions}
-                  selected={editForm.work_location}
-                  onSelect={(val) => setEditForm({ ...editForm, work_location: val })}
-                  placeholder={t("companies.select_location")}
-                  theme={theme}
-                  accessibilityLabel={t("companies.location_selector")}
-                />
-              ) : (
-                <Text style={[styles.infoValue, { color: theme.foreground }]}>
-                  {selectedJob.work_location || t("companies.na")}
-                </Text>
-              )}
-            </View>
-            <View style={styles.infoItem}>
-              <View style={styles.infoLabelRow}>
-                <Ionicons name="briefcase-outline" size={14} color={theme.primary} />
-                <Text style={[styles.infoLabel, { color: theme.muted }]}>{t("companies.type_label")}</Text>
-              </View>
-              {isEditing ? (
-                <PickerDropdown
-                  options={jobTypeOptions}
-                  selected={editForm.job_type}
-                  onSelect={(val) => setEditForm({ ...editForm, job_type: val })}
-                  placeholder={t("companies.select_type")}
-                  theme={theme}
-                  accessibilityLabel={t("companies.type_selector")}
-                />
-              ) : (
-                <Text style={[styles.infoValue, { color: theme.foreground }]}>
-                  {selectedJob.job_type?.replace(/_/g, "-") || t("companies.na")}
-                </Text>
-              )}
-            </View>
-            <View style={styles.infoItem}>
-              <View style={styles.infoLabelRow}>
-                <Ionicons name="cash-outline" size={14} color={theme.primary} />
-                <Text style={[styles.infoLabel, { color: theme.muted }]}>{t("companies.salary_label")}</Text>
-              </View>
-              {isEditing ? (
-                <View style={styles.salaryEditRow}>
-                  <TextInput
-                    style={[styles.editInfoInput, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.foreground }]}
-                    value={String(editForm.salary_min || "")}
-                    onChangeText={(t) => setEditForm({ ...editForm, salary_min: t })}
-                    placeholder={t("companies.min")}
-                    placeholderTextColor={theme.muted}
-                    keyboardType="numeric"
-                    accessibilityLabel={t("companies.min_salary")}
+            {/* Info Grid */}
+            <Card
+              style={[
+                styles.infoGrid,
+                { backgroundColor: theme.card, borderColor: theme.border },
+              ]}
+            >
+              <View style={styles.infoItem}>
+                <View style={styles.infoLabelRow}>
+                  <Ionicons
+                    name="layers-outline"
+                    size={14}
+                    color={theme.primary}
                   />
-                  <Text style={[styles.salaryDash, { color: theme.muted }]}>-</Text>
-                  <TextInput
-                    style={[styles.editInfoInput, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.foreground }]}
-                    value={String(editForm.salary_max || "")}
-                    onChangeText={(t) => setEditForm({ ...editForm, salary_max: t })}
-                    placeholder={t("companies.max")}
-                    placeholderTextColor={theme.muted}
-                    keyboardType="numeric"
-                    accessibilityLabel={t("companies.max_salary")}
-                  />
+                  <Text style={[styles.infoLabel, { color: theme.muted }]}>
+                    {t("companies.seniority_level_label")}
+                  </Text>
                 </View>
-              ) : (
+                {isEditing ? (
+                  <PickerDropdown
+                    options={seniorityOptions}
+                    selected={editForm.seniority_level}
+                    onSelect={(val) =>
+                      setEditForm({ ...editForm, seniority_level: val })
+                    }
+                    placeholder={t("companies.select_level")}
+                    theme={theme}
+                    accessibilityLabel={t("companies.seniority_selector")}
+                  />
+                ) : (
+                  <Text style={[styles.infoValue, { color: theme.foreground }]}>
+                    {selectedJob.seniority_level || t("companies.na")}
+                  </Text>
+                )}
+              </View>
+              <View style={styles.infoItem}>
+                <View style={styles.infoLabelRow}>
+                  <Ionicons
+                    name="location-outline"
+                    size={14}
+                    color={theme.primary}
+                  />
+                  <Text style={[styles.infoLabel, { color: theme.muted }]}>
+                    {t("companies.location_label")}
+                  </Text>
+                </View>
+                {isEditing ? (
+                  <PickerDropdown
+                    options={workLocationOptions}
+                    selected={editForm.work_location}
+                    onSelect={(val) =>
+                      setEditForm({ ...editForm, work_location: val })
+                    }
+                    placeholder={t("companies.select_location")}
+                    theme={theme}
+                    accessibilityLabel={t("companies.location_selector")}
+                  />
+                ) : (
+                  <Text style={[styles.infoValue, { color: theme.foreground }]}>
+                    {selectedJob.work_location || t("companies.na")}
+                  </Text>
+                )}
+              </View>
+              <View style={styles.infoItem}>
+                <View style={styles.infoLabelRow}>
+                  <Ionicons
+                    name="briefcase-outline"
+                    size={14}
+                    color={theme.primary}
+                  />
+                  <Text style={[styles.infoLabel, { color: theme.muted }]}>
+                    {t("companies.type_label")}
+                  </Text>
+                </View>
+                {isEditing ? (
+                  <PickerDropdown
+                    options={jobTypeOptions}
+                    selected={editForm.job_type}
+                    onSelect={(val) =>
+                      setEditForm({ ...editForm, job_type: val })
+                    }
+                    placeholder={t("companies.select_type")}
+                    theme={theme}
+                    accessibilityLabel={t("companies.type_selector")}
+                  />
+                ) : (
+                  <Text style={[styles.infoValue, { color: theme.foreground }]}>
+                    {selectedJob.job_type?.replace(/_/g, "-") ||
+                      t("companies.na")}
+                  </Text>
+                )}
+              </View>
+              <View style={styles.infoItem}>
+                <View style={styles.infoLabelRow}>
+                  <Ionicons
+                    name="cash-outline"
+                    size={14}
+                    color={theme.primary}
+                  />
+                  <Text style={[styles.infoLabel, { color: theme.muted }]}>
+                    {t("companies.salary_label")}
+                  </Text>
+                </View>
+                {isEditing ? (
+                  <View style={styles.salaryEditRow}>
+                    <TextInput
+                      style={[
+                        styles.editInfoInput,
+                        {
+                          backgroundColor: theme.surface,
+                          borderColor: theme.border,
+                          color: theme.foreground,
+                        },
+                      ]}
+                      value={String(editForm.salary_min || "")}
+                      onChangeText={(t) =>
+                        setEditForm({ ...editForm, salary_min: t })
+                      }
+                      placeholder={t("companies.min")}
+                      placeholderTextColor={theme.muted}
+                      keyboardType="numeric"
+                      accessibilityLabel={t("companies.min_salary")}
+                    />
+                    <Text style={[styles.salaryDash, { color: theme.muted }]}>
+                      -
+                    </Text>
+                    <TextInput
+                      style={[
+                        styles.editInfoInput,
+                        {
+                          backgroundColor: theme.surface,
+                          borderColor: theme.border,
+                          color: theme.foreground,
+                        },
+                      ]}
+                      value={String(editForm.salary_max || "")}
+                      onChangeText={(t) =>
+                        setEditForm({ ...editForm, salary_max: t })
+                      }
+                      placeholder={t("companies.max")}
+                      placeholderTextColor={theme.muted}
+                      keyboardType="numeric"
+                      accessibilityLabel={t("companies.max_salary")}
+                    />
+                  </View>
+                ) : (
+                  <Text style={[styles.infoValue, { color: theme.foreground }]}>
+                    {selectedJob.salary_min
+                      ? `$${selectedJob.salary_min.toLocaleString()}`
+                      : t("companies.na")}{" "}
+                    -{" "}
+                    {selectedJob.salary_max
+                      ? `$${selectedJob.salary_max.toLocaleString()}`
+                      : t("companies.na")}
+                  </Text>
+                )}
+              </View>
+              <View style={styles.infoItem}>
+                <View style={styles.infoLabelRow}>
+                  <Ionicons
+                    name="calendar-outline"
+                    size={14}
+                    color={theme.primary}
+                  />
+                  <Text style={[styles.infoLabel, { color: theme.muted }]}>
+                    {t("companies.published_label")}
+                  </Text>
+                </View>
                 <Text style={[styles.infoValue, { color: theme.foreground }]}>
-                  {selectedJob.salary_min
-                    ? `$${selectedJob.salary_min.toLocaleString()}`
-                    : t("companies.na")}{" "}
-                  -{" "}
-                  {selectedJob.salary_max
-                    ? `$${selectedJob.salary_max.toLocaleString()}`
-                    : t("companies.na")}
+                  {formatDate(selectedJob.created_at)}
+                </Text>
+              </View>
+              <View style={styles.infoItem}>
+                <View style={styles.infoLabelRow}>
+                  <Ionicons
+                    name="flash-outline"
+                    size={14}
+                    color={theme.primary}
+                  />
+                  <Text style={[styles.infoLabel, { color: theme.muted }]}>
+                    {t("companies.ai_shortlist_label")}
+                  </Text>
+                </View>
+                <Text style={[styles.infoValue, { color: theme.foreground }]}>
+                  {t("companies.strong_fits", {
+                    count: selectedJob.shortlist_entries?.[0]?.count || 0,
+                  })}
+                </Text>
+              </View>
+            </Card>
+
+            {/* Content Cards */}
+            <Card
+              style={[
+                styles.contentCard,
+                { backgroundColor: theme.card, borderColor: theme.border },
+              ]}
+            >
+              <Text
+                style={[styles.contentCardTitle, { color: theme.foreground }]}
+              >
+                {t("companies.job_summary")}
+              </Text>
+              {isEditing ? (
+                <TextInput
+                  style={[
+                    styles.editTextArea,
+                    {
+                      backgroundColor: theme.surface,
+                      borderColor: theme.border,
+                      color: theme.mutedForeground,
+                    },
+                  ]}
+                  value={editForm.description || ""}
+                  onChangeText={(t) =>
+                    setEditForm({ ...editForm, description: t })
+                  }
+                  multiline
+                  numberOfLines={4}
+                  textAlignVertical="top"
+                  accessibilityLabel={t("companies.description_input")}
+                />
+              ) : (
+                <Text
+                  style={[
+                    styles.contentCardBody,
+                    { color: theme.mutedForeground },
+                  ]}
+                >
+                  {selectedJob.description || t("companies.no_description")}
                 </Text>
               )}
-            </View>
-            <View style={styles.infoItem}>
-              <View style={styles.infoLabelRow}>
-                <Ionicons name="calendar-outline" size={14} color={theme.primary} />
-                <Text style={[styles.infoLabel, { color: theme.muted }]}>{t("companies.published_label")}</Text>
-              </View>
-              <Text style={[styles.infoValue, { color: theme.foreground }]}>
-                {formatDate(selectedJob.created_at)}
+            </Card>
+
+            {/* Responsibilities */}
+            <Card
+              style={[
+                styles.contentCard,
+                { backgroundColor: theme.card, borderColor: theme.border },
+              ]}
+            >
+              <Text
+                style={[styles.contentCardTitle, { color: theme.foreground }]}
+              >
+                {t("companies.responsibilities")}
               </Text>
-            </View>
-            <View style={styles.infoItem}>
-              <View style={styles.infoLabelRow}>
-                <Ionicons name="flash-outline" size={14} color={theme.primary} />
-                <Text style={[styles.infoLabel, { color: theme.muted }]}>{t("companies.ai_shortlist_label")}</Text>
-              </View>
-              <Text style={[styles.infoValue, { color: theme.foreground }]}>
-                {t("companies.strong_fits", { count: selectedJob.shortlist_entries?.[0]?.count || 0 })}
-              </Text>
-            </View>
-          </Card>
-
-          {/* Content Cards */}
-          <Card style={[styles.contentCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
-            <Text style={[styles.contentCardTitle, { color: theme.foreground }]}>{t("companies.job_summary")}</Text>
-            {isEditing ? (
-              <TextInput
-                style={[styles.editTextArea, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.mutedForeground }]}
-                value={editForm.description || ""}
-                onChangeText={(t) => setEditForm({ ...editForm, description: t })}
-                multiline
-                numberOfLines={4}
-                textAlignVertical="top"
-                accessibilityLabel={t("companies.description_input")}
-              />
-            ) : (
-              <Text style={[styles.contentCardBody, { color: theme.mutedForeground }]}>
-                {selectedJob.description || t("companies.no_description")}
-              </Text>
-            )}
-          </Card>
-
-          {/* Responsibilities */}
-          <Card style={[styles.contentCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
-            <Text style={[styles.contentCardTitle, { color: theme.foreground }]}>{t("companies.responsibilities")}</Text>
-            {isEditing ? (
-              <View style={styles.editList}>
-                {(editForm.responsibilities || []).map((resp, i) => (
-                  <View key={i} style={styles.editListItem}>
-                    <TouchableOpacity
-                      onPress={() => removeArrayItem(i, "responsibilities")}
-                      accessibilityRole="button"
-                      accessibilityLabel={t("companies.remove_responsibility", { text: resp })}
-                    >
-                      <Ionicons name="close-circle-outline" size={18} color={theme.muted} />
-                    </TouchableOpacity>
-                    <TextInput
-                      style={[styles.editListItemInput, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.foreground }]}
-                      value={resp}
-                      onChangeText={(t) => {
-                        const newArr = [...editForm.responsibilities];
-                        newArr[i] = t;
-                        setEditForm({ ...editForm, responsibilities: newArr });
-                      }}
-                    />
-                  </View>
-                ))}
-                <TextInput
-                  style={[styles.editListAdd, { backgroundColor: theme.card, borderColor: theme.border, color: theme.mutedForeground }]}
-                  placeholder={t("companies.type_to_add")}
-                  placeholderTextColor={theme.muted}
-                  onSubmitEditing={(e) => handleArrayInputSubmit(e, "responsibilities")}
-                  accessibilityLabel={t("companies.add_responsibility")}
-                />
-              </View>
-            ) : (
-              (selectedJob.responsibilities || []).length > 0 ? (
-                selectedJob.responsibilities.map((resp, i) => (
-                  <View key={i} style={styles.listItem}>
-                    <Ionicons name="checkmark-circle" size={16} color={theme.success} />
-                    <Text style={[styles.listItemText, { color: theme.mutedForeground }]}>{resp}</Text>
-                  </View>
-                ))
-              ) : (
-                <Text style={[styles.noContent, { color: theme.muted }]}>{t("companies.none_specified")}</Text>
-              )
-            )}
-          </Card>
-
-          {/* Requirements */}
-          <Card style={[styles.contentCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
-            <Text style={[styles.contentCardTitle, { color: theme.foreground }]}>{t("companies.requirements")}</Text>
-            {isEditing ? (
-              <View style={styles.editList}>
-                {(editForm.requirements || []).map((req, i) => (
-                  <View key={i} style={styles.editListItem}>
-                    <TouchableOpacity
-                      onPress={() => removeArrayItem(i, "requirements")}
-                      accessibilityRole="button"
-                      accessibilityLabel={t("companies.remove_requirement", { text: req })}
-                    >
-                      <Ionicons name="close-circle-outline" size={18} color={theme.muted} />
-                    </TouchableOpacity>
-                    <TextInput
-                      style={[styles.editListItemInput, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.foreground }]}
-                      value={req}
-                      onChangeText={(t) => {
-                        const newArr = [...editForm.requirements];
-                        newArr[i] = t;
-                        setEditForm({ ...editForm, requirements: newArr });
-                      }}
-                    />
-                  </View>
-                ))}
-                <TextInput
-                  style={[styles.editListAdd, { backgroundColor: theme.card, borderColor: theme.border, color: theme.mutedForeground }]}
-                  placeholder={t("companies.type_to_add")}
-                  placeholderTextColor={theme.muted}
-                  onSubmitEditing={(e) => handleArrayInputSubmit(e, "requirements")}
-                  accessibilityLabel={t("companies.add_requirement")}
-                />
-              </View>
-            ) : (
-              (selectedJob.requirements || []).length > 0 ? (
-                selectedJob.requirements.map((req, i) => (
-                  <View key={i} style={styles.listItem}>
-                    <Ionicons name="checkmark-circle" size={16} color={theme.success} />
-                    <Text style={[styles.listItemText, { color: theme.mutedForeground }]}>{req}</Text>
-                  </View>
-                ))
-              ) : (
-                <Text style={[styles.noContent, { color: theme.muted }]}>{t("companies.none_specified")}</Text>
-              )
-            )}
-          </Card>
-
-          {/* Skills */}
-          <Card style={[styles.contentCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
-            <Text style={[styles.contentCardTitle, { color: theme.foreground }]}>{t("companies.skills")}</Text>
-            <View style={styles.skillsWrap}>
               {isEditing ? (
-                <View style={styles.editSkillsWrap}>
-                  {(editForm.skills || []).map((skill, i) => (
-                    <View key={i} style={[styles.skillChip, { backgroundColor: theme.chipBg, borderColor: theme.chipBorder }]}>
-                      <Text style={[styles.skillChipText, { color: theme.chipText }]}>{skill}</Text>
+                <View style={styles.editList}>
+                  {(editForm.responsibilities || []).map((resp, i) => (
+                    <View key={i} style={styles.editListItem}>
                       <TouchableOpacity
-                        onPress={() => removeArrayItem(i, "skills")}
+                        onPress={() => removeArrayItem(i, "responsibilities")}
                         accessibilityRole="button"
-                        accessibilityLabel={t("companies.remove_skill", { text: skill })}
+                        accessibilityLabel={t(
+                          "companies.remove_responsibility",
+                          { text: resp },
+                        )}
                       >
-                        <Ionicons name="close" size={14} color={theme.chipText} />
+                        <Ionicons
+                          name="close-circle-outline"
+                          size={18}
+                          color={theme.muted}
+                        />
                       </TouchableOpacity>
+                      <TextInput
+                        style={[
+                          styles.editListItemInput,
+                          {
+                            backgroundColor: theme.surface,
+                            borderColor: theme.border,
+                            color: theme.foreground,
+                          },
+                        ]}
+                        value={resp}
+                        onChangeText={(t) => {
+                          const newArr = [...editForm.responsibilities];
+                          newArr[i] = t;
+                          setEditForm({
+                            ...editForm,
+                            responsibilities: newArr,
+                          });
+                        }}
+                      />
                     </View>
                   ))}
                   <TextInput
-                    style={[styles.addSkillInput, { backgroundColor: theme.card, borderColor: theme.border, color: theme.mutedForeground }]}
-                    placeholder={t("companies.add_skill_placeholder")}
+                    style={[
+                      styles.editListAdd,
+                      {
+                        backgroundColor: theme.card,
+                        borderColor: theme.border,
+                        color: theme.mutedForeground,
+                      },
+                    ]}
+                    placeholder={t("companies.type_to_add")}
                     placeholderTextColor={theme.muted}
-                    onSubmitEditing={(e) => handleArrayInputSubmit(e, "skills")}
-                    accessibilityLabel={t("companies.add_skill")}
+                    onSubmitEditing={(e) =>
+                      handleArrayInputSubmit(e, "responsibilities")
+                    }
+                    accessibilityLabel={t("companies.add_responsibility")}
                   />
                 </View>
+              ) : (selectedJob.responsibilities || []).length > 0 ? (
+                selectedJob.responsibilities.map((resp, i) => (
+                  <View key={i} style={styles.listItem}>
+                    <Ionicons
+                      name="checkmark-circle"
+                      size={16}
+                      color={theme.success}
+                    />
+                    <Text
+                      style={[
+                        styles.listItemText,
+                        { color: theme.mutedForeground },
+                      ]}
+                    >
+                      {resp}
+                    </Text>
+                  </View>
+                ))
               ) : (
-                (selectedJob.skills || []).length > 0 ? (
+                <Text style={[styles.noContent, { color: theme.muted }]}>
+                  {t("companies.none_specified")}
+                </Text>
+              )}
+            </Card>
+
+            {/* Requirements */}
+            <Card
+              style={[
+                styles.contentCard,
+                { backgroundColor: theme.card, borderColor: theme.border },
+              ]}
+            >
+              <Text
+                style={[styles.contentCardTitle, { color: theme.foreground }]}
+              >
+                {t("companies.requirements")}
+              </Text>
+              {isEditing ? (
+                <View style={styles.editList}>
+                  {(editForm.requirements || []).map((req, i) => (
+                    <View key={i} style={styles.editListItem}>
+                      <TouchableOpacity
+                        onPress={() => removeArrayItem(i, "requirements")}
+                        accessibilityRole="button"
+                        accessibilityLabel={t("companies.remove_requirement", {
+                          text: req,
+                        })}
+                      >
+                        <Ionicons
+                          name="close-circle-outline"
+                          size={18}
+                          color={theme.muted}
+                        />
+                      </TouchableOpacity>
+                      <TextInput
+                        style={[
+                          styles.editListItemInput,
+                          {
+                            backgroundColor: theme.surface,
+                            borderColor: theme.border,
+                            color: theme.foreground,
+                          },
+                        ]}
+                        value={req}
+                        onChangeText={(t) => {
+                          const newArr = [...editForm.requirements];
+                          newArr[i] = t;
+                          setEditForm({ ...editForm, requirements: newArr });
+                        }}
+                      />
+                    </View>
+                  ))}
+                  <TextInput
+                    style={[
+                      styles.editListAdd,
+                      {
+                        backgroundColor: theme.card,
+                        borderColor: theme.border,
+                        color: theme.mutedForeground,
+                      },
+                    ]}
+                    placeholder={t("companies.type_to_add")}
+                    placeholderTextColor={theme.muted}
+                    onSubmitEditing={(e) =>
+                      handleArrayInputSubmit(e, "requirements")
+                    }
+                    accessibilityLabel={t("companies.add_requirement")}
+                  />
+                </View>
+              ) : (selectedJob.requirements || []).length > 0 ? (
+                selectedJob.requirements.map((req, i) => (
+                  <View key={i} style={styles.listItem}>
+                    <Ionicons
+                      name="checkmark-circle"
+                      size={16}
+                      color={theme.success}
+                    />
+                    <Text
+                      style={[
+                        styles.listItemText,
+                        { color: theme.mutedForeground },
+                      ]}
+                    >
+                      {req}
+                    </Text>
+                  </View>
+                ))
+              ) : (
+                <Text style={[styles.noContent, { color: theme.muted }]}>
+                  {t("companies.none_specified")}
+                </Text>
+              )}
+            </Card>
+
+            {/* Skills */}
+            <Card
+              style={[
+                styles.contentCard,
+                { backgroundColor: theme.card, borderColor: theme.border },
+              ]}
+            >
+              <Text
+                style={[styles.contentCardTitle, { color: theme.foreground }]}
+              >
+                {t("companies.skills")}
+              </Text>
+              <View style={styles.skillsWrap}>
+                {isEditing ? (
+                  <View style={styles.editSkillsWrap}>
+                    {(editForm.skills || []).map((skill, i) => (
+                      <View
+                        key={i}
+                        style={[
+                          styles.skillChip,
+                          {
+                            backgroundColor: theme.chipBg,
+                            borderColor: theme.chipBorder,
+                          },
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.skillChipText,
+                            { color: theme.chipText },
+                          ]}
+                        >
+                          {skill}
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => removeArrayItem(i, "skills")}
+                          accessibilityRole="button"
+                          accessibilityLabel={t("companies.remove_skill", {
+                            text: skill,
+                          })}
+                        >
+                          <Ionicons
+                            name="close"
+                            size={14}
+                            color={theme.chipText}
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    ))}
+                    <TextInput
+                      style={[
+                        styles.addSkillInput,
+                        {
+                          backgroundColor: theme.card,
+                          borderColor: theme.border,
+                          color: theme.mutedForeground,
+                        },
+                      ]}
+                      placeholder={t("companies.add_skill_placeholder")}
+                      placeholderTextColor={theme.muted}
+                      onSubmitEditing={(e) =>
+                        handleArrayInputSubmit(e, "skills")
+                      }
+                      accessibilityLabel={t("companies.add_skill")}
+                    />
+                  </View>
+                ) : (selectedJob.skills || []).length > 0 ? (
                   selectedJob.skills.map((skill, i) => (
-                    <View key={i} style={[styles.skillChip, { backgroundColor: theme.chipBg, borderColor: theme.chipBorder }]}>
-                      <Text style={[styles.skillChipText, { color: theme.chipText }]}>{skill}</Text>
+                    <View
+                      key={i}
+                      style={[
+                        styles.skillChip,
+                        {
+                          backgroundColor: theme.chipBg,
+                          borderColor: theme.chipBorder,
+                        },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.skillChipText,
+                          { color: theme.chipText },
+                        ]}
+                      >
+                        {skill}
+                      </Text>
                     </View>
                   ))
                 ) : (
-                  <Text style={[styles.noContent, { color: theme.muted }]}>{t("companies.none_specified")}</Text>
-                )
-              )}
-            </View>
-          </Card>
-
-          {/* Pipeline Preview */}
-          <Card style={[styles.contentCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
-            <Text style={[styles.pipelineHeaderLabel, { color: theme.primary }]}>
-              {t("companies.hiring_pipeline")}
-            </Text>
-            <Text style={[styles.pipelineTitle, { color: theme.foreground }]}>
-              {t("companies.pipeline_title", { title: selectedJob.title })}
-            </Text>
-            <Text style={[styles.pipelineSubtitle, { color: theme.muted }]}>
-              {loadingStages
-                ? t("companies.loading_stages")
-                : t("companies.stages_count", { count: pipelineStages.length })}
-            </Text>
-
-            {loadingStages ? (
-              <View style={styles.pipelineLoading}>
-                <ActivityIndicator size="small" color={theme.primary} />
-                <Text style={[styles.pipelineLoadingText, { color: theme.muted }]}>{t("companies.loading_pipeline")}</Text>
+                  <Text style={[styles.noContent, { color: theme.muted }]}>
+                    {t("companies.none_specified")}
+                  </Text>
+                )}
               </View>
-            ) : pipelineStages.length === 0 ? (
-              <View style={[styles.emptyPipeline, { borderColor: theme.border }]}>
-                <Ionicons name="git-network-outline" size={32} color={theme.muted} />
-                <Text style={[styles.emptyPipelineText, { color: theme.muted }]}>{t("companies.no_stages")}</Text>
-              </View>
-            ) : (
-              <ScrollView
-                horizontal
-                style={styles.pipelineScroll}
-                showsHorizontalScrollIndicator={false}
+            </Card>
+
+            {/* Pipeline Preview */}
+            <Card
+              style={[
+                styles.contentCard,
+                { backgroundColor: theme.card, borderColor: theme.border },
+              ]}
+            >
+              <Text
+                style={[styles.pipelineHeaderLabel, { color: theme.primary }]}
               >
-                {pipelineStages.map((stage, idx) => (
-                  <View key={stage.id} style={[styles.stageCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-                    <View style={[styles.stageNumber, { backgroundColor: theme.primaryLight }]}>
-                      <Text style={[styles.stageNumberText, { color: theme.primary }]}>{idx + 1}</Text>
-                    </View>
-                    <Text style={styles.stageMeta}>
-                      <Text style={[styles.stageLabel, { color: theme.muted }]}>{t("companies.stage_number", { number: idx + 1 })}</Text>
-                    </Text>
-                    <Text style={[styles.stageName, { color: theme.foreground }]} numberOfLines={2}>
-                      {stage.name}
-                    </Text>
-                    <View style={styles.stageBadges}>
-                      <View style={[styles.weightBadge, { backgroundColor: theme.grayBg }]}>
-                        <Text style={[styles.weightBadgeText, { color: theme.grayText }]}>
-                          {Math.round((stage.weight || 0) * 100)}%
+                {t("companies.hiring_pipeline")}
+              </Text>
+              <Text style={[styles.pipelineTitle, { color: theme.foreground }]}>
+                {t("companies.pipeline_title", { title: selectedJob.title })}
+              </Text>
+              <Text style={[styles.pipelineSubtitle, { color: theme.muted }]}>
+                {loadingStages
+                  ? t("companies.loading_stages")
+                  : t("companies.stages_count", {
+                      count: pipelineStages.length,
+                    })}
+              </Text>
+
+              {loadingStages ? (
+                <View style={styles.pipelineLoading}>
+                  <ActivityIndicator size="small" color={theme.primary} />
+                  <Text
+                    style={[styles.pipelineLoadingText, { color: theme.muted }]}
+                  >
+                    {t("companies.loading_pipeline")}
+                  </Text>
+                </View>
+              ) : pipelineStages.length === 0 ? (
+                <View
+                  style={[styles.emptyPipeline, { borderColor: theme.border }]}
+                >
+                  <Ionicons
+                    name="git-network-outline"
+                    size={32}
+                    color={theme.muted}
+                  />
+                  <Text
+                    style={[styles.emptyPipelineText, { color: theme.muted }]}
+                  >
+                    {t("companies.no_stages")}
+                  </Text>
+                </View>
+              ) : (
+                <ScrollView
+                  horizontal
+                  style={styles.pipelineScroll}
+                  showsHorizontalScrollIndicator={false}
+                >
+                  {pipelineStages.map((stage, idx) => (
+                    <View
+                      key={stage.id}
+                      style={[
+                        styles.stageCard,
+                        {
+                          backgroundColor: theme.surface,
+                          borderColor: theme.border,
+                        },
+                      ]}
+                    >
+                      <View
+                        style={[
+                          styles.stageNumber,
+                          { backgroundColor: theme.primaryLight },
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.stageNumberText,
+                            { color: theme.primary },
+                          ]}
+                        >
+                          {idx + 1}
                         </Text>
                       </View>
-                      <View style={[styles.aiBadge, { backgroundColor: theme.chipBg, borderColor: theme.chipBorder }]}>
-                        <Text style={[styles.aiBadgeText, { color: theme.chipText }]}>AI</Text>
+                      <Text style={styles.stageMeta}>
+                        <Text
+                          style={[styles.stageLabel, { color: theme.muted }]}
+                        >
+                          {t("companies.stage_number", { number: idx + 1 })}
+                        </Text>
+                      </Text>
+                      <Text
+                        style={[styles.stageName, { color: theme.foreground }]}
+                        numberOfLines={2}
+                      >
+                        {stage.name}
+                      </Text>
+                      <View style={styles.stageBadges}>
+                        <View
+                          style={[
+                            styles.weightBadge,
+                            { backgroundColor: theme.grayBg },
+                          ]}
+                        >
+                          <Text
+                            style={[
+                              styles.weightBadgeText,
+                              { color: theme.grayText },
+                            ]}
+                          >
+                            {Math.round((stage.weight || 0) * 100)}%
+                          </Text>
+                        </View>
+                        <View
+                          style={[
+                            styles.aiBadge,
+                            {
+                              backgroundColor: theme.chipBg,
+                              borderColor: theme.chipBorder,
+                            },
+                          ]}
+                        >
+                          <Text
+                            style={[
+                              styles.aiBadgeText,
+                              { color: theme.chipText },
+                            ]}
+                          >
+                            AI
+                          </Text>
+                        </View>
                       </View>
                     </View>
-                  </View>
-                ))}
-              </ScrollView>
-            )}
+                  ))}
+                </ScrollView>
+              )}
 
-            <TouchableOpacity
-              style={[styles.editPipelineBtn, { backgroundColor: theme.primaryLight, borderColor: theme.chipBorder }]}
-              onPress={() => navigation.navigate("PipelineBuilder", { jobId: selectedJob.id })}
-              accessibilityRole="button"
-              accessibilityLabel={t("companies.edit_pipeline")}
-            >
-              <Ionicons name="build-outline" size={16} color={theme.primary} />
-              <Text style={[styles.editPipelineBtnText, { color: theme.primary }]}>{t("companies.edit_pipeline_btn")}</Text>
-            </TouchableOpacity>
-          </Card>
-        </ScrollView>
+              <TouchableOpacity
+                style={[
+                  styles.editPipelineBtn,
+                  {
+                    backgroundColor: theme.primaryLight,
+                    borderColor: theme.chipBorder,
+                  },
+                ]}
+                onPress={() =>
+                  navigation.navigate("PipelineBuilder", {
+                    jobId: selectedJob.id,
+                  })
+                }
+                accessibilityRole="button"
+                accessibilityLabel={t("companies.edit_pipeline")}
+              >
+                <Ionicons
+                  name="build-outline"
+                  size={16}
+                  color={theme.primary}
+                />
+                <Text
+                  style={[styles.editPipelineBtnText, { color: theme.primary }]}
+                >
+                  {t("companies.edit_pipeline_btn")}
+                </Text>
+              </TouchableOpacity>
+            </Card>
+          </ScrollView>
         </KeyboardAvoidingView>
       </View>
     );
   }
 
   return (
-    <View style={[styles.listContainer, { backgroundColor: theme.background, paddingTop: insets.top }]}>
+    <View
+      style={[
+        styles.listContainer,
+        { backgroundColor: theme.background, paddingTop: insets.top },
+      ]}
+    >
       {/* Search + Header */}
       <View style={[styles.listHeader, { borderBottomColor: theme.border }]}>
-        <Text style={[styles.listHeaderLabel, { color: theme.muted }]}>{t("companies.open_roles")}</Text>
+        <Text style={[styles.listHeaderLabel, { color: theme.muted }]}>
+          {t("companies.open_roles")}
+        </Text>
         <View style={styles.searchRow}>
-          <View style={[styles.searchInputWrap, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+          <View
+            style={[
+              styles.searchInputWrap,
+              { backgroundColor: theme.surface, borderColor: theme.border },
+            ]}
+          >
             <Ionicons name="search-outline" size={16} color={theme.muted} />
             <TextInput
               style={[styles.searchInput, { color: theme.foreground }]}
@@ -807,19 +1256,40 @@ export default function JobPostings() {
               style={styles.tab}
               onPress={() => setActiveTab(tab)}
               accessibilityRole="tab"
-              accessibilityLabel={t("companies.tab_accessible", { tab: t(`companies.tab_${tab.toLowerCase()}`), count })}
+              accessibilityLabel={t("companies.tab_accessible", {
+                tab: t(`companies.tab_${tab.toLowerCase()}`),
+                count,
+              })}
               accessibilityState={{ selected: isActive }}
             >
-              <Text style={[styles.tabText, { color: isActive ? theme.primary : theme.muted }, isActive && styles.tabTextActive]}>
+              <Text
+                style={[
+                  styles.tabText,
+                  { color: isActive ? theme.primary : theme.muted },
+                  isActive && styles.tabTextActive,
+                ]}
+              >
                 {t(`companies.tab_${tab.toLowerCase()}`)}
               </Text>
-              <View style={[styles.tabCountBadge, { backgroundColor: isActive ? theme.primary : theme.grayBg }]}>
-                <Text style={[styles.tabCountText, { color: isActive ? "#fff" : theme.grayText }]}>
+              <View
+                style={[
+                  styles.tabCountBadge,
+                  { backgroundColor: isActive ? theme.primary : theme.grayBg },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.tabCountText,
+                    { color: isActive ? "#fff" : theme.grayText },
+                  ]}
+                >
                   {count}
                 </Text>
               </View>
               {i < TABS.length - 1 && (
-                <Text style={[styles.tabSeparator, { color: theme.muted }]}>·</Text>
+                <Text style={[styles.tabSeparator, { color: theme.muted }]}>
+                  ·
+                </Text>
               )}
             </TouchableOpacity>
           );
@@ -835,9 +1305,13 @@ export default function JobPostings() {
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Ionicons name="briefcase-outline" size={48} color={theme.muted} />
-            <Text style={[styles.emptyText, { color: theme.muted }]}>{t("companies.no_jobs")}</Text>
+            <Text style={[styles.emptyText, { color: theme.muted }]}>
+              {t("companies.no_jobs")}
+            </Text>
             <Text style={[styles.emptyHint, { color: theme.muted }]}>
-              {searchQuery ? t("companies.try_different_search") : t("companies.create_job_to_start")}
+              {searchQuery
+                ? t("companies.try_different_search")
+                : t("companies.create_job_to_start")}
             </Text>
           </View>
         }

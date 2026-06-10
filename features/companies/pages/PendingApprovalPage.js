@@ -5,9 +5,12 @@ import {
   StyleSheet,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { colors } from "../../../src/theme";
+import { useTheme } from "../../../shared/context/ThemeContext";
 
 export default function PendingApprovalPage({ companyName }) {
+  const { theme } = useTheme();
+  const colors = theme.colors;
+  const styles = createStyles(colors);
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -33,63 +36,65 @@ export default function PendingApprovalPage({ companyName }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.white,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.gray[100],
-  },
-  logoWrap: {
-    width: 28,
-    height: 28,
-    borderRadius: 6,
-    backgroundColor: colors.darkAmethyst[600],
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  logoText: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: colors.darkAmethyst[950],
-  },
-  body: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 24,
-  },
-  iconCircle: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: colors.amber[50],
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 20,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: colors.darkAmethyst[950],
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: colors.gray[600],
-    textAlign: "center",
-    marginBottom: 4,
-  },
-  hint: {
-    fontSize: 12,
-    color: colors.gray[400],
-    textAlign: "center",
-  },
-});
+function createStyles(c) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: c.white,
+    },
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+      paddingHorizontal: 20,
+      paddingVertical: 14,
+      borderBottomWidth: 1,
+      borderBottomColor: c.gray[100],
+    },
+    logoWrap: {
+      width: 28,
+      height: 28,
+      borderRadius: 6,
+      backgroundColor: c.darkAmethyst[600],
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    logoText: {
+      fontSize: 18,
+      fontWeight: "700",
+      color: c.darkAmethyst[950],
+    },
+    body: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 24,
+    },
+    iconCircle: {
+      width: 64,
+      height: 64,
+      borderRadius: 32,
+      backgroundColor: c.amber[50],
+      alignItems: "center",
+      justifyContent: "center",
+      marginBottom: 20,
+    },
+    title: {
+      fontSize: 22,
+      fontWeight: "700",
+      color: c.darkAmethyst[950],
+      marginBottom: 8,
+    },
+    subtitle: {
+      fontSize: 14,
+      color: c.gray[600],
+      textAlign: "center",
+      marginBottom: 4,
+    },
+    hint: {
+      fontSize: 12,
+      color: c.gray[400],
+      textAlign: "center",
+    },
+  });
+}

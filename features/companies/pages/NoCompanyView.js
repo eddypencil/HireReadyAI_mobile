@@ -12,7 +12,9 @@ import {
   StyleSheet,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { colors } from "../../../src/theme";
+import { useTheme } from "../../../shared/context/ThemeContext";
+import { useTranslation } from "../../../shared/context/I18nContext";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { fetchAllCompanies, createCompany } from "../services/companies.service";
 import { addMembership } from "../services/memberships.service";
 import { useUser } from "../../auth/context/user.context";
@@ -21,7 +23,7 @@ import { MEMBERSHIP_PERMISSION } from "../../../shared/constants/enums";
 export default function NoCompanyView({ onCompanyJoined }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const c = theme.colors;
+  const colors = theme.colors;
   const insets = useSafeAreaInsets();
   const { profile } = useUser();
   const [companies, setCompanies] = useState([]);
@@ -45,7 +47,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
     twitter_url: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const styles = createStyles(c);
+  const styles = createStyles(colors);
 
   useEffect(() => {
     (async () => {
@@ -112,7 +114,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="small" color={c.primary} />
+        <ActivityIndicator size="small" color={colors.primary} />
         <Text style={styles.loadingText}>{t("companies.loading_companies")}</Text>
       </View>
     );
@@ -434,389 +436,389 @@ export default function NoCompanyView({ onCompanyJoined }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.darkAmethyst[50],
-  },
-  content: {
-    padding: 24,
-    paddingBottom: 40,
-  },
-  centered: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.gray[50],
-  },
-  loadingText: {
-    marginTop: 8,
-    fontSize: 13,
-    color: colors.gray[500],
-  },
-  errorBanner: {
-    backgroundColor: colors.red[50],
-    borderColor: colors.red[200],
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 16,
-  },
-  errorText: {
-    color: colors.red[700],
-    fontSize: 13,
-  },
-  hero: {
-    alignItems: "center",
-    marginBottom: 32,
-  },
-  heroIcon: {
-    width: 64,
-    height: 64,
-    borderRadius: 16,
-    backgroundColor: colors.darkAmethyst[100],
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 16,
-  },
-  heroIconText: {
-    fontSize: 28,
-    fontWeight: "700",
-    color: colors.darkAmethyst[700],
-  },
-  heroTitle: {
-    fontSize: 26,
-    fontWeight: "700",
-    color: colors.darkAmethyst[950],
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  heroSubtitle: {
-    fontSize: 14,
-    color: colors.gray[600],
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  createNewBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.darkAmethyst[950],
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
-  },
-  createNewBtnText: {
-    color: colors.white,
-    fontSize: 14,
-    fontWeight: "600",
-  },
-  emptyState: {
-    alignItems: "center",
-    backgroundColor: colors.white,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.gray[100],
-    padding: 48,
-  },
-  emptyText: {
-    color: colors.gray[500],
-    marginBottom: 24,
-    fontSize: 14,
-  },
-  gridRow: {
-    justifyContent: "space-between",
-    marginBottom: 12,
-  },
-  companyCard: {
-    flex: 1,
-    backgroundColor: colors.white,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.gray[100],
-    padding: 16,
-    marginHorizontal: 4,
-    justifyContent: "space-between",
-  },
-  cardHeader: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    marginBottom: 12,
-  },
-  avatarCircle: {
-    width: 44,
-    height: 44,
-    borderRadius: 8,
-    backgroundColor: colors.darkAmethyst[100],
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 10,
-  },
-  avatarLetter: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: colors.darkAmethyst[700],
-  },
-  cardInfo: {
-    flex: 1,
-  },
-  companyName: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: colors.darkAmethyst[950],
-    marginBottom: 2,
-  },
-  companyIndustry: {
-    fontSize: 12,
-    color: colors.gray[500],
-  },
-  companySize: {
-    fontSize: 11,
-    color: colors.gray[500],
-    marginBottom: 12,
-  },
-  joinBtn: {
-    backgroundColor: colors.darkAmethyst[50],
-    paddingVertical: 10,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  joinBtnDisabled: {
-    opacity: 0.5,
-  },
-  joinBtnText: {
-    color: colors.darkAmethyst[700],
-    fontSize: 13,
-    fontWeight: "500",
-  },
-  // Pricing
-  backRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  backArrow: {
-    fontSize: 16,
-    color: colors.gray[500],
-  },
-  backText: {
-    fontSize: 13,
-    color: colors.gray[500],
-  },
-  pricingRow: {
-    gap: 16,
-    marginBottom: 24,
-  },
-  planCard: {
-    backgroundColor: colors.white,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.gray[100],
-    padding: 24,
-    marginBottom: 12,
-  },
-  planCardPremium: {
-    borderColor: colors.darkAmethyst[300],
-    backgroundColor: colors.darkAmethyst[50],
-    position: "relative",
-    overflow: "hidden",
-  },
-  premiumBadge: {
-    position: "absolute",
-    top: 12,
-    right: 12,
-    backgroundColor: colors.darkAmethyst[600],
-    borderRadius: 12,
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-  },
-  premiumBadgeText: {
-    fontSize: 10,
-    fontWeight: "700",
-    color: colors.white,
-  },
-  planIconWrap: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-    backgroundColor: colors.darkAmethyst[50],
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 12,
-  },
-  planIcon: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: colors.darkAmethyst[600],
-  },
-  planName: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: colors.darkAmethyst[950],
-    marginBottom: 4,
-  },
-  planPrice: {
-    fontSize: 28,
-    fontWeight: "800",
-    color: colors.darkAmethyst[950],
-  },
-  planPeriod: {
-    fontSize: 12,
-    color: colors.gray[500],
-    marginBottom: 20,
-  },
-  planFeatures: {
-    gap: 10,
-    marginBottom: 24,
-  },
-  featureRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  featureCheck: {
-    fontSize: 14,
-    color: colors.emerald[500],
-    fontWeight: "700",
-  },
-  featureText: {
-    fontSize: 13,
-    color: colors.gray[600],
-    flex: 1,
-  },
-  selectPlanBtn: {
-    backgroundColor: colors.darkAmethyst[950],
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  selectPlanBtnText: {
-    color: colors.white,
-    fontSize: 14,
-    fontWeight: "600",
-  },
-  comingSoonBtn: {
-    backgroundColor: colors.gray[200],
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  comingSoonBtnText: {
-    color: colors.gray[500],
-    fontSize: 14,
-    fontWeight: "600",
-  },
-  // Form
-  formCard: {
-    backgroundColor: colors.white,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.gray[100],
-    overflow: "hidden",
-    maxHeight: "100%",
-  },
-  formHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.gray[100],
-  },
-  formBackArrow: {
-    fontSize: 20,
-    color: colors.gray[500],
-    marginRight: 12,
-  },
-  formTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: colors.darkAmethyst[950],
-  },
-  formBody: {
-    padding: 20,
-  },
-  label: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: colors.gray[700],
-    marginBottom: 6,
-    marginTop: 12,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: colors.gray[300],
-    borderRadius: 8,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    fontSize: 14,
-    color: colors.darkAmethyst[700],
-    backgroundColor: colors.white,
-  },
-  row: {
-    flexDirection: "row",
-    gap: 12,
-  },
-  halfField: {
-    flex: 1,
-  },
-  textArea: {
-    borderWidth: 1,
-    borderColor: colors.gray[300],
-    borderRadius: 8,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    fontSize: 14,
-    color: colors.darkAmethyst[700],
-    backgroundColor: colors.white,
-    minHeight: 80,
-    textAlignVertical: "top",
-  },
-  textAreaSmall: {
-    borderWidth: 1,
-    borderColor: colors.gray[300],
-    borderRadius: 8,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    fontSize: 14,
-    color: colors.darkAmethyst[700],
-    backgroundColor: colors.white,
-    minHeight: 60,
-    textAlignVertical: "top",
-  },
-  formActions: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    gap: 10,
-    marginTop: 24,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: colors.gray[100],
-  },
-  cancelBtn: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: colors.gray[300],
-    backgroundColor: colors.white,
-  },
-  cancelBtnText: {
-    fontSize: 13,
-    fontWeight: "500",
-    color: colors.gray[700],
-  },
-  createBtn: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 8,
-    backgroundColor: colors.darkAmethyst[950],
-  },
-  createBtnDisabled: {
-    opacity: 0.5,
-  },
-  createBtnText: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: colors.white,
-  },
-});
+function createStyles(c) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: c.darkAmethyst[50],
+    },
+    content: {
+      padding: 24,
+      paddingBottom: 40,
+    },
+    centered: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: c.gray[50],
+    },
+    loadingText: {
+      marginTop: 8,
+      fontSize: 13,
+      color: c.gray[500],
+    },
+    errorBanner: {
+      backgroundColor: c.red[50],
+      borderColor: c.red[200],
+      borderWidth: 1,
+      borderRadius: 8,
+      padding: 12,
+      marginBottom: 16,
+    },
+    errorText: {
+      color: c.red[700],
+      fontSize: 13,
+    },
+    hero: {
+      alignItems: "center",
+      marginBottom: 32,
+    },
+    heroIcon: {
+      width: 64,
+      height: 64,
+      borderRadius: 16,
+      backgroundColor: c.darkAmethyst[100],
+      alignItems: "center",
+      justifyContent: "center",
+      marginBottom: 16,
+    },
+    heroIconText: {
+      fontSize: 28,
+      fontWeight: "700",
+      color: c.darkAmethyst[700],
+    },
+    heroTitle: {
+      fontSize: 26,
+      fontWeight: "700",
+      color: c.darkAmethyst[950],
+      marginBottom: 8,
+      textAlign: "center",
+    },
+    heroSubtitle: {
+      fontSize: 14,
+      color: c.gray[600],
+      textAlign: "center",
+      marginBottom: 20,
+    },
+    createNewBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: c.darkAmethyst[950],
+      paddingHorizontal: 24,
+      paddingVertical: 12,
+      borderRadius: 8,
+    },
+    createNewBtnText: {
+      color: c.white,
+      fontSize: 14,
+      fontWeight: "600",
+    },
+    emptyState: {
+      alignItems: "center",
+      backgroundColor: c.white,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: c.gray[100],
+      padding: 48,
+    },
+    emptyText: {
+      color: c.gray[500],
+      marginBottom: 24,
+      fontSize: 14,
+    },
+    gridRow: {
+      justifyContent: "space-between",
+      marginBottom: 12,
+    },
+    companyCard: {
+      flex: 1,
+      backgroundColor: c.white,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: c.gray[100],
+      padding: 16,
+      marginHorizontal: 4,
+      justifyContent: "space-between",
+    },
+    cardHeader: {
+      flexDirection: "row",
+      alignItems: "flex-start",
+      marginBottom: 12,
+    },
+    avatarCircle: {
+      width: 44,
+      height: 44,
+      borderRadius: 8,
+      backgroundColor: c.darkAmethyst[100],
+      alignItems: "center",
+      justifyContent: "center",
+      marginRight: 10,
+    },
+    avatarLetter: {
+      fontSize: 18,
+      fontWeight: "700",
+      color: c.darkAmethyst[700],
+    },
+    cardInfo: {
+      flex: 1,
+    },
+    companyName: {
+      fontSize: 15,
+      fontWeight: "600",
+      color: c.darkAmethyst[950],
+      marginBottom: 2,
+    },
+    companyIndustry: {
+      fontSize: 12,
+      color: c.gray[500],
+    },
+    companySize: {
+      fontSize: 11,
+      color: c.gray[500],
+      marginBottom: 12,
+    },
+    joinBtn: {
+      backgroundColor: c.darkAmethyst[50],
+      paddingVertical: 10,
+      borderRadius: 8,
+      alignItems: "center",
+    },
+    joinBtnDisabled: {
+      opacity: 0.5,
+    },
+    joinBtnText: {
+      color: c.darkAmethyst[700],
+      fontSize: 13,
+      fontWeight: "500",
+    },
+    backRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginBottom: 16,
+    },
+    backArrow: {
+      fontSize: 16,
+      color: c.gray[500],
+    },
+    backText: {
+      fontSize: 13,
+      color: c.gray[500],
+    },
+    pricingRow: {
+      gap: 16,
+      marginBottom: 24,
+    },
+    planCard: {
+      backgroundColor: c.white,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: c.gray[100],
+      padding: 24,
+      marginBottom: 12,
+    },
+    planCardPremium: {
+      borderColor: c.darkAmethyst[300],
+      backgroundColor: c.darkAmethyst[50],
+      position: "relative",
+      overflow: "hidden",
+    },
+    premiumBadge: {
+      position: "absolute",
+      top: 12,
+      right: 12,
+      backgroundColor: c.darkAmethyst[600],
+      borderRadius: 12,
+      paddingHorizontal: 10,
+      paddingVertical: 3,
+    },
+    premiumBadgeText: {
+      fontSize: 10,
+      fontWeight: "700",
+      color: c.white,
+    },
+    planIconWrap: {
+      width: 40,
+      height: 40,
+      borderRadius: 10,
+      backgroundColor: c.darkAmethyst[50],
+      alignItems: "center",
+      justifyContent: "center",
+      marginBottom: 12,
+    },
+    planIcon: {
+      fontSize: 20,
+      fontWeight: "700",
+      color: c.darkAmethyst[600],
+    },
+    planName: {
+      fontSize: 18,
+      fontWeight: "700",
+      color: c.darkAmethyst[950],
+      marginBottom: 4,
+    },
+    planPrice: {
+      fontSize: 28,
+      fontWeight: "800",
+      color: c.darkAmethyst[950],
+    },
+    planPeriod: {
+      fontSize: 12,
+      color: c.gray[500],
+      marginBottom: 20,
+    },
+    planFeatures: {
+      gap: 10,
+      marginBottom: 24,
+    },
+    featureRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+    },
+    featureCheck: {
+      fontSize: 14,
+      color: c.emerald[500],
+      fontWeight: "700",
+    },
+    featureText: {
+      fontSize: 13,
+      color: c.gray[600],
+      flex: 1,
+    },
+    selectPlanBtn: {
+      backgroundColor: c.darkAmethyst[950],
+      paddingVertical: 12,
+      borderRadius: 8,
+      alignItems: "center",
+    },
+    selectPlanBtnText: {
+      color: c.white,
+      fontSize: 14,
+      fontWeight: "600",
+    },
+    comingSoonBtn: {
+      backgroundColor: c.gray[200],
+      paddingVertical: 12,
+      borderRadius: 8,
+      alignItems: "center",
+    },
+    comingSoonBtnText: {
+      color: c.gray[500],
+      fontSize: 14,
+      fontWeight: "600",
+    },
+    formCard: {
+      backgroundColor: c.white,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: c.gray[100],
+      overflow: "hidden",
+      maxHeight: "100%",
+    },
+    formHeader: {
+      flexDirection: "row",
+      alignItems: "center",
+      padding: 20,
+      borderBottomWidth: 1,
+      borderBottomColor: c.gray[100],
+    },
+    formBackArrow: {
+      fontSize: 20,
+      color: c.gray[500],
+      marginRight: 12,
+    },
+    formTitle: {
+      fontSize: 18,
+      fontWeight: "700",
+      color: c.darkAmethyst[950],
+    },
+    formBody: {
+      padding: 20,
+    },
+    label: {
+      fontSize: 12,
+      fontWeight: "600",
+      color: c.gray[700],
+      marginBottom: 6,
+      marginTop: 12,
+    },
+    input: {
+      borderWidth: 1,
+      borderColor: c.gray[300],
+      borderRadius: 8,
+      paddingHorizontal: 14,
+      paddingVertical: 10,
+      fontSize: 14,
+      color: c.darkAmethyst[700],
+      backgroundColor: c.white,
+    },
+    row: {
+      flexDirection: "row",
+      gap: 12,
+    },
+    halfField: {
+      flex: 1,
+    },
+    textArea: {
+      borderWidth: 1,
+      borderColor: c.gray[300],
+      borderRadius: 8,
+      paddingHorizontal: 14,
+      paddingVertical: 10,
+      fontSize: 14,
+      color: c.darkAmethyst[700],
+      backgroundColor: c.white,
+      minHeight: 80,
+      textAlignVertical: "top",
+    },
+    textAreaSmall: {
+      borderWidth: 1,
+      borderColor: c.gray[300],
+      borderRadius: 8,
+      paddingHorizontal: 14,
+      paddingVertical: 10,
+      fontSize: 14,
+      color: c.darkAmethyst[700],
+      backgroundColor: c.white,
+      minHeight: 60,
+      textAlignVertical: "top",
+    },
+    formActions: {
+      flexDirection: "row",
+      justifyContent: "flex-end",
+      gap: 10,
+      marginTop: 24,
+      paddingTop: 16,
+      borderTopWidth: 1,
+      borderTopColor: c.gray[100],
+    },
+    cancelBtn: {
+      paddingHorizontal: 16,
+      paddingVertical: 10,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: c.gray[300],
+      backgroundColor: c.white,
+    },
+    cancelBtnText: {
+      fontSize: 13,
+      fontWeight: "500",
+      color: c.gray[700],
+    },
+    createBtn: {
+      paddingHorizontal: 20,
+      paddingVertical: 10,
+      borderRadius: 8,
+      backgroundColor: c.darkAmethyst[950],
+    },
+    createBtnDisabled: {
+      opacity: 0.5,
+    },
+    createBtnText: {
+      fontSize: 13,
+      fontWeight: "600",
+      color: c.white,
+    },
+  });
+}
