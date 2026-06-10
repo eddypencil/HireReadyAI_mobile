@@ -6,6 +6,7 @@ import {
   deleteCompany,
 } from "../services/companies.service";
 import { addMembership } from "../services/memberships.service";
+import { MEMBERSHIP_PERMISSION } from "../../../shared/constants/enums";
 
 export const useCompaniesViewModel = () => {
   const [companies, setCompanies] = useState([]);
@@ -34,12 +35,12 @@ export const useCompaniesViewModel = () => {
     try {
       const created = await createCompany(formData);
       
-      // Automatically add the creator as a member of the company
+      // Automatically add the creator as a member with hr_manager permission
       if (creatorProfileId) {
         await addMembership({
           company_id: created.id,
           profile_id: creatorProfileId,
-          permissions: ["admin"], // default to admin for the creator
+          recruiter_permissions: MEMBERSHIP_PERMISSION.hrManager,
         });
       }
       

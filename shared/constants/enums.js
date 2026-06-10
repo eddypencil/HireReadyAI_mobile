@@ -4,6 +4,12 @@ export const USER_ROLE = Object.freeze({
   hrManager: "hr_manager",
 });
 
+export const MEMBERSHIP_PERMISSION = Object.freeze({
+  pending: "pending",
+  recruiter: "recruiter",
+  hrManager: "hr_manager",
+});
+
 // intern, junior, mid, senior, lead
 export const SENIORITY_LEVEL = Object.freeze({
   intern: "intern",

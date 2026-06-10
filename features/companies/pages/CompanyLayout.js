@@ -17,7 +17,9 @@ import {
   fetchCompanyMembers,
 } from "../services/companies.service";
 import { addMembership } from "../services/memberships.service";
+import { MEMBERSHIP_PERMISSION } from "../../../shared/constants/enums";
 import NoCompanyView from "./NoCompanyView";
+import PendingApprovalPage from "./PendingApprovalPage";
 
 const CompanyContext = createContext(null);
 
@@ -32,6 +34,7 @@ export function CompanyProvider({ children }) {
   const [jobs, setJobs] = useState([]);
   const [members, setMembers] = useState([]);
   const [company, setCompany] = useState(null);
+  const [permission, setPermission] = useState(null);
   const [frameworkFile, setFrameworkFile] = useState("engineering-framework-v3.pdf");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -41,8 +44,9 @@ export function CompanyProvider({ children }) {
     try {
       setLoading(true);
       setError(null);
-      const companyData = await fetchCompanyByProfileId(profile.id);
+      const { company: companyData, permission: perm } = await fetchCompanyByProfileId(profile.id);
       setCompany(companyData);
+      setPermission(perm);
       if (companyData) {
         const [jobsData, membersData] = await Promise.all([
           fetchJobsByCompanyId(companyData.id),
@@ -68,7 +72,7 @@ export function CompanyProvider({ children }) {
       const newMember = await addMembership({
         company_id: company.id,
         profile_id: profile.id,
-        permissions: { role: "recruiter" },
+        recruiter_permissions: MEMBERSHIP_PERMISSION.pending,
       });
       setMembers((prev) => [...prev, newMember]);
     } catch (err) {
@@ -85,8 +89,20 @@ export function CompanyProvider({ children }) {
     );
   }
 
+  if (error) {
+    return (
+      <View style={styles.centered}>
+        <Text style={styles.errorText}>Error: {error}</Text>
+      </View>
+    );
+  }
+
   if (!company && !loading) {
     return <NoCompanyView onCompanyJoined={() => fetchCompanyData()} />;
+  }
+
+  if (permission === MEMBERSHIP_PERMISSION.pending) {
+    return <PendingApprovalPage companyName={company?.name} />;
   }
 
   return (
@@ -95,16 +111,20 @@ export function CompanyProvider({ children }) {
         company,
         jobs,
         members,
+        permission,
         frameworkFile,
         setFrameworkFile,
         onInvite: handleInviteMember,
+        onMembersChange: setMembers,
+        onCompanyUpdate: setCompany,
         loading,
+        error,
         reload: fetchCompanyData,
       }}
     >
       {loading ? (
         <View style={styles.centered}>
-      <ActivityIndicator size="small" color={colors.primary} />
+          <ActivityIndicator size="small" color={colors.primary} />
         </View>
       ) : (
         children
@@ -169,8 +189,7 @@ const styles = StyleSheet.create({
   content: { padding: 20 },
   centered: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: colors.white },
   loadingText: { marginTop: 8, fontSize: 13, color: colors.gray[500] },
-  errorContainer: { padding: 24 },
-  errorText: { color: colors.red[500], fontSize: 14 },
+  errorText: { color: colors.red[500], fontSize: 14, textAlign: "center" },
   header: { marginBottom: 24 },
   welcome: { fontSize: 14, color: colors.gray[500] },
   companyName: { fontSize: 26, fontWeight: "700", color: colors.foreground, marginTop: 2 },

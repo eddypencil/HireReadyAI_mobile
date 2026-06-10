@@ -9,10 +9,12 @@ import {
   FlatList,
   StyleSheet,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { colors } from "../../../src/theme";
 import { fetchAllCompanies, createCompany } from "../services/companies.service";
 import { addMembership } from "../services/memberships.service";
 import { useUser } from "../../auth/context/user.context";
+import { MEMBERSHIP_PERMISSION } from "../../../shared/constants/enums";
 
 export default function NoCompanyView({ onCompanyJoined }) {
   const { profile } = useUser();
@@ -21,11 +23,20 @@ export default function NoCompanyView({ onCompanyJoined }) {
   const [error, setError] = useState(null);
   const [joining, setJoining] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [showingPricing, setShowingPricing] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState(null);
   const [newCompany, setNewCompany] = useState({
     name: "",
     industry: "",
     size: "",
     location: "",
+    description: "",
+    culture: "",
+    benefits: "",
+    founding_date: "",
+    website_url: "",
+    linkedin_url: "",
+    twitter_url: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -50,7 +61,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
       await addMembership({
         company_id: companyId,
         profile_id: profile.id,
-        permissions: { role: "recruiter" },
+        recruiter_permissions: MEMBERSHIP_PERMISSION.pending,
       });
       onCompanyJoined(companyId);
     } catch (err) {
@@ -70,11 +81,18 @@ export default function NoCompanyView({ onCompanyJoined }) {
         industry: newCompany.industry,
         size: newCompany.size ? parseInt(newCompany.size, 10) : null,
         location: newCompany.location,
+        description: newCompany.description,
+        culture: newCompany.culture,
+        benefits: newCompany.benefits,
+        founding_date: newCompany.founding_date || null,
+        website_url: newCompany.website_url,
+        linkedin_url: newCompany.linkedin_url,
+        twitter_url: newCompany.twitter_url,
       });
       await addMembership({
         company_id: created.id,
         profile_id: profile.id,
-        permissions: { role: "admin" },
+        recruiter_permissions: MEMBERSHIP_PERMISSION.hrManager,
       });
       onCompanyJoined(created.id);
     } catch (err) {
@@ -133,23 +151,83 @@ export default function NoCompanyView({ onCompanyJoined }) {
         </View>
       )}
 
-      {isCreating ? (
+      {/* Pricing Step */}
+      {showingPricing && !selectedPlan && (
+        <View>
+          <TouchableOpacity onPress={() => setShowingPricing(false)} style={styles.backRow}>
+            <Text style={styles.backArrow}>{"< "}</Text>
+            <Text style={styles.backText}>Back</Text>
+          </TouchableOpacity>
+          <View style={styles.hero}>
+            <Text style={styles.heroTitle}>Choose your plan</Text>
+            <Text style={styles.heroSubtitle}>
+              Start with a free plan and upgrade anytime
+            </Text>
+          </View>
+          <View style={styles.pricingRow}>
+            <View style={styles.planCard}>
+              <View style={styles.planIconWrap}>
+                <Text style={styles.planIcon}>✓</Text>
+              </View>
+              <Text style={styles.planName}>Free</Text>
+              <Text style={styles.planPrice}>$0</Text>
+              <Text style={styles.planPeriod}>forever</Text>
+              <View style={styles.planFeatures}>
+                {["Up to 10 active job postings", "Basic candidate management", "Team collaboration (up to 5 members)", "Email support"].map((f, i) => (
+                  <View key={i} style={styles.featureRow}>
+                    <Text style={styles.featureCheck}>✓</Text>
+                    <Text style={styles.featureText}>{f}</Text>
+                  </View>
+                ))}
+              </View>
+              <TouchableOpacity
+                style={styles.selectPlanBtn}
+                onPress={() => { setSelectedPlan("free"); setIsCreating(true); }}
+              >
+                <Text style={styles.selectPlanBtnText}>Get Started Free</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={[styles.planCard, styles.planCardPremium]}>
+              <View style={styles.premiumBadge}>
+                <Text style={styles.premiumBadgeText}>Coming Soon</Text>
+              </View>
+              <View style={styles.planIconWrap}>
+                <Text style={[styles.planIcon, { color: colors.amber[500] }]}>★</Text>
+              </View>
+              <Text style={styles.planName}>Premium</Text>
+              <Text style={styles.planPrice}>$29</Text>
+              <Text style={styles.planPeriod}>/month</Text>
+              <View style={styles.planFeatures}>
+                {["Unlimited job postings", "AI-powered candidate screening", "Advanced analytics & reports", "Priority support", "Custom branding"].map((f, i) => (
+                  <View key={i} style={styles.featureRow}>
+                    <Text style={styles.featureCheck}>✓</Text>
+                    <Text style={styles.featureText}>{f}</Text>
+                  </View>
+                ))}
+              </View>
+              <TouchableOpacity style={styles.comingSoonBtn} disabled>
+                <Text style={styles.comingSoonBtnText}>Coming Soon</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      )}
+
+      {/* Create Company Form */}
+      {isCreating && selectedPlan === "free" && (
         <View style={styles.formCard}>
           <View style={styles.formHeader}>
-            <TouchableOpacity onPress={() => setIsCreating(false)}>
-              <Text style={styles.backArrow}>{"<"}</Text>
+            <TouchableOpacity onPress={() => { setIsCreating(false); setSelectedPlan(null); setShowingPricing(true); }}>
+              <Text style={styles.formBackArrow}>{"<"}</Text>
             </TouchableOpacity>
-            <Text style={styles.formTitle}>Create a New Company</Text>
+            <Text style={styles.formTitle}>Create Company</Text>
           </View>
-
-          <View style={styles.formBody}>
+          <ScrollView style={styles.formBody} nestedScrollEnabled>
             <Text style={styles.label}>Company Name</Text>
             <TextInput
               style={styles.input}
               value={newCompany.name}
-              onChangeText={(text) =>
-                setNewCompany({ ...newCompany, name: text })
-              }
+              onChangeText={(t) => setNewCompany({ ...newCompany, name: t })}
               placeholder="Acme Corp"
               placeholderTextColor={colors.darkAmethyst[300]}
             />
@@ -158,9 +236,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
             <TextInput
               style={styles.input}
               value={newCompany.industry}
-              onChangeText={(text) =>
-                setNewCompany({ ...newCompany, industry: text })
-              }
+              onChangeText={(t) => setNewCompany({ ...newCompany, industry: t })}
               placeholder="e.g. Technology, Healthcare"
               placeholderTextColor={colors.darkAmethyst[300]}
             />
@@ -171,9 +247,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
                 <TextInput
                   style={styles.input}
                   value={newCompany.size}
-                  onChangeText={(text) =>
-                    setNewCompany({ ...newCompany, size: text })
-                  }
+                  onChangeText={(t) => setNewCompany({ ...newCompany, size: t })}
                   placeholder="Employees"
                   placeholderTextColor={colors.darkAmethyst[300]}
                   keyboardType="numeric"
@@ -184,11 +258,94 @@ export default function NoCompanyView({ onCompanyJoined }) {
                 <TextInput
                   style={styles.input}
                   value={newCompany.location}
-                  onChangeText={(text) =>
-                    setNewCompany({ ...newCompany, location: text })
-                  }
+                  onChangeText={(t) => setNewCompany({ ...newCompany, location: t })}
                   placeholder="City, Country"
                   placeholderTextColor={colors.darkAmethyst[300]}
+                />
+              </View>
+            </View>
+
+            <Text style={styles.label}>Founded</Text>
+            <TextInput
+              style={styles.input}
+              value={newCompany.founding_date}
+              onChangeText={(t) => setNewCompany({ ...newCompany, founding_date: t })}
+              placeholder="YYYY-MM-DD"
+              placeholderTextColor={colors.darkAmethyst[300]}
+            />
+
+            <Text style={styles.label}>About</Text>
+            <TextInput
+              style={styles.textArea}
+              value={newCompany.description}
+              onChangeText={(t) => setNewCompany({ ...newCompany, description: t })}
+              placeholder="Tell applicants about your company..."
+              placeholderTextColor={colors.darkAmethyst[300]}
+              multiline
+              numberOfLines={3}
+              textAlignVertical="top"
+            />
+
+            <View style={styles.row}>
+              <View style={styles.halfField}>
+                <Text style={styles.label}>Culture</Text>
+                <TextInput
+                  style={styles.textAreaSmall}
+                  value={newCompany.culture}
+                  onChangeText={(t) => setNewCompany({ ...newCompany, culture: t })}
+                  placeholder="Company values, culture..."
+                  placeholderTextColor={colors.darkAmethyst[300]}
+                  multiline
+                  numberOfLines={2}
+                  textAlignVertical="top"
+                />
+              </View>
+              <View style={styles.halfField}>
+                <Text style={styles.label}>Benefits</Text>
+                <TextInput
+                  style={styles.textAreaSmall}
+                  value={newCompany.benefits}
+                  onChangeText={(t) => setNewCompany({ ...newCompany, benefits: t })}
+                  placeholder="Perks, benefits..."
+                  placeholderTextColor={colors.darkAmethyst[300]}
+                  multiline
+                  numberOfLines={2}
+                  textAlignVertical="top"
+                />
+              </View>
+            </View>
+
+            <Text style={styles.label}>Website</Text>
+            <TextInput
+              style={styles.input}
+              value={newCompany.website_url}
+              onChangeText={(t) => setNewCompany({ ...newCompany, website_url: t })}
+              placeholder="https://example.com"
+              placeholderTextColor={colors.darkAmethyst[300]}
+              keyboardType="url"
+            />
+
+            <View style={styles.row}>
+              <View style={styles.halfField}>
+                <Text style={styles.label}>LinkedIn</Text>
+                <TextInput
+                  style={styles.input}
+                  value={newCompany.linkedin_url}
+                  onChangeText={(t) => setNewCompany({ ...newCompany, linkedin_url: t })}
+                  placeholder="LinkedIn URL"
+                  placeholderTextColor={colors.darkAmethyst[300]}
+                  keyboardType="url"
+                />
+              </View>
+              <View style={styles.halfField}>
+                <Text style={styles.label}>Twitter</Text>
+                <TextInput
+                  style={styles.input}
+                  value={newCompany.twitter_url}
+                  onChangeText={(t) => setNewCompany({ ...newCompany, twitter_url: t })}
+                  placeholder="Twitter URL"
+                  placeholderTextColor={colors.darkAmethyst[300]}
+                  keyboardType="url"
                 />
               </View>
             </View>
@@ -196,7 +353,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
             <View style={styles.formActions}>
               <TouchableOpacity
                 style={styles.cancelBtn}
-                onPress={() => setIsCreating(false)}
+                onPress={() => { setIsCreating(false); setSelectedPlan(null); }}
               >
                 <Text style={styles.cancelBtnText}>Cancel</Text>
               </TouchableOpacity>
@@ -210,9 +367,12 @@ export default function NoCompanyView({ onCompanyJoined }) {
                 </Text>
               </TouchableOpacity>
             </View>
-          </View>
+          </ScrollView>
         </View>
-      ) : (
+      )}
+
+      {/* Main View */}
+      {!showingPricing && !isCreating && (
         <>
           <View style={styles.hero}>
             <View style={styles.heroIcon}>
@@ -220,13 +380,12 @@ export default function NoCompanyView({ onCompanyJoined }) {
             </View>
             <Text style={styles.heroTitle}>Join or Create a Company</Text>
             <Text style={styles.heroSubtitle}>
-              Select a company to get started with HireReadyAI or create your
-              own
+              Select a company to get started with HireReadyAI or create your own
             </Text>
             {companies.length > 0 && (
               <TouchableOpacity
                 style={styles.createNewBtn}
-                onPress={() => setIsCreating(true)}
+                onPress={() => setShowingPricing(true)}
               >
                 <Text style={styles.createNewBtnText}>
                   + Create a New Company
@@ -242,7 +401,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
               </Text>
               <TouchableOpacity
                 style={styles.createNewBtn}
-                onPress={() => setIsCreating(true)}
+                onPress={() => setShowingPricing(true)}
               >
                 <Text style={styles.createNewBtnText}>+ Create a Company</Text>
               </TouchableOpacity>
@@ -418,12 +577,131 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "500",
   },
+  // Pricing
+  backRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  backArrow: {
+    fontSize: 16,
+    color: colors.gray[500],
+  },
+  backText: {
+    fontSize: 13,
+    color: colors.gray[500],
+  },
+  pricingRow: {
+    gap: 16,
+    marginBottom: 24,
+  },
+  planCard: {
+    backgroundColor: colors.white,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.gray[100],
+    padding: 24,
+    marginBottom: 12,
+  },
+  planCardPremium: {
+    borderColor: colors.darkAmethyst[300],
+    backgroundColor: colors.darkAmethyst[50],
+    position: "relative",
+    overflow: "hidden",
+  },
+  premiumBadge: {
+    position: "absolute",
+    top: 12,
+    right: 12,
+    backgroundColor: colors.darkAmethyst[600],
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+  },
+  premiumBadgeText: {
+    fontSize: 10,
+    fontWeight: "700",
+    color: colors.white,
+  },
+  planIconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    backgroundColor: colors.darkAmethyst[50],
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 12,
+  },
+  planIcon: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: colors.darkAmethyst[600],
+  },
+  planName: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: colors.darkAmethyst[950],
+    marginBottom: 4,
+  },
+  planPrice: {
+    fontSize: 28,
+    fontWeight: "800",
+    color: colors.darkAmethyst[950],
+  },
+  planPeriod: {
+    fontSize: 12,
+    color: colors.gray[500],
+    marginBottom: 20,
+  },
+  planFeatures: {
+    gap: 10,
+    marginBottom: 24,
+  },
+  featureRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  featureCheck: {
+    fontSize: 14,
+    color: colors.emerald[500],
+    fontWeight: "700",
+  },
+  featureText: {
+    fontSize: 13,
+    color: colors.gray[600],
+    flex: 1,
+  },
+  selectPlanBtn: {
+    backgroundColor: colors.darkAmethyst[950],
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  selectPlanBtnText: {
+    color: colors.white,
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  comingSoonBtn: {
+    backgroundColor: colors.gray[200],
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  comingSoonBtnText: {
+    color: colors.gray[500],
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  // Form
   formCard: {
     backgroundColor: colors.white,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: colors.gray[100],
     overflow: "hidden",
+    maxHeight: "100%",
   },
   formHeader: {
     flexDirection: "row",
@@ -432,7 +710,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.gray[100],
   },
-  backArrow: {
+  formBackArrow: {
     fontSize: 20,
     color: colors.gray[500],
     marginRight: 12,
@@ -468,6 +746,30 @@ const styles = StyleSheet.create({
   },
   halfField: {
     flex: 1,
+  },
+  textArea: {
+    borderWidth: 1,
+    borderColor: colors.gray[300],
+    borderRadius: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    fontSize: 14,
+    color: colors.darkAmethyst[700],
+    backgroundColor: colors.white,
+    minHeight: 80,
+    textAlignVertical: "top",
+  },
+  textAreaSmall: {
+    borderWidth: 1,
+    borderColor: colors.gray[300],
+    borderRadius: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    fontSize: 14,
+    color: colors.darkAmethyst[700],
+    backgroundColor: colors.white,
+    minHeight: 60,
+    textAlignVertical: "top",
   },
   formActions: {
     flexDirection: "row",

@@ -1,19 +1,12 @@
 import { useState, useEffect } from "react";
-import { Routes, Route, Link, Navigate, useNavigate } from "react-router-dom";
-import { Wand2 } from "lucide-react";
+import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { useUser } from "@/features/auth/context/user.context";
 import Navbar from "@/shared/ui/Navbar";
 import JobPostings from "./JobPostings";
 import CompanyProfile from "./CompanyProfile";
 import JDGeneratorPage from "./JDGeneratorPage";
 import NoCompanyView from "./NoCompanyView";
-import {
-  Briefcase,
-  Building2,
-  LayoutDashboard,
-  ClipboardCheck,
-  GitBranch,
-} from "lucide-react";
+import PendingApprovalPage from "./PendingApprovalPage";
 import RecruiterDashboardPage from "../../recruiter/pages/RecruiterDashboardPage";
 import ShortlistsPage from "../../shortlist/pages/ShortlistsPage";
 import PipelineBuilderPage from "../../pipeline/pages/PipelineBuilderPage";
@@ -23,42 +16,43 @@ import {
   fetchCompanyMembers,
 } from "../services/companies.service";
 import { addMembership } from "../services/memberships.service";
+import { MEMBERSHIP_PERMISSION } from "../../../shared/constants/enums";
 
 function CompanyLayout() {
   const { loading, profile } = useUser();
   const navigate = useNavigate();
+  const location = useLocation();
   const [jobs, setJobs] = useState([]);
   const [members, setMembers] = useState([]);
   const [company, setCompany] = useState(null);
+  const [permission, setPermission] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [frameworkFile, setFrameworkFile] = useState(
-    "engineering-framework-v3.pdf",
-  );
+  const [frameworkFile, setFrameworkFile] = useState("engineering-framework-v3.pdf");
   const [dataLoading, setDataLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const isFullscreenRoute =
+    location.pathname.includes("/shortlists");
 
   useEffect(() => {
     const fetchCompanyData = async () => {
       if (!profile?.id) return;
-
       try {
         setDataLoading(true);
         setError(null);
-
-        const companyData = await fetchCompanyByProfileId(profile.id);
+        const { company: companyData, permission: perm } = await fetchCompanyByProfileId(profile.id);
         if (!companyData) {
           setCompany(null);
+          setPermission(null);
           setDataLoading(false);
           return;
         }
-
         setCompany(companyData);
-
+        setPermission(perm);
         const [jobsData, membersData] = await Promise.all([
           fetchJobsByCompanyId(companyData.id),
           fetchCompanyMembers(companyData.id),
         ]);
-
         setJobs(jobsData);
         setMembers(membersData);
       } catch (err) {
@@ -68,20 +62,17 @@ function CompanyLayout() {
         setDataLoading(false);
       }
     };
-
     fetchCompanyData();
   }, [profile?.id]);
 
   const handleInviteMember = async () => {
     try {
       if (!company?.id) return;
-
       const membershipData = {
         company_id: company.id,
         profile_id: profile?.id,
-        permissions: { role: "recruiter" },
+        recruiter_permissions: MEMBERSHIP_PERMISSION.pending,
       };
-
       const newMembership = await addMembership(membershipData);
       setMembers([...members, newMembership]);
     } catch (err) {
@@ -111,23 +102,27 @@ function CompanyLayout() {
       <NoCompanyView
         onCompanyJoined={() => {
           setDataLoading(true);
-          setTimeout(() => {
-            window.location.reload();
-          }, 500);
+          setTimeout(() => { window.location.reload(); }, 500);
         }}
       />
     );
   }
 
+  if (permission === MEMBERSHIP_PERMISSION.pending) {
+    return <PendingApprovalPage companyName={company?.name} />;
+  }
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden w-full h-full">
-      <Navbar
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        onAddJobClick={() => navigate("/companies/jd-generator")}
-      />
+      {!isFullscreenRoute && (
+        <Navbar
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          onAddJobClick={() => navigate("/companies/jd-generator")}
+        />
+      )}
 
-      <div className="flex-1 overflow-y-auto">
+      <div className={isFullscreenRoute ? "flex-1" : "flex-1 overflow-y-auto"}>
         <Routes>
           <Route path="/" element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<RecruiterDashboardPage />} />
@@ -137,7 +132,11 @@ function CompanyLayout() {
               <CompanyProfile
                 company={company}
                 members={members}
+                currentUserPermission={permission}
+                currentUserId={profile?.id}
                 onInvite={handleInviteMember}
+                onMembersChange={setMembers}
+                onCompanyUpdate={setCompany}
                 frameworkFile={frameworkFile}
                 setFrameworkFile={setFrameworkFile}
               />
@@ -145,13 +144,10 @@ function CompanyLayout() {
           />
           <Route
             path="jobs"
-            element={<JobPostings jobs={jobs} searchQuery={searchQuery} />}
+            element={<JobPostings jobs={jobs} searchQuery={searchQuery} company={company} />}
           />
-          <Route path="shortlists" element={<ShortlistsPage jobs={jobs} />} />
-          <Route
-            path="shortlists/:jobId"
-            element={<ShortlistsPage jobs={jobs} />}
-          />
+          <Route path="shortlists" element={<ShortlistsPage jobs={jobs} company={company} />} />
+          <Route path="shortlists/:jobId" element={<ShortlistsPage jobs={jobs} company={company} />} />
           <Route path="pipelines/:jobId" element={<PipelineBuilderPage />} />
           <Route
             path="jd-generator"
