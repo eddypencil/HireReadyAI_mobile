@@ -4,6 +4,12 @@ export const USER_ROLE = Object.freeze({
   hrManager: "hr_manager",
 });
 
+export const MEMBERSHIP_PERMISSION = Object.freeze({
+  pending: "pending",
+  recruiter: "recruiter",
+  hrManager: "hr_manager",
+});
+
 // intern, junior, mid, senior, lead
 export const SENIORITY_LEVEL = Object.freeze({
   intern: "intern",
@@ -20,7 +26,18 @@ export const APPLICATION_STAGE = Object.freeze({
   interview: "interview",
   hired: "hired",
   rejected: "rejected",
-  shorListed: "short_listed"
+  shorListed: "short_listed",
+
+  cv_screening: "cv_screening",
+  ai_screening: "ai_screening",
+  assessment_test: "assessment_test",
+  coding_test: "coding_test",
+  video_interview: "video_interview",
+  technical_interview: "technical_interview",
+  hr_interview: "hr_interview",
+  manager_interview: "manager_interview",
+  background_check: "background_check",
+  offer: "offer",
 });
 
 export const JOB_TYPE = Object.freeze({

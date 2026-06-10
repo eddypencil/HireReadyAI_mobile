@@ -6,21 +6,23 @@ import {
   StyleSheet,
   Animated,
   ScrollView,
-  Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSidebar } from '../context/SidebarContext';
+import { useTheme } from '../context/ThemeContext';
 import { useUser } from '../../features/auth/context/user.context';
 import { USER_ROLE } from '../constants/enums';
-import { colors } from '../../src/theme';
+import { spacing, borderRadius, fontSize, fontWeight } from '../../src/theme';
+import LanguageSwitcher from '../i18n/LanguageSwitcher';
 
 const SIDEBAR_WIDTH = 280;
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function AnimatedSidebar() {
   const { isOpen, close } = useSidebar();
+  const { theme, toggleTheme, isDark } = useTheme();
+  const c = theme.colors;
   const navigation = useNavigation();
   const { profile, signOutUser } = useUser();
   const isApplicant = profile?.role === USER_ROLE.applicant;
@@ -87,55 +89,69 @@ export default function AnimatedSidebar() {
       <Animated.View
         style={[
           styles.sidebar,
-          { transform: [{ translateX: slideAnim }] },
+          { backgroundColor: c.sidebar, transform: [{ translateX: slideAnim }] },
         ]}
       >
         <SafeAreaView style={styles.sidebarSafe}>
           <View style={styles.drawerHeader}>
-            <View style={styles.logoMark}>
-              <Text style={styles.logoText}>H</Text>
+            <View style={[styles.logoMark, { backgroundColor: c.accent }]}>
+              <Text style={[styles.logoText, { color: c['destructive-foreground'] }]}>H</Text>
             </View>
-            <Text style={styles.wordmark}>HireReadyAI</Text>
+            <Text style={[styles.wordmark, { color: c['destructive-foreground'] }]}>HireReadyAI</Text>
           </View>
 
-          <View style={styles.userChip}>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>
+          <View style={[styles.userChip, { borderTopColor: `${c['destructive-foreground']}14`, borderBottomColor: `${c['destructive-foreground']}14` }]}>
+            <View style={[styles.avatar, { backgroundColor: `${c.accent}33` }]}>
+              <Text style={[styles.avatarText, { color: c.accent }]}>
                 {(profile?.full_name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)) || '?'}
               </Text>
             </View>
-            <View>
-              <Text style={styles.userName}>{profile?.full_name || 'User'}</Text>
-              <Text style={styles.userRole}>{profile?.role || ''}</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.userName, { color: c['destructive-foreground'] }]}>{profile?.full_name || 'User'}</Text>
+              <Text style={[styles.userRole, { color: `${c['destructive-foreground']}80` }]}>{profile?.role || ''}</Text>
             </View>
+            <LanguageSwitcher />
           </View>
 
           <ScrollView style={styles.navScroll} showsVerticalScrollIndicator={false}>
-            {links.map((link) => {
-              return (
-                <TouchableOpacity
-                  key={link.name}
-                  onPress={() => handleNavigate(link.screen)}
-                  style={styles.navItem}
-                  activeOpacity={0.7}
-                >
-                  <Ionicons
-                    name={link.icon}
-                    size={18}
-                    color="rgba(255,255,255,0.7)"
-                    style={styles.navIcon}
-                  />
-                  <Text style={styles.navLabel}>
-                    {link.label}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
+            {links.map((link) => (
+              <TouchableOpacity
+                key={link.name}
+                onPress={() => handleNavigate(link.screen)}
+                style={styles.navItem}
+                activeOpacity={0.7}
+              >
+                <Ionicons
+                  name={link.icon}
+                  size={18}
+                  color={`${c['destructive-foreground']}b3`}
+                  style={styles.navIcon}
+                />
+                <Text style={[styles.navLabel, { color: `${c['destructive-foreground']}cc` }]}>
+                  {link.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
           </ScrollView>
 
-          <TouchableOpacity onPress={handleSignOut} style={styles.logoutButton} activeOpacity={0.7}>
-            <Ionicons name="log-out" size={18} color="#ef4444" />
-            <Text style={styles.logoutText}>Logout</Text>
+          <TouchableOpacity
+            onPress={toggleTheme}
+            style={[styles.themeButton, { borderTopColor: `${c['destructive-foreground']}14` }]}
+            activeOpacity={0.7}
+          >
+            <Ionicons
+              name={isDark ? 'sunny' : 'moon'}
+              size={18}
+              color={c['muted-foreground']}
+            />
+            <Text style={[styles.themeText, { color: c['muted-foreground'] }]}>
+              {isDark ? 'Light Mode' : 'Dark Mode'}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={handleSignOut} style={[styles.logoutButton, { borderTopColor: `${c['destructive-foreground']}14` }]} activeOpacity={0.7}>
+            <Ionicons name="log-out" size={18} color={c.destructive} />
+            <Text style={[styles.logoutText, { color: c.destructive }]}>Logout</Text>
           </TouchableOpacity>
         </SafeAreaView>
       </Animated.View>
@@ -155,7 +171,6 @@ const styles = StyleSheet.create({
     left: 0,
     bottom: 0,
     width: SIDEBAR_WIDTH,
-    backgroundColor: colors.sidebarBg,
     zIndex: 50,
     elevation: 10,
     shadowColor: '#000',
@@ -165,69 +180,60 @@ const styles = StyleSheet.create({
   },
   sidebarSafe: {
     flex: 1,
-    padding: 16,
+    padding: spacing[4],
     justifyContent: 'space-between',
   },
   drawerHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    paddingHorizontal: 4,
-    paddingVertical: 8,
-    marginBottom: 20,
+    gap: spacing[2.5],
+    paddingHorizontal: spacing[1],
+    paddingVertical: spacing[2],
+    marginBottom: spacing[5],
   },
   logoMark: {
     width: 36,
     height: 36,
-    borderRadius: 8,
-    backgroundColor: colors.accent,
+    borderRadius: borderRadius.lg,
     justifyContent: 'center',
     alignItems: 'center',
   },
   logoText: {
-    color: colors.white,
-    fontSize: 20,
-    fontWeight: '700',
+    fontSize: fontSize.xl,
+    fontWeight: fontWeight.bold,
   },
   wordmark: {
-    color: colors.white,
     fontSize: 17,
-    fontWeight: '600',
+    fontWeight: fontWeight.semibold,
     letterSpacing: -0.3,
   },
   userChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    paddingHorizontal: 4,
-    paddingVertical: 12,
+    gap: spacing[2.5],
+    paddingHorizontal: spacing[1],
+    paddingVertical: spacing[3],
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.08)',
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.08)',
-    marginBottom: 16,
+    marginBottom: spacing[4],
   },
   avatar: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: 'rgba(70, 143, 175, 0.2)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   avatarText: {
-    color: colors.accent,
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: fontWeight.semibold,
   },
   userName: {
-    color: colors.white,
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.semibold,
   },
   userRole: {
-    color: 'rgba(255,255,255,0.5)',
-    fontSize: 12,
+    fontSize: fontSize.xs,
     textTransform: 'capitalize',
   },
   navScroll: {
@@ -236,14 +242,11 @@ const styles = StyleSheet.create({
   navItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 8,
+    gap: spacing[3],
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[2.5],
+    borderRadius: borderRadius.lg,
     marginBottom: 2,
-  },
-  navItemActive: {
-    backgroundColor: 'rgba(70, 143, 175, 0.2)',
   },
   navIcon: {
     width: 20,
@@ -251,33 +254,32 @@ const styles = StyleSheet.create({
   },
   navLabel: {
     flex: 1,
-    fontSize: 14,
-    fontWeight: '500',
-    color: 'rgba(255,255,255,0.8)',
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.medium,
   },
-  navLabelActive: {
-    color: colors.white,
-    fontWeight: '600',
+  themeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[3],
+    paddingVertical: spacing[2],
+    paddingHorizontal: spacing[3],
+    borderTopWidth: 1,
   },
-  activeDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.accent,
+  themeText: {
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.medium,
   },
   logoutButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 12,
+    gap: spacing[3],
+    paddingVertical: spacing[3],
+    paddingHorizontal: spacing[3],
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.08)',
-    marginTop: 8,
+    marginTop: spacing[2],
   },
   logoutText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#ef4444',
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.medium,
   },
 });

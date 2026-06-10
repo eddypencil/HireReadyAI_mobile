@@ -1,576 +1,513 @@
-import { useState, useEffect, useRef } from "react";
-import { supabase } from "@/shared/services/supabase";
+import { useState, useEffect, useMemo } from 'react';
+import {
+  ScrollView,
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+  Modal,
+  Alert,
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import { useCompany } from '../../../features/companies/pages/CompanyLayout';
 import {
   getPipelineCandidates,
-  getStageByType,
-  closeCurrentStage,
-  openStage,
-} from "../services/candidatesPipline.service";
-const STAGES = [
-  { key: "cv_screening", label: "CV Screening", color: "#9c33ff" },
-  { key: "coding_test", label: "Coding Test", color: "#8400ff" },
-  {
-    key: "technical_interview",
-    label: "Technical Interview",
-    color: "#6900cc",
-  },
-  { key: "hr_interview", label: "HR Interview", color: "#4f0099" },
-  { key: "offer", label: "Offer", color: "#350066" },
-];
-const STAGE_TYPE_MAP = {
-  cv_screening: "cv",
-  coding_test: "coding",
-  technical_interview: "technical",
-  hr_interview: "hr",
-  offer: "offer",
+  getJobStages,
+  moveToStage,
+} from '../services/candidatesPipline.service';
+import { useTheme } from '../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../shared/context/I18nContext';
+import AutoAdvanceModal from '../components/AutoAdvanceModal';
+
+const STAGE_TYPE_COLORS = {
+  cv_review: '#6b7280',
+  shortlist: '#f59e0b',
+  screening: '#f59e0b',
+  assessment_test: '#8b5cf6',
+  coding_test: '#8b5cf6',
+  video_interview: '#3b82f6',
+  technical_interview: '#3b82f6',
+  hr_interview: '#3b82f6',
+  manager_interview: '#ec4899',
+  ai_screening: '#8b5cf6',
+  offer: '#10b981',
+  default: '#6b7280',
 };
 
-function mapStage(type) {
-  const t = (type || "").toLowerCase();
-
-  if (["cv", "cv_screening"].includes(t)) return "cv_screening";
-  if (["coding", "coding_test"].includes(t)) return "coding_test";
-
-  if (
-    ["technical", "technical_interview", "interview", "interviewed"].includes(t)
-  )
-    return "technical_interview";
-
-  if (["hr", "hr_interview"].includes(t)) return "hr_interview";
-
-  if (["offer"].includes(t)) return "offer";
-
-  return "cv_screening";
-}
-const FIT_STYLES = {
-  "Strong Fit": {
-    bg: "bg-violet-100",
-    text: "text-violet-700",
-    border: "border-violet-200",
-  },
-  "Good Fit": {
-    bg: "bg-indigo-100",
-    text: "text-indigo-700",
-    border: "border-indigo-200",
-  },
-  "Needs Review": {
-    bg: "bg-amber-100",
-    text: "text-amber-700",
-    border: "border-amber-200",
-  },
-  Reject: { bg: "bg-red-100", text: "text-red-600", border: "border-red-200" },
-};
-
-function getFit(score) {
-  if (score >= 85) return "Strong Fit";
-  if (score >= 70) return "Good Fit";
-  if (score >= 55) return "Needs Review";
-  return "Reject";
-}
-/* ───────── DATE ───────── */
-function formatAppliedDate(date) {
-  const diff = Date.now() - new Date(date).getTime();
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  if (days > 0) return `${days}d ago`;
-
-  const hours = Math.floor(diff / (1000 * 60 * 60));
-  if (hours > 0) return `${hours}h ago`;
-
-  const mins = Math.floor(diff / (1000 * 60));
-  return `${mins}m ago`;
+function getInitials(name = '') {
+  return (name || '').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || '?';
 }
 
-const scoreColor = (score) => {
-  if (score >= 85) return { bg: "bg-emerald-100", text: "text-emerald-700" };
-  if (score >= 70) return { bg: "bg-violet-100", text: "text-violet-700" };
-  if (score >= 55) return { bg: "bg-amber-100", text: "text-amber-700" };
-  return { bg: "bg-red-100", text: "text-red-600" };
-};
-
-const scoreBarColor = (score) => {
-  if (score >= 85) return "bg-emerald-500";
-  if (score >= 70) return "bg-violet-600";
-  if (score >= 55) return "bg-amber-500";
-  return "bg-red-500";
-};
-
-// ─── Avatar Component ─────────────────────────────────────────────────────────
-const Avatar = ({ initials, size = "md" }) => {
-  const sizes = { sm: "w-8 h-8 text-xs", md: "w-10 h-10 text-sm" };
-  return (
-    <div
-      className={`${sizes[size]} rounded-xl flex items-center justify-center font-bold text-white shrink-0`}
-      style={{
-        background: "linear-gradient(135deg, #8400ff 0%, #4f0099 100%)",
-      }}
-    >
-      {initials}
-    </div>
-  );
-};
-
-// ─── Score Badge ──────────────────────────────────────────────────────────────
-const ScoreBadge = ({ score }) => {
-  const { bg, text } = scoreColor(score);
-  return (
-    <span className={`px-2 py-0.5 rounded-lg text-xs font-bold ${bg} ${text}`}>
-      {score}
-    </span>
-  );
-};
-
-// ─── Fit Badge ────────────────────────────────────────────────────────────────
-const FitBadge = ({ fit }) => {
-  const s = FIT_STYLES[fit] || FIT_STYLES["Good Fit"];
-  const icons = {
-    "Strong Fit": "✦",
-    "Good Fit": "✓",
-    "Needs Review": "⚑",
-    Reject: "✕",
-  };
-  return (
-    <span
-      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold border ${s.bg} ${s.text} ${s.border}`}
-    >
-      <span className="text-[10px]">{icons[fit]}</span> {fit}
-    </span>
-  );
-};
-
-// ─── Score Bar ────────────────────────────────────────────────────────────────
-const ScoreBar = ({ score, label }) => (
-  <div>
-    <div className="flex items-center justify-between mb-1">
-      <span className="text-xs text-dark-amethyst-500">{label}</span>
-      <span className="text-xs font-semibold text-dark-amethyst-700">
-        {score}/100
-      </span>
-    </div>
-    <div className="w-full h-1.5 rounded-full bg-dark-amethyst-100 overflow-hidden">
-      <div
-        className={`h-full rounded-full transition-all duration-700 ${scoreBarColor(score)}`}
-        style={{ width: `${score}%` }}
-      />
-    </div>
-  </div>
-);
-
-// ─── Candidate Card ───────────────────────────────────────────────────────────
-const CandidateCard = ({ candidate, onDragStart, isDragging }) => {
-  return (
-    <div
-      draggable
-      onDragStart={() => onDragStart(candidate)}
-      className={`bg-white rounded-2xl border border-dark-amethyst-100 p-4 cursor-grab active:cursor-grabbing select-none transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 group ${isDragging ? "opacity-40 scale-95" : ""}`}
-      style={{ boxShadow: "0 1px 4px rgba(132,0,255,0.07)" }}
-    >
-      {/* Header */}
-      <div className="flex items-start gap-3 mb-3">
-        <Avatar initials={candidate.avatar} />
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-bold text-dark-amethyst-950 leading-tight truncate">
-            {candidate.name}
-          </p>
-          <p className="text-xs text-dark-amethyst-400 mt-0.5 flex items-center gap-1">
-            <svg
-              className="w-3 h-3"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <rect x="3" y="4" width="18" height="18" rx="2" />
-              <path d="M16 2v4M8 2v4M3 10h18" />
-            </svg>
-            {candidate.applied}
-          </p>
-        </div>
-        <button className="opacity-0 group-hover:opacity-100 transition w-7 h-7 rounded-lg border border-dark-amethyst-100 flex items-center justify-center hover:bg-dark-amethyst-50">
-          <svg
-            className="w-3.5 h-3.5 text-dark-amethyst-400"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <circle cx="12" cy="5" r="1.5" />
-            <circle cx="12" cy="12" r="1.5" />
-            <circle cx="12" cy="19" r="1.5" />
-          </svg>
-        </button>
-      </div>
-
-      {/* Fit badge + overall score */}
-      <div className="flex items-center justify-between mb-3">
-        <FitBadge fit={candidate.fit} />
-        <div className="flex items-center gap-1.5">
-          <span className="text-xs text-dark-amethyst-500">Overall</span>
-          <ScoreBadge score={candidate.overall} />
-        </div>
-      </div>
-
-      {/* Score bar */}
-      <ScoreBar score={candidate.stage_score} label="Stage score" />
-    </div>
-  );
-};
-
-// ─── Column ───────────────────────────────────────────────────────────────────
-const PipelineColumn = ({
-  stage,
-  candidates,
-  onDragStart,
-  dragOverStage,
-  onDragOver,
-  onDrop,
-  draggingCandidate,
-}) => {
-  const isOver = dragOverStage === stage.key;
-  return (
-    <div
-      className={`flex flex-col min-w-[270px] w-[270px] shrink-0 rounded-2xl transition-all duration-200 ${isOver ? "ring-2 ring-dark-amethyst-400 ring-offset-2" : ""}`}
-      onDragOver={(e) => {
-        e.preventDefault();
-        onDragOver(stage.key);
-      }}
-      onDrop={() => onDrop(stage.key)}
-    >
-      {/* Column header */}
-      <div className="flex items-center justify-between px-4 py-3 mb-3">
-        <div className="flex items-center gap-2">
-          <span
-            className="w-2.5 h-2.5 rounded-full shrink-0"
-            style={{ background: stage.color }}
-          />
-          <span className="text-sm font-bold text-dark-amethyst-950">
-            {stage.label}
-          </span>
-          <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-dark-amethyst-100 text-dark-amethyst-600 ml-1">
-            {candidates.length}
-          </span>
-        </div>
-        <button className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-dark-amethyst-100 transition">
-          <svg
-            className="w-4 h-4 text-dark-amethyst-400"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <circle cx="5" cy="12" r="1.5" />
-            <circle cx="12" cy="12" r="1.5" />
-            <circle cx="19" cy="12" r="1.5" />
-          </svg>
-        </button>
-      </div>
-
-      {/* Cards scroll container */}
-      <div
-        className={`flex-1 overflow-y-auto space-y-3 px-1 pb-4 pr-2 transition-all duration-200 ${isOver ? "bg-dark-amethyst-50/60 rounded-xl" : ""}`}
-        style={{ maxHeight: "calc(100vh - 230px)", minHeight: 120 }}
-      >
-        {candidates.length === 0 ? (
-          <div
-            className={`rounded-xl border-2 border-dashed h-24 flex items-center justify-center transition-all ${isOver ? "border-dark-amethyst-400 bg-dark-amethyst-50" : "border-dark-amethyst-100"}`}
-          >
-            <p className="text-xs text-dark-amethyst-300">Drop here</p>
-          </div>
-        ) : (
-          candidates.map((c) => (
-            <CandidateCard
-              key={c.id}
-              candidate={c}
-              onDragStart={onDragStart}
-              isDragging={draggingCandidate?.id === c.id}
-            />
-          ))
-        )}
-      </div>
-    </div>
-  );
-};
-
-function resolveCurrentStage(stages = []) {
-  if (!stages.length) return null;
-
-  const inProgress = stages.find((s) => s.status === "in_progress");
-  if (inProgress) return inProgress;
-
-  const passed = (stages || [])
-    .filter((s) => s?.status === "passed")
-    .sort(
-      (a, b) =>
-        (b.recruitment_stages?.order_index || 0) -
-        (a.recruitment_stages?.order_index || 0),
-    );
-
-  return passed[0] || null;
+function createStyles(c) {
+  return StyleSheet.create({
+    container: { flex: 1 },
+    centered: { justifyContent: 'center', alignItems: 'center' },
+    loadingText: { marginTop: 12, fontSize: 14 },
+    headerBar: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: c.primary,
+      paddingHorizontal: 16,
+      paddingBottom: 12,
+      gap: 8,
+    },
+    jobSelector: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: 'rgba(255,255,255,0.15)',
+      borderRadius: 10,
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      gap: 8,
+    },
+    jobSelectorText: {
+      flex: 1,
+      fontSize: 15,
+      fontWeight: '600',
+      color: c['destructive-foreground'],
+    },
+    autoAdvanceBtn: {
+      width: 40,
+      height: 40,
+      borderRadius: 10,
+      backgroundColor: 'rgba(255,255,255,0.15)',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    infoBar: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 16,
+      paddingVertical: 10,
+      gap: 6,
+      backgroundColor: c.card,
+      borderBottomWidth: 1,
+      borderBottomColor: c.border,
+    },
+    infoText: {
+      fontSize: 13,
+      fontWeight: '600',
+      color: c.primary,
+      flex: 1,
+    },
+    infoHint: {
+      fontSize: 11,
+      color: c['muted-foreground'],
+    },
+    boardScroll: { flex: 1 },
+    board: {
+      flexDirection: 'row',
+      paddingHorizontal: 16,
+      paddingVertical: 20,
+      gap: 14,
+      alignItems: 'flex-start',
+    },
+    column: { width: 240, maxHeight: '100%' },
+    columnHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 12,
+      paddingHorizontal: 4,
+    },
+    stageDot: { width: 10, height: 10, borderRadius: 5, marginRight: 8 },
+    columnTitle: { fontSize: 14, fontWeight: '700', flex: 1 },
+    countBadge: {
+      backgroundColor: c['surface-muted'],
+      borderRadius: 10,
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+      borderWidth: 1,
+      borderColor: c.border,
+    },
+    countText: { fontSize: 12, fontWeight: '700', color: c.primary },
+    columnBody: { maxHeight: 500 },
+    emptyColumn: {
+      borderWidth: 2,
+      borderStyle: 'dashed',
+      borderColor: c.border,
+      borderRadius: 12,
+      padding: 32,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    emptyColumnText: { fontSize: 12, marginTop: 6 },
+    candidateCard: {
+      backgroundColor: c.card,
+      borderRadius: 12,
+      padding: 14,
+      marginBottom: 10,
+      borderWidth: 1,
+      borderColor: c.border,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    candidateTop: { flexDirection: 'row', alignItems: 'center', flex: 1 },
+    avatar: {
+      width: 38,
+      height: 38,
+      borderRadius: 19,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: 10,
+    },
+    avatarText: { color: c['destructive-foreground'], fontSize: 12, fontWeight: '700' },
+    candidateInfo: { flex: 1 },
+    candidateName: { fontSize: 13, fontWeight: '700', color: c.foreground },
+    candidateRole: { fontSize: 11, color: c['muted-foreground'], marginTop: 1 },
+    scoreBadge: {
+      borderRadius: 8,
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+    },
+    scoreText: { fontSize: 12, fontWeight: '800' },
+    rightActions: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+    },
+    advanceArrow: {
+      width: 36,
+      height: 36,
+      borderRadius: 14,
+      backgroundColor: c.primary + '1a',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0,0,0,0.4)',
+      justifyContent: 'flex-end',
+    },
+    modalContent: {
+      backgroundColor: c.card,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      maxHeight: '70%',
+      paddingBottom: 40,
+    },
+    modalHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 20,
+      paddingVertical: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: c.border,
+    },
+    modalTitle: { fontSize: 17, fontWeight: '700', color: c.foreground },
+    jobOption: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 20,
+      paddingVertical: 14,
+      gap: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: c.border,
+    },
+    jobOptionActive: { backgroundColor: c.primary + '08' },
+    jobOptionInfo: { flex: 1 },
+    jobOptionTitle: { fontSize: 15, fontWeight: '600', color: c.foreground },
+    jobOptionDept: { fontSize: 12, color: c['muted-foreground'], marginTop: 2 },
+    emptyJobsText: { textAlign: 'center', padding: 30, color: c['muted-foreground'], fontSize: 14 },
+    moveModal: {
+      backgroundColor: c.card,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      maxHeight: '60%',
+      paddingBottom: 40,
+    },
+    moveSubtitle: {
+      fontSize: 13,
+      color: c['muted-foreground'],
+      paddingHorizontal: 20,
+      paddingTop: 12,
+      paddingBottom: 8,
+    },
+    moveOption: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 20,
+      paddingVertical: 14,
+      gap: 10,
+      borderBottomWidth: 1,
+      borderBottomColor: c.border,
+    },
+    moveDot: { width: 12, height: 12, borderRadius: 6 },
+    moveOptionText: { flex: 1, fontSize: 15, fontWeight: '500', color: c.foreground },
+  });
 }
-// ─── Main Page ────────────────────────────────────────────────────────────────
+
 export default function PipelineCandidatesPage() {
+  const insets = useSafeAreaInsets();
+  const { theme } = useTheme();
+  const c = theme.colors;
+  const navigation = useNavigation();
+  const { company, jobs } = useCompany();
+  const { t } = useTranslation();
+
   const [candidates, setCandidates] = useState([]);
-  const [jobTitle, setJobTitle] = useState("");
-  const [search, setSearch] = useState("");
-  const [filterFit, setFilterFit] = useState("All");
-  const [draggingCandidate, setDraggingCandidate] = useState(null);
-  const [dragOverStage, setDragOverStage] = useState(null);
-  const [showFilters, setShowFilters] = useState(false);
-  const searchRef = useRef(null);
-  const [loadingDrop, setLoadingDrop] = useState(false);
+  const [stages, setStages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedJobId, setSelectedJobId] = useState(null);
+  const [showJobPicker, setShowJobPicker] = useState(false);
+  const [showAutoAdvanceModal, setShowAutoAdvanceModal] = useState(false);
+  const [moving, setMoving] = useState(false);
 
   useEffect(() => {
-    loadPipeline();
-  }, []);
-
-  async function loadPipeline() {
-    const { data, error } = await getPipelineCandidates();
-    if (error) {
-      console.error(error);
-      return;
+    if (jobs.length > 0 && !selectedJobId) {
+      setSelectedJobId(jobs[0].id);
     }
+  }, [jobs]);
 
-    if (data?.length) {
-      setJobTitle(data[0]?.job_postings?.title || "");
+  useEffect(() => {
+    if (!selectedJobId) return;
+    fetchData();
+  }, [selectedJobId]);
+
+  async function fetchData() {
+    setLoading(true);
+    try {
+      const { data: stagesData, error: stagesErr } = await getJobStages(selectedJobId);
+      if (stagesErr) throw stagesErr;
+      setStages(stagesData || []);
+
+      const { data: candidatesData, error: candErr } = await getPipelineCandidates(company?.id);
+      if (candErr) throw candErr;
+      setCandidates((candidatesData || []).filter(c => c.job_postings?.id === selectedJobId));
+    } catch (err) {
+      console.error('Pipeline fetch error:', err);
+    } finally {
+      setLoading(false);
     }
-
-    const mapped = data.map((app) => {
-      const currentStage = resolveCurrentStage(app.application_stages);
-
-      const stageType = currentStage?.recruitment_stages?.stage_type || "cv";
-
-      const evaluation = currentStage?.application_stage_evaluations?.[0];
-
-      const score = evaluation?.ai_score || currentStage?.score || 0;
-
-      return {
-        id: app.id,
-
-        name: app.profiles?.full_name || "Unknown Candidate",
-
-        avatar:
-          app.profiles?.full_name
-            ?.split(" ")
-            .map((n) => n[0])
-            .join("")
-            .slice(0, 2) || "NA",
-
-        stage: mapStage(stageType),
-
-        overall: app.composite_score || score,
-
-        stage_score: currentStage?.score || score,
-
-        fit: getFit(score),
-
-        applied: formatAppliedDate(app.applied_at),
-      };
-    });
-    console.log("ALL MAPPED CANDIDATES:", mapped);
-    setCandidates(mapped);
   }
 
-  /* ───────── FILTERING ───────── */
-  const filtered = candidates.filter((c) => {
-    const matchSearch = c.name.toLowerCase().includes(search.toLowerCase());
-
-    const matchFit = filterFit === "All" || c.fit === filterFit;
-
-    return matchSearch && matchFit;
-  });
-
-  const byStage = (key) => filtered.filter((c) => c.stage === key);
-
-  // Drag & drop
-  const handleDragStart = (candidate) => setDraggingCandidate(candidate);
-
-  const handleDrop = async (targetStageKey) => {
-    if (!draggingCandidate || loadingDrop) return;
-
-    setLoadingDrop(true);
-    const previousCandidates = [...candidates];
-
-    try {
-      const stageType = STAGE_TYPE_MAP[targetStageKey];
-
-      const { data: stageRecord, error: stageError } =
-        await getStageByType(stageType);
-
-      if (stageError || !stageRecord) {
-        throw new Error("Stage not found");
+  const candidatesByStage = useMemo(() => {
+    const map = {};
+    stages.forEach(s => { map[s.id] = []; });
+    candidates.forEach(c => {
+      const stageId = c.current_stage_id;
+      if (stageId && map[stageId]) {
+        map[stageId].push(c);
       }
+    });
+    return map;
+  }, [stages, candidates]);
 
-      const { error: closeErr } = await closeCurrentStage(draggingCandidate.id);
-      if (closeErr) throw closeErr;
-      const { error: openErr } = await openStage(
-        draggingCandidate.id,
-        stageRecord.id,
-      );
-      if (openErr) throw openErr;
+  const handleCandidateTap = (candidate) => {
+    navigation.navigate('CandidateProfile', { applicationId: candidate.id });
+  };
 
-      setCandidates((prev) =>
-        prev.map((c) =>
-          c.id === draggingCandidate.id ? { ...c, stage: targetStageKey } : c,
-        ),
-      );
-
-      await loadPipeline();
+  const handleAdvanceOneStage = async (candidate, nextStageId) => {
+    if (moving) return;
+    setMoving(true);
+    try {
+      const { error } = await moveToStage(candidate.id, nextStageId);
+      if (error) {
+        Alert.alert(t("recruiter.cannot_move"), error.message);
+      } else {
+        fetchData();
+      }
     } catch (err) {
-      console.error("DROP FAILED:", err);
-      setCandidates(previousCandidates);
-      alert("Something went wrong while updating stage.");
+      Alert.alert(t("recruiter.error"), err.message);
     } finally {
-      setDraggingCandidate(null);
-      setDragOverStage(null);
-      setLoadingDrop(false);
+      setMoving(false);
     }
   };
-  const totalInFlight = candidates.length;
+
+  const handleAutoAdvanceComplete = (advancedCount) => {
+    if (advancedCount > 0) {
+      Alert.alert(t("recruiter.auto_advance"), t("recruiter.auto_advanced", { count: advancedCount }));
+      fetchData();
+    }
+  };
+
+  const precedingStageCandidates = useMemo(() => {
+    const shortlistStage = stages.find(s => s.stage_type === 'shortlist');
+    if (!shortlistStage) return [];
+    const preceding = stages
+      .filter(s => s.order_index < shortlistStage.order_index)
+      .sort((a, b) => b.order_index - a.order_index)[0];
+    if (!preceding) return [];
+    return candidatesByStage[preceding.id] || [];
+  }, [stages, candidatesByStage]);
+
+  const selectedJob = jobs.find(j => j.id === selectedJobId);
+
+  const styles = createStyles(c);
+
+  function CandidateCard({ candidate, stageColor, onTap, onAdvance }) {
+    const app = candidate;
+    const name = app.profiles?.full_name || t("recruiter.unknown");
+    const score = app.composite_score;
+    const initials = getInitials(name);
+
+    const scoreColor = score >= 80 ? c.success
+      : score >= 60 ? c.warning
+      : c['muted-foreground'];
+    const scoreBg = score >= 80 ? `${c.success}1a`
+      : score >= 60 ? `${c.warning}1a`
+      : c['surface-muted'];
+
+    return (
+      <TouchableOpacity
+        style={styles.candidateCard}
+        activeOpacity={0.8}
+        onPress={() => onTap(app)}
+      >
+        <View style={styles.candidateTop}>
+          <View style={[styles.avatar, { backgroundColor: stageColor }]}>
+            <Text style={styles.avatarText}>{initials}</Text>
+          </View>
+          <View style={styles.candidateInfo}>
+            <Text style={styles.candidateName} numberOfLines={1}>{name}</Text>
+            <Text style={styles.candidateRole} numberOfLines={1}>{app.job_postings?.title || ''}</Text>
+          </View>
+        </View>
+        <View style={styles.rightActions}>
+          {score != null && (
+            <View style={[styles.scoreBadge, { backgroundColor: scoreBg }]}>
+              <Text style={[styles.scoreText, { color: scoreColor }]}>{Math.round(score)}</Text>
+            </View>
+          )}
+          {onAdvance && (
+            <TouchableOpacity onPress={onAdvance} style={styles.advanceArrow} disabled={moving}>
+              <Ionicons name="chevron-forward" size={18} color={c.primary} />
+            </TouchableOpacity>
+          )}
+        </View>
+      </TouchableOpacity>
+    );
+  }
+
+  if (loading && candidates.length === 0) {
+    return (
+      <View style={[styles.container, styles.centered, { backgroundColor: c.background }]}>
+        <ActivityIndicator size="large" color={c.primary} />
+        <Text style={[styles.loadingText, { color: c['muted-foreground'] }]}>{t("recruiter.loading")}</Text>
+      </View>
+    );
+  }
 
   return (
-    <div
-      className="min-h-screen bg-dark-amethyst-50"
-      onDragEnd={() => {
-        if (loadingDrop) return;
-        setDraggingCandidate(null);
-        setDragOverStage(null);
-      }}
-    >
-      {/* ── Top bar ── */}
-      <div
-        className="bg-white border-b border-dark-amethyst-100 px-6 py-4 sticky top-0 z-30"
-        style={{ boxShadow: "0 2px 16px rgba(132,0,255,0.06)" }}
-      >
-        <div className="flex items-center justify-between gap-4">
-          {/* Title */}
-          <div>
-            <h1 className="text-xl font-bold text-dark-amethyst-950 leading-tight">
-              Candidate Pipeline
-            </h1>
-            <p className="text-xs text-dark-amethyst-500 mt-0.5">
-              {jobTitle} Pipeline ·{" "}
-              <span className="font-semibold text-dark-amethyst-600">
-                {totalInFlight}
-              </span>{" "}
-              candidates in flight
-            </p>
-          </div>
+    <View style={[styles.container, { backgroundColor: c.background }]}>
+      {/* Job Selector Header */}
+      <View style={[styles.headerBar, { paddingTop: insets.top + 12 }]}>
+        <TouchableOpacity style={styles.jobSelector} onPress={() => setShowJobPicker(true)}>
+          <Ionicons name="briefcase-outline" size={18} color={c['destructive-foreground']} />
+          <Text style={styles.jobSelectorText} numberOfLines={1}>
+            {selectedJob?.title || t("recruiter.select_job")}
+          </Text>
+          <Ionicons name="chevron-down" size={16} color={c['destructive-foreground']} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.autoAdvanceBtn} onPress={() => setShowAutoAdvanceModal(true)}>
+          <Ionicons name="flash-outline" size={16} color={c['destructive-foreground']} />
+        </TouchableOpacity>
+      </View>
 
-          {/* Search */}
-          <div className="flex-1 max-w-sm relative">
-            <svg
-              className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-dark-amethyst-300"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.35-4.35" />
-            </svg>
-            <input
-              ref={searchRef}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search candidates, jobs…"
-              className="w-full h-10 rounded-xl pl-9 pr-16 text-sm text-dark-amethyst-900 bg-dark-amethyst-50 border border-dark-amethyst-100 outline-none transition-all duration-200 placeholder:text-dark-amethyst-300"
-              onFocus={(e) => {
-                e.target.style.borderColor = "#8400ff";
-                e.target.style.boxShadow = "0 0 0 3px rgba(132,0,255,0.08)";
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = "";
-                e.target.style.boxShadow = "none";
-              }}
-            />
-            <kbd className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-0.5 text-[10px] text-dark-amethyst-400 border border-dark-amethyst-200 rounded px-1.5 py-0.5 bg-white font-mono">
-              ⌘K
-            </kbd>
-          </div>
+      {/* Pipeline Info */}
+      <View style={styles.infoBar}>
+        <Ionicons name="git-network-outline" size={16} color={c.primary} />
+        <Text style={styles.infoText}>
+          {t("recruiter.candidates_in_pipeline", { count: candidates.length })}
+        </Text>
+        <Text style={styles.infoHint}>{t("recruiter.advance_hint")}</Text>
+      </View>
 
-          {/* Right actions */}
-          <div className="flex items-center gap-2.5">
-            {/* Filter button */}
-            <button
-              onClick={() => setShowFilters((s) => !s)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-semibold transition ${showFilters ? "bg-dark-amethyst-600 text-white border-dark-amethyst-600" : "border-dark-amethyst-200 text-dark-amethyst-600 bg-white hover:bg-dark-amethyst-50"}`}
-            >
-              <svg
-                className="w-3.5 h-3.5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-              </svg>
-              Filters
-            </button>
-          </div>
-        </div>
+      {/* Kanban Board */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.boardScroll}>
+        <View style={styles.board}>
+          {stages.map((stage, stageIndex) => {
+            const nextStage = stages[stageIndex + 1];
+            const stageCandidates = candidatesByStage[stage.id] || [];
+            const stageColor = STAGE_TYPE_COLORS[stage.stage_type] || STAGE_TYPE_COLORS.default;
+            return (
+              <View key={stage.id} style={styles.column}>
+                <View style={styles.columnHeader}>
+                  <View style={[styles.stageDot, { backgroundColor: stageColor }]} />
+                  <Text style={[styles.columnTitle, { color: c.foreground }]} numberOfLines={1}>
+                    {stage.name}
+                  </Text>
+                  <View style={styles.countBadge}>
+                    <Text style={styles.countText}>{stageCandidates.length}</Text>
+                  </View>
+                </View>
 
-        {/* Filter bar */}
-        {showFilters && (
-          <div className="mt-4 pt-4 border-t border-dark-amethyst-100 flex items-center gap-3 flex-wrap">
-            <span className="text-xs font-semibold text-dark-amethyst-500 uppercase tracking-wide">
-              Fit:
-            </span>
-            {["All", "Strong Fit", "Good Fit", "Needs Review", "Reject"].map(
-              (f) => (
-                <button
-                  key={f}
-                  onClick={() => setFilterFit(f)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition ${
-                    filterFit === f
-                      ? "bg-dark-amethyst-600 text-white border-dark-amethyst-600"
-                      : "bg-white text-dark-amethyst-600 border-dark-amethyst-200 hover:bg-dark-amethyst-50"
-                  }`}
+                <ScrollView style={styles.columnBody} showsVerticalScrollIndicator={false}>
+                  {stageCandidates.length === 0 ? (
+                    <View style={styles.emptyColumn}>
+                      <Ionicons name="move-outline" size={24} color={c.border} />
+                      <Text style={[styles.emptyColumnText, { color: c.border }]}>{t("recruiter.drop_here")}</Text>
+                    </View>
+                  ) : (
+                    stageCandidates.map((candidate) => (
+                      <CandidateCard
+                        key={candidate.id}
+                        candidate={candidate}
+                        stageColor={stageColor}
+                        onTap={handleCandidateTap}
+                        onAdvance={nextStage && !nextStage.is_locked ? () => handleAdvanceOneStage(candidate, nextStage.id) : null}
+                      />
+                    ))
+                  )}
+                </ScrollView>
+              </View>
+            );
+          })}
+        </View>
+      </ScrollView>
+
+      {/* Job Picker Modal */}
+      <Modal visible={showJobPicker} transparent animationType="slide" onRequestClose={() => setShowJobPicker(false)}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>{t("recruiter.select_a_job_title")}</Text>
+              <TouchableOpacity onPress={() => setShowJobPicker(false)}>
+                <Ionicons name="close" size={24} color={c.foreground} />
+              </TouchableOpacity>
+            </View>
+            <ScrollView>
+              {jobs.map(job => (
+                <TouchableOpacity
+                  key={job.id}
+                  style={[styles.jobOption, job.id === selectedJobId && styles.jobOptionActive]}
+                  onPress={() => { setSelectedJobId(job.id); setShowJobPicker(false); }}
                 >
-                  {f}
-                </button>
-              ),
-            )}
-          </div>
-        )}
-      </div>
+                  <Ionicons
+                    name={job.id === selectedJobId ? 'radio-button-on' : 'radio-button-off'}
+                    size={20}
+                    color={job.id === selectedJobId ? c.primary : c['muted-foreground']}
+                  />
+                  <View style={styles.jobOptionInfo}>
+                    <Text style={[styles.jobOptionTitle, job.id === selectedJobId && { color: c.primary }]}>
+                      {job.title}
+                    </Text>
+                    {job.department && (
+                      <Text style={styles.jobOptionDept}>{job.department}</Text>
+                    )}
+                  </View>
+                </TouchableOpacity>
+              ))}
+              {jobs.length === 0 && (
+                <Text style={styles.emptyJobsText}>{t("recruiter.no_jobs_available")}</Text>
+              )}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
 
-      {/* ── Stage summary pills ── */}
-      <div className="px-6 py-4 flex items-center gap-3 overflow-x-auto">
-        {STAGES.map((s) => {
-          const count = byStage(s.key).length;
-          return (
-            <div
-              key={s.key}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-dark-amethyst-100 shrink-0"
-              style={{ boxShadow: "0 1px 4px rgba(132,0,255,0.05)" }}
-            >
-              <span
-                className="w-2 h-2 rounded-full shrink-0"
-                style={{ background: s.color }}
-              />
-              <span className="text-xs font-semibold text-dark-amethyst-800">
-                {s.label}
-              </span>
-              <span className="px-1.5 py-0.5 rounded-full text-xs font-bold bg-dark-amethyst-50 text-dark-amethyst-600">
-                {count}
-              </span>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* ── Kanban board ── */}
-      <div className="px-6 pb-10 overflow-x-auto">
-        <div className="flex gap-4 w-max min-w-full">
-          {STAGES.map((stage) => (
-            <PipelineColumn
-              key={stage.key}
-              stage={stage}
-              candidates={byStage(stage.key)}
-              onDragStart={handleDragStart}
-              draggingCandidate={draggingCandidate}
-              dragOverStage={dragOverStage}
-              onDragOver={setDragOverStage}
-              onDrop={handleDrop}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
+      <AutoAdvanceModal
+        visible={showAutoAdvanceModal}
+        onClose={() => setShowAutoAdvanceModal(false)}
+        selectedJobId={selectedJobId}
+        precedingStageCandidates={precedingStageCandidates}
+        onComplete={handleAutoAdvanceComplete}
+      />
+    </View>
   );
 }

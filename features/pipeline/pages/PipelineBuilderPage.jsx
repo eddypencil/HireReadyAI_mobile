@@ -1,11 +1,21 @@
-import React from "react";
-import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, AlertCircle } from "lucide-react";
+import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet, Platform } from "react-native";
+import { useRoute, useNavigation } from "@react-navigation/native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "../../../shared/context/ThemeContext";
+import { useTranslation } from "../../../shared/context/I18nContext";
 import { usePipeline } from "../hooks/usePipeline";
 import PipelineBuilder from "../components/PipelineBuilder";
 
 export default function PipelineBuilderPage() {
-  const { jobId } = useParams();
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const c = theme.colors;
+  const styles = createStyles(c);
+  const insets = useSafeAreaInsets();
+  const route = useRoute();
+  const navigation = useNavigation();
+  const { jobId } = route.params || {};
   const {
     job,
     stages,
@@ -15,74 +25,184 @@ export default function PipelineBuilderPage() {
     handleAddStage,
     handleUpdateStage,
     handleDeleteStage,
+    moveStage,
     handleReorderStages,
   } = usePipeline(jobId);
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-7 h-7 border-2 border-dark-amethyst-600 border-t-transparent rounded-full animate-spin" />
-      </div>
+      <View style={[styles.centered, { paddingTop: insets.top }]}>
+        <ActivityIndicator size="large" color={c.primary} />
+      </View>
     );
   }
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3 p-8">
-        <AlertCircle className="w-8 h-8 text-red-400" />
-        <p className="text-sm text-red-600 text-center">{error}</p>
-        <Link
-          to="/companies/pipelines"
-          className="inline-flex items-center gap-1.5 text-sm text-dark-amethyst-600 hover:text-dark-amethyst-700 font-medium transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Pipelines
-        </Link>
-      </div>
+      <View style={[styles.centered, { paddingTop: insets.top }]}>
+        <View style={styles.errorWrap}>
+          <Ionicons name="alert-circle-outline" size={32} color={c.destructive} />
+          <Text style={styles.errorText}>{error}</Text>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backLink}
+          >
+            <Ionicons name="arrow-back-outline" size={16} color={c.primary} />
+            <Text style={styles.backLinkText}>{t("pipeline.back_to_pipelines")}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     );
   }
 
   return (
-    <div className="flex flex-col h-dvh lg:h-full font-sans bg-gray-50/30 relative">
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       {warning && (
-        <div className="fixed sm:absolute top-4 left-4 right-4 sm:left-auto sm:right-4 sm:max-w-md z-50 flex items-start gap-3 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl shadow-lg transition-all">
-          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-          <p className="text-sm font-medium leading-relaxed">{warning}</p>
-        </div>
+        <View style={styles.warningBanner}>
+          <Ionicons name="alert-circle-outline" size={18} color={c.destructive} />
+          <Text style={styles.warningText}>{warning}</Text>
+        </View>
       )}
 
-      <div className="flex items-center justify-between px-4 md:px-6 py-3 border-b border-gray-100 bg-white/95 backdrop-blur-sm shrink-0">
-        <div className="flex items-center gap-2 md:gap-3 min-w-0">
-          <Link
-            to="/companies/pipelines"
-            className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-dark-amethyst-700 transition-colors shrink-0"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span className="hidden sm:inline">Pipelines</span>
-          </Link>
-          <span className="text-gray-300 shrink-0" aria-hidden> / </span>
-          <span className="text-sm font-semibold text-dark-amethyst-950 truncate">
-            {job?.title}
-          </span>
-        </div>
-
+      <View style={styles.topBar}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.topBarBack}
+        >
+          <Ionicons name="arrow-back-outline" size={18} color={c['muted-foreground']} />
+          <Text style={styles.topBarBackText}>{t("pipeline.pipelines")}</Text>
+        </TouchableOpacity>
+        <View style={styles.topBarSeparator}>
+          <Text style={styles.topBarSeparatorText}>/</Text>
+        </View>
+        <Text style={styles.topBarTitle} numberOfLines={1}>
+          {job?.title}
+        </Text>
         {job?.seniority_level && (
-          <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-dark-amethyst-100 text-dark-amethyst-700 shrink-0 capitalize whitespace-nowrap">
-            {job.seniority_level}
-          </span>
+          <View style={styles.topBarSeniority}>
+            <Text style={styles.topBarSeniorityText}>
+              {job.seniority_level}
+            </Text>
+          </View>
         )}
-      </div>
+      </View>
 
-      <div className="flex-1 overflow-hidden">
+      <View style={styles.builderContainer}>
         <PipelineBuilder
           job={job}
           stages={stages}
           onAddStage={handleAddStage}
           onUpdateStage={handleUpdateStage}
           onDeleteStage={handleDeleteStage}
-          onReorderStages={handleReorderStages}
+          moveStage={moveStage}
         />
-      </div>
-    </div>
+      </View>
+    </View>
   );
+}
+
+function createStyles(c) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: c['surface-muted'],
+    },
+    centered: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: c['surface-muted'],
+    },
+    warningBanner: {
+      position: "absolute",
+      top: 8,
+      left: 16,
+      right: 16,
+      zIndex: 50,
+      flexDirection: "row",
+      alignItems: "flex-start",
+      gap: 8,
+      backgroundColor: c['surface-muted'],
+      borderWidth: 1,
+      borderColor: c.border,
+      borderRadius: 12,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+    },
+    warningText: {
+      fontSize: 13,
+      fontWeight: "500",
+      color: c.foreground,
+      flex: 1,
+      lineHeight: 18,
+    },
+    topBar: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: c.border,
+      backgroundColor: c.card,
+    },
+    topBarBack: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 4,
+      paddingRight: 8,
+    },
+    topBarBackText: {
+      fontSize: 13,
+      color: c['muted-foreground'],
+    },
+    topBarSeparator: {
+      marginHorizontal: 4,
+    },
+    topBarSeparatorText: {
+      fontSize: 14,
+      color: c.border,
+    },
+    topBarTitle: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: c.foreground,
+      flex: 1,
+      marginHorizontal: 4,
+    },
+    topBarSeniority: {
+      backgroundColor: c.border,
+      paddingHorizontal: 10,
+      paddingVertical: 4,
+      borderRadius: 12,
+    },
+    topBarSeniorityText: {
+      fontSize: 11,
+      fontWeight: "600",
+      color: c.foreground,
+      textTransform: "capitalize",
+    },
+    builderContainer: {
+      flex: 1,
+    },
+    errorWrap: {
+      alignItems: "center",
+      gap: 8,
+    },
+    errorText: {
+      fontSize: 14,
+      color: c.destructive,
+      textAlign: "center",
+    },
+    backLink: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 4,
+      marginTop: 8,
+    },
+    backLinkText: {
+      fontSize: 13,
+      fontWeight: "500",
+      color: c.primary,
+    },
+  });
 }

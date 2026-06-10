@@ -1,69 +1,152 @@
-import React from "react";
-import { GripVertical, Trash2 } from "lucide-react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "../../../shared/context/ThemeContext";
+import { useTranslation } from "../../../shared/context/I18nContext";
 
 export default function StageCard({
   stage,
   isSelected,
   onSelect,
   onDelete,
-  provided,
-  snapshot,
+  onMoveUp,
+  onMoveDown,
+  isFirst,
+  isLast,
 }) {
-  return (
-    <div
-      ref={provided.innerRef}
-      {...provided.draggableProps}
-      style={provided.draggableProps.style}
-      onClick={() => onSelect(stage)}
-      className={`group relative flex items-center gap-3 rounded-xl border px-4 py-4 cursor-pointer transition-colors duration-150 select-none ${
-        isSelected
-          ? "border-dark-amethyst-500 bg-dark-amethyst-50/60 shadow-sm ring-1 ring-dark-amethyst-400"
-          : snapshot.isDragging
-            ? "border-dark-amethyst-300 bg-white shadow-lg"
-            : "border-gray-200 bg-white hover:border-dark-amethyst-300 hover:shadow-sm"
-      }`}
-    >
-      {/* Drag Handle */}
-      <div
-        {...provided.dragHandleProps}
-        onClick={(e) => e.stopPropagation()}
-        className="text-gray-300 hover:text-gray-500 shrink-0 cursor-grab active:cursor-grabbing"
-      >
-        <GripVertical className="w-4 h-4" />
-      </div>
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const c = theme.colors;
+  const styles = createStyles(c);
 
-      {/* Stage Info */}
-      <div className="flex-1 min-w-0">
-        <p
-          className={`text-sm font-semibold leading-tight truncate ${
-            isSelected ? "text-dark-amethyst-900" : "text-gray-900"
-          }`}
+  return (
+    <TouchableOpacity
+      onPress={() => onSelect(stage)}
+      activeOpacity={0.8}
+      style={[
+        styles.card,
+        isSelected && styles.cardSelected,
+      ]}
+    >
+      <View style={styles.leftCol}>
+        {stage.is_locked ? (
+          <Ionicons name="lock-closed-outline" size={16} color={c.border} />
+        ) : (
+          <>
+            <TouchableOpacity
+              onPress={(e) => { e.stopPropagation(); onMoveUp(stage.id, -1); }}
+              disabled={isFirst}
+              style={styles.moveBtn}
+            >
+              <Ionicons
+                name="chevron-up-outline"
+                size={14}
+                color={isFirst ? c.border : c['muted-foreground']}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={(e) => { e.stopPropagation(); onMoveDown(stage.id, 1); }}
+              disabled={isLast}
+              style={styles.moveBtn}
+            >
+              <Ionicons
+                name="chevron-down-outline"
+                size={14}
+                color={isLast ? c.border : c['muted-foreground']}
+              />
+            </TouchableOpacity>
+          </>
+        )}
+      </View>
+
+      <View style={styles.info}>
+        <Text
+          style={[styles.name, isSelected && styles.nameSelected]}
+          numberOfLines={1}
         >
           {stage.name}
-        </p>
-        <p className="text-xs text-gray-400 mt-0.5 truncate">
+        </Text>
+        <Text style={styles.type} numberOfLines={1}>
           {stage.stage_type?.replace(/_/g, " ")}
-        </p>
-      </div>
+        </Text>
+      </View>
 
-      {/* Weight badge */}
       {stage.weight != null && (
-        <span className="text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 shrink-0">
-          {Math.round(stage.weight * 100)}% wt
-        </span>
+        <View style={styles.weightBadge}>
+          <Text style={styles.weightText}>
+            {t("pipeline.weight_label", { pct: Math.round(stage.weight * 100) })}
+          </Text>
+        </View>
       )}
 
-      {/* Delete button — visible on hover or when selected */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onDelete(stage.id);
-        }}
-        className="shrink-0 p-1.5 rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all cursor-pointer"
-        title="Delete stage"
-      >
-        <Trash2 className="w-3.5 h-3.5" />
-      </button>
-    </div>
+      {!stage.is_locked && (
+        <TouchableOpacity
+          onPress={(e) => { e.stopPropagation(); onDelete(stage.id); }}
+          style={styles.deleteBtn}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
+          <Ionicons name="trash-outline" size={16} color={c.border} />
+        </TouchableOpacity>
+      )}
+    </TouchableOpacity>
   );
+}
+
+function createStyles(c) {
+  return StyleSheet.create({
+    card: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: c.card,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: c.border,
+      paddingVertical: 14,
+      paddingHorizontal: 12,
+      gap: 10,
+    },
+    cardSelected: {
+      borderColor: c['muted-foreground'],
+      backgroundColor: `${c['surface-muted']}99`,
+    },
+    leftCol: {
+      alignItems: "center",
+      gap: 2,
+      width: 20,
+    },
+    moveBtn: {
+      padding: 2,
+    },
+    info: {
+      flex: 1,
+    },
+    name: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: c.foreground,
+    },
+    nameSelected: {
+      color: c.foreground,
+    },
+    type: {
+      fontSize: 11,
+      color: c['muted-foreground'],
+      marginTop: 2,
+      textTransform: "capitalize",
+    },
+    weightBadge: {
+      backgroundColor: c.border,
+      borderRadius: 6,
+      paddingHorizontal: 8,
+      paddingVertical: 3,
+    },
+    weightText: {
+      fontSize: 11,
+      color: c['muted-foreground'],
+      fontWeight: "500",
+    },
+    deleteBtn: {
+      padding: 6,
+      borderRadius: 6,
+    },
+  });
 }

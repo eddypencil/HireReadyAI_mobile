@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   getPipeline,
   createStage,
@@ -13,6 +13,7 @@ export const usePipeline = (jobId) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [warning, setWarning] = useState(null);
+  const warningTimeout = useRef(null);
 
   const fetchPipeline = useCallback(async () => {
     if (!jobId) return;
@@ -21,7 +22,6 @@ export const usePipeline = (jobId) => {
       setError(null);
       const data = await getPipeline(jobId);
       setJob(data);
-      // Sort stages by order_index on load
       const sorted = (data.recruitment_stages || []).sort(
         (a, b) => a.order_index - b.order_index
       );
@@ -38,21 +38,33 @@ export const usePipeline = (jobId) => {
     fetchPipeline();
   }, [fetchPipeline]);
 
-  // Add a stage from the library — optimistic local update then persist
+  useEffect(() => {
+    return () => {
+      if (warningTimeout.current) clearTimeout(warningTimeout.current);
+    };
+  }, []);
+
+  const showWarning = useCallback((msg) => {
+    setWarning(msg);
+    if (warningTimeout.current) clearTimeout(warningTimeout.current);
+    warningTimeout.current = setTimeout(() => setWarning(null), 5000);
+  }, []);
+
   const handleAddStage = async (libraryItem) => {
-    const nextIndex = stages.length; // 0-based order_index
+    const unlockedStages = stages.filter((s) => !s.is_locked);
+    const maxUnlockedIndex = unlockedStages.length > 0
+      ? Math.max(...unlockedStages.map((s) => s.order_index))
+      : 10;
+    const nextIndex = Math.min(maxUnlockedIndex + 1, 9998);
 
     const totalWeight = stages.reduce(
-      (sum, s) => sum + (parseFloat(s.weight) || 0),
-      0
+      (sum, s) => sum + (parseFloat(s.weight) || 0), 0
     );
-    // Use an epsilon for floating point comparison issues (e.g. 0.9000000000000001)
-    const isFull = totalWeight > 0.901; 
-    let newWeight = isFull ? 0 : 0.10;
+    const isFull = totalWeight > 0.901;
+    let newWeight = isFull ? 0 : 0.1;
 
     if (isFull) {
-      setWarning("The composite weight can't exceed 100%. Stage added with 0% weight. Please free up weight from other stages to add weight to this one.");
-      setTimeout(() => setWarning(null), 5000);
+      showWarning("The composite weight can't exceed 100%. Stage added with 0% weight. Please free up weight from other stages to add weight to this one.");
     }
 
     const stageData = {
@@ -62,18 +74,20 @@ export const usePipeline = (jobId) => {
       order_index: nextIndex,
       weight: newWeight,
       pass_score: null,
+      num_questions: 0,
     };
 
     try {
       const created = await createStage(jobId, stageData);
-      setStages((prev) => [...prev, created]);
+      setStages((prev) =>
+        [...prev, created].sort((a, b) => a.order_index - b.order_index)
+      );
     } catch (err) {
       console.error("Failed to add stage:", err);
       setError(err.message);
     }
   };
 
-  // Update a stage's fields and sync local state
   const handleUpdateStage = async (stageId, updates) => {
     try {
       const updated = await updateStage(stageId, updates);
@@ -86,47 +100,94 @@ export const usePipeline = (jobId) => {
     }
   };
 
-  // Delete a stage, recompute order_index for remaining, persist via two-phase upsert (Fix 2)
   const handleDeleteStage = async (stageId) => {
-    const remaining = stages
-      .filter((s) => s.id !== stageId)
-      .map((s, idx) => ({ ...s, order_index: idx }));
+    const deleted = stages.find((s) => s.id === stageId);
+    const remaining = stages.filter((s) => s.id !== stageId);
+    const lockedStages = remaining.filter((s) => s.is_locked);
+    const unlockedStages = remaining.filter((s) => !s.is_locked);
+    const unlockedWithNewIndex = unlockedStages.map((s, idx) => ({
+      ...s,
+      order_index: 11 + idx,
+    }));
+    const finalStages = [...lockedStages, ...unlockedWithNewIndex].sort(
+      (a, b) => a.order_index - b.order_index
+    );
 
-    // Optimistic update
-    setStages(remaining);
+    setStages(finalStages);
 
     try {
       await deleteStage(stageId);
-      if (remaining.length > 0) {
-        await reorderStages(remaining);
+      if (unlockedWithNewIndex.length > 0 && !deleted?.is_locked) {
+        await reorderStages(unlockedWithNewIndex);
       }
     } catch (err) {
       console.error("Failed to delete stage:", err);
       setError(err.message);
-      // Revert on failure
       fetchPipeline();
     }
   };
 
-  // Reorder stages after drag-and-drop, persist with two-phase upsert (Fix 1)
-  const handleReorderStages = async (reorderedList) => {
-    const withNewIndex = reorderedList.map((s, idx) => ({
-      ...s,
-      order_index: idx,
-    }));
+  const moveStage = useCallback((stageId, direction) => {
+    setStages((prev) => {
+      const idx = prev.findIndex((s) => s.id === stageId);
+      if (idx === -1) return prev;
+      const targetIdx = idx + direction;
+      if (targetIdx < 0 || targetIdx >= prev.length) return prev;
 
-    // Optimistic update
-    setStages(withNewIndex);
+      const stage = prev[idx];
+      if (stage.is_locked) return prev;
+      const target = prev[targetIdx];
+      if (target.is_locked) return prev;
+
+      const reordered = Array.from(prev);
+      reordered[idx] = target;
+      reordered[targetIdx] = stage;
+
+      const unlockedOnly = reordered.filter((s) => !s.is_locked);
+      const lockedOnly = reordered.filter((s) => s.is_locked);
+      const withNewIndex = unlockedOnly.map((s, i) => ({
+        ...s,
+        order_index: 11 + i,
+      }));
+      const finalStages = [...lockedOnly, ...withNewIndex].sort(
+        (a, b) => a.order_index - b.order_index
+      );
+
+      (async () => {
+        try {
+          await reorderStages(withNewIndex);
+        } catch (err) {
+          console.error("Failed to reorder stages:", err);
+          setError(err.message);
+          fetchPipeline();
+        }
+      })();
+
+      return finalStages;
+    });
+  }, [fetchPipeline]);
+
+  const handleReorderStages = useCallback(async (reorderedList) => {
+    const unlockedOnly = reorderedList.filter((s) => !s.is_locked);
+    const lockedOnly = stages.filter((s) => s.is_locked);
+    const withNewIndex = unlockedOnly.map((s, idx) => ({
+      ...s,
+      order_index: 11 + idx,
+    }));
+    const finalStages = [...lockedOnly, ...withNewIndex].sort(
+      (a, b) => a.order_index - b.order_index
+    );
+
+    setStages(finalStages);
 
     try {
       await reorderStages(withNewIndex);
     } catch (err) {
       console.error("Failed to reorder stages:", err);
       setError(err.message);
-      // Revert on failure
       fetchPipeline();
     }
-  };
+  }, [stages, fetchPipeline]);
 
   return {
     job,
@@ -137,6 +198,7 @@ export const usePipeline = (jobId) => {
     handleAddStage,
     handleUpdateStage,
     handleDeleteStage,
+    moveStage,
     handleReorderStages,
     refetch: fetchPipeline,
   };

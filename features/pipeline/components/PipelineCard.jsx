@@ -1,83 +1,201 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { GitBranch } from "lucide-react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "../../../shared/context/ThemeContext";
+import { useTranslation } from "../../../shared/context/I18nContext";
 
-const SENIORITY_COLORS = {
-  intern: "bg-sky-100 text-sky-700",
-  junior: "bg-emerald-100 text-emerald-700",
-  mid: "bg-dark-amethyst-100 text-dark-amethyst-700",
-  senior: "bg-mauve-magic-100 text-mauve-magic-700",
-  lead: "bg-orange-100 text-orange-700",
-};
+function formatDate(dateString) {
+  if (!dateString) return "";
+  const d = new Date(dateString);
+  return d.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
 
-export default function PipelineCard({ pipeline }) {
+export default function PipelineCard({ pipeline, onPress }) {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const c = theme.colors;
+  const styles = createStyles(c);
+
+  const SENIORITY_COLORS = {
+    intern: { bg: "#e0f2fe", text: "#075985" },
+    junior: { bg: "#d1fae5", text: "#065f46" },
+    mid: { bg: c.border, text: c.foreground },
+    senior: { bg: c.border, text: c.foreground },
+    lead: { bg: "#ffedd5", text: "#9a3412" },
+  };
+
   const stages = pipeline.recruitment_stages || [];
   const stageCount = stages.length;
   const previewStages = stages.slice(0, 4);
   const overflow = stageCount - 4;
 
-  const createdDate = new Date(pipeline.created_at).toLocaleDateString(
-    "en-US",
-    { month: "short", day: "numeric", year: "numeric" }
-  );
-
   const seniorityColor =
     SENIORITY_COLORS[pipeline.seniority_level] ||
-    "bg-gray-100 text-gray-600";
+    { bg: c.border, text: c['muted-foreground'] };
 
   return (
-    <Link
-      to={`/companies/pipelines/${pipeline.id}`}
-      className="block bg-white rounded-xl border border-gray-100 p-6 hover:shadow-md hover:border-dark-amethyst-200 transition-all duration-200 group"
+    <TouchableOpacity
+      onPress={() => onPress(pipeline)}
+      activeOpacity={0.8}
+      style={styles.card}
     >
-      {/* Header */}
-      <div className="flex items-start justify-between mb-3">
-        <div className="w-8 h-8 bg-dark-amethyst-100 rounded-lg flex items-center justify-center shrink-0">
-          <GitBranch className="w-4 h-4 text-dark-amethyst-600" />
-        </div>
+      <View style={styles.topRow}>
+        <View style={styles.iconWrap}>
+          <Ionicons name="git-network-outline" size={20} color={c.primary} />
+        </View>
         {pipeline.seniority_level && (
-          <span
-            className={`text-xs font-medium px-2.5 py-1 rounded-full ${seniorityColor}`}
-          >
-            {pipeline.seniority_level.charAt(0).toUpperCase() +
-              pipeline.seniority_level.slice(1)}
-          </span>
+          <View style={[styles.seniorityBadge, { backgroundColor: seniorityColor.bg }]}>
+            <Text style={[styles.seniorityText, { color: seniorityColor.text }]}>
+              {pipeline.seniority_level.charAt(0).toUpperCase() +
+                pipeline.seniority_level.slice(1)}
+            </Text>
+          </View>
         )}
-      </div>
+      </View>
 
-      {/* Title */}
-      <h3 className="font-bold text-dark-amethyst-950 text-base mb-1 group-hover:text-dark-amethyst-700 transition-colors leading-snug">
+      <Text style={styles.title} numberOfLines={2}>
         {pipeline.title}
-      </h3>
-      <p className="text-xs text-gray-400 mb-4">Created {createdDate}</p>
+      </Text>
+      <Text style={styles.date}>{t("pipeline.created", { date: formatDate(pipeline.created_at) })}</Text>
 
-      {/* Stage Preview */}
       {stageCount > 0 ? (
-        <div className="flex flex-wrap items-center gap-1.5 mb-4">
+        <View style={styles.stagePreview}>
           {previewStages.map((stage, idx) => (
-            <React.Fragment key={stage.id}>
-              <span className="text-xs text-gray-600 bg-gray-50 border border-gray-200 rounded px-2 py-0.5 truncate max-w-[90px]">
-                {stage.name}
-              </span>
+            <View key={stage.id} style={styles.stageRow}>
+              <View style={styles.stageChip}>
+                <Text style={styles.stageChipText} numberOfLines={1}>
+                  {stage.name}
+                </Text>
+              </View>
               {(idx < previewStages.length - 1 || overflow > 0) && (
-                <span className="text-gray-300 text-xs">→</span>
+                <Text style={styles.stageArrow}>→</Text>
               )}
-            </React.Fragment>
+            </View>
           ))}
           {overflow > 0 && (
-            <span className="text-xs font-medium text-dark-amethyst-600 bg-dark-amethyst-50 border border-dark-amethyst-200 rounded px-2 py-0.5">
-              +{overflow}
-            </span>
+            <View style={styles.overflowBadge}>
+              <Text style={styles.overflowText}>+{overflow}</Text>
+            </View>
           )}
-        </div>
+        </View>
       ) : (
-        <p className="text-xs text-gray-400 italic mb-4">No stages yet</p>
+        <Text style={styles.noStages}>{t("pipeline.no_stages")}</Text>
       )}
 
-      {/* Footer */}
-      <div className="text-xs text-gray-500 font-medium">
-        {stageCount} {stageCount === 1 ? "stage" : "stages"}
-      </div>
-    </Link>
+      <View style={styles.footer}>
+        <Text style={styles.footerText}>
+          {stageCount} {t(stageCount === 1 ? "pipeline.stage" : "pipeline.stages")}
+        </Text>
+      </View>
+    </TouchableOpacity>
   );
+}
+
+function createStyles(c) {
+  return StyleSheet.create({
+    card: {
+      backgroundColor: c.card,
+      borderRadius: 14,
+      borderWidth: 1,
+      borderColor: c.border,
+      padding: 20,
+      marginBottom: 12,
+    },
+    topRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "flex-start",
+      marginBottom: 12,
+    },
+    iconWrap: {
+      width: 32,
+      height: 32,
+      borderRadius: 8,
+      backgroundColor: c.border,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    seniorityBadge: {
+      paddingHorizontal: 8,
+      paddingVertical: 3,
+      borderRadius: 12,
+    },
+    seniorityText: {
+      fontSize: 11,
+      fontWeight: "600",
+      textTransform: "capitalize",
+    },
+    title: {
+      fontSize: 16,
+      fontWeight: "700",
+      color: c.foreground,
+      marginBottom: 4,
+    },
+    date: {
+      fontSize: 12,
+      color: c['muted-foreground'],
+      marginBottom: 16,
+    },
+    stagePreview: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      alignItems: "center",
+      gap: 4,
+      marginBottom: 16,
+    },
+    stageRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 4,
+    },
+    stageChip: {
+      backgroundColor: c['surface-muted'],
+      borderWidth: 1,
+      borderColor: c.border,
+      borderRadius: 6,
+      paddingHorizontal: 8,
+      paddingVertical: 3,
+      maxWidth: 90,
+    },
+    stageChipText: {
+      fontSize: 11,
+      color: c['muted-foreground'],
+    },
+    stageArrow: {
+      fontSize: 12,
+      color: c.border,
+    },
+    overflowBadge: {
+      backgroundColor: c['surface-muted'],
+      borderWidth: 1,
+      borderColor: c.border,
+      borderRadius: 6,
+      paddingHorizontal: 8,
+      paddingVertical: 3,
+    },
+    overflowText: {
+      fontSize: 11,
+      fontWeight: "600",
+      color: c.primary,
+    },
+    noStages: {
+      fontSize: 12,
+      fontStyle: "italic",
+      color: c['muted-foreground'],
+      marginBottom: 16,
+    },
+    footer: {
+      borderTopWidth: 1,
+      borderTopColor: c.border,
+      paddingTop: 12,
+    },
+    footerText: {
+      fontSize: 12,
+      fontWeight: "500",
+      color: c['muted-foreground'],
+    },
+  });
 }

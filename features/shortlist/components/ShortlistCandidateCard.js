@@ -1,13 +1,8 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '../../../src/theme';
-
-const TAG_STYLES = {
-  'Strong Fit': { bg: colors.emerald[50], text: colors.emerald[700], border: colors.emerald[200] },
-  'Leaning hire': { bg: '#f0f9ff', text: '#0369a1', border: '#bae6fd' },
-  'Needs Review': { bg: colors.amber[50], text: colors.amber[700], border: colors.amber[200] },
-};
+import { useTheme } from '../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../shared/context/I18nContext';
 
 function getInitials(name) {
   if (!name) return '?';
@@ -26,20 +21,31 @@ function getAvatarColor(name) {
   return avatarColors[Math.abs(hash) % avatarColors.length];
 }
 
-function timeAgo(dateString) {
+function timeAgo(dateString, t) {
   if (!dateString) return '';
   const diff = Date.now() - new Date(dateString).getTime();
   const minutes = Math.floor(diff / 60000);
   const hours = Math.floor(minutes / 60);
   const days = Math.floor(hours / 24);
   const weeks = Math.floor(days / 7);
-  if (weeks > 0) return `${weeks}w ago`;
-  if (days > 0) return `${days}d ago`;
-  if (hours > 0) return `${hours}h ago`;
-  return 'Just now';
+  if (weeks > 0) return t('shortlist.weeks_ago', { count: weeks });
+  if (days > 0) return t('shortlist.days_ago', { count: days });
+  if (hours > 0) return t('shortlist.hours_ago', { count: hours });
+  return t('shortlist.just_now');
 }
 
 export default function ShortlistCandidateCard({ entry, index, isSelected, onClick }) {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const c = theme.colors;
+  const styles = createStyles(c);
+
+  const TAG_STYLES = {
+    'Strong Fit': { bg: `${c.success}1a`, text: c.success, border: `${c.success}40` },
+    'Leaning hire': { bg: '#f0f9ff', text: '#0369a1', border: '#bae6fd' },
+    'Needs Review': { bg: `${c.warning}1a`, text: c.warning, border: `${c.warning}40` },
+  };
+
   const { applications: app, tags = [], rank } = entry;
   const { profiles: candidate, shortlist_votes: votes = [], composite_score, ai_rationale, applied_at, is_rejected } = app;
 
@@ -49,8 +55,8 @@ export default function ShortlistCandidateCard({ entry, index, isSelected, onCli
   const voterAvatars = (votes || []).slice(0, 4);
   const remainingVoters = Math.max(0, (votes || []).length - 4);
 
-  const scoreBg = composite_score >= 80 ? colors.emerald[50] : composite_score >= 65 ? colors.amber[50] : colors.gray[100];
-  const scoreText = composite_score >= 80 ? colors.emerald[700] : composite_score >= 65 ? colors.amber[700] : colors.gray[600];
+  const scoreBg = composite_score >= 80 ? `${c.success}1a` : composite_score >= 65 ? `${c.warning}1a` : c.border;
+  const scoreText = composite_score >= 80 ? c.success : composite_score >= 65 ? c.warning : c['muted-foreground'];
 
   return (
     <TouchableOpacity
@@ -70,15 +76,15 @@ export default function ShortlistCandidateCard({ entry, index, isSelected, onCli
         <View style={styles.nameSection}>
           <View style={styles.nameRow}>
             <Text style={[styles.name, isSelected && styles.selectedName]} numberOfLines={1}>
-              {candidate?.full_name || 'Unknown'}
+              {candidate?.full_name || t("shortlist.unknown")}
             </Text>
             {is_rejected && (
               <View style={styles.rejectedBadge}>
-                <Text style={styles.rejectedBadgeText}>Rejected</Text>
+                <Text style={styles.rejectedBadgeText}>{t("shortlist.rejected")}</Text>
               </View>
             )}
             {tags.slice(0, 2).map((tag) => {
-              const tagStyle = TAG_STYLES[tag] || { bg: colors.gray[100], text: colors.gray[600], border: colors.gray[200] };
+              const tagStyle = TAG_STYLES[tag] || { bg: c.border, text: c['muted-foreground'], border: c.border };
               return (
                 <View key={tag} style={[styles.tag, { backgroundColor: tagStyle.bg, borderColor: tagStyle.border }]}>
                   <Text style={[styles.tagText, { color: tagStyle.text }]}>{tag}</Text>
@@ -87,15 +93,15 @@ export default function ShortlistCandidateCard({ entry, index, isSelected, onCli
             })}
           </View>
           <View style={styles.appliedRow}>
-            <Ionicons name="calendar-outline" size={11} color={colors.gray[400]} />
-            <Text style={styles.appliedText}>Applied {timeAgo(applied_at)}</Text>
+            <Ionicons name="calendar-outline" size={11} color={c['muted-foreground']} />
+            <Text style={styles.appliedText}>{t("shortlist.applied", { time: timeAgo(applied_at, t) })}</Text>
           </View>
         </View>
       </View>
 
       {ai_rationale ? (
         <View style={styles.aiRow}>
-          <Ionicons name="sparkles" size={14} color={colors.mauveMagic[400]} style={styles.aiIcon} />
+          <Ionicons name="sparkles" size={14} color={c['muted-foreground']} style={styles.aiIcon} />
           <Text style={styles.aiText} numberOfLines={2}>{ai_rationale}</Text>
         </View>
       ) : null}
@@ -122,17 +128,17 @@ export default function ShortlistCandidateCard({ entry, index, isSelected, onCli
 
         <View style={styles.scoreRow}>
           <Text style={styles.aiMatchLabel}>
-            AI match{' '}
+            {t("shortlist.ai_match")}{' '}
             <Text style={[styles.scoreBadge, { backgroundColor: scoreBg, color: scoreText }]}>
               {composite_score || '—'}
             </Text>
           </Text>
           <View style={styles.voteCountRow}>
-            <Ionicons name="thumbs-up" size={12} color={colors.emerald[600]} />
-            <Text style={[styles.voteCount, { color: colors.emerald[600] }]}>{upVotes}</Text>
+            <Ionicons name="thumbs-up" size={12} color={c.success} />
+            <Text style={[styles.voteCount, { color: c.success }]}>{upVotes}</Text>
             <Text style={styles.voteDivider}>—</Text>
-            <Ionicons name="thumbs-down" size={12} color={colors.red[400]} />
-            <Text style={[styles.voteCount, { color: colors.red[400] }]}>{downVotes}</Text>
+            <Ionicons name="thumbs-down" size={12} color={c.destructive} />
+            <Text style={[styles.voteCount, { color: c.destructive }]}>{downVotes}</Text>
           </View>
         </View>
       </View>
@@ -140,19 +146,19 @@ export default function ShortlistCandidateCard({ entry, index, isSelected, onCli
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(c) { return StyleSheet.create({
   card: {
-    backgroundColor: colors.white,
+    backgroundColor: c.card,
     borderBottomWidth: 1,
-    borderBottomColor: colors.gray[100],
+    borderBottomColor: c.border,
     paddingHorizontal: 20,
     paddingVertical: 14,
     borderLeftWidth: 2,
     borderLeftColor: 'transparent',
   },
   selectedCard: {
-    backgroundColor: colors.darkAmethyst[50],
-    borderLeftColor: colors.darkAmethyst[500],
+    backgroundColor: c['surface-muted'],
+    borderLeftColor: c['muted-foreground'],
   },
   rejectedCard: {
     opacity: 0.5,
@@ -166,7 +172,7 @@ const styles = StyleSheet.create({
   rank: {
     fontSize: 10,
     fontWeight: '700',
-    color: colors.gray[400],
+    color: c['muted-foreground'],
     marginTop: 2,
     width: 20,
   },
@@ -180,7 +186,7 @@ const styles = StyleSheet.create({
   avatarText: {
     fontSize: 11,
     fontWeight: '700',
-    color: colors.white,
+    color: c['destructive-foreground'],
   },
   nameSection: {
     flex: 1,
@@ -194,22 +200,22 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 14,
     fontWeight: '600',
-    color: colors.gray[900],
+    color: c.foreground,
   },
   selectedName: {
-    color: colors.darkAmethyst[900],
+    color: c.foreground,
   },
   rejectedBadge: {
     paddingHorizontal: 5,
     paddingVertical: 1,
-    backgroundColor: colors.red[50],
+    backgroundColor: `${c.destructive}1a`,
     borderWidth: 1,
-    borderColor: colors.red[200],
+    borderColor: `${c.destructive}40`,
     borderRadius: 4,
   },
   rejectedBadgeText: {
     fontSize: 10,
-    color: colors.red[500],
+    color: c.destructive,
     fontWeight: '500',
   },
   tag: {
@@ -230,7 +236,7 @@ const styles = StyleSheet.create({
   },
   appliedText: {
     fontSize: 11,
-    color: colors.gray[400],
+    color: c['muted-foreground'],
   },
   aiRow: {
     flexDirection: 'row',
@@ -244,7 +250,7 @@ const styles = StyleSheet.create({
   },
   aiText: {
     fontSize: 12,
-    color: colors.gray[500],
+    color: c['muted-foreground'],
     lineHeight: 17,
     flex: 1,
   },
@@ -263,23 +269,23 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: colors.white,
+    borderColor: c.card,
     alignItems: 'center',
     justifyContent: 'center',
   },
   voterAvatarText: {
     fontSize: 9,
     fontWeight: '700',
-    color: colors.white,
+    color: c['destructive-foreground'],
   },
   voterOverflow: {
-    backgroundColor: colors.gray[200],
-    borderColor: colors.white,
+    backgroundColor: c.border,
+    borderColor: c.card,
   },
   voterOverflowText: {
     fontSize: 9,
     fontWeight: '700',
-    color: colors.gray[600],
+    color: c['muted-foreground'],
   },
   scoreRow: {
     flexDirection: 'row',
@@ -289,7 +295,7 @@ const styles = StyleSheet.create({
   aiMatchLabel: {
     fontSize: 12,
     fontWeight: '500',
-    color: colors.gray[500],
+    color: c['muted-foreground'],
   },
   scoreBadge: {
     fontWeight: '700',
@@ -309,7 +315,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   voteDivider: {
-    color: colors.gray[300],
+    color: c.border,
     marginHorizontal: 2,
   },
-});
+}); }

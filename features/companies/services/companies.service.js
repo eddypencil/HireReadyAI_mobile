@@ -26,9 +26,7 @@ export const fetchCompanyById = async (companyId) => {
   `
     )
     .eq("id", companyId)
-    .eq("company_memberships.profiles.role", USER_ROLE.recruiter)
     .single();
-  console.log(data);
   if (error) throw error;
   return data;
 };
@@ -65,18 +63,27 @@ export const deleteCompany = async (companyId) => {
   if (error) throw error;
 };
 
-// Fetch the company associated with a profile's membership
+// Fetch the company and permission associated with a profile's membership
 export const fetchCompanyByProfileId = async (profileId) => {
   const { data: membership, error: membershipError } = await supabase
     .from("company_memberships")
-    .select("company_id")
+    .select("company_id, recruiter_permissions, permissions")
     .eq("profile_id", profileId)
     .maybeSingle();
 
   if (membershipError) throw membershipError;
-  if (!membership) return null;
+  if (!membership) return { company: null, permission: null };
 
-  return await fetchCompanyById(membership.company_id);
+  // Fallback: if new recruiter_permissions is null, read from old jsonb permissions
+  let permission = membership.recruiter_permissions;
+  if (!permission && membership.permissions) {
+    const oldRole = membership.permissions?.role;
+    if (oldRole === "admin") permission = "hr_manager";
+    else if (oldRole === "recruiter") permission = "recruiter";
+  }
+
+  const company = await fetchCompanyById(membership.company_id);
+  return { company, permission };
 };
 
 // Fetch job postings for a company
@@ -103,7 +110,7 @@ export const fetchCompanyMembers = async (companyId) => {
     .select(
       `
       *,
-      profiles(id, full_name, role, phone)
+      profiles(id, full_name, role, phone, headline)
     `,
     )
     .eq("company_id", companyId)
