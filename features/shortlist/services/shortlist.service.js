@@ -198,7 +198,7 @@ const generateDummyShortlist = () => [
       is_rejected: false,
       rejection_reason: null,
       applied_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-      profiles: { id: "prof-1", full_name: "Priya Natarajan", headline: "Senior Frontend Engineer", role: "recruiter" },
+      profiles: { id: "prof-1", full_name: "Priya Natarajan", headline: "Senior Frontend Engineer", role: "recruiter", email: "priya.natarajan@example.com" },
       shortlist_votes: [
         { id: "v1", vote: "up",      voter_id: "voter-1", profiles: { full_name: "Sarah Klein",   headline: "Hiring Manager",     role: "recruiter" } },
         { id: "v2", vote: "up",      voter_id: "voter-2", profiles: { full_name: "Marcus Idowu",  headline: "Engineering Lead",   role: "recruiter" } },
@@ -224,7 +224,7 @@ const generateDummyShortlist = () => [
       is_rejected: false,
       rejection_reason: null,
       applied_at: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
-      profiles: { id: "prof-2", full_name: "Marcus Reyes", headline: "Full Stack Developer", role: "recruiter" },
+      profiles: { id: "prof-2", full_name: "Marcus Reyes", headline: "Full Stack Developer", role: "recruiter", email: "marcus.reyes@example.com" },
       shortlist_votes: [
         { id: "v5", vote: "up",      voter_id: "voter-1", profiles: { full_name: "Sarah Klein",  headline: "Hiring Manager",   role: "recruiter" } },
         { id: "v6", vote: "up",      voter_id: "voter-2", profiles: { full_name: "Marcus Idowu", headline: "Engineering Lead", role: "recruiter" } },
@@ -248,7 +248,7 @@ const generateDummyShortlist = () => [
       is_rejected: false,
       rejection_reason: null,
       applied_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-      profiles: { id: "prof-3", full_name: "Sofia Almeida", headline: "UI/UX Engineer", role: "recruiter" },
+      profiles: { id: "prof-3", full_name: "Sofia Almeida", headline: "UI/UX Engineer", role: "recruiter", email: "sofia.almeida@example.com" },
       shortlist_votes: [
         { id: "v8",  vote: "up",      voter_id: "voter-1", profiles: { full_name: "Sarah Klein",  headline: "Hiring Manager",   role: "recruiter" } },
         { id: "v9",  vote: "up",      voter_id: "voter-2", profiles: { full_name: "Marcus Idowu", headline: "Engineering Lead", role: "recruiter" } },
@@ -272,7 +272,7 @@ const generateDummyShortlist = () => [
       is_rejected: false,
       rejection_reason: null,
       applied_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      profiles: { id: "prof-4", full_name: "Daniel Park", headline: "Staff Engineer", role: "recruiter" },
+      profiles: { id: "prof-4", full_name: "Daniel Park", headline: "Staff Engineer", role: "recruiter", email: "daniel.park@example.com" },
       shortlist_votes: [
         { id: "v11", vote: "up",     voter_id: "voter-1", profiles: { full_name: "Sarah Klein",  headline: "Hiring Manager",   role: "recruiter" } },
         { id: "v12", vote: "up",     voter_id: "voter-2", profiles: { full_name: "Marcus Idowu", headline: "Engineering Lead", role: "recruiter" } },
@@ -295,7 +295,7 @@ const generateDummyShortlist = () => [
       is_rejected: false,
       rejection_reason: null,
       applied_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-      profiles: { id: "prof-5", full_name: "Liam O'Connor", headline: "Frontend Developer", role: "recruiter" },
+      profiles: { id: "prof-5", full_name: "Liam O'Connor", headline: "Frontend Developer", role: "recruiter", email: "liam.oconnor@example.com" },
       shortlist_votes: [
         { id: "v13", vote: "up",      voter_id: "voter-1", profiles: { full_name: "Sarah Klein",  headline: "Hiring Manager",   role: "recruiter" } },
         { id: "v14", vote: "up",      voter_id: "voter-2", profiles: { full_name: "Marcus Idowu", headline: "Engineering Lead", role: "recruiter" } },
@@ -319,7 +319,7 @@ const generateDummyShortlist = () => [
       is_rejected: false,
       rejection_reason: null,
       applied_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-      profiles: { id: "prof-6", full_name: "Hana Saito", headline: "Design Engineer", role: "recruiter" },
+      profiles: { id: "prof-6", full_name: "Hana Saito", headline: "Design Engineer", role: "recruiter", email: "hana.saito@example.com" },
       shortlist_votes: [
         { id: "v16", vote: "up",   voter_id: "voter-1", profiles: { full_name: "Sarah Klein",  headline: "Hiring Manager",   role: "recruiter" } },
         { id: "v17", vote: "down", voter_id: "voter-2", profiles: { full_name: "Marcus Idowu", headline: "Engineering Lead", role: "recruiter" } },

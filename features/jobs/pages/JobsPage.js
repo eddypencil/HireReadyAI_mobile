@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  View, Text, FlatList, StyleSheet, ActivityIndicator,
+  View, Text, FlatList, ActivityIndicator,
   TouchableOpacity, Modal, ScrollView, TextInput,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -9,16 +9,23 @@ import JobSearch from '../components/JobSearch';
 import JobCard from '../components/JobCard';
 import { useJobs } from '../hooks/useJobs';
 import { SENIORITY_LEVEL } from '../../../shared/constants/enums';
-import { colors } from '../../../src/theme';
+import { useTheme } from '../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../shared/context/I18nContext';
+import { fontSize, fontWeight } from '../../../src/theme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const DATE_OPTIONS = [
-  { label: 'Anytime', value: '' },
-  { label: 'Last 24 hours', value: '24h' },
-  { label: 'Last week', value: 'week' },
-  { label: 'Last month', value: 'month' },
+  { labelKey: 'jobs_page.anytime', value: '' },
+  { labelKey: 'jobs_page.last_24h', value: '24h' },
+  { labelKey: 'jobs_page.last_week', value: 'week' },
+  { labelKey: 'jobs_page.last_month', value: 'month' },
 ];
 
 export default function JobsPage() {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const c = theme.colors;
+  const insets = useSafeAreaInsets();
   const { jobs, loading, error } = useJobs();
 
   const [search, setSearch] = useState('');
@@ -34,12 +41,8 @@ export default function JobsPage() {
     .filter(Boolean).length;
 
   function clearFilters() {
-    setLevel('');
-    setJobType('');
-    setWorkLocation('');
-    setDatePosted('');
-    setSalaryMin('');
-    setSalaryMax('');
+    setLevel(''); setJobType(''); setWorkLocation('');
+    setDatePosted(''); setSalaryMin(''); setSalaryMax('');
   }
 
   const filteredJobs = jobs.filter(job => {
@@ -47,7 +50,6 @@ export default function JobsPage() {
     const matchLevel = level ? job.seniority_level === level : true;
     const matchType = jobType ? job.job_type === jobType : true;
     const matchLocation = workLocation ? job.work_location === workLocation : true;
-
     const matchDate = (() => {
       if (!datePosted) return true;
       const posted = new Date(job.created_at);
@@ -58,7 +60,6 @@ export default function JobsPage() {
       if (datePosted === 'month') return diff <= 30;
       return true;
     })();
-
     const matchSalary = (() => {
       if (!salaryMin && !salaryMax) return true;
       if (job.salary_min == null && job.salary_max == null) return false;
@@ -66,83 +67,120 @@ export default function JobsPage() {
       const max = Number(salaryMax) || Infinity;
       return job.salary_min >= min && job.salary_max <= max;
     })();
-
     return matchSearch && matchLevel && matchType && matchLocation && matchDate && matchSalary;
   });
 
+  const s = {
+    screen: { flex: 1, backgroundColor: c['surface-muted'] },
+    centered: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: c['surface-muted'], padding: 32 },
+    loadingText: { marginTop: 12, color: c['muted-foreground'], fontSize: 15 },
+    errorText: { color: c.destructive, fontSize: 15 },
+    header: { paddingHorizontal: 24, paddingTop: 24, paddingBottom: 56 },
+    headerLabel: { color: `${c['destructive-foreground']}99`, fontSize: 11, fontWeight: '500', letterSpacing: 1.5, marginBottom: 10, textTransform: 'uppercase' },
+    headerTitle: { color: c['destructive-foreground'], fontSize: 34, fontWeight: '900', lineHeight: 40, marginBottom: 8 },
+    headerSubtitle: { color: `${c['destructive-foreground']}b3`, fontSize: 14, lineHeight: 20 },
+    searchContainer: { marginHorizontal: 16, marginTop: -28, zIndex: 10 },
+    resultsRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingTop: 20, paddingBottom: 12 },
+    resultCount: { fontSize: 13, color: c['muted-foreground'] },
+    resultCountNumber: { fontWeight: '700', color: c.foreground },
+    filterButton: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 10, borderWidth: 1, borderColor: c.border, backgroundColor: c.card },
+    filterButtonActive: { backgroundColor: c.primary, borderColor: c.primary },
+    filterButtonText: { fontSize: 13, fontWeight: '600', color: c.primary },
+    filterButtonTextActive: { color: c['destructive-foreground'] },
+    filterBadge: { width: 18, height: 18, borderRadius: 9, backgroundColor: c.card, alignItems: 'center', justifyContent: 'center' },
+    filterBadgeText: { fontSize: 11, fontWeight: '700', color: c.primary },
+    listContent: { paddingBottom: 32 },
+    emptyState: { alignItems: 'center', justifyContent: 'center', paddingTop: 60, gap: 12 },
+    emptyText: { color: c['muted-foreground'], fontSize: 14, textAlign: 'center' },
+    clearButton: { paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10, backgroundColor: c.card, borderWidth: 1, borderColor: c.border, marginTop: 4 },
+    clearButtonText: { fontSize: 13, color: c.primary, fontWeight: '600' },
+    modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' },
+    bottomSheet: { backgroundColor: c.card, borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingHorizontal: 20, paddingBottom: 32, maxHeight: '80%' },
+    sheetHandle: { width: 40, height: 4, borderRadius: 2, backgroundColor: c['muted-foreground'], alignSelf: 'center', marginTop: 12, marginBottom: 8 },
+    sheetHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: c.border, marginBottom: 20 },
+    sheetTitle: { fontSize: 17, fontWeight: '700', color: c.foreground },
+    clearAllText: { fontSize: 13, color: c['muted-foreground'], fontWeight: '500' },
+    sheetScroll: { maxHeight: 420 },
+    filterSectionTitle: { fontSize: 11, fontWeight: '700', color: c.foreground, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 12, marginTop: 4 },
+    chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 20 },
+    chip: { paddingHorizontal: 14, paddingVertical: 12, borderRadius: 999, borderWidth: 1, borderColor: c.border, backgroundColor: c.card },
+    chipActive: { backgroundColor: c.primary, borderColor: c.primary },
+    chipText: { fontSize: 13, color: c.foreground, fontWeight: '500' },
+    chipTextActive: { color: c['destructive-foreground'], fontWeight: '600' },
+    salaryRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 20 },
+    salaryInput: { flex: 1, height: 44, paddingHorizontal: 14, borderRadius: 10, borderWidth: 1, borderColor: c.border, backgroundColor: c.card, fontSize: fontSize.sm, color: c.foreground },
+    salarySep: { fontSize: 13, color: c['muted-foreground'] },
+    applyFiltersButton: { backgroundColor: c.primary, paddingVertical: 14, borderRadius: 14, alignItems: 'center', marginTop: 8 },
+    applyFiltersText: { color: c['destructive-foreground'], fontSize: 15, fontWeight: '700' },
+  };
+
   if (loading) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>Loading jobs...</Text>
+      <View style={s.centered}>
+        <ActivityIndicator size="large" color={c.primary} />
+        <Text style={s.loadingText}>{t('jobs_page.loading')}</Text>
       </View>
     );
   }
 
   if (error) {
     return (
-      <View style={styles.centered}>
-        <Text style={styles.errorText}>Error: {error}</Text>
+      <View style={s.centered}>
+        <Text style={s.errorText}>{t('jobs_page.error')}: {error}</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.screen}>
-
-      
+    <View style={[s.screen, { paddingTop: insets.top }]}>
       <FlatList
         data={filteredJobs}
         keyExtractor={item => item.id}
-        renderItem={({ item }) => 
-        (<View style={{ paddingHorizontal: 16 }}>
-          <JobCard job={item} />
-        </View>)}
+        renderItem={({ item }) =>
+          <View style={{ paddingHorizontal: 16 }}>
+            <JobCard job={item} />
+          </View>
+        }
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={s.listContent}
         ListHeaderComponent={
           <>
-            
             <LinearGradient
-              colors={['#012a4a', '#01497c', '#2a6f97']}
+              colors={[c.sidebar, c.primary, c.accent]}
               start={{ x: 0, y: 0 }}
               end={{ x: 0.3, y: 1 }}
-              style={styles.header}
+              style={s.header}
             >
-              <Text style={styles.headerLabel}>HireReadyAI · Job Board</Text>
-              <Text style={styles.headerTitle}>Find your{'\n'}dream job</Text>
-              <Text style={styles.headerSubtitle}>
-                Browse the latest openings and apply today.
-              </Text>
+              <Text style={s.headerLabel}>HireReadyAI · {t('jobs_page.job_board')}</Text>
+              <Text style={s.headerTitle}>{t('jobs_page.find_dream_job')}</Text>
+              <Text style={s.headerSubtitle}>{t('jobs_page.browse_openings')}</Text>
             </LinearGradient>
 
-            
-            <View style={styles.searchContainer}>
+            <View style={s.searchContainer}>
               <JobSearch search={search} setSearch={setSearch} />
             </View>
 
-            
-            <View style={styles.resultsRow}>
-              <Text style={styles.resultCount}>
-                <Text style={styles.resultCountNumber}>{filteredJobs.length}</Text>
-                {' '}job{filteredJobs.length !== 1 ? 's' : ''} found
+            <View style={s.resultsRow}>
+              <Text style={s.resultCount}>
+                <Text style={s.resultCountNumber}>{filteredJobs.length}</Text>
+                {' '}{t('jobs_page.jobs_found')}
               </Text>
               <TouchableOpacity
-                style={[styles.filterButton, activeFilterCount > 0 && styles.filterButtonActive]}
+                style={[s.filterButton, activeFilterCount > 0 && s.filterButtonActive]}
                 onPress={() => setFiltersOpen(true)}
                 activeOpacity={0.8}
               >
                 <Ionicons
                   name="options-outline"
                   size={16}
-                  color={activeFilterCount > 0 ? colors.white : colors.primary}
+                  color={activeFilterCount > 0 ? c['destructive-foreground'] : c.primary}
                 />
-                <Text style={[styles.filterButtonText, activeFilterCount > 0 && styles.filterButtonTextActive]}>
-                  Filters
+                <Text style={[s.filterButtonText, activeFilterCount > 0 && s.filterButtonTextActive]}>
+                  {t('jobs_page.filters')}
                 </Text>
                 {activeFilterCount > 0 && (
-                  <View style={styles.filterBadge}>
-                    <Text style={styles.filterBadgeText}>{activeFilterCount}</Text>
+                  <View style={s.filterBadge}>
+                    <Text style={s.filterBadgeText}>{activeFilterCount}</Text>
                   </View>
                 )}
               </TouchableOpacity>
@@ -150,19 +188,18 @@ export default function JobsPage() {
           </>
         }
         ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <Ionicons name="search-outline" size={40} color={colors.gray[300]} />
-            <Text style={styles.emptyText}>No jobs found matching your search.</Text>
+          <View style={s.emptyState}>
+            <Ionicons name="search-outline" size={40} color={c['muted-foreground']} />
+            <Text style={s.emptyText}>{t('jobs_page.no_jobs_found')}</Text>
             {activeFilterCount > 0 && (
-              <TouchableOpacity onPress={clearFilters} style={styles.clearButton}>
-                <Text style={styles.clearButtonText}>Clear filters</Text>
+              <TouchableOpacity onPress={clearFilters} style={s.clearButton}>
+                <Text style={s.clearButtonText}>{t('jobs_page.clear_filters')}</Text>
               </TouchableOpacity>
             )}
           </View>
         }
       />
 
-      
       <Modal
         visible={filtersOpen}
         transparent
@@ -170,98 +207,97 @@ export default function JobsPage() {
         onRequestClose={() => setFiltersOpen(false)}
       >
         <TouchableOpacity
-          style={styles.modalOverlay}
+          style={s.modalOverlay}
           activeOpacity={1}
           onPress={() => setFiltersOpen(false)}
         />
 
-        <View style={styles.bottomSheet}>
-          <View style={styles.sheetHandle} />
+        <View style={s.bottomSheet}>
+          <View style={s.sheetHandle} />
 
-          <View style={styles.sheetHeader}>
-            <Text style={styles.sheetTitle}>Filters</Text>
+          <View style={s.sheetHeader}>
+            <Text style={s.sheetTitle}>{t('jobs_page.filters')}</Text>
             <TouchableOpacity onPress={() => { clearFilters(); setFiltersOpen(false); }}>
-              <Text style={styles.clearAllText}>Clear all</Text>
+              <Text style={s.clearAllText}>{t('jobs_page.clear_all')}</Text>
             </TouchableOpacity>
           </View>
 
-          <ScrollView showsVerticalScrollIndicator={false} style={styles.sheetScroll}>
-
-            <Text style={styles.filterSectionTitle}>Date Posted</Text>
-            <View style={styles.chipRow}>
+          <ScrollView showsVerticalScrollIndicator={false} style={s.sheetScroll}>
+            <Text style={s.filterSectionTitle}>{t('jobs_page.date_posted')}</Text>
+            <View style={s.chipRow}>
               {DATE_OPTIONS.map(opt => (
                 <TouchableOpacity
                   key={opt.value}
-                  style={[styles.chip, datePosted === opt.value && styles.chipActive]}
+                  style={[s.chip, datePosted === opt.value && s.chipActive]}
                   onPress={() => setDatePosted(opt.value)}
                 >
-                  <Text style={[styles.chipText, datePosted === opt.value && styles.chipTextActive]}>
-                    {opt.label}
+                  <Text style={[s.chipText, datePosted === opt.value && s.chipTextActive]}>
+                    {t(opt.labelKey)}
                   </Text>
                 </TouchableOpacity>
               ))}
             </View>
 
-            <Text style={styles.filterSectionTitle}>Salary Range (EGP)</Text>
-            <View style={styles.salaryRow}>
+            <Text style={s.filterSectionTitle}>{t('jobs_page.salary_range')}</Text>
+            <View style={s.salaryRow}>
               <TextInput
-                style={styles.salaryInput}
+                style={s.salaryInput}
                 value={salaryMin}
                 onChangeText={setSalaryMin}
-                placeholder="Min"
-                placeholderTextColor={colors.gray[400]}
+                placeholder={t('jobs_page.min')}
+                placeholderTextColor={c['muted-foreground']}
                 keyboardType="numeric"
               />
-              <Text style={styles.salarySep}>to</Text>
+              <Text style={s.salarySep}>{t('jobs_page.to')}</Text>
               <TextInput
-                style={styles.salaryInput}
+                style={s.salaryInput}
                 value={salaryMax}
                 onChangeText={setSalaryMax}
-                placeholder="Max"
-                placeholderTextColor={colors.gray[400]}
+                placeholder={t('jobs_page.max')}
+                placeholderTextColor={c['muted-foreground']}
                 keyboardType="numeric"
               />
             </View>
 
-            <Text style={styles.filterSectionTitle}>Job Type</Text>
-            <View style={styles.chipRow}>
-              {[{ label: 'Full Time', value: 'full_time' }, { label: 'Part Time', value: 'part_time' }].map(({ label, value }) => (
+            <Text style={s.filterSectionTitle}>{t('jobs_page.job_type')}</Text>
+            <View style={s.chipRow}>
+              {[{ labelKey: 'jobs_page.full_time', value: 'full_time' }, { labelKey: 'jobs_page.part_time', value: 'part_time' }].map(({ labelKey, value }) => (
                 <TouchableOpacity
                   key={value}
-                  style={[styles.chip, jobType === value && styles.chipActive]}
+                  style={[s.chip, jobType === value && s.chipActive]}
                   onPress={() => setJobType(jobType === value ? '' : value)}
                 >
-                  <Text style={[styles.chipText, jobType === value && styles.chipTextActive]}>
-                    {label}
+                  <Text style={[s.chipText, jobType === value && s.chipTextActive]}>
+                    {t(labelKey)}
                   </Text>
                 </TouchableOpacity>
               ))}
             </View>
 
-            <Text style={styles.filterSectionTitle}>Work Location</Text>
-            <View style={styles.chipRow}>
-              {[{ label: 'On-site', value: 'on_site' }, { label: 'Remote', value: 'remote' }, { label: 'Hybrid', value: 'hybrid' }].map(({ label, value }) => (
+            <Text style={s.filterSectionTitle}>{t('jobs_page.work_location')}</Text>
+            <View style={s.chipRow}>
+              {[{ labelKey: 'jobs_page.on_site', value: 'on_site' }, { labelKey: 'jobs_page.remote', value: 'remote' }, { labelKey: 'jobs_page.hybrid', value: 'hybrid' }].map(({ labelKey, value }) => (
                 <TouchableOpacity
                   key={value}
-                  style={[styles.chip, workLocation === value && styles.chipActive]}
+                  style={[s.chip, workLocation === value && s.chipActive]}
                   onPress={() => setWorkLocation(workLocation === value ? '' : value)}
                 >
-                  <Text style={[styles.chipText, workLocation === value && styles.chipTextActive]}>
-                    {label}
+                  <Text style={[s.chipText, workLocation === value && s.chipTextActive]}>
+                    {t(labelKey)}
                   </Text>
                 </TouchableOpacity>
               ))}
             </View>
 
-            <Text style={styles.filterSectionTitle}>Seniority Level</Text>
-            <View style={styles.chipRow}>
+            <Text style={s.filterSectionTitle}>{t('jobs_page.seniority_level')}</Text>
+            <View style={s.chipRow}>
               {Object.values(SENIORITY_LEVEL).map(lvl => (
                 <TouchableOpacity
                   key={lvl}
-                  style={[styles.chip, level === lvl && styles.chipActive]}
+                  style={[s.chip, level === lvl && s.chipActive]}
                   onPress={() => setLevel(level === lvl ? '' : lvl)}
                 >
-                  <Text style={[styles.chipText, level === lvl && styles.chipTextActive, { textTransform: 'capitalize' }]}>
+                  <Text style={[s.chipText, level === lvl && s.chipTextActive, { textTransform: 'capitalize' }]}>
                     {lvl}
                   </Text>
                 </TouchableOpacity>
@@ -272,265 +308,14 @@ export default function JobsPage() {
           </ScrollView>
 
           <TouchableOpacity
-            style={styles.applyFiltersButton}
+            style={s.applyFiltersButton}
             onPress={() => setFiltersOpen(false)}
             activeOpacity={0.8}
           >
-            <Text style={styles.applyFiltersText}>Apply Filters</Text>
+            <Text style={s.applyFiltersText}>{t('jobs_page.apply_filters')}</Text>
           </TouchableOpacity>
         </View>
       </Modal>
-
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.surface,
-  },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-    padding: 32,
-  },
-  loadingText: {
-    marginTop: 12,
-    color: colors.mutedForeground,
-    fontSize: 15,
-  },
-  errorText: {
-    color: colors.red[500],
-    fontSize: 15,
-  },
-  header: {
-    paddingHorizontal: 24,
-    paddingTop: 24,
-    paddingBottom: 56,
-  },
-  headerLabel: {
-    color: 'rgba(255,255,255,0.6)',
-    fontSize: 11,
-    fontWeight: '500',
-    letterSpacing: 1.5,
-    marginBottom: 10,
-    textTransform: 'uppercase',
-  },
-  headerTitle: {
-    color: colors.white,
-    fontSize: 34,
-    fontWeight: '900',
-    lineHeight: 40,
-    marginBottom: 8,
-  },
-  headerSubtitle: {
-    color: 'rgba(255,255,255,0.7)',
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  searchContainer: {
-    marginHorizontal: 16,
-    marginTop: -28,
-    zIndex: 10,
-  },
-  resultsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingTop: 20,
-    paddingBottom: 12,
-  },
-  resultCount: {
-    fontSize: 13,
-    color: colors.mutedForeground,
-  },
-  resultCountNumber: {
-    fontWeight: '700',
-    color: colors.foreground,
-  },
-  filterButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.white,
-  },
-  filterButtonActive: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
-  },
-  filterButtonText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: colors.primary,
-  },
-  filterButtonTextActive: {
-    color: colors.white,
-  },
-  filterBadge: {
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    backgroundColor: colors.white,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  filterBadgeText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: colors.primary,
-  },
-  listContent: {
-    paddingBottom: 32,
-  },
-  emptyState: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 60,
-    gap: 12,
-  },
-  emptyText: {
-    color: colors.mutedForeground,
-    fontSize: 14,
-    textAlign: 'center',
-  },
-  clearButton: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 10,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    marginTop: 4,
-  },
-  clearButtonText: {
-    fontSize: 13,
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-  },
-  bottomSheet: {
-    backgroundColor: colors.white,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingHorizontal: 20,
-    paddingBottom: 32,
-    maxHeight: '80%',
-  },
-  sheetHandle: {
-    width: 40,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: colors.gray[300],
-    alignSelf: 'center',
-    marginTop: 12,
-    marginBottom: 8,
-  },
-  sheetHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    marginBottom: 20,
-  },
-  sheetTitle: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: colors.foreground,
-  },
-  clearAllText: {
-    fontSize: 13,
-    color: colors.mutedForeground,
-    fontWeight: '500',
-  },
-  sheetScroll: {
-    maxHeight: 420,
-  },
-  filterSectionTitle: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: colors.foreground,
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-    marginBottom: 12,
-    marginTop: 4,
-  },
-  chipRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginBottom: 20,
-  },
-  chip: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-  },
-  chipActive: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
-  },
-  chipText: {
-    fontSize: 13,
-    color: colors.foreground,
-    fontWeight: '500',
-  },
-  chipTextActive: {
-    color: colors.white,
-    fontWeight: '600',
-  },
-  salaryRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    marginBottom: 20,
-  },
-  salaryInput: {
-    flex: 1,
-    height: 44,
-    paddingHorizontal: 14,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-    fontSize: 14,
-    color: colors.foreground,
-  },
-  salarySep: {
-    fontSize: 13,
-    color: colors.mutedForeground,
-  },
-  applyFiltersButton: {
-    backgroundColor: colors.primary,
-    paddingVertical: 14,
-    borderRadius: 14,
-    alignItems: 'center',
-    marginTop: 8,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  applyFiltersText: {
-    color: colors.white,
-    fontSize: 15,
-    fontWeight: '700',
-  },
-});

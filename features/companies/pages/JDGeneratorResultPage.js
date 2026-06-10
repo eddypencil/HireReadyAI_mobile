@@ -8,14 +8,22 @@ import {
   StyleSheet,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { colors } from "../../../src/theme";
+import { useTheme } from "../../../shared/context/ThemeContext";
+import { useTranslation } from "../../../shared/context/I18nContext";
 import { supabase } from "../../../shared/services/supabase";
 import { useJobs } from "../../jobs/hooks/useJobs";
 import { useCompany } from "./CompanyLayout";
 import { useUser } from "../../auth/context/user.context";
 import { seedAnchorStages } from "../../recruiter/services/candidatesPipline.service";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function JDGeneratorResultPage({ route }) {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const c = theme.colors;
+  const insets = useSafeAreaInsets();
+  const styles = createStyles(c);
+
   const params = route.params;
   const { company, reload: reloadCompany } = useCompany();
   const { profile } = useUser();
@@ -96,11 +104,11 @@ export default function JDGeneratorResultPage({ route }) {
     return (
       <View style={styles.successContainer}>
         <View style={styles.successIcon}>
-          <Ionicons name="checkmark-circle" size={36} color={colors.darkAmethyst[600]} />
+          <Ionicons name="checkmark-circle" size={36} color={c.primary} />
         </View>
-        <Text style={styles.successTitle}>Job Published!</Text>
+        <Text style={styles.successTitle}>{t("companies.job_published")}</Text>
         <Text style={styles.successSubtitle}>
-          {params.title} has been published and is now visible to applicants.
+          {t("companies.publish_success", { title: params.title })}
         </Text>
       </View>
     );
@@ -109,9 +117,9 @@ export default function JDGeneratorResultPage({ route }) {
   if (generating) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color={colors.darkAmethyst[600]} />
-        <Text style={styles.loadingText}>Generating job description...</Text>
-        <Text style={styles.loadingSubtext}>This usually takes about 30 seconds</Text>
+        <ActivityIndicator size="large" color={c.primary} />
+        <Text style={styles.loadingText}>{t("companies.generating")}</Text>
+        <Text style={styles.loadingSubtext}>{t("companies.generating_subtext")}</Text>
       </View>
     );
   }
@@ -119,23 +127,23 @@ export default function JDGeneratorResultPage({ route }) {
   if (generateError) {
     return (
       <View style={styles.centered}>
-        <Ionicons name="alert-circle-outline" size={48} color={colors.red[500]} />
-        <Text style={styles.errorTitle}>Generation failed</Text>
+        <Ionicons name="alert-circle-outline" size={48} color={c.destructive} />
+        <Text style={styles.errorTitle}>{t("companies.generation_failed")}</Text>
         <Text style={styles.errorBody}>{generateError}</Text>
         <TouchableOpacity style={styles.retryBtn} onPress={generateJD}>
-          <Text style={styles.retryBtnText}>Try Again</Text>
+          <Text style={styles.retryBtnText}>{t("companies.try_again")}</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.pageContainer} contentContainerStyle={styles.pageContent}>
+    <ScrollView style={[styles.pageContainer, { paddingTop: insets.top }]} contentContainerStyle={styles.pageContent}>
       <View style={styles.previewColumn}>
         <View style={styles.previewContent}>
           <View style={styles.aiBadge}>
-            <Ionicons name="sparkles" size={14} color={colors.darkAmethyst[500]} />
-            <Text style={styles.aiBadgeText}> AI Generated</Text>
+            <Ionicons name="sparkles" size={14} color={c['muted-foreground']} />
+            <Text style={styles.aiBadgeText}> {t("companies.ai_generated")}</Text>
           </View>
 
           <Text style={styles.previewTitle}>{params.title}</Text>
@@ -170,18 +178,18 @@ export default function JDGeneratorResultPage({ route }) {
           </View>
 
           <View style={styles.salaryDisplay}>
-            <Ionicons name="cash-outline" size={14} color={colors.darkAmethyst[500]} />
+            <Ionicons name="cash-outline" size={14} color={c['muted-foreground']} />
             <Text style={styles.salaryDisplayText}>
               {params.salaryMin && params.salaryMax
-                ? `${Number(params.salaryMin).toLocaleString()} – ${Number(params.salaryMax).toLocaleString()} EGP`
-                : "Salary: Confidential"}
+                ? t("companies.salary_range_display", { min: Number(params.salaryMin).toLocaleString(), max: Number(params.salaryMax).toLocaleString() })
+                : t("companies.salary_confidential")}
             </Text>
           </View>
 
           <View style={styles.divider} />
 
           <View style={styles.previewSection}>
-            <Text style={styles.previewSectionTitle}>About the role</Text>
+            <Text style={styles.previewSectionTitle}>{t("companies.about_role")}</Text>
             <Text style={styles.previewSectionBody}>
               {aiResult?.description}
             </Text>
@@ -189,7 +197,7 @@ export default function JDGeneratorResultPage({ route }) {
 
           {aiResult?.responsibilities?.length > 0 && (
             <View style={styles.previewSection}>
-              <Text style={styles.previewSectionTitle}>What you'll do</Text>
+              <Text style={styles.previewSectionTitle}>{t("companies.what_youll_do")}</Text>
               {aiResult.responsibilities.map((item, i) => (
                 <View key={i} style={styles.listRow}>
                   <View style={styles.bullet} />
@@ -201,7 +209,7 @@ export default function JDGeneratorResultPage({ route }) {
 
           {aiResult?.requirements?.length > 0 && (
             <View style={styles.previewSection}>
-              <Text style={styles.previewSectionTitle}>What we're looking for</Text>
+              <Text style={styles.previewSectionTitle}>{t("companies.what_were_looking_for")}</Text>
               {aiResult.requirements.map((item, i) => (
                 <View key={i} style={styles.listRow}>
                   <View style={styles.bullet} />
@@ -213,7 +221,7 @@ export default function JDGeneratorResultPage({ route }) {
 
           {aiResult?.skills?.length > 0 && (
             <View style={styles.previewSection}>
-              <Text style={styles.previewSectionTitle}>Skills & Tools</Text>
+              <Text style={styles.previewSectionTitle}>{t("companies.skills_and_tools")}</Text>
               <View style={styles.skillsGrid}>
                 {aiResult.skills.map((skill, i) => (
                   <View key={i} style={styles.skillRow}>
@@ -237,9 +245,9 @@ export default function JDGeneratorResultPage({ route }) {
             disabled={publishing}
           >
             {publishing ? (
-              <ActivityIndicator size="small" color={colors.white} />
+              <ActivityIndicator size="small" color={c['destructive-foreground']} />
             ) : (
-              <Text style={styles.publishBtnText}>Publish JD</Text>
+              <Text style={styles.publishBtnText}>{t("companies.publish_jd")}</Text>
             )}
           </TouchableOpacity>
         </View>
@@ -248,215 +256,217 @@ export default function JDGeneratorResultPage({ route }) {
   );
 }
 
-const styles = StyleSheet.create({
-  pageContainer: {
-    flex: 1,
-    backgroundColor: colors.darkAmethyst[50],
-  },
-  pageContent: {
-    padding: 20,
-    paddingBottom: 40,
-  },
-  centered: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: colors.darkAmethyst[50],
-    padding: 24,
-  },
-  loadingText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: colors.darkAmethyst[800],
-    marginTop: 20,
-  },
-  loadingSubtext: {
-    fontSize: 13,
-    color: colors.darkAmethyst[400],
-    marginTop: 6,
-  },
-  errorTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: colors.darkAmethyst[950],
-    marginTop: 16,
-  },
-  errorBody: {
-    fontSize: 13,
-    color: colors.darkAmethyst[600],
-    textAlign: "center",
-    marginTop: 8,
-    lineHeight: 20,
-  },
-  retryBtn: {
-    backgroundColor: colors.darkAmethyst[600],
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 12,
-    marginTop: 24,
-  },
-  retryBtnText: {
-    color: colors.white,
-    fontSize: 14,
-    fontWeight: "600",
-  },
-  previewColumn: {
-    backgroundColor: colors.white,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colors.darkAmethyst[100],
-    padding: 24,
-  },
-  previewContent: {
-    gap: 20,
-  },
-  aiBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  aiBadgeText: {
-    fontSize: 11,
-    color: colors.darkAmethyst[500],
-  },
-  previewTitle: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: colors.darkAmethyst[950],
-  },
-  previewMeta: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-  },
-  metaTag: {
-    backgroundColor: colors.darkAmethyst[50],
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 6,
-  },
-  metaText: {
-    fontSize: 12,
-    color: colors.darkAmethyst[600],
-    textTransform: "capitalize",
-  },
-  salaryDisplay: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  salaryDisplayText: {
-    fontSize: 13,
-    color: colors.darkAmethyst[600],
-  },
-  divider: {
-    height: 1,
-    backgroundColor: colors.darkAmethyst[100],
-  },
-  previewSection: {
-    gap: 8,
-  },
-  previewSectionTitle: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: colors.darkAmethyst[950],
-    marginBottom: 2,
-  },
-  previewSectionBody: {
-    fontSize: 14,
-    color: colors.darkAmethyst[900],
-    lineHeight: 22,
-  },
-  listRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 8,
-  },
-  bullet: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.darkAmethyst[400],
-    marginTop: 7,
-  },
-  listItem: {
-    fontSize: 13,
-    color: colors.darkAmethyst[900],
-    flex: 1,
-    lineHeight: 20,
-  },
-  skillsGrid: {
-    gap: 8,
-  },
-  skillRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  skillBullet: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.darkAmethyst[500],
-  },
-  skillText: {
-    fontSize: 13,
-    color: colors.darkAmethyst[900],
-  },
-  errorBanner: {
-    backgroundColor: colors.red[50],
-    borderWidth: 1,
-    borderColor: colors.red[200],
-    borderRadius: 8,
-    padding: 12,
-  },
-  errorBannerText: {
-    fontSize: 12,
-    color: colors.red[600],
-  },
-  publishBtn: {
-    backgroundColor: colors.darkAmethyst[600],
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  publishBtnDisabled: {
-    backgroundColor: colors.darkAmethyst[400],
-  },
-  publishBtnText: {
-    color: colors.white,
-    fontSize: 15,
-    fontWeight: "600",
-  },
-  successContainer: {
-    flex: 1,
-    backgroundColor: colors.darkAmethyst[50],
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 24,
-  },
-  successIcon: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: colors.darkAmethyst[100],
-    borderWidth: 1,
-    borderColor: colors.darkAmethyst[200],
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 20,
-  },
-  successTitle: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: colors.darkAmethyst[950],
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  successSubtitle: {
-    fontSize: 13,
-    color: colors.darkAmethyst[700],
-    textAlign: "center",
-    lineHeight: 22,
-  },
-});
+function createStyles(c) {
+  return StyleSheet.create({
+    pageContainer: {
+      flex: 1,
+      backgroundColor: c['surface-muted'],
+    },
+    pageContent: {
+      padding: 20,
+      paddingBottom: 40,
+    },
+    centered: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: c['surface-muted'],
+      padding: 24,
+    },
+    loadingText: {
+      fontSize: 16,
+      fontWeight: "600",
+      color: c.foreground,
+      marginTop: 20,
+    },
+    loadingSubtext: {
+      fontSize: 13,
+      color: c['muted-foreground'],
+      marginTop: 6,
+    },
+    errorTitle: {
+      fontSize: 18,
+      fontWeight: "700",
+      color: c.foreground,
+      marginTop: 16,
+    },
+    errorBody: {
+      fontSize: 13,
+      color: c.primary,
+      textAlign: "center",
+      marginTop: 8,
+      lineHeight: 20,
+    },
+    retryBtn: {
+      backgroundColor: c.primary,
+      paddingHorizontal: 24,
+      paddingVertical: 12,
+      borderRadius: 12,
+      marginTop: 24,
+    },
+    retryBtnText: {
+      color: c['destructive-foreground'],
+      fontSize: 14,
+      fontWeight: "600",
+    },
+    previewColumn: {
+      backgroundColor: c.card,
+      borderRadius: 16,
+      borderWidth: 1,
+      borderColor: c.border,
+      padding: 24,
+    },
+    previewContent: {
+      gap: 20,
+    },
+    aiBadge: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    aiBadgeText: {
+      fontSize: 11,
+      color: c['muted-foreground'],
+    },
+    previewTitle: {
+      fontSize: 22,
+      fontWeight: "700",
+      color: c.foreground,
+    },
+    previewMeta: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: 8,
+    },
+    metaTag: {
+      backgroundColor: c['surface-muted'],
+      paddingHorizontal: 10,
+      paddingVertical: 4,
+      borderRadius: 6,
+    },
+    metaText: {
+      fontSize: 12,
+      color: c.primary,
+      textTransform: "capitalize",
+    },
+    salaryDisplay: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+    },
+    salaryDisplayText: {
+      fontSize: 13,
+      color: c.primary,
+    },
+    divider: {
+      height: 1,
+      backgroundColor: c.border,
+    },
+    previewSection: {
+      gap: 8,
+    },
+    previewSectionTitle: {
+      fontSize: 14,
+      fontWeight: "700",
+      color: c.foreground,
+      marginBottom: 2,
+    },
+    previewSectionBody: {
+      fontSize: 14,
+      color: c.foreground,
+      lineHeight: 22,
+    },
+    listRow: {
+      flexDirection: "row",
+      alignItems: "flex-start",
+      gap: 8,
+    },
+    bullet: {
+      width: 6,
+      height: 6,
+      borderRadius: 3,
+      backgroundColor: c['muted-foreground'],
+      marginTop: 7,
+    },
+    listItem: {
+      fontSize: 13,
+      color: c.foreground,
+      flex: 1,
+      lineHeight: 20,
+    },
+    skillsGrid: {
+      gap: 8,
+    },
+    skillRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+    },
+    skillBullet: {
+      width: 6,
+      height: 6,
+      borderRadius: 3,
+      backgroundColor: c['muted-foreground'],
+    },
+    skillText: {
+      fontSize: 13,
+      color: c.foreground,
+    },
+    errorBanner: {
+      backgroundColor: `${c.destructive}1a`,
+      borderWidth: 1,
+      borderColor: `${c.destructive}40`,
+      borderRadius: 8,
+      padding: 12,
+    },
+    errorBannerText: {
+      fontSize: 12,
+      color: c.destructive,
+    },
+    publishBtn: {
+      backgroundColor: c.primary,
+      paddingVertical: 14,
+      borderRadius: 12,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    publishBtnDisabled: {
+      backgroundColor: c['muted-foreground'],
+    },
+    publishBtnText: {
+      color: c['destructive-foreground'],
+      fontSize: 15,
+      fontWeight: "600",
+    },
+    successContainer: {
+      flex: 1,
+      backgroundColor: c['surface-muted'],
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 24,
+    },
+    successIcon: {
+      width: 72,
+      height: 72,
+      borderRadius: 36,
+      backgroundColor: c.border,
+      borderWidth: 1,
+      borderColor: c.border,
+      alignItems: "center",
+      justifyContent: "center",
+      marginBottom: 20,
+    },
+    successTitle: {
+      fontSize: 22,
+      fontWeight: "700",
+      color: c.foreground,
+      marginBottom: 8,
+      textAlign: "center",
+    },
+    successSubtitle: {
+      fontSize: 13,
+      color: c.foreground,
+      textAlign: "center",
+      lineHeight: 22,
+    },
+  });
+}

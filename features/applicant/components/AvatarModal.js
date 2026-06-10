@@ -2,16 +2,20 @@ import { useState } from "react";
 import { View, Text, TouchableOpacity, Modal, Alert } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { supabase } from "../../../shared/services/supabase";
-import { colors } from "../../../src/theme";
+import { useTheme } from "../../../shared/context/ThemeContext";
+import { useTranslation } from "../../../shared/context/I18nContext";
 
 export default function AvatarModal({ open, onClose, userId, currentUrl, onUpdated, onDeleted }) {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const c = theme.colors;
   const [uploading, setUploading] = useState(false);
 
   const handlePickImage = async () => {
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
-        Alert.alert("Permission needed", "We need camera roll access to change your avatar.");
+        Alert.alert(t("applicant.permission_needed"), t("applicant.permission_message"));
         return;
       }
 
@@ -51,7 +55,7 @@ export default function AvatarModal({ open, onClose, userId, currentUrl, onUpdat
       onUpdated?.(urlData.publicUrl);
       onClose();
     } catch (err) {
-      Alert.alert("Error", "Failed to update avatar. Please try again.");
+      Alert.alert(t("applicant.error_title"), t("applicant.update_error"));
     } finally {
       setUploading(false);
     }
@@ -68,7 +72,7 @@ export default function AvatarModal({ open, onClose, userId, currentUrl, onUpdat
       onDeleted?.();
       onClose();
     } catch (err) {
-      Alert.alert("Error", "Failed to remove avatar.");
+      Alert.alert(t("applicant.error_title"), t("applicant.remove_error"));
     } finally {
       setUploading(false);
     }
@@ -81,17 +85,17 @@ export default function AvatarModal({ open, onClose, userId, currentUrl, onUpdat
         onPress={onClose}
         style={{
           flex: 1,
-          backgroundColor: "rgba(1,42,74,0.4)",
+          backgroundColor: `${c.sidebar}66`,
           justifyContent: "center",
           alignItems: "center",
           padding: 16,
         }}
       >
         <TouchableOpacity activeOpacity={1} onPress={() => {}} style={{
-          backgroundColor: colors.white,
+          backgroundColor: c.card,
           borderRadius: 20,
           borderWidth: 1,
-          borderColor: colors.border,
+          borderColor: c.border,
           padding: 24,
           width: "100%",
           maxWidth: 340,
@@ -99,10 +103,10 @@ export default function AvatarModal({ open, onClose, userId, currentUrl, onUpdat
           <Text style={{
             fontSize: 18,
             fontWeight: "700",
-            color: colors.foreground,
+            color: c.foreground,
             marginBottom: 20,
           }}>
-            Profile Picture
+            {t("applicant.profile_picture")}
           </Text>
 
           <View style={{ gap: 10 }}>
@@ -110,15 +114,15 @@ export default function AvatarModal({ open, onClose, userId, currentUrl, onUpdat
               onPress={handlePickImage}
               disabled={uploading}
               style={{
-                backgroundColor: colors.primary,
+                backgroundColor: c.primary,
                 borderRadius: 10,
                 paddingVertical: 12,
                 alignItems: "center",
                 opacity: uploading ? 0.5 : 1,
               }}
             >
-              <Text style={{ color: colors.white, fontSize: 14, fontWeight: "600" }}>
-                {uploading ? "Uploading..." : "Upload Photo"}
+              <Text style={{ color: c['destructive-foreground'], fontSize: 14, fontWeight: "600" }}>
+                {uploading ? t("applicant.uploading") : t("applicant.upload_photo")}
               </Text>
             </TouchableOpacity>
 
@@ -127,15 +131,15 @@ export default function AvatarModal({ open, onClose, userId, currentUrl, onUpdat
               disabled={uploading}
               style={{
                 borderWidth: 1,
-                borderColor: colors.red[300],
+                borderColor: `${c.destructive}4d`,
                 borderRadius: 10,
                 paddingVertical: 12,
                 alignItems: "center",
                 opacity: uploading ? 0.5 : 1,
               }}
             >
-              <Text style={{ color: colors.red[600], fontSize: 14, fontWeight: "600" }}>
-                Remove Photo
+              <Text style={{ color: c.destructive, fontSize: 14, fontWeight: "600" }}>
+                {t("applicant.remove_photo")}
               </Text>
             </TouchableOpacity>
 
@@ -143,14 +147,14 @@ export default function AvatarModal({ open, onClose, userId, currentUrl, onUpdat
               onPress={onClose}
               style={{
                 borderWidth: 1,
-                borderColor: colors.border,
+                borderColor: c.border,
                 borderRadius: 10,
                 paddingVertical: 12,
                 alignItems: "center",
               }}
             >
-              <Text style={{ color: colors.mutedForeground, fontSize: 14, fontWeight: "600" }}>
-                Cancel
+              <Text style={{ color: c['muted-foreground'], fontSize: 14, fontWeight: "600" }}>
+                {t("applicant.cancel")}
               </Text>
             </TouchableOpacity>
           </View>

@@ -5,22 +5,16 @@ import {
   TouchableOpacity,
   ScrollView,
   Modal,
-  Dimensions,
+  useWindowDimensions,
   StyleSheet,
-  Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTheme } from "../../../shared/context/ThemeContext";
 import StageLibrary from "./StageLibrary";
 import StageCard from "./StageCard";
 import StageDetailsPanel from "./StageDetailsPanel";
-import { colors } from "../../../src/theme";
-
-const WINDOW = Dimensions.get("window");
-const SCREEN_WIDTH = WINDOW.width;
-const SCREEN_HEIGHT = WINDOW.height;
-const IS_DESKTOP = SCREEN_WIDTH >= 1024;
-const BOTTOM_SHEET_HEIGHT = Math.min(SCREEN_HEIGHT * 0.75, 560);
+import { useTranslation } from "../../../shared/context/I18nContext";
 
 export default function PipelineBuilder({
   job,
@@ -30,7 +24,13 @@ export default function PipelineBuilder({
   onDeleteStage,
   moveStage,
 }) {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const c = theme.colors;
+  const styles = createStyles(c);
   const insets = useSafeAreaInsets();
+  const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = useWindowDimensions();
+  const BOTTOM_SHEET_HEIGHT = Math.min(SCREEN_HEIGHT * 0.75, 560);
   const [selectedStageId, setSelectedStageId] = useState(null);
   const [libraryOpen, setLibraryOpen] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
@@ -76,21 +76,21 @@ export default function PipelineBuilder({
     <View style={styles.canvas}>
       <View style={styles.canvasHeader}>
         <Text style={styles.jobTitle} numberOfLines={1}>
-          {job?.title || "Pipeline"}
+          {job?.title || t("pipeline.title")}
         </Text>
         <Text style={styles.canvasHint}>
-          Tap a stage to configure, or add from the library.
+          {t("pipeline.tap_stage_hint")}
         </Text>
       </View>
 
       {stages.length === 0 ? (
         <View style={styles.emptyState}>
           <View style={styles.emptyIconWrap}>
-            <Ionicons name="add-outline" size={24} color={colors.gray[400]} />
+            <Ionicons name="add-outline" size={24} color={c['muted-foreground']} />
           </View>
-          <Text style={styles.emptyTitle}>No stages yet</Text>
+          <Text style={styles.emptyTitle}>{t("pipeline.no_stages")}</Text>
           <Text style={styles.emptyHint}>
-            Tap the Library button to add stages.
+            {t("pipeline.tap_library_hint")}
           </Text>
         </View>
       ) : (
@@ -117,34 +117,14 @@ export default function PipelineBuilder({
     </View>
   );
 
-  if (IS_DESKTOP && Platform.OS === "web") {
-    return (
-      <View style={[styles.desktopLayout, { paddingTop: insets.top }]}>
-        <View style={styles.desktopSidebar}>
-          <StageLibrary onAddStage={handleAddFromLibrary} />
-        </View>
-        <View style={styles.desktopCanvas}>
-          {renderCanvas()}
-        </View>
-        <View style={styles.desktopDetails}>
-          <StageDetailsPanel
-            stage={selectedStage}
-            stages={stages}
-            onUpdate={onUpdateStage}
-          />
-        </View>
-      </View>
-    );
-  }
-
   return (
     <View style={styles.mobileLayout}>
       <TouchableOpacity
         onPress={() => setLibraryOpen(true)}
         style={styles.libraryBtn}
       >
-        <Ionicons name="library-outline" size={18} color={colors.gray[600]} />
-        <Text style={styles.libraryBtnText}>Library</Text>
+        <Ionicons name="library-outline" size={18} color={c['muted-foreground']} />
+        <Text style={styles.libraryBtnText}>{t("pipeline.library")}</Text>
       </TouchableOpacity>
 
       {renderCanvas()}
@@ -162,12 +142,12 @@ export default function PipelineBuilder({
           />
           <View style={styles.drawerLeft}>
             <View style={styles.drawerHeader}>
-              <Text style={styles.drawerHeaderLabel}>Stage Library</Text>
+              <Text style={styles.drawerHeaderLabel}>{t("pipeline.stage_library")}</Text>
               <TouchableOpacity
                 onPress={() => setLibraryOpen(false)}
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               >
-                <Ionicons name="close-outline" size={22} color={colors.gray[400]} />
+                <Ionicons name="close-outline" size={22} color={c['muted-foreground']} />
               </TouchableOpacity>
             </View>
             <StageLibrary onAddStage={handleAddFromLibrary} />
@@ -190,13 +170,13 @@ export default function PipelineBuilder({
             <View style={styles.bottomSheetHandle} />
             <View style={styles.bottomSheetHeader}>
               <Text style={styles.detailsHeaderTitle} numberOfLines={1}>
-                {selectedStage?.name || "Stage Settings"}
+                {selectedStage?.name || t("pipeline.stage_settings")}
               </Text>
               <TouchableOpacity
                 onPress={() => setDetailsOpen(false)}
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               >
-                <Ionicons name="close-outline" size={22} color={colors.gray[400]} />
+                <Ionicons name="close-outline" size={22} color={c['muted-foreground']} />
               </TouchableOpacity>
             </View>
             <StageDetailsPanel
@@ -211,191 +191,171 @@ export default function PipelineBuilder({
   );
 }
 
-const styles = StyleSheet.create({
-  // Desktop
-  desktopLayout: {
-    flex: 1,
-    flexDirection: "row",
-  },
-  desktopSidebar: {
-    width: 220,
-    borderRightWidth: 1,
-    borderRightColor: colors.gray[100],
-    backgroundColor: colors.white,
-  },
-  desktopCanvas: {
-    flex: 1,
-    backgroundColor: colors.gray[50],
-  },
-  desktopDetails: {
-    width: 260,
-    borderLeftWidth: 1,
-    borderLeftColor: colors.gray[100],
-    backgroundColor: colors.white,
-  },
+function createStyles(c) {
+  return StyleSheet.create({
+    // Mobile
+    mobileLayout: {
+      flex: 1,
+      position: "relative",
+    },
+    libraryBtn: {
+      position: "absolute",
+      top: 12,
+      left: 12,
+      zIndex: 10,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 4,
+      backgroundColor: c.card,
+      borderWidth: 1,
+      borderColor: c.border,
+      borderRadius: 10,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      shadowColor: c.foreground,
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.08,
+      shadowRadius: 3,
+      elevation: 2,
+    },
+    libraryBtnText: {
+      fontSize: 12,
+      fontWeight: "500",
+      color: c['muted-foreground'],
+    },
+    bottomSheetOverlay: {
+      flex: 1,
+      justifyContent: "flex-end",
+    },
+    bottomSheetBackdrop: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: `${c.foreground}4D`,
+    },
+    bottomSheetContainer: {
+      height: BOTTOM_SHEET_HEIGHT,
+      backgroundColor: c.card,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      overflow: "hidden",
+    },
+    bottomSheetHandle: {
+      width: 36,
+      height: 4,
+      borderRadius: 2,
+      backgroundColor: c.border,
+      alignSelf: "center",
+      marginTop: 10,
+      marginBottom: 4,
+    },
+    bottomSheetHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingHorizontal: 20,
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: c.border,
+    },
 
-  // Mobile
-  mobileLayout: {
-    flex: 1,
-    position: "relative",
-  },
-  libraryBtn: {
-    position: "absolute",
-    top: 12,
-    left: 12,
-    zIndex: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.gray[200],
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  libraryBtnText: {
-    fontSize: 12,
-    fontWeight: "500",
-    color: colors.gray[600],
-  },
-  bottomSheetOverlay: {
-    flex: 1,
-    justifyContent: "flex-end",
-  },
-  bottomSheetBackdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.3)",
-  },
-  bottomSheetContainer: {
-    height: BOTTOM_SHEET_HEIGHT,
-    backgroundColor: colors.white,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    overflow: "hidden",
-  },
-  bottomSheetHandle: {
-    width: 36,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: colors.gray[300],
-    alignSelf: "center",
-    marginTop: 10,
-    marginBottom: 4,
-  },
-  bottomSheetHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.gray[100],
-  },
+    // Canvas
+    canvas: {
+      flex: 1,
+      paddingTop: 60,
+      paddingHorizontal: 16,
+    },
+    canvasHeader: {
+      marginBottom: 16,
+    },
+    jobTitle: {
+      fontSize: 20,
+      fontWeight: "700",
+      color: c.foreground,
+      marginBottom: 2,
+    },
+    canvasHint: {
+      fontSize: 12,
+      color: c['muted-foreground'],
+    },
+    emptyState: {
+      alignItems: "center",
+      justifyContent: "center",
+      borderWidth: 2,
+      borderStyle: "dashed",
+      borderColor: c.border,
+      borderRadius: 16,
+      paddingVertical: 48,
+      paddingHorizontal: 24,
+      marginTop: 20,
+    },
+    emptyIconWrap: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: c.border,
+      justifyContent: "center",
+      alignItems: "center",
+      marginBottom: 12,
+    },
+    emptyTitle: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: c['muted-foreground'],
+      marginBottom: 4,
+    },
+    emptyHint: {
+      fontSize: 12,
+      color: c['muted-foreground'],
+      textAlign: "center",
+    },
+    stageList: {
+      flex: 1,
+    },
+    stageListContent: {
+      gap: 10,
+      paddingBottom: 100,
+    },
 
-  // Canvas
-  canvas: {
-    flex: 1,
-    paddingTop: 60,
-    paddingHorizontal: 16,
-  },
-  canvasHeader: {
-    marginBottom: 16,
-  },
-  jobTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: colors.gray[900],
-    marginBottom: 2,
-  },
-  canvasHint: {
-    fontSize: 12,
-    color: colors.gray[400],
-  },
-  emptyState: {
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 2,
-    borderStyle: "dashed",
-    borderColor: colors.gray[200],
-    borderRadius: 16,
-    paddingVertical: 48,
-    paddingHorizontal: 24,
-    marginTop: 20,
-  },
-  emptyIconWrap: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.gray[100],
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  emptyTitle: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: colors.gray[500],
-    marginBottom: 4,
-  },
-  emptyHint: {
-    fontSize: 12,
-    color: colors.gray[400],
-    textAlign: "center",
-  },
-  stageList: {
-    flex: 1,
-  },
-  stageListContent: {
-    gap: 10,
-    paddingBottom: 100,
-  },
-
-  // Drawers
-  drawerOverlay: {
-    flex: 1,
-    flexDirection: "row",
-  },
-  drawerBackdrop: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.3)",
-  },
-  drawerLeft: {
-    width: 280,
-    maxWidth: "80%",
-    backgroundColor: colors.white,
-  },
-  drawerRight: {
-    width: 300,
-    maxWidth: "85%",
-    backgroundColor: colors.white,
-  },
-  drawerHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.gray[100],
-  },
-  drawerHeaderLabel: {
-    fontSize: 10,
-    fontWeight: "700",
-    color: colors.gray[400],
-    letterSpacing: 1,
-    textTransform: "uppercase",
-  },
-  detailsHeaderTitle: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: colors.gray[900],
-    flex: 1,
-    marginRight: 8,
-  },
-});
+    // Drawers
+    drawerOverlay: {
+      flex: 1,
+      flexDirection: "row",
+    },
+    drawerBackdrop: {
+      flex: 1,
+      backgroundColor: `${c.foreground}4D`,
+    },
+    drawerLeft: {
+      width: 280,
+      maxWidth: "80%",
+      backgroundColor: c.card,
+    },
+    drawerRight: {
+      width: 300,
+      maxWidth: "85%",
+      backgroundColor: c.card,
+    },
+    drawerHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingHorizontal: 16,
+      paddingVertical: 14,
+      borderBottomWidth: 1,
+      borderBottomColor: c.border,
+    },
+    drawerHeaderLabel: {
+      fontSize: 10,
+      fontWeight: "700",
+      color: c['muted-foreground'],
+      letterSpacing: 1,
+      textTransform: "uppercase",
+    },
+    detailsHeaderTitle: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: c.foreground,
+      flex: 1,
+      marginRight: 8,
+    },
+  });
+}

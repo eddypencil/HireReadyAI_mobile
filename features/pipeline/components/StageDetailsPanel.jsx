@@ -12,12 +12,13 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { STAGE_TYPE_OPTIONS } from "../constants/stageLibrary";
-import { colors } from "../../../src/theme";
+import { useTheme } from "../../../shared/context/ThemeContext";
 import WeightSlider from "../../../shared/ui/Slider";
+import { useTranslation } from "../../../shared/context/I18nContext";
 
 const DEBOUNCE_MS = 400;
 
-function PickerDropdown({ options, selected, onSelect, placeholder, disabled }) {
+function PickerDropdown({ options, selected, onSelect, placeholder, disabled, c }) {
   const [visible, setVisible] = useState(false);
   const displayValue = selected
     ? options.find((o) => o.value === selected)?.label || placeholder
@@ -33,14 +34,14 @@ function PickerDropdown({ options, selected, onSelect, placeholder, disabled }) 
         <Text
           style={[
             styles.selectFieldText,
-            !selected && { color: colors.gray[400] },
-            disabled && { color: colors.gray[500] },
+            !selected && { color: c['muted-foreground'] },
+            disabled && { color: c['muted-foreground'] },
           ]}
           numberOfLines={1}
         >
           {displayValue}
         </Text>
-        <Ionicons name="chevron-down" size={14} color={colors.gray[400]} />
+        <Ionicons name="chevron-down" size={14} color={c['muted-foreground']} />
       </TouchableOpacity>
 
       <Modal
@@ -75,7 +76,7 @@ function PickerDropdown({ options, selected, onSelect, placeholder, disabled }) 
                     {item.label}
                   </Text>
                   {selected === item.value && (
-                    <Ionicons name="checkmark" size={18} color={colors.primary} />
+                    <Ionicons name="checkmark" size={18} color={c.primary} />
                   )}
                 </TouchableOpacity>
               )}
@@ -89,6 +90,11 @@ function PickerDropdown({ options, selected, onSelect, placeholder, disabled }) 
 
 
 export default function StageDetailsPanel({ stage, stages, onUpdate }) {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const c = theme.colors;
+  const styles = createStyles(c);
+
   const [form, setForm] = useState({
     name: "",
     stage_type: "",
@@ -128,11 +134,11 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
     return (
       <View style={styles.emptyContainer}>
         <View style={styles.emptyIconWrap}>
-          <Ionicons name="settings-outline" size={22} color={colors.gray[400]} />
+          <Ionicons name="settings-outline" size={22} color={c['muted-foreground']} />
         </View>
-        <Text style={styles.emptyTitle}>Stage Settings</Text>
+        <Text style={styles.emptyTitle}>{t("pipeline.stage_settings")}</Text>
         <Text style={styles.emptyHint}>
-          Select a stage from the canvas to configure it.
+          {t("pipeline.select_stage_hint")}
         </Text>
       </View>
     );
@@ -165,14 +171,14 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.header}>
-        <Text style={styles.headerLabel}>Stage Settings</Text>
+        <Text style={styles.headerLabel}>{t("pipeline.stage_settings")}</Text>
         <View style={styles.headerTitleRow}>
           <Text style={styles.headerTitle} numberOfLines={1}>
-            {form.name || "Untitled Stage"}
+            {form.name || t("pipeline.untitled_stage")}
           </Text>
           {stage.is_locked && (
             <View style={styles.lockedBadge}>
-              <Text style={styles.lockedText}>Locked</Text>
+                <Text style={styles.lockedText}>{t("pipeline.locked")}</Text>
             </View>
           )}
         </View>
@@ -183,19 +189,19 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
 
       <View style={styles.fields}>
         <View style={styles.fieldGroup}>
-          <Text style={styles.fieldLabel}>Stage Name</Text>
+          <Text style={styles.fieldLabel}>{t("pipeline.stage_name")}</Text>
           <TextInput
             style={[styles.input, stage.is_locked && styles.fieldDisabled]}
             value={form.name}
             onChangeText={(t) => handleChange("name", t)}
             editable={!stage.is_locked}
-            placeholder="Stage name"
-            placeholderTextColor={colors.gray[400]}
+            placeholder={t("pipeline.stage_name_placeholder")}
+            placeholderTextColor={c['muted-foreground']}
           />
         </View>
 
         <View style={styles.fieldGroup}>
-          <Text style={styles.fieldLabel}>Stage Type</Text>
+          <Text style={styles.fieldLabel}>{t("pipeline.stage_type")}</Text>
           <PickerDropdown
             options={[
               ...STAGE_TYPE_OPTIONS,
@@ -205,14 +211,15 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
             ]}
             selected={form.stage_type}
             onSelect={(val) => handleChange("stage_type", val)}
-            placeholder="Select type..."
+            placeholder={t("pipeline.select_type_placeholder")}
             disabled={stage.is_locked}
+            c={c}
           />
         </View>
 
         <View style={styles.fieldGroup}>
           <View style={styles.weightHeader}>
-            <Text style={styles.fieldLabel}>Weight</Text>
+            <Text style={styles.fieldLabel}>{t("pipeline.weight")}</Text>
             <Text style={styles.weightValue}>{weightPct}%</Text>
           </View>
           <WeightSlider
@@ -223,7 +230,7 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
         </View>
 
         <View style={styles.fieldGroup}>
-          <Text style={styles.fieldLabel}>Description</Text>
+          <Text style={styles.fieldLabel}>{t("pipeline.description")}</Text>
           <TextInput
             style={[styles.textArea, stage.is_locked && styles.fieldDisabled]}
             value={form.description}
@@ -232,30 +239,30 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
             multiline
             numberOfLines={3}
             textAlignVertical="top"
-            placeholder="Describe what happens in this stage..."
-            placeholderTextColor={colors.gray[400]}
+            placeholder={t("pipeline.description_placeholder")}
+            placeholderTextColor={c['muted-foreground']}
           />
         </View>
 
         <View style={styles.fieldGroup}>
-          <Text style={styles.fieldLabel}>Number of Questions</Text>
+          <Text style={styles.fieldLabel}>{t("pipeline.num_questions")}</Text>
           <TextInput
             style={[styles.input, stage.is_locked && styles.fieldDisabled]}
             value={String(form.num_questions || 0)}
             onChangeText={(t) => handleChange("num_questions", parseInt(t) || 0)}
             editable={!stage.is_locked}
             keyboardType="numeric"
-            placeholder="Enter number of questions..."
-            placeholderTextColor={colors.gray[400]}
+            placeholder={t("pipeline.num_questions_placeholder")}
+            placeholderTextColor={c['muted-foreground']}
           />
         </View>
 
         <View style={styles.advancedSection}>
-          <Text style={styles.advancedLabel}>Advanced (Coming Soon)</Text>
-          {["AI Evaluation", "Manual Review Required", "Auto Advance", "Auto Reject"].map(
-            (label) => (
-              <View key={label} style={styles.advancedRow}>
-                <Text style={styles.advancedRowText}>{label}</Text>
+          <Text style={styles.advancedLabel}>{t("pipeline.advanced_coming_soon")}</Text>
+          {["pipeline.ai_evaluation", "pipeline.manual_review", "pipeline.auto_advance", "pipeline.auto_reject"].map(
+            (key) => (
+              <View key={key} style={styles.advancedRow}>
+                <Text style={styles.advancedRowText}>{t(key)}</Text>
                 <View style={styles.advancedToggle} />
               </View>
             )
@@ -273,9 +280,9 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
           ]}
           activeOpacity={0.7}
         >
-          <Ionicons name="save-outline" size={16} color={(!hasChanges || stage.is_locked) ? colors.gray[400] : colors.white} />
+          <Ionicons name="save-outline" size={16} color={(!hasChanges || stage.is_locked) ? c['muted-foreground'] : c.card} />
           <Text style={[styles.saveButtonText, (!hasChanges || stage.is_locked) && styles.saveButtonTextDisabled]}>
-            {isSaving ? "Saving..." : "Save Changes"}
+            {isSaving ? t("pipeline.saving") : t("pipeline.save_changes")}
           </Text>
         </TouchableOpacity>
       </View>
@@ -283,236 +290,238 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    paddingBottom: 40,
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 24,
-  },
-  emptyIconWrap: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-    backgroundColor: colors.gray[100],
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  emptyTitle: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: colors.gray[600],
-    marginBottom: 4,
-  },
-  emptyHint: {
-    fontSize: 12,
-    color: colors.gray[400],
-    textAlign: "center",
-  },
-  header: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.gray[100],
-  },
-  headerLabel: {
-    fontSize: 10,
-    fontWeight: "700",
-    color: colors.darkAmethyst[600],
-    letterSpacing: 1,
-    textTransform: "uppercase",
-    marginBottom: 4,
-  },
-  headerTitleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  headerTitle: {
-    fontSize: 15,
-    fontWeight: "700",
-    color: colors.gray[900],
-    flex: 1,
-  },
-  lockedBadge: {
-    backgroundColor: colors.gray[100],
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  lockedText: {
-    fontSize: 10,
-    fontWeight: "600",
-    color: colors.gray[500],
-  },
-  headerType: {
-    fontSize: 12,
-    color: colors.gray[400],
-    textTransform: "capitalize",
-    marginTop: 2,
-  },
-  fields: {
-    padding: 20,
-    gap: 20,
-  },
-  fieldGroup: {
-    gap: 6,
-  },
-  fieldLabel: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: colors.gray[600],
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: colors.gray[200],
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 14,
-    color: colors.gray[900],
-  },
-  fieldDisabled: {
-    backgroundColor: colors.gray[50],
-    color: colors.gray[500],
-  },
-  selectField: {
-    borderWidth: 1,
-    borderColor: colors.gray[200],
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  selectFieldText: {
-    fontSize: 14,
-    flex: 1,
-    color: colors.gray[900],
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContent: {
-    width: "80%",
-    maxHeight: "60%",
-    backgroundColor: colors.white,
-    borderRadius: 16,
-    padding: 20,
-  },
-  modalTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: colors.gray[900],
-    marginBottom: 12,
-  },
-  modalOption: {
-    paddingVertical: 14,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  modalOptionSelected: {
-    backgroundColor: colors.darkAmethyst[50],
-  },
-  modalOptionText: {
-    fontSize: 15,
-    color: colors.gray[800],
-  },
-  modalOptionTextSelected: {
-    color: colors.primary,
-    fontWeight: "600",
-  },
-  weightHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  weightValue: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: colors.darkAmethyst[600],
-  },
+function createStyles(c) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    content: {
+      paddingBottom: 40,
+    },
+    emptyContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      paddingHorizontal: 24,
+    },
+    emptyIconWrap: {
+      width: 40,
+      height: 40,
+      borderRadius: 10,
+      backgroundColor: c.border,
+      justifyContent: "center",
+      alignItems: "center",
+      marginBottom: 12,
+    },
+    emptyTitle: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: c['muted-foreground'],
+      marginBottom: 4,
+    },
+    emptyHint: {
+      fontSize: 12,
+      color: c['muted-foreground'],
+      textAlign: "center",
+    },
+    header: {
+      paddingHorizontal: 20,
+      paddingTop: 20,
+      paddingBottom: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: c.border,
+    },
+    headerLabel: {
+      fontSize: 10,
+      fontWeight: "700",
+      color: c.primary,
+      letterSpacing: 1,
+      textTransform: "uppercase",
+      marginBottom: 4,
+    },
+    headerTitleRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+    },
+    headerTitle: {
+      fontSize: 15,
+      fontWeight: "700",
+      color: c.foreground,
+      flex: 1,
+    },
+    lockedBadge: {
+      backgroundColor: c.border,
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+      borderRadius: 4,
+    },
+    lockedText: {
+      fontSize: 10,
+      fontWeight: "600",
+      color: c['muted-foreground'],
+    },
+    headerType: {
+      fontSize: 12,
+      color: c['muted-foreground'],
+      textTransform: "capitalize",
+      marginTop: 2,
+    },
+    fields: {
+      padding: 20,
+      gap: 20,
+    },
+    fieldGroup: {
+      gap: 6,
+    },
+    fieldLabel: {
+      fontSize: 12,
+      fontWeight: "600",
+      color: c['muted-foreground'],
+    },
+    input: {
+      borderWidth: 1,
+      borderColor: c.border,
+      borderRadius: 8,
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      fontSize: 14,
+      color: c.foreground,
+    },
+    fieldDisabled: {
+      backgroundColor: c['surface-muted'],
+      color: c['muted-foreground'],
+    },
+    selectField: {
+      borderWidth: 1,
+      borderColor: c.border,
+      borderRadius: 8,
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    selectFieldText: {
+      fontSize: 14,
+      flex: 1,
+      color: c.foreground,
+    },
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: `${c.foreground}80`,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    modalContent: {
+      width: "80%",
+      maxHeight: "60%",
+      backgroundColor: c.card,
+      borderRadius: 16,
+      padding: 20,
+    },
+    modalTitle: {
+      fontSize: 16,
+      fontWeight: "700",
+      color: c.foreground,
+      marginBottom: 12,
+    },
+    modalOption: {
+      paddingVertical: 14,
+      paddingHorizontal: 12,
+      borderRadius: 8,
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    modalOptionSelected: {
+      backgroundColor: c['surface-muted'],
+    },
+    modalOptionText: {
+      fontSize: 15,
+      color: c.foreground,
+    },
+    modalOptionTextSelected: {
+      color: c.primary,
+      fontWeight: "600",
+    },
+    weightHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    weightValue: {
+      fontSize: 13,
+      fontWeight: "700",
+      color: c.primary,
+    },
 
-  textArea: {
-    borderWidth: 1,
-    borderColor: colors.gray[200],
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 14,
-    color: colors.gray[900],
-    minHeight: 72,
-    textAlignVertical: "top",
-  },
-  advancedSection: {
-    borderTopWidth: 1,
-    borderTopColor: colors.gray[100],
-    paddingTop: 16,
-    gap: 12,
-  },
-  advancedLabel: {
-    fontSize: 10,
-    fontWeight: "700",
-    color: colors.gray[400],
-    letterSpacing: 1,
-    textTransform: "uppercase",
-  },
-  advancedRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    opacity: 0.4,
-  },
-  advancedRowText: {
-    fontSize: 12,
-    color: colors.gray[500],
-  },
-  advancedToggle: {
-    width: 32,
-    height: 16,
-    borderRadius: 8,
-    backgroundColor: colors.gray[200],
-  },
-  saveFooter: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderTopWidth: 1,
-    borderTopColor: colors.gray[100],
-    backgroundColor: colors.white,
-  },
-  saveButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    backgroundColor: colors.darkAmethyst[600],
-    paddingVertical: 12,
-    borderRadius: 10,
-  },
-  saveButtonDisabled: {
-    backgroundColor: colors.gray[200],
-  },
-  saveButtonText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: colors.white,
-  },
-  saveButtonTextDisabled: {
-    color: colors.gray[400],
-  },
-});
+    textArea: {
+      borderWidth: 1,
+      borderColor: c.border,
+      borderRadius: 8,
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      fontSize: 14,
+      color: c.foreground,
+      minHeight: 72,
+      textAlignVertical: "top",
+    },
+    advancedSection: {
+      borderTopWidth: 1,
+      borderTopColor: c.border,
+      paddingTop: 16,
+      gap: 12,
+    },
+    advancedLabel: {
+      fontSize: 10,
+      fontWeight: "700",
+      color: c['muted-foreground'],
+      letterSpacing: 1,
+      textTransform: "uppercase",
+    },
+    advancedRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      opacity: 0.4,
+    },
+    advancedRowText: {
+      fontSize: 12,
+      color: c['muted-foreground'],
+    },
+    advancedToggle: {
+      width: 32,
+      height: 16,
+      borderRadius: 8,
+      backgroundColor: c.border,
+    },
+    saveFooter: {
+      paddingHorizontal: 20,
+      paddingVertical: 16,
+      borderTopWidth: 1,
+      borderTopColor: c.border,
+      backgroundColor: c.card,
+    },
+    saveButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 8,
+      backgroundColor: c.primary,
+      paddingVertical: 12,
+      borderRadius: 10,
+    },
+    saveButtonDisabled: {
+      backgroundColor: c.border,
+    },
+    saveButtonText: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: c.card,
+    },
+    saveButtonTextDisabled: {
+      color: c['muted-foreground'],
+    },
+  });
+}

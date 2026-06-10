@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -12,8 +12,10 @@ import {
   Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '../../../src/theme';
+import { useTheme } from '../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../shared/context/I18nContext';
 import { useUser } from '../../../features/auth/context/user.context';
+import BottomSheet from '../../../shared/ui/BottomSheet';
 
 function getInitials(name) {
   if (!name) return '?';
@@ -32,28 +34,16 @@ function getAvatarColor(name) {
   return avatarColors[Math.abs(hash) % avatarColors.length];
 }
 
-function timeAgo(dateString) {
+function timeAgo(dateString, t) {
   if (!dateString) return '';
   const diff = Date.now() - new Date(dateString).getTime();
   const minutes = Math.floor(diff / 60000);
   const hours = Math.floor(minutes / 60);
   const days = Math.floor(hours / 24);
-  if (days > 0) return `${days}d ago`;
-  if (hours > 0) return `${hours}h ago`;
-  return 'Just now';
+  if (days > 0) return t('shortlist.days_ago', { count: days });
+  if (hours > 0) return t('shortlist.hours_ago', { count: hours });
+  return t('shortlist.just_now');
 }
-
-const TAG_STYLES = {
-  'Strong Fit': { bg: colors.emerald[50], text: colors.emerald[700], border: colors.emerald[200] },
-  'Needs Review': { bg: colors.amber[50], text: colors.amber[700], border: colors.amber[200] },
-  'Leaning hire': { bg: '#f0f9ff', text: '#0369a1', border: '#bae6fd' },
-};
-
-const VOTE_CONFIG = [
-  { value: 'up', label: 'Up', icon: 'thumbs-up', activeBg: colors.emerald[500], inactiveBg: colors.gray[100], inactiveText: colors.gray[500] },
-  { value: 'neutral', label: 'Neutral', icon: 'remove', activeBg: colors.gray[500], inactiveBg: colors.gray[100], inactiveText: colors.gray[500] },
-  { value: 'down', label: 'Down', icon: 'thumbs-down', activeBg: colors.red[500], inactiveBg: colors.gray[100], inactiveText: colors.gray[500] },
-];
 
 export default function ShortlistDetailPanel({
   entry,
@@ -67,7 +57,23 @@ export default function ShortlistDetailPanel({
   onPostNote,
   isOverlay,
 }) {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const c = theme.colors;
+  const styles = createStyles(c);
   const { profile } = useUser();
+
+  const TAG_STYLES = {
+    'Strong Fit': { bg: `${c.success}1a`, text: c.success, border: `${c.success}40` },
+    'Needs Review': { bg: `${c.warning}1a`, text: c.warning, border: `${c.warning}40` },
+    'Leaning hire': { bg: '#f0f9ff', text: '#0369a1', border: '#bae6fd' },
+  };
+
+  const VOTE_CONFIG = useMemo(() => [
+    { value: 'up', label: t('shortlist.vote_up'), icon: 'thumbs-up', activeBg: c.success, inactiveBg: c.border, inactiveText: c['muted-foreground'] },
+    { value: 'neutral', label: t('shortlist.vote_neutral'), icon: 'remove', activeBg: c['muted-foreground'], inactiveBg: c.border, inactiveText: c['muted-foreground'] },
+    { value: 'down', label: t('shortlist.vote_down'), icon: 'thumbs-down', activeBg: c.destructive, inactiveBg: c.border, inactiveText: c['muted-foreground'] },
+  ], [t]);
   const [noteBody, setNoteBody] = useState('');
   const [visibleToTeam, setVisibleToTeam] = useState(true);
   const [showRejectInput, setShowRejectInput] = useState(false);
@@ -117,9 +123,9 @@ export default function ShortlistDetailPanel({
     setShowRejectInput(false);
   };
 
-  const scoreBadgeBg = composite_score >= 80 ? colors.emerald[50] : composite_score >= 65 ? colors.amber[50] : colors.gray[50];
-  const scoreBadgeText = composite_score >= 80 ? colors.emerald[700] : composite_score >= 65 ? colors.amber[700] : colors.gray[600];
-  const scoreBadgeBorder = composite_score >= 80 ? colors.emerald[200] : composite_score >= 65 ? colors.amber[200] : colors.gray[200];
+  const scoreBadgeBg = composite_score >= 80 ? `${c.success}1a` : composite_score >= 65 ? `${c.warning}1a` : c['surface-muted'];
+  const scoreBadgeText = composite_score >= 80 ? c.success : composite_score >= 65 ? c.warning : c['muted-foreground'];
+  const scoreBadgeBorder = composite_score >= 80 ? `${c.success}40` : composite_score >= 65 ? `${c.warning}40` : c.border;
 
   const renderVoteButton = ({ value, label, icon, activeBg, inactiveBg, inactiveText }) => {
     const isActive = myVote === value;
@@ -136,310 +142,305 @@ export default function ShortlistDetailPanel({
         <Ionicons
           name={isActive ? icon : `${icon}-outline`}
           size={14}
-          color={isActive ? colors.white : inactiveText}
+          color={isActive ? c['destructive-foreground'] : inactiveText}
         />
-        <Text style={[styles.voteBtnLabel, { color: isActive ? colors.white : inactiveText }]}>
+        <Text style={[styles.voteBtnLabel, { color: isActive ? c['destructive-foreground'] : inactiveText }]}>
           {label}
         </Text>
       </TouchableOpacity>
     );
   };
 
-  const panelContent = (
-    <View style={[styles.panel, isOverlay && styles.overlayPanel]}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <View style={[styles.headerAvatar, { backgroundColor: getAvatarColor(candidate?.full_name) }]}>
-            <Text style={styles.headerAvatarText}>{getInitials(candidate?.full_name)}</Text>
-          </View>
-          <View style={styles.headerInfo}>
-            <View style={styles.headerNameRow}>
-              <Text style={styles.headerName} numberOfLines={1}>{candidate?.full_name}</Text>
-              {composite_score != null && (
-                <View style={[styles.scorePill, { backgroundColor: scoreBadgeBg, borderColor: scoreBadgeBorder }]}>
-                  <Text style={[styles.scorePillText, { color: scoreBadgeText }]}>{composite_score}</Text>
-                </View>
-              )}
-            </View>
-            <Text style={styles.headerHeadline} numberOfLines={1}>
-              {candidate?.headline || candidate?.role}
-            </Text>
-            <View style={styles.tagRow}>
-              {tags.slice(0, 3).map((tag) => {
-                const ts = TAG_STYLES[tag] || { bg: colors.gray[100], text: colors.gray[600], border: colors.gray[200] };
-                return (
-                  <View key={tag} style={[styles.headerTag, { backgroundColor: ts.bg, borderColor: ts.border }]}>
-                    <Text style={[styles.headerTagText, { color: ts.text }]}>{tag}</Text>
-                  </View>
-                );
-              })}
-            </View>
-          </View>
+  const headerContent = (
+    <View style={isOverlay ? styles.overlaySection : styles.header}>
+      <View style={styles.headerLeft}>
+        <View style={[styles.headerAvatar, { backgroundColor: getAvatarColor(candidate?.full_name) }]}>
+          <Text style={styles.headerAvatarText}>{getInitials(candidate?.full_name)}</Text>
         </View>
-        <TouchableOpacity onPress={onClose} style={styles.closeBtn} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-          <Ionicons name="close" size={18} color={colors.gray[400]} />
-        </TouchableOpacity>
-      </View>
-
-      {/* Scrollable Body */}
-      <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent} keyboardShouldPersistTaps="handled">
-        {/* YOUR VOTE */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Your Vote</Text>
-          {myVote ? (
-            <View style={[
-              styles.currentVoteBadge,
-              {
-                backgroundColor: myVote === 'up' ? colors.emerald[50] : myVote === 'down' ? colors.red[50] : colors.gray[50],
-                borderColor: myVote === 'up' ? colors.emerald[200] : myVote === 'down' ? colors.red[200] : colors.gray[200],
-              },
-            ]}>
-              <Text style={[
-                styles.currentVoteText,
-                { color: myVote === 'up' ? colors.emerald[700] : myVote === 'down' ? colors.red[600] : colors.gray[600] },
-              ]}>
-                You voted <Text style={styles.currentVoteBold}>{myVote}</Text> — tap again to undo
-              </Text>
-            </View>
-          ) : (
-            <Text style={styles.noVoteText}>You haven't voted yet.</Text>
-          )}
-          <View style={styles.voteRow}>
-            {VOTE_CONFIG.map(renderVoteButton)}
-          </View>
-        </View>
-
-        {/* TEAM VOTES */}
-        <View style={styles.section}>
-          <View style={styles.teamVotesHeader}>
-            <Text style={styles.sectionTitle}>Team Votes</Text>
-            <Text style={styles.voterCount}>{totalVoters} / ? cast</Text>
-          </View>
-          {totalVoters > 0 && (
-            <View style={styles.progressBar}>
-              <View style={[styles.progressFill, { width: `${(upVotes / Math.max(totalVoters, 1)) * 100}%` }]} />
-            </View>
-          )}
-          <View style={styles.voterList}>
-            {votes.length === 0 && <Text style={styles.emptyText}>No votes yet.</Text>}
-            {votes.map((v, i) => (
-              <View key={v.id || i} style={styles.voterItem}>
-                <View style={styles.voterInfo}>
-                  <View style={[styles.voterListItemAvatar, { backgroundColor: getAvatarColor(v.profiles?.full_name) }]}>
-                    <Text style={styles.voterListItemAvatarText}>{getInitials(v.profiles?.full_name)}</Text>
-                  </View>
-                  <View>
-                    <Text style={styles.voterName}>{v.profiles?.full_name}</Text>
-                    <Text style={styles.voterRole}>{v.profiles?.headline || v.profiles?.role}</Text>
-                  </View>
-                </View>
-                <View style={[
-                  styles.votePill,
-                  {
-                    backgroundColor: v.vote === 'up' ? colors.emerald[50] : v.vote === 'down' ? colors.red[50] : colors.gray[100],
-                    borderColor: v.vote === 'up' ? colors.emerald[200] : v.vote === 'down' ? colors.red[200] : colors.gray[200],
-                  },
-                ]}>
-                  <Text style={[
-                    styles.votePillText,
-                    { color: v.vote === 'up' ? colors.emerald[600] : v.vote === 'down' ? colors.red[500] : colors.gray[500] },
-                  ]}>
-                    {v.vote === 'up' ? '↑ Up' : v.vote === 'down' ? '↓ Down' : '— Neutral'}
-                  </Text>
-                </View>
-              </View>
-            ))}
-          </View>
-        </View>
-
-        {/* AI RATIONALE */}
-        <View style={styles.section}>
-          <View style={styles.aiCard}>
-            <View style={styles.aiHeader}>
-              <View style={styles.aiTitleRow}>
-                <Ionicons name="sparkles" size={14} color={colors.mauveMagic[500]} />
-                <Text style={styles.aiTitle}>AI Rationale</Text>
-              </View>
-              {ai_confidence != null && (
-                <View style={styles.confidenceBadge}>
-                  <Text style={styles.confidenceText}>Confidence {Math.round(ai_confidence * 100)}%</Text>
-                </View>
-              )}
-            </View>
-            <Text style={styles.aiRationaleText}>
-              {ai_rationale || 'No AI rationale available for this candidate.'}
-            </Text>
-          </View>
-        </View>
-
-        {/* TEAM NOTES */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Team Notes</Text>
-          {notesLoading ? (
-            <ActivityIndicator size="small" color={colors.darkAmethyst[500]} style={styles.notesLoader} />
-          ) : (
-            <View style={styles.notesList}>
-              {notes.length === 0 && <Text style={styles.emptyText}>No notes yet. Be the first to leave one.</Text>}
-              {notes.map((note) => (
-                <View key={note.id} style={styles.noteCard}>
-                  <View style={styles.noteHeader}>
-                    <Text style={styles.noteAuthor}>{note.profiles?.full_name || 'Team member'}</Text>
-                    <View style={styles.noteTime}>
-                      <Ionicons name="time-outline" size={11} color={colors.gray[400]} />
-                      <Text style={styles.noteTimeText}>{timeAgo(note.created_at)}</Text>
-                    </View>
-                  </View>
-                  <Text style={styles.noteBody}>{note.body}</Text>
-                </View>
-              ))}
-              <View ref={notesEndRef} />
-            </View>
-          )}
-          <TextInput
-            style={styles.noteInput}
-            multiline
-            numberOfLines={2}
-            value={noteBody}
-            onChangeText={setNoteBody}
-            placeholder="Leave a note for the hiring team..."
-            placeholderTextColor={colors.gray[400]}
-            textAlignVertical="top"
-          />
-          <View style={styles.noteActions}>
-            <TouchableOpacity
-              onPress={() => setVisibleToTeam(!visibleToTeam)}
-              style={styles.visibilityToggle}
-            >
-              <Ionicons
-                name={visibleToTeam ? 'checkbox' : 'square-outline'}
-                size={16}
-                color={colors.darkAmethyst[500]}
-              />
-              <Ionicons name="person-check-outline" size={13} color={colors.gray[500]} />
-              <Text style={styles.visibilityText}>Visible to hiring team</Text>
-            </TouchableOpacity>
-            <View style={styles.noteActionBtns}>
-              <TouchableOpacity onPress={() => setNoteBody('')}>
-                <Text style={styles.cancelBtn}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={handlePostNote}
-                disabled={!noteBody.trim() || postingNote}
-                style={[styles.postBtn, (!noteBody.trim() || postingNote) && styles.postBtnDisabled]}
-              >
-                <Ionicons name="send" size={13} color={colors.white} />
-                <Text style={styles.postBtnText}>{postingNote ? 'Posting...' : 'Post note'}</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </ScrollView>
-
-      {/* ACTION BUTTONS */}
-      {!is_rejected ? (
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-          <View style={styles.actions}>
-            {showRejectInput ? (
-              <View style={styles.rejectInputSection}>
-                <Text style={styles.rejectLabel}>Rejection reason (pre-filled from AI):</Text>
-                <TextInput
-                  style={styles.rejectInput}
-                  multiline
-                  numberOfLines={3}
-                  value={rejectReason}
-                  onChangeText={setRejectReason}
-                  textAlignVertical="top"
-                />
-                <View style={styles.rejectActions}>
-                  <TouchableOpacity onPress={() => setShowRejectInput(false)} style={styles.cancelRejectBtn}>
-                    <Text style={styles.cancelRejectText}>Cancel</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={handleReject}
-                    disabled={rejecting}
-                    style={styles.confirmRejectBtn}
-                  >
-                    <Text style={styles.confirmRejectText}>
-                      {rejecting ? 'Rejecting...' : 'Confirm reject'}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            ) : (
-              <View style={styles.actionRow}>
-                <TouchableOpacity
-                  onPress={() => onAdvanceToOffer(app.id)}
-                  style={styles.advanceBtn}
-                  activeOpacity={0.8}
-                >
-                  <Ionicons name="chevron-up" size={16} color={colors.white} />
-                  <Text style={styles.advanceBtnText}>Advance to offer</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => setShowRejectInput(true)}
-                  style={styles.rejectBtn}
-                >
-                  <Text style={styles.rejectBtnText}>Move to rejected</Text>
-                </TouchableOpacity>
+        <View style={styles.headerInfo}>
+          <View style={styles.headerNameRow}>
+            <Text style={styles.headerName} numberOfLines={1}>{candidate?.full_name}</Text>
+            {composite_score != null && (
+              <View style={[styles.scorePill, { backgroundColor: scoreBadgeBg, borderColor: scoreBadgeBorder }]}>
+                <Text style={[styles.scorePillText, { color: scoreBadgeText }]}>{composite_score}</Text>
               </View>
             )}
           </View>
-        </KeyboardAvoidingView>
-      ) : (
-        <View style={styles.rejectedBanner}>
-          <Text style={styles.rejectedBannerTitle}>This candidate was rejected</Text>
-          {rejection_reason && (
-            <Text style={styles.rejectedBannerReason}>{rejection_reason}</Text>
-          )}
+          <Text style={styles.headerHeadline} numberOfLines={1}>
+            {candidate?.headline || candidate?.role}
+          </Text>
+          <View style={styles.tagRow}>
+            {tags.slice(0, 3).map((tag) => {
+              const ts = TAG_STYLES[tag] || { bg: c.border, text: c['muted-foreground'], border: c.border };
+              return (
+                <View key={tag} style={[styles.headerTag, { backgroundColor: ts.bg, borderColor: ts.border }]}>
+                  <Text style={[styles.headerTagText, { color: ts.text }]}>{tag}</Text>
+                </View>
+              );
+            })}
+          </View>
         </View>
+      </View>
+      {!isOverlay && (
+        <TouchableOpacity onPress={onClose} style={styles.closeBtn} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+          <Ionicons name="close" size={18} color={c['muted-foreground']} />
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+
+  const bodySections = (
+    <>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>{t("shortlist.your_vote")}</Text>
+        {myVote ? (
+          <View style={[
+            styles.currentVoteBadge,
+            {
+              backgroundColor: myVote === 'up' ? `${c.success}1a` : myVote === 'down' ? `${c.destructive}1a` : c['surface-muted'],
+              borderColor: myVote === 'up' ? `${c.success}40` : myVote === 'down' ? `${c.destructive}40` : c.border,
+            },
+          ]}>
+            <Text style={[
+              styles.currentVoteText,
+              { color: myVote === 'up' ? c.success : myVote === 'down' ? c.destructive : c['muted-foreground'] },
+            ]}>
+              {t("shortlist.you_voted", { vote: myVote })}
+            </Text>
+          </View>
+        ) : (
+          <Text style={styles.noVoteText}>{t("shortlist.not_voted")}</Text>
+        )}
+        <View style={styles.voteRow}>
+          {VOTE_CONFIG.map(renderVoteButton)}
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <View style={styles.teamVotesHeader}>
+          <Text style={styles.sectionTitle}>{t("shortlist.team_votes")}</Text>
+          <Text style={styles.voterCount}>{t("shortlist.votes_cast", { count: totalVoters })}</Text>
+        </View>
+        {totalVoters > 0 && (
+          <View style={styles.progressBar}>
+            <View style={[styles.progressFill, { width: `${(upVotes / Math.max(totalVoters, 1)) * 100}%` }]} />
+          </View>
+        )}
+        <View style={styles.voterList}>
+          {votes.length === 0 && <Text style={styles.emptyText}>{t("shortlist.no_votes")}</Text>}
+          {votes.map((v, i) => (
+            <View key={v.id || i} style={styles.voterItem}>
+              <View style={styles.voterInfo}>
+                <View style={[styles.voterListItemAvatar, { backgroundColor: getAvatarColor(v.profiles?.full_name) }]}>
+                  <Text style={styles.voterListItemAvatarText}>{getInitials(v.profiles?.full_name)}</Text>
+                </View>
+                <View>
+                  <Text style={styles.voterName}>{v.profiles?.full_name}</Text>
+                  <Text style={styles.voterRole}>{v.profiles?.headline || v.profiles?.role}</Text>
+                </View>
+              </View>
+              <View style={[
+                styles.votePill,
+                {
+                  backgroundColor: v.vote === 'up' ? `${c.success}1a` : v.vote === 'down' ? `${c.destructive}1a` : c.border,
+                  borderColor: v.vote === 'up' ? `${c.success}40` : v.vote === 'down' ? `${c.destructive}40` : c.border,
+                },
+              ]}>
+                <Text style={[
+                  styles.votePillText,
+                  { color: v.vote === 'up' ? c.success : v.vote === 'down' ? c.destructive : c['muted-foreground'] },
+                ]}>
+                  {v.vote === 'up' ? t("shortlist.vote_up_pill") : v.vote === 'down' ? t("shortlist.vote_down_pill") : t("shortlist.vote_neutral_pill")}
+                </Text>
+              </View>
+            </View>
+          ))}
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <View style={styles.aiCard}>
+          <View style={styles.aiHeader}>
+            <View style={styles.aiTitleRow}>
+              <Ionicons name="sparkles" size={14} color={c['muted-foreground']} />
+              <Text style={styles.aiTitle}>{t("shortlist.ai_rationale")}</Text>
+            </View>
+            {ai_confidence != null && (
+              <View style={styles.confidenceBadge}>
+                <Text style={styles.confidenceText}>{t("shortlist.confidence", { percent: Math.round(ai_confidence * 100) })}</Text>
+              </View>
+            )}
+          </View>
+          <Text style={styles.aiRationaleText}>
+            {ai_rationale || t("shortlist.no_rationale")}
+          </Text>
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>{t("shortlist.team_notes")}</Text>
+        {notesLoading ? (
+          <ActivityIndicator size="small" color={c['muted-foreground']} style={styles.notesLoader} />
+        ) : (
+          <View style={styles.notesList}>
+            {notes.length === 0 && <Text style={styles.emptyText}>{t("shortlist.no_notes")}</Text>}
+            {notes.map((note) => (
+              <View key={note.id} style={styles.noteCard}>
+                <View style={styles.noteHeader}>
+                  <Text style={styles.noteAuthor}>{note.profiles?.full_name || t("shortlist.team_member")}</Text>
+                  <View style={styles.noteTime}>
+                    <Ionicons name="time-outline" size={11} color={c['muted-foreground']} />
+                    <Text style={styles.noteTimeText}>{timeAgo(note.created_at, t)}</Text>
+                  </View>
+                </View>
+                <Text style={styles.noteBody}>{note.body}</Text>
+              </View>
+            ))}
+            <View ref={notesEndRef} />
+          </View>
+        )}
+        <TextInput
+          style={styles.noteInput}
+          multiline
+          numberOfLines={2}
+          value={noteBody}
+          onChangeText={setNoteBody}
+          placeholder={t("shortlist.note_placeholder")}
+          placeholderTextColor={c['muted-foreground']}
+          textAlignVertical="top"
+        />
+        <View style={styles.noteActions}>
+          <TouchableOpacity
+            onPress={() => setVisibleToTeam(!visibleToTeam)}
+            style={styles.visibilityToggle}
+          >
+            <Ionicons
+              name={visibleToTeam ? 'checkbox' : 'square-outline'}
+              size={16}
+              color={c['muted-foreground']}
+            />
+            <Ionicons name="person-check-outline" size={13} color={c['muted-foreground']} />
+            <Text style={styles.visibilityText}>{t("shortlist.visible_to_team")}</Text>
+          </TouchableOpacity>
+          <View style={styles.noteActionBtns}>
+            <TouchableOpacity onPress={() => setNoteBody('')}>
+              <Text style={styles.cancelBtn}>{t("shortlist.cancel")}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handlePostNote}
+              disabled={!noteBody.trim() || postingNote}
+              style={[styles.postBtn, (!noteBody.trim() || postingNote) && styles.postBtnDisabled]}
+            >
+              <Ionicons name="send" size={13} color={c['destructive-foreground']} />
+              <Text style={styles.postBtnText}>{postingNote ? t("shortlist.posting") : t("shortlist.post_note")}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </>
+  );
+
+  const actionsContent = !is_rejected ? (
+    showRejectInput ? (
+      <View style={styles.rejectInputSection}>
+        <Text style={styles.rejectLabel}>{t("shortlist.rejection_reason_label")}</Text>
+        <TextInput
+          style={styles.rejectInput}
+          multiline
+          numberOfLines={3}
+          value={rejectReason}
+          onChangeText={setRejectReason}
+          textAlignVertical="top"
+        />
+        <View style={styles.rejectActions}>
+          <TouchableOpacity onPress={() => setShowRejectInput(false)} style={styles.cancelRejectBtn}>
+            <Text style={styles.cancelRejectText}>{t("shortlist.cancel")}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleReject}
+            disabled={rejecting}
+            style={styles.confirmRejectBtn}
+          >
+            <Text style={styles.confirmRejectText}>
+              {rejecting ? t("shortlist.rejecting") : t("shortlist.confirm_reject")}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    ) : (
+      <View style={styles.actionRow}>
+        <TouchableOpacity
+          onPress={() => onAdvanceToOffer(app.id)}
+          style={styles.advanceBtn}
+          activeOpacity={0.8}
+        >
+          <Ionicons name="chevron-up" size={16} color={c['destructive-foreground']} />
+          <Text style={styles.advanceBtnText}>{t("shortlist.advance_to_offer")}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => setShowRejectInput(true)}
+          style={styles.rejectBtn}
+        >
+          <Text style={styles.rejectBtnText}>{t("shortlist.move_to_rejected")}</Text>
+        </TouchableOpacity>
+      </View>
+    )
+  ) : (
+    <View style={styles.rejectedBanner}>
+      <Text style={styles.rejectedBannerTitle}>{t("shortlist.rejected_title")}</Text>
+      {rejection_reason && (
+        <Text style={styles.rejectedBannerReason}>{rejection_reason}</Text>
       )}
     </View>
   );
 
   if (isOverlay) {
     return (
-      <Modal visible transparent animationType="slide" onRequestClose={onClose}>
-        <View style={styles.overlayBackdrop}>
-          <TouchableOpacity style={styles.backdropTouch} onPress={onClose} activeOpacity={1} />
-          {panelContent}
-        </View>
-      </Modal>
+      <BottomSheet
+        visible
+        onClose={onClose}
+        closeButton={
+          <TouchableOpacity onPress={onClose} style={styles.closeBtn} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+            <Ionicons name="close" size={18} color={c['muted-foreground']} />
+          </TouchableOpacity>
+        }
+        footer={actionsContent}
+      >
+        {headerContent}
+        {bodySections}
+      </BottomSheet>
     );
   }
 
-  return panelContent;
+  return (
+    <View style={styles.panel}>
+      <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent} keyboardShouldPersistTaps="handled">
+        {headerContent}
+        {bodySections}
+      </ScrollView>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        {actionsContent}
+      </KeyboardAvoidingView>
+    </View>
+  );
 }
 
-const styles = StyleSheet.create({
+function createStyles(c) { return StyleSheet.create({
   panel: {
-    backgroundColor: colors.white,
+    backgroundColor: c.card,
     flex: 1,
     flexDirection: 'column',
     overflow: 'hidden',
     borderLeftWidth: 1,
-    borderLeftColor: colors.gray[100],
+    borderLeftColor: c.border,
   },
-  overlayPanel: {
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    bottom: 0,
-    width: 380,
-    shadowColor: '#000',
-    shadowOffset: { width: -2, height: 0 },
-    shadowOpacity: 0.15,
-    shadowRadius: 20,
-    elevation: 10,
-  },
-  overlayBackdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.25)',
+  overlaySection: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
-  },
-  backdropTouch: {
-    flex: 1,
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    paddingBottom: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: c.border,
   },
   header: {
     flexDirection: 'row',
@@ -449,8 +450,8 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingBottom: 14,
     borderBottomWidth: 1,
-    borderBottomColor: colors.gray[100],
-    backgroundColor: colors.white,
+    borderBottomColor: c.border,
+    backgroundColor: c.card,
   },
   headerLeft: {
     flexDirection: 'row',
@@ -468,7 +469,7 @@ const styles = StyleSheet.create({
   headerAvatarText: {
     fontSize: 15,
     fontWeight: '700',
-    color: colors.white,
+    color: c['destructive-foreground'],
   },
   headerInfo: {
     flex: 1,
@@ -481,7 +482,7 @@ const styles = StyleSheet.create({
   headerName: {
     fontSize: 16,
     fontWeight: '700',
-    color: colors.gray[900],
+    color: c.foreground,
     flexShrink: 1,
   },
   scorePill: {
@@ -496,7 +497,7 @@ const styles = StyleSheet.create({
   },
   headerHeadline: {
     fontSize: 12,
-    color: colors.gray[500],
+    color: c['muted-foreground'],
     marginTop: 1,
   },
   tagRow: {
@@ -529,13 +530,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: colors.gray[100],
+    borderBottomColor: c.border,
   },
   sectionTitle: {
     fontSize: 10,
     fontWeight: '700',
     letterSpacing: 0.5,
-    color: colors.gray[400],
+    color: c['muted-foreground'],
     textTransform: 'uppercase',
     marginBottom: 10,
   },
@@ -556,7 +557,7 @@ const styles = StyleSheet.create({
   },
   noVoteText: {
     fontSize: 12,
-    color: colors.gray[400],
+    color: c['muted-foreground'],
     marginBottom: 10,
   },
   voteRow: {
@@ -584,18 +585,18 @@ const styles = StyleSheet.create({
   },
   voterCount: {
     fontSize: 11,
-    color: colors.gray[500],
+    color: c['muted-foreground'],
   },
   progressBar: {
     height: 6,
-    backgroundColor: colors.gray[100],
+    backgroundColor: c.border,
     borderRadius: 3,
     marginBottom: 10,
     overflow: 'hidden',
   },
   progressFill: {
     height: 6,
-    backgroundColor: colors.emerald[400],
+    backgroundColor: c.success,
     borderRadius: 3,
   },
   voterList: {
@@ -621,16 +622,16 @@ const styles = StyleSheet.create({
   voterListItemAvatarText: {
     fontSize: 10,
     fontWeight: '700',
-    color: colors.white,
+    color: c['destructive-foreground'],
   },
   voterName: {
     fontSize: 12,
     fontWeight: '600',
-    color: colors.gray[800],
+    color: c.foreground,
   },
   voterRole: {
     fontSize: 10,
-    color: colors.gray[400],
+    color: c['muted-foreground'],
   },
   votePill: {
     paddingHorizontal: 8,
@@ -644,12 +645,12 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 12,
-    color: colors.gray[400],
+    color: c['muted-foreground'],
   },
   aiCard: {
-    backgroundColor: colors.mauveMagic[50],
+    backgroundColor: c['surface-muted'],
     borderWidth: 1,
-    borderColor: colors.mauveMagic[200],
+    borderColor: c.border,
     borderRadius: 12,
     padding: 14,
   },
@@ -668,11 +669,11 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '700',
     letterSpacing: 0.5,
-    color: colors.mauveMagic[600],
+    color: c.primary,
     textTransform: 'uppercase',
   },
   confidenceBadge: {
-    backgroundColor: colors.mauveMagic[100],
+    backgroundColor: c.border,
     paddingHorizontal: 7,
     paddingVertical: 2,
     borderRadius: 999,
@@ -680,11 +681,11 @@ const styles = StyleSheet.create({
   confidenceText: {
     fontSize: 10,
     fontWeight: '700',
-    color: colors.mauveMagic[700],
+    color: c.foreground,
   },
   aiRationaleText: {
     fontSize: 13,
-    color: colors.gray[700],
+    color: c.foreground,
     lineHeight: 19,
   },
   notesLoader: {
@@ -695,11 +696,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   noteCard: {
-    backgroundColor: colors.gray[50],
+    backgroundColor: c['surface-muted'],
     borderRadius: 8,
     padding: 10,
     borderWidth: 1,
-    borderColor: colors.gray[100],
+    borderColor: c.border,
   },
   noteHeader: {
     flexDirection: 'row',
@@ -710,7 +711,7 @@ const styles = StyleSheet.create({
   noteAuthor: {
     fontSize: 12,
     fontWeight: '600',
-    color: colors.gray[800],
+    color: c.foreground,
   },
   noteTime: {
     flexDirection: 'row',
@@ -719,21 +720,21 @@ const styles = StyleSheet.create({
   },
   noteTimeText: {
     fontSize: 10,
-    color: colors.gray[400],
+    color: c['muted-foreground'],
   },
   noteBody: {
     fontSize: 12,
-    color: colors.gray[600],
+    color: c['muted-foreground'],
     lineHeight: 17,
   },
   noteInput: {
     borderWidth: 1,
-    borderColor: colors.gray[200],
+    borderColor: c.border,
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 8,
     fontSize: 12,
-    color: colors.gray[700],
+    color: c.foreground,
     minHeight: 44,
   },
   noteActions: {
@@ -749,7 +750,7 @@ const styles = StyleSheet.create({
   },
   visibilityText: {
     fontSize: 11,
-    color: colors.gray[500],
+    color: c['muted-foreground'],
   },
   noteActionBtns: {
     flexDirection: 'row',
@@ -758,13 +759,13 @@ const styles = StyleSheet.create({
   },
   cancelBtn: {
     fontSize: 12,
-    color: colors.gray[400],
+    color: c['muted-foreground'],
   },
   postBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: colors.darkAmethyst[600],
+    backgroundColor: c.primary,
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 8,
@@ -775,14 +776,7 @@ const styles = StyleSheet.create({
   postBtnText: {
     fontSize: 12,
     fontWeight: '600',
-    color: colors.white,
-  },
-  actions: {
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    borderTopWidth: 1,
-    borderTopColor: colors.gray[100],
-    backgroundColor: colors.white,
+    color: c['destructive-foreground'],
   },
   actionRow: {
     flexDirection: 'row',
@@ -795,9 +789,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 6,
     paddingVertical: 11,
-    backgroundColor: colors.darkAmethyst[600],
+    backgroundColor: c.primary,
     borderRadius: 12,
-    shadowColor: 'rgba(124, 58, 237, 0.3)',
+    shadowColor: `${c.primary}4d`,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 1,
     shadowRadius: 6,
@@ -806,13 +800,13 @@ const styles = StyleSheet.create({
   advanceBtnText: {
     fontSize: 14,
     fontWeight: '600',
-    color: colors.white,
+    color: c['destructive-foreground'],
   },
   rejectBtn: {
     flex: 1,
     paddingVertical: 11,
     borderWidth: 1,
-    borderColor: colors.gray[200],
+    borderColor: c.border,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
@@ -820,7 +814,7 @@ const styles = StyleSheet.create({
   rejectBtnText: {
     fontSize: 13,
     fontWeight: '500',
-    color: colors.gray[700],
+    color: c.foreground,
   },
   rejectInputSection: {
     gap: 8,
@@ -828,16 +822,16 @@ const styles = StyleSheet.create({
   rejectLabel: {
     fontSize: 12,
     fontWeight: '500',
-    color: colors.gray[500],
+    color: c['muted-foreground'],
   },
   rejectInput: {
     borderWidth: 1,
-    borderColor: colors.red[200],
+    borderColor: `${c.destructive}40`,
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 8,
     fontSize: 12,
-    color: colors.gray[700],
+    color: c.foreground,
     minHeight: 60,
   },
   rejectActions: {
@@ -848,43 +842,43 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 9,
     borderWidth: 1,
-    borderColor: colors.gray[200],
+    borderColor: c.border,
     borderRadius: 8,
     alignItems: 'center',
   },
   cancelRejectText: {
     fontSize: 13,
     fontWeight: '500',
-    color: colors.gray[600],
+    color: c['muted-foreground'],
   },
   confirmRejectBtn: {
     flex: 1,
     paddingVertical: 9,
-    backgroundColor: colors.red[500],
+    backgroundColor: c.destructive,
     borderRadius: 8,
     alignItems: 'center',
   },
   confirmRejectText: {
     fontSize: 13,
     fontWeight: '600',
-    color: colors.white,
+    color: c['destructive-foreground'],
   },
   rejectedBanner: {
     paddingHorizontal: 20,
     paddingVertical: 14,
     borderTopWidth: 1,
-    borderTopColor: colors.gray[100],
-    backgroundColor: colors.red[50],
+    borderTopColor: c.border,
+    backgroundColor: `${c.destructive}1a`,
   },
   rejectedBannerTitle: {
     fontSize: 12,
     fontWeight: '600',
-    color: colors.red[500],
+    color: c.destructive,
     marginBottom: 2,
   },
   rejectedBannerReason: {
     fontSize: 12,
-    color: colors.gray[500],
+    color: c['muted-foreground'],
     lineHeight: 17,
   },
-});
+}); }

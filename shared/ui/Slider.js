@@ -1,24 +1,30 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import Slider from "@react-native-community/slider";
-import { colors } from "../../src/theme";
+import RNNSlider from "@react-native-community/slider";
+import { useTheme } from "../context/ThemeContext";
+import { spacing, borderRadius, fontSize, fontWeight } from "../../src/theme";
 
 export default function WeightSlider({ value, maxValue, onChange }) {
+  const { theme } = useTheme();
+  const c = theme.colors;
+
   return (
     <View style={styles.container}>
-      <Slider
+      <RNNSlider
         style={styles.slider}
         value={value}
         onValueChange={onChange}
         minimumValue={0}
         maximumValue={Math.max(maxValue, 0.01)}
         step={0.01}
-        minimumTrackTintColor={colors.darkAmethyst[600]}
-        maximumTrackTintColor={colors.gray[200]}
-        thumbTintColor={colors.white}
+        minimumTrackTintColor={c.primary}
+        maximumTrackTintColor={c.border}
+        thumbTintColor={c.card}
       />
       <View style={styles.tickContainer}>
         {[0, 25, 50, 75, 100].map((pct) => {
           const tickVal = (pct / 100) * maxValue;
+          const isActive = Math.round(value * 100) >= Math.round(tickVal * 100);
+          const isExact = Math.round(value * 100) === Math.round(tickVal * 100);
           return (
             <TouchableOpacity
               key={pct}
@@ -28,15 +34,15 @@ export default function WeightSlider({ value, maxValue, onChange }) {
               <View
                 style={[
                   styles.tickMark,
-                  Math.round(value * 100) >= Math.round(tickVal * 100) &&
-                    styles.tickMarkActive,
+                  { backgroundColor: c.border },
+                  isActive && { backgroundColor: c.primary },
                 ]}
               />
               <Text
                 style={[
                   styles.tickLabel,
-                  Math.round(value * 100) === Math.round(tickVal * 100) &&
-                    styles.tickLabelActive,
+                  { color: c['muted-foreground'] },
+                  isExact && { color: c.primary, fontWeight: fontWeight.bold },
                 ]}
               >
                 {pct}%
@@ -51,7 +57,7 @@ export default function WeightSlider({ value, maxValue, onChange }) {
 
 const styles = StyleSheet.create({
   container: {
-    gap: 4,
+    gap: spacing[1],
   },
   slider: {
     width: "100%",
@@ -64,25 +70,16 @@ const styles = StyleSheet.create({
   },
   tick: {
     alignItems: "center",
-    gap: 4,
+    gap: spacing[1],
     paddingHorizontal: 2,
   },
   tickMark: {
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: colors.gray[300],
-  },
-  tickMarkActive: {
-    backgroundColor: colors.darkAmethyst[600],
   },
   tickLabel: {
-    fontSize: 10,
-    color: colors.gray[400],
-    fontWeight: "500",
-  },
-  tickLabelActive: {
-    color: colors.darkAmethyst[600],
-    fontWeight: "700",
+    fontSize: fontSize.xs,
+    fontWeight: fontWeight.medium,
   },
 });

@@ -1,15 +1,20 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '../../../src/theme';
+import { useTheme } from '../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../shared/context/I18nContext';
 import ComparisonCard from './ComparisonCard';
 
 export default function SideBySideComparison({ selectedCandidates, onReorder }) {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const c = theme.colors;
+  const styles = createStyles(c);
   if (!selectedCandidates || selectedCandidates.length === 0) {
     return (
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyText}>
-          Select candidates from the table above to compare them side-by-side.
+          {t("shortlist.compare_hint")}
         </Text>
       </View>
     );
@@ -36,9 +41,9 @@ export default function SideBySideComparison({ selectedCandidates, onReorder }) 
   return (
     <View style={styles.container}>
       <View style={styles.headerSection}>
-        <Text style={styles.title}>Side-by-side comparison</Text>
+        <Text style={styles.title}>{t("shortlist.compare_title")}</Text>
         <Text style={styles.subtitle}>
-          Select 2-3 candidates to compare dimensions in detail. Use arrows to reorder.
+          {t("shortlist.compare_subtitle")}
         </Text>
       </View>
 
@@ -59,7 +64,7 @@ export default function SideBySideComparison({ selectedCandidates, onReorder }) 
                   <Ionicons
                     name="chevron-back"
                     size={16}
-                    color={index === 0 ? colors.gray[300] : colors.darkAmethyst[600]}
+                    color={index === 0 ? c.border : c.primary}
                   />
                 </TouchableOpacity>
                 <Text style={styles.reorderIndex}>{index + 1}</Text>
@@ -71,7 +76,7 @@ export default function SideBySideComparison({ selectedCandidates, onReorder }) 
                   <Ionicons
                     name="chevron-forward"
                     size={16}
-                    color={index === selectedCandidates.length - 1 ? colors.gray[300] : colors.darkAmethyst[600]}
+                    color={index === selectedCandidates.length - 1 ? c.border : c.primary}
                   />
                 </TouchableOpacity>
               </View>
@@ -84,12 +89,12 @@ export default function SideBySideComparison({ selectedCandidates, onReorder }) 
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(c) { return StyleSheet.create({
   container: {
-    backgroundColor: colors.white,
+    backgroundColor: c.card,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: colors.gray[100],
+    borderColor: c.border,
     padding: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
@@ -98,16 +103,16 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   emptyContainer: {
-    backgroundColor: colors.white,
+    backgroundColor: c.card,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: colors.gray[100],
+    borderColor: c.border,
     padding: 32,
     alignItems: 'center',
   },
   emptyText: {
     fontSize: 13,
-    color: colors.gray[500],
+    color: c['muted-foreground'],
     textAlign: 'center',
   },
   headerSection: {
@@ -116,12 +121,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#0f172a',
+    color: c.foreground,
     marginBottom: 2,
   },
   subtitle: {
     fontSize: 13,
-    color: colors.gray[500],
+    color: c['muted-foreground'],
   },
   scrollContent: {
     flexDirection: 'row',
@@ -142,7 +147,7 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: colors.gray[100],
+    backgroundColor: c.border,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -152,8 +157,8 @@ const styles = StyleSheet.create({
   reorderIndex: {
     fontSize: 13,
     fontWeight: '600',
-    color: colors.gray[500],
+    color: c['muted-foreground'],
     minWidth: 16,
     textAlign: 'center',
   },
-});
+}); }

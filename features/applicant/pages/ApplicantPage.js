@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from "react-native";
+import { View, Text, ScrollView, ActivityIndicator } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useUser } from "../../auth/context/user.context";
 import { fetchApplicationsByApplicantId } from "../../applications/services/application.service";
@@ -7,9 +7,16 @@ import ApplicantHeader from "../components/ApplicantHeader";
 import StatsCards from "../components/StatsCards";
 import ApplicationsList from "../components/ApplicationsList";
 import InterviewList from "../components/InterviewList";
-import { colors } from "../../../src/theme";
+import { useTheme } from "../../../shared/context/ThemeContext";
+import { useTranslation } from "../../../shared/context/I18nContext";
+import { spacing } from "../../../src/theme";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function ApplicantPage() {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const c = theme.colors;
+  const insets = useSafeAreaInsets();
   const { profile, user } = useUser();
   const navigation = useNavigation();
   const [localProfile, setLocalProfile] = useState(profile);
@@ -17,14 +24,11 @@ export default function ApplicantPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    setLocalProfile(profile);
-  }, [profile]);
+  useEffect(() => { setLocalProfile(profile); }, [profile]);
 
   useEffect(() => {
     if (user?.id) {
-      setLoading(true);
-      setError(null);
+      setLoading(true); setError(null);
       fetchApplicationsByApplicantId(user.id)
         .then(setApplications)
         .catch((err) => setError(err.message))
@@ -32,24 +36,31 @@ export default function ApplicantPage() {
     }
   }, [user?.id]);
 
+  const s = {
+    container: { flex: 1, backgroundColor: c['surface-muted'] },
+    content: { padding: 20, gap: 20, paddingBottom: 40 },
+    centered: { flex: 1, backgroundColor: c['surface-muted'], alignItems: "center", justifyContent: "center" },
+    errorText: { color: c.destructive, fontSize: 13, textAlign: "center", padding: 20 },
+  };
+
   if (loading) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color={colors.primary} />
+      <View style={s.centered}>
+        <ActivityIndicator size="large" color={c.primary} />
       </View>
     );
   }
 
   if (error) {
     return (
-      <View style={styles.centered}>
-        <Text style={styles.errorText}>{error}</Text>
+      <View style={s.centered}>
+        <Text style={s.errorText}>{error}</Text>
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView style={[s.container, { paddingTop: insets.top }]} contentContainerStyle={s.content}>
       <ApplicantHeader
         fullName={localProfile?.full_name}
         profile_pic={localProfile?.profile_pic}
@@ -73,27 +84,3 @@ export default function ApplicantPage() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.surface,
-  },
-  content: {
-    padding: 20,
-    gap: 20,
-    paddingBottom: 40,
-  },
-  centered: {
-    flex: 1,
-    backgroundColor: colors.surface,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  errorText: {
-    color: colors.red[600],
-    fontSize: 13,
-    textAlign: "center",
-    padding: 20,
-  },
-});

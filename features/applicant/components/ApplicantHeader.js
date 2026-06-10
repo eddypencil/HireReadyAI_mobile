@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { colors } from "../../../src/theme";
+import { useTheme } from "../../../shared/context/ThemeContext";
+import { useTranslation } from "../../../shared/context/I18nContext";
 import AvatarModal from "./AvatarModal";
 
 export default function ApplicantHeader({ fullName, profile_pic, email, phone, joinedDate, userId, onAvatarChange }) {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const c = theme.colors;
   const [avatarOpen, setAvatarOpen] = useState(false);
 
   const initials = fullName
@@ -18,10 +22,9 @@ export default function ApplicantHeader({ fullName, profile_pic, email, phone, j
   return (
     <>
       <View style={{
-        background: "linear-gradient(135deg, #012a4a 0%, #01497c 60%, #2a6f97 100%)",
         borderRadius: 16,
         overflow: "hidden",
-        backgroundColor: colors.darkAmethyst[800],
+        backgroundColor: c.sidebar,
       }}>
         <View style={{
           padding: 24,
@@ -40,7 +43,7 @@ export default function ApplicantHeader({ fullName, profile_pic, email, phone, j
                       height: 64,
                       borderRadius: 32,
                       borderWidth: 3,
-                      borderColor: "rgba(70,143,175,0.4)",
+                      borderColor: `${c['stage-hired']}66`,
                     }}
                   />
                 ) : (
@@ -48,16 +51,16 @@ export default function ApplicantHeader({ fullName, profile_pic, email, phone, j
                     width: 64,
                     height: 64,
                     borderRadius: 32,
-                    backgroundColor: "rgba(70,143,175,0.25)",
+                    backgroundColor: `${c['stage-hired']}40`,
                     borderWidth: 3,
-                    borderColor: "rgba(70,143,175,0.4)",
+                    borderColor: `${c['stage-hired']}66`,
                     alignItems: "center",
                     justifyContent: "center",
                   }}>
                     <Text style={{
                       fontSize: 22,
                       fontWeight: "700",
-                      color: colors.surface,
+                      color: c['destructive-foreground'],
                     }}>{initials}</Text>
                   </View>
                 )}
@@ -68,13 +71,13 @@ export default function ApplicantHeader({ fullName, profile_pic, email, phone, j
                   width: 20,
                   height: 20,
                   borderRadius: 10,
-                  backgroundColor: colors.accent,
+                  backgroundColor: c.accent,
                   borderWidth: 2,
-                  borderColor: colors.darkAmethyst[800],
+                  borderColor: c.sidebar,
                   alignItems: "center",
                   justifyContent: "center",
                 }}>
-                  <Text style={{ fontSize: 9, color: colors.white }}>✎</Text>
+                  <Text style={{ fontSize: 9, color: c['destructive-foreground'] }}>✎</Text>
                 </View>
               </View>
             </TouchableOpacity>
@@ -84,16 +87,16 @@ export default function ApplicantHeader({ fullName, profile_pic, email, phone, j
                 <Text style={{
                   fontSize: 22,
                   fontWeight: "700",
-                  color: colors.white,
+                  color: c['sidebar-foreground'],
                   letterSpacing: -0.3,
                 }}>
                   {fullName || "Applicant"}
                 </Text>
                 <Text style={{
-                  backgroundColor: "rgba(70,143,175,0.25)",
+                  backgroundColor: `${c['stage-hired']}40`,
                   borderWidth: 1,
-                  borderColor: "rgba(70,143,175,0.4)",
-                  color: "#89c2d9",
+                  borderColor: `${c['stage-hired']}66`,
+                  color: c['stage-applied'],
                   borderRadius: 999,
                   paddingHorizontal: 10,
                   paddingVertical: 2,
@@ -102,27 +105,25 @@ export default function ApplicantHeader({ fullName, profile_pic, email, phone, j
                   letterSpacing: 0.3,
                   textTransform: "uppercase",
                   overflow: "hidden",
-                }}>Applicant</Text>
+                }}>{t("applicant.applicant_badge")}</Text>
               </View>
 
               <View style={{ flexDirection: "row", gap: 16, marginTop: 6, flexWrap: "wrap" }}>
                 {email && (
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                    <Ionicons name="mail-outline" size={13} color="rgba(207,231,242,0.8)" />
-                    <Text style={{ fontSize: 13, color: "rgba(207,231,242,0.8)" }}>{email}</Text>
+                    <Ionicons name="mail-outline" size={13} color={c['sidebar-foreground']} />
+                    <Text style={{ fontSize: 13, color: c['sidebar-foreground'] }}>{email}</Text>
                   </View>
                 )}
                 {phone && (
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                    <Ionicons name="call-outline" size={13} color="rgba(207,231,242,0.8)" />
-                    <Text style={{ fontSize: 13, color: "rgba(207,231,242,0.8)" }}>{phone}</Text>
+                    <Ionicons name="call-outline" size={13} color={c['sidebar-foreground']} />
+                    <Text style={{ fontSize: 13, color: c['sidebar-foreground'] }}>{phone}</Text>
                   </View>
                 )}
               </View>
             </View>
           </View>
-
-         
         </View>
       </View>
 

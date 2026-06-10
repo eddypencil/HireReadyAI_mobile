@@ -2,11 +2,16 @@ import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet, Platform }
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "../../../shared/context/ThemeContext";
+import { useTranslation } from "../../../shared/context/I18nContext";
 import { usePipeline } from "../hooks/usePipeline";
 import PipelineBuilder from "../components/PipelineBuilder";
-import { colors } from "../../../src/theme";
 
 export default function PipelineBuilderPage() {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const c = theme.colors;
+  const styles = createStyles(c);
   const insets = useSafeAreaInsets();
   const route = useRoute();
   const navigation = useNavigation();
@@ -27,7 +32,7 @@ export default function PipelineBuilderPage() {
   if (loading) {
     return (
       <View style={[styles.centered, { paddingTop: insets.top }]}>
-        <ActivityIndicator size="large" color={colors.darkAmethyst[600]} />
+        <ActivityIndicator size="large" color={c.primary} />
       </View>
     );
   }
@@ -36,14 +41,14 @@ export default function PipelineBuilderPage() {
     return (
       <View style={[styles.centered, { paddingTop: insets.top }]}>
         <View style={styles.errorWrap}>
-          <Ionicons name="alert-circle-outline" size={32} color={colors.red[400]} />
+          <Ionicons name="alert-circle-outline" size={32} color={c.destructive} />
           <Text style={styles.errorText}>{error}</Text>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
             style={styles.backLink}
           >
-            <Ionicons name="arrow-back-outline" size={16} color={colors.darkAmethyst[600]} />
-            <Text style={styles.backLinkText}>Back to Pipelines</Text>
+            <Ionicons name="arrow-back-outline" size={16} color={c.primary} />
+            <Text style={styles.backLinkText}>{t("pipeline.back_to_pipelines")}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -54,7 +59,7 @@ export default function PipelineBuilderPage() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       {warning && (
         <View style={styles.warningBanner}>
-          <Ionicons name="alert-circle-outline" size={18} color={colors.red[600]} />
+          <Ionicons name="alert-circle-outline" size={18} color={c.destructive} />
           <Text style={styles.warningText}>{warning}</Text>
         </View>
       )}
@@ -64,8 +69,8 @@ export default function PipelineBuilderPage() {
           onPress={() => navigation.goBack()}
           style={styles.topBarBack}
         >
-          <Ionicons name="arrow-back-outline" size={18} color={colors.gray[500]} />
-          <Text style={styles.topBarBackText}>Pipelines</Text>
+          <Ionicons name="arrow-back-outline" size={18} color={c['muted-foreground']} />
+          <Text style={styles.topBarBackText}>{t("pipeline.pipelines")}</Text>
         </TouchableOpacity>
         <View style={styles.topBarSeparator}>
           <Text style={styles.topBarSeparatorText}>/</Text>
@@ -96,106 +101,108 @@ export default function PipelineBuilderPage() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.gray[50],
-  },
-  centered: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: colors.gray[50],
-  },
-  warningBanner: {
-    position: "absolute",
-    top: 8,
-    left: 16,
-    right: 16,
-    zIndex: 50,
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 8,
-    backgroundColor: colors.red[50],
-    borderWidth: 1,
-    borderColor: colors.red[200],
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  warningText: {
-    fontSize: 13,
-    fontWeight: "500",
-    color: colors.red[700],
-    flex: 1,
-    lineHeight: 18,
-  },
-  topBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.gray[100],
-    backgroundColor: colors.white,
-  },
-  topBarBack: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    paddingRight: 8,
-  },
-  topBarBackText: {
-    fontSize: 13,
-    color: colors.gray[500],
-  },
-  topBarSeparator: {
-    marginHorizontal: 4,
-  },
-  topBarSeparatorText: {
-    fontSize: 14,
-    color: colors.gray[300],
-  },
-  topBarTitle: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: colors.gray[900],
-    flex: 1,
-    marginHorizontal: 4,
-  },
-  topBarSeniority: {
-    backgroundColor: colors.darkAmethyst[100],
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  topBarSeniorityText: {
-    fontSize: 11,
-    fontWeight: "600",
-    color: colors.darkAmethyst[700],
-    textTransform: "capitalize",
-  },
-  builderContainer: {
-    flex: 1,
-  },
-  errorWrap: {
-    alignItems: "center",
-    gap: 8,
-  },
-  errorText: {
-    fontSize: 14,
-    color: colors.red[600],
-    textAlign: "center",
-  },
-  backLink: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    marginTop: 8,
-  },
-  backLinkText: {
-    fontSize: 13,
-    fontWeight: "500",
-    color: colors.darkAmethyst[600],
-  },
-});
+function createStyles(c) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: c['surface-muted'],
+    },
+    centered: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: c['surface-muted'],
+    },
+    warningBanner: {
+      position: "absolute",
+      top: 8,
+      left: 16,
+      right: 16,
+      zIndex: 50,
+      flexDirection: "row",
+      alignItems: "flex-start",
+      gap: 8,
+      backgroundColor: c['surface-muted'],
+      borderWidth: 1,
+      borderColor: c.border,
+      borderRadius: 12,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+    },
+    warningText: {
+      fontSize: 13,
+      fontWeight: "500",
+      color: c.foreground,
+      flex: 1,
+      lineHeight: 18,
+    },
+    topBar: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: c.border,
+      backgroundColor: c.card,
+    },
+    topBarBack: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 4,
+      paddingRight: 8,
+    },
+    topBarBackText: {
+      fontSize: 13,
+      color: c['muted-foreground'],
+    },
+    topBarSeparator: {
+      marginHorizontal: 4,
+    },
+    topBarSeparatorText: {
+      fontSize: 14,
+      color: c.border,
+    },
+    topBarTitle: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: c.foreground,
+      flex: 1,
+      marginHorizontal: 4,
+    },
+    topBarSeniority: {
+      backgroundColor: c.border,
+      paddingHorizontal: 10,
+      paddingVertical: 4,
+      borderRadius: 12,
+    },
+    topBarSeniorityText: {
+      fontSize: 11,
+      fontWeight: "600",
+      color: c.foreground,
+      textTransform: "capitalize",
+    },
+    builderContainer: {
+      flex: 1,
+    },
+    errorWrap: {
+      alignItems: "center",
+      gap: 8,
+    },
+    errorText: {
+      fontSize: 14,
+      color: c.destructive,
+      textAlign: "center",
+    },
+    backLink: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 4,
+      marginTop: 8,
+    },
+    backLinkText: {
+      fontSize: 13,
+      fontWeight: "500",
+      color: c.primary,
+    },
+  });
+}

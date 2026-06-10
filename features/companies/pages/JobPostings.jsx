@@ -10,67 +10,21 @@ import {
   ActivityIndicator,
   Alert,
   StyleSheet,
-  useColorScheme,
   Pressable,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { colors } from "../../../src/theme";
+import { useTheme } from "../../../shared/context/ThemeContext";
+import { useTranslation } from "../../../shared/context/I18nContext";
 import { Card } from "../../../shared/ui/Card";
 import { updateJobPosting } from "../services/companies.service";
 import { getPipeline } from "../../pipeline/services/pipeline.service";
 import { useCompany } from "./CompanyLayout";
 
 const TABS = ["All", "Open", "Closed"];
-
-const seniorityOptions = [
-  { label: "intern", value: "intern" },
-  { label: "Junior", value: "junior" },
-  { label: "Mid", value: "mid" },
-  { label: "Senior", value: "senior" },
-  { label: "Lead", value: "lead" },
-];
-
-
-const jobTypeOptions = [
-  { label: "Full Time", value: "full_time" },
-  { label: "Part Time", value: "part_time" },
-];
-
-const workLocationOptions = [
-  { label: "On-site", value: "on_site" },
-  { label: "Remote", value: "remote" },
-  { label: "Hybrid", value: "hybrid" },
-];
-
-function useTheme() {
-  const scheme = useColorScheme();
-  const isDark = scheme === "dark";
-  return {
-    isDark,
-    background: isDark ? "#0b1120" : colors.gray[50],
-    surface: isDark ? "#152032" : colors.white,
-    card: isDark ? "#152032" : colors.white,
-    border: isDark ? "#1e3048" : colors.gray[100],
-    foreground: isDark ? "#e2e8f0" : colors.gray[900],
-    muted: isDark ? "#8899b4" : colors.gray[500],
-    mutedForeground: isDark ? "#94a3b8" : colors.gray[600],
-    primary: "#01497c",
-    primaryLight: isDark ? "#1a3a5c" : "#01497c15",
-    accent: colors.accent,
-    success: colors.emerald[500],
-    successBg: isDark ? "#064e3b" : colors.emerald[50],
-    successText: isDark ? "#6ee7b7" : colors.emerald[700],
-    danger: colors.red[500],
-    grayBg: isDark ? "#1e293b" : colors.gray[100],
-    grayText: isDark ? "#94a3b8" : colors.gray[500],
-    chipBg: isDark ? "#1a3a5c" : colors.darkAmethyst[50],
-    chipBorder: isDark ? "#1e5080" : colors.darkAmethyst[200],
-    chipText: isDark ? "#89c2d9" : colors.darkAmethyst[700],
-    overlay: "rgba(0,0,0,0.5)",
-  };
-}
 
 function PickerDropdown({ options, selected, onSelect, placeholder, theme, accessibilityLabel }) {
   const [visible, setVisible] = useState(false);
@@ -152,7 +106,32 @@ function PickerDropdown({ options, selected, onSelect, placeholder, theme, acces
 
 export default function JobPostings() {
   const insets = useSafeAreaInsets();
-  const theme = useTheme();
+  const { theme: appTheme, isDark } = useTheme();
+  const { t } = useTranslation();
+  const c = appTheme.colors;
+  const theme = {
+    isDark,
+    background: c.background,
+    surface: c.card,
+    card: c.card,
+    border: c.border,
+    foreground: c.foreground,
+    muted: c['muted-foreground'],
+    mutedForeground: c['muted-foreground'],
+    primary: c.primary,
+    primaryLight: `${c.primary}26`,
+    accent: c.accent,
+    success: c.success,
+    successBg: `${c.success}1a`,
+    successText: c.success,
+    danger: c.destructive,
+    grayBg: c['surface-muted'],
+    grayText: c['muted-foreground'],
+    chipBg: c['surface-muted'],
+    chipBorder: c.border,
+    chipText: c.primary,
+    overlay: `${c.foreground}66`,
+  };
   const navigation = useNavigation();
   const { jobs } = useCompany();
   const [searchQuery, setSearchQuery] = useState("");
@@ -166,6 +145,25 @@ export default function JobPostings() {
 
   const [pipelineStages, setPipelineStages] = useState([]);
   const [loadingStages, setLoadingStages] = useState(false);
+
+  const seniorityOptions = useMemo(() => [
+    { label: t("companies.seniority_intern"), value: "intern" },
+    { label: t("companies.seniority_junior"), value: "junior" },
+    { label: t("companies.seniority_mid"), value: "mid" },
+    { label: t("companies.seniority_senior"), value: "senior" },
+    { label: t("companies.seniority_lead"), value: "lead" },
+  ], [t]);
+
+  const jobTypeOptions = useMemo(() => [
+    { label: t("companies.full_time"), value: "full_time" },
+    { label: t("companies.part_time"), value: "part_time" },
+  ], [t]);
+
+  const workLocationOptions = useMemo(() => [
+    { label: t("companies.on_site"), value: "on_site" },
+    { label: t("companies.remote"), value: "remote" },
+    { label: t("companies.hybrid"), value: "hybrid" },
+  ], [t]);
 
   useEffect(() => {
     setLocalJobs(jobs);
@@ -253,14 +251,14 @@ export default function JobPostings() {
       setIsEditing(false);
     } catch (err) {
       console.error("Failed to update job:", err);
-      Alert.alert("Error", "Failed to update job details.");
+      Alert.alert(t("companies.error_title"), t("companies.update_failed"));
     } finally {
       setSaving(false);
     }
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return "Recently";
+    if (!dateString) return t("companies.recently");
     return new Date(dateString).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
@@ -306,8 +304,8 @@ export default function JobPostings() {
         }}
         activeOpacity={0.7}
         accessibilityRole="button"
-        accessibilityLabel={`${job.title}, ${isPublished ? "Active" : "Closed"}, ${applicantCount} applicants`}
-        accessibilityHint="Opens job details"
+        accessibilityLabel={t("companies.job_accessibility_label", { title: job.title, status: isPublished ? t("companies.active") : t("companies.closed"), count: applicantCount })}
+        accessibilityHint={t("companies.opens_job_details")}
       >
         <View style={styles.jobListItemContent}>
           <View style={styles.jobListTopRow}>
@@ -329,19 +327,19 @@ export default function JobPostings() {
                   { color: isPublished ? theme.successText : theme.grayText },
                 ]}
               >
-                {isPublished ? "Active" : "Closed"}
+                {isPublished ? t("companies.active") : t("companies.closed")}
               </Text>
             </View>
           </View>
           <View style={styles.jobListMeta}>
             <Ionicons name="briefcase-outline" size={11} color={theme.muted} />
-            <Text style={[styles.jobListMetaText, { color: theme.muted }]}>{job.seniority_level || "Any"}</Text>
+            <Text style={[styles.jobListMetaText, { color: theme.muted }]}>{job.seniority_level || t("companies.any")}</Text>
             <View style={[styles.jobMetaDivider, { backgroundColor: theme.muted }]} />
             <Ionicons name="location-outline" size={11} color={theme.muted} />
-            <Text style={[styles.jobListMetaText, { color: theme.muted }]}>{job.work_location || "Remote"}</Text>
+            <Text style={[styles.jobListMetaText, { color: theme.muted }]}>{job.work_location || t("companies.remote")}</Text>
             <View style={[styles.jobMetaDivider, { backgroundColor: theme.muted }]} />
             <Ionicons name="people-outline" size={11} color={theme.muted} />
-            <Text style={[styles.jobListMetaText, { color: theme.muted }]}>{applicantCount} applicant{applicantCount !== 1 ? "s" : ""}</Text>
+            <Text style={[styles.jobListMetaText, { color: theme.muted }]}>{t("companies.applicant_count", { count: applicantCount })}</Text>
           </View>
         </View>
         <Ionicons name="chevron-forward" size={16} color={theme.muted} />
@@ -352,15 +350,19 @@ export default function JobPostings() {
   if (!showList && selectedJob) {
     return (
       <View style={[styles.detailContainer, { backgroundColor: theme.background, paddingTop: insets.top }]}>
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
         <ScrollView contentContainerStyle={styles.detailContent}>
           <TouchableOpacity
             style={styles.backToList}
             onPress={() => setShowList(true)}
             accessibilityRole="button"
-            accessibilityLabel="Back to jobs list"
+            accessibilityLabel={t("companies.back_to_jobs_accessible")}
           >
             <Ionicons name="chevron-back" size={20} color={theme.primary} />
-            <Text style={[styles.backText, { color: theme.primary }]}>Back to jobs</Text>
+            <Text style={[styles.backText, { color: theme.primary }]}>{t("companies.back_to_jobs")}</Text>
           </TouchableOpacity>
 
           {/* Header */}
@@ -371,15 +373,15 @@ export default function JobPostings() {
                   style={[styles.editTitleInput, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.foreground }]}
                   value={editForm.title}
                   onChangeText={(t) => setEditForm({ ...editForm, title: t })}
-                  accessibilityLabel="Job title input"
+                  accessibilityLabel={t("companies.job_title_input")}
                 />
               ) : (
                 <Text style={[styles.detailTitle, { color: theme.foreground }]}>{selectedJob.title}</Text>
               )}
               <Text style={[styles.detailSubtitle, { color: theme.muted }]}>
-                {selectedJob.seniority_level || "Any"} ·{" "}
-                {selectedJob.work_location || "Any"} ·{" "}
-                {selectedJob.job_type?.replace(/_/g, "-") || "Full-time"}
+                {selectedJob.seniority_level || t("companies.any")} ·{" "}
+                {selectedJob.work_location || t("companies.any")} ·{" "}
+                {selectedJob.job_type?.replace(/_/g, "-") || t("companies.full_time")}
               </Text>
             </View>
             <View style={styles.detailHeaderActions}>
@@ -389,19 +391,19 @@ export default function JobPostings() {
                     style={[styles.actionBtnOutline, { borderColor: theme.border, backgroundColor: theme.surface }]}
                     onPress={handleCancelEdit}
                     accessibilityRole="button"
-                    accessibilityLabel="Cancel editing"
+                    accessibilityLabel={t("companies.cancel_editing")}
                   >
-                    <Text style={[styles.actionBtnOutlineText, { color: theme.foreground }]}>Cancel</Text>
+                    <Text style={[styles.actionBtnOutlineText, { color: theme.foreground }]}>{t("companies.cancel")}</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[styles.actionBtnPrimary, { backgroundColor: theme.primary }]}
                     onPress={handleSave}
                     disabled={saving}
                     accessibilityRole="button"
-                    accessibilityLabel={saving ? "Saving job" : "Save job changes"}
+                    accessibilityLabel={saving ? t("companies.saving_accessible") : t("companies.save_accessible")}
                   >
                     <Text style={styles.actionBtnPrimaryText}>
-                      {saving ? "Saving..." : "Save"}
+                      {saving ? t("companies.saving") : t("companies.save")}
                     </Text>
                   </TouchableOpacity>
                 </>
@@ -410,9 +412,9 @@ export default function JobPostings() {
                   style={[styles.actionBtnOutline, { borderColor: theme.border, backgroundColor: theme.surface }]}
                   onPress={handleEditClick}
                   accessibilityRole="button"
-                  accessibilityLabel="Edit job details"
+                  accessibilityLabel={t("companies.edit_job")}
                 >
-                  <Text style={[styles.actionBtnOutlineText, { color: theme.foreground }]}>Edit</Text>
+                  <Text style={[styles.actionBtnOutlineText, { color: theme.foreground }]}>{t("companies.edit")}</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -423,67 +425,67 @@ export default function JobPostings() {
             <View style={styles.infoItem}>
               <View style={styles.infoLabelRow}>
                 <Ionicons name="layers-outline" size={14} color={theme.primary} />
-                <Text style={[styles.infoLabel, { color: theme.muted }]}>SENIORITY LEVEL</Text>
+                <Text style={[styles.infoLabel, { color: theme.muted }]}>{t("companies.seniority_level_label")}</Text>
               </View>
               {isEditing ? (
                 <PickerDropdown
                   options={seniorityOptions}
                   selected={editForm.seniority_level}
                   onSelect={(val) => setEditForm({ ...editForm, seniority_level: val })}
-                  placeholder="Select level"
+                  placeholder={t("companies.select_level")}
                   theme={theme}
-                  accessibilityLabel="Seniority level selector"
+                  accessibilityLabel={t("companies.seniority_selector")}
                 />
               ) : (
                 <Text style={[styles.infoValue, { color: theme.foreground }]}>
-                  {selectedJob.seniority_level || "N/A"}
+                  {selectedJob.seniority_level || t("companies.na")}
                 </Text>
               )}
             </View>
             <View style={styles.infoItem}>
               <View style={styles.infoLabelRow}>
                 <Ionicons name="location-outline" size={14} color={theme.primary} />
-                <Text style={[styles.infoLabel, { color: theme.muted }]}>LOCATION</Text>
+                <Text style={[styles.infoLabel, { color: theme.muted }]}>{t("companies.location_label")}</Text>
               </View>
               {isEditing ? (
                 <PickerDropdown
                   options={workLocationOptions}
                   selected={editForm.work_location}
                   onSelect={(val) => setEditForm({ ...editForm, work_location: val })}
-                  placeholder="Select location"
+                  placeholder={t("companies.select_location")}
                   theme={theme}
-                  accessibilityLabel="Work location selector"
+                  accessibilityLabel={t("companies.location_selector")}
                 />
               ) : (
                 <Text style={[styles.infoValue, { color: theme.foreground }]}>
-                  {selectedJob.work_location || "N/A"}
+                  {selectedJob.work_location || t("companies.na")}
                 </Text>
               )}
             </View>
             <View style={styles.infoItem}>
               <View style={styles.infoLabelRow}>
                 <Ionicons name="briefcase-outline" size={14} color={theme.primary} />
-                <Text style={[styles.infoLabel, { color: theme.muted }]}>TYPE</Text>
+                <Text style={[styles.infoLabel, { color: theme.muted }]}>{t("companies.type_label")}</Text>
               </View>
               {isEditing ? (
                 <PickerDropdown
                   options={jobTypeOptions}
                   selected={editForm.job_type}
                   onSelect={(val) => setEditForm({ ...editForm, job_type: val })}
-                  placeholder="Select type"
+                  placeholder={t("companies.select_type")}
                   theme={theme}
-                  accessibilityLabel="Job type selector"
+                  accessibilityLabel={t("companies.type_selector")}
                 />
               ) : (
                 <Text style={[styles.infoValue, { color: theme.foreground }]}>
-                  {selectedJob.job_type?.replace(/_/g, "-") || "N/A"}
+                  {selectedJob.job_type?.replace(/_/g, "-") || t("companies.na")}
                 </Text>
               )}
             </View>
             <View style={styles.infoItem}>
               <View style={styles.infoLabelRow}>
                 <Ionicons name="cash-outline" size={14} color={theme.primary} />
-                <Text style={[styles.infoLabel, { color: theme.muted }]}>SALARY</Text>
+                <Text style={[styles.infoLabel, { color: theme.muted }]}>{t("companies.salary_label")}</Text>
               </View>
               {isEditing ? (
                 <View style={styles.salaryEditRow}>
@@ -491,38 +493,38 @@ export default function JobPostings() {
                     style={[styles.editInfoInput, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.foreground }]}
                     value={String(editForm.salary_min || "")}
                     onChangeText={(t) => setEditForm({ ...editForm, salary_min: t })}
-                    placeholder="Min"
+                    placeholder={t("companies.min")}
                     placeholderTextColor={theme.muted}
                     keyboardType="numeric"
-                    accessibilityLabel="Minimum salary"
+                    accessibilityLabel={t("companies.min_salary")}
                   />
                   <Text style={[styles.salaryDash, { color: theme.muted }]}>-</Text>
                   <TextInput
                     style={[styles.editInfoInput, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.foreground }]}
                     value={String(editForm.salary_max || "")}
                     onChangeText={(t) => setEditForm({ ...editForm, salary_max: t })}
-                    placeholder="Max"
+                    placeholder={t("companies.max")}
                     placeholderTextColor={theme.muted}
                     keyboardType="numeric"
-                    accessibilityLabel="Maximum salary"
+                    accessibilityLabel={t("companies.max_salary")}
                   />
                 </View>
               ) : (
                 <Text style={[styles.infoValue, { color: theme.foreground }]}>
                   {selectedJob.salary_min
                     ? `$${selectedJob.salary_min.toLocaleString()}`
-                    : "N/A"}{" "}
+                    : t("companies.na")}{" "}
                   -{" "}
                   {selectedJob.salary_max
                     ? `$${selectedJob.salary_max.toLocaleString()}`
-                    : "N/A"}
+                    : t("companies.na")}
                 </Text>
               )}
             </View>
             <View style={styles.infoItem}>
               <View style={styles.infoLabelRow}>
                 <Ionicons name="calendar-outline" size={14} color={theme.primary} />
-                <Text style={[styles.infoLabel, { color: theme.muted }]}>PUBLISHED</Text>
+                <Text style={[styles.infoLabel, { color: theme.muted }]}>{t("companies.published_label")}</Text>
               </View>
               <Text style={[styles.infoValue, { color: theme.foreground }]}>
                 {formatDate(selectedJob.created_at)}
@@ -531,17 +533,17 @@ export default function JobPostings() {
             <View style={styles.infoItem}>
               <View style={styles.infoLabelRow}>
                 <Ionicons name="flash-outline" size={14} color={theme.primary} />
-                <Text style={[styles.infoLabel, { color: theme.muted }]}>AI SHORTLIST</Text>
+                <Text style={[styles.infoLabel, { color: theme.muted }]}>{t("companies.ai_shortlist_label")}</Text>
               </View>
               <Text style={[styles.infoValue, { color: theme.foreground }]}>
-                {selectedJob.shortlist_entries?.[0]?.count || 0} strong fits
+                {t("companies.strong_fits", { count: selectedJob.shortlist_entries?.[0]?.count || 0 })}
               </Text>
             </View>
           </Card>
 
           {/* Content Cards */}
           <Card style={[styles.contentCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
-            <Text style={[styles.contentCardTitle, { color: theme.foreground }]}>Job summary</Text>
+            <Text style={[styles.contentCardTitle, { color: theme.foreground }]}>{t("companies.job_summary")}</Text>
             {isEditing ? (
               <TextInput
                 style={[styles.editTextArea, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.mutedForeground }]}
@@ -550,18 +552,18 @@ export default function JobPostings() {
                 multiline
                 numberOfLines={4}
                 textAlignVertical="top"
-                accessibilityLabel="Job description input"
+                accessibilityLabel={t("companies.description_input")}
               />
             ) : (
               <Text style={[styles.contentCardBody, { color: theme.mutedForeground }]}>
-                {selectedJob.description || "No description provided."}
+                {selectedJob.description || t("companies.no_description")}
               </Text>
             )}
           </Card>
 
           {/* Responsibilities */}
           <Card style={[styles.contentCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
-            <Text style={[styles.contentCardTitle, { color: theme.foreground }]}>Responsibilities</Text>
+            <Text style={[styles.contentCardTitle, { color: theme.foreground }]}>{t("companies.responsibilities")}</Text>
             {isEditing ? (
               <View style={styles.editList}>
                 {(editForm.responsibilities || []).map((resp, i) => (
@@ -569,7 +571,7 @@ export default function JobPostings() {
                     <TouchableOpacity
                       onPress={() => removeArrayItem(i, "responsibilities")}
                       accessibilityRole="button"
-                      accessibilityLabel={`Remove responsibility: ${resp}`}
+                      accessibilityLabel={t("companies.remove_responsibility", { text: resp })}
                     >
                       <Ionicons name="close-circle-outline" size={18} color={theme.muted} />
                     </TouchableOpacity>
@@ -586,10 +588,10 @@ export default function JobPostings() {
                 ))}
                 <TextInput
                   style={[styles.editListAdd, { backgroundColor: theme.card, borderColor: theme.border, color: theme.mutedForeground }]}
-                  placeholder="Type and press Enter to add..."
+                  placeholder={t("companies.type_to_add")}
                   placeholderTextColor={theme.muted}
                   onSubmitEditing={(e) => handleArrayInputSubmit(e, "responsibilities")}
-                  accessibilityLabel="Add new responsibility"
+                  accessibilityLabel={t("companies.add_responsibility")}
                 />
               </View>
             ) : (
@@ -601,14 +603,14 @@ export default function JobPostings() {
                   </View>
                 ))
               ) : (
-                <Text style={[styles.noContent, { color: theme.muted }]}>None specified.</Text>
+                <Text style={[styles.noContent, { color: theme.muted }]}>{t("companies.none_specified")}</Text>
               )
             )}
           </Card>
 
           {/* Requirements */}
           <Card style={[styles.contentCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
-            <Text style={[styles.contentCardTitle, { color: theme.foreground }]}>Requirements</Text>
+            <Text style={[styles.contentCardTitle, { color: theme.foreground }]}>{t("companies.requirements")}</Text>
             {isEditing ? (
               <View style={styles.editList}>
                 {(editForm.requirements || []).map((req, i) => (
@@ -616,7 +618,7 @@ export default function JobPostings() {
                     <TouchableOpacity
                       onPress={() => removeArrayItem(i, "requirements")}
                       accessibilityRole="button"
-                      accessibilityLabel={`Remove requirement: ${req}`}
+                      accessibilityLabel={t("companies.remove_requirement", { text: req })}
                     >
                       <Ionicons name="close-circle-outline" size={18} color={theme.muted} />
                     </TouchableOpacity>
@@ -633,10 +635,10 @@ export default function JobPostings() {
                 ))}
                 <TextInput
                   style={[styles.editListAdd, { backgroundColor: theme.card, borderColor: theme.border, color: theme.mutedForeground }]}
-                  placeholder="Type and press Enter to add..."
+                  placeholder={t("companies.type_to_add")}
                   placeholderTextColor={theme.muted}
                   onSubmitEditing={(e) => handleArrayInputSubmit(e, "requirements")}
-                  accessibilityLabel="Add new requirement"
+                  accessibilityLabel={t("companies.add_requirement")}
                 />
               </View>
             ) : (
@@ -648,14 +650,14 @@ export default function JobPostings() {
                   </View>
                 ))
               ) : (
-                <Text style={[styles.noContent, { color: theme.muted }]}>None specified.</Text>
+                <Text style={[styles.noContent, { color: theme.muted }]}>{t("companies.none_specified")}</Text>
               )
             )}
           </Card>
 
           {/* Skills */}
           <Card style={[styles.contentCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
-            <Text style={[styles.contentCardTitle, { color: theme.foreground }]}>Skills</Text>
+            <Text style={[styles.contentCardTitle, { color: theme.foreground }]}>{t("companies.skills")}</Text>
             <View style={styles.skillsWrap}>
               {isEditing ? (
                 <View style={styles.editSkillsWrap}>
@@ -665,7 +667,7 @@ export default function JobPostings() {
                       <TouchableOpacity
                         onPress={() => removeArrayItem(i, "skills")}
                         accessibilityRole="button"
-                        accessibilityLabel={`Remove skill: ${skill}`}
+                        accessibilityLabel={t("companies.remove_skill", { text: skill })}
                       >
                         <Ionicons name="close" size={14} color={theme.chipText} />
                       </TouchableOpacity>
@@ -673,10 +675,10 @@ export default function JobPostings() {
                   ))}
                   <TextInput
                     style={[styles.addSkillInput, { backgroundColor: theme.card, borderColor: theme.border, color: theme.mutedForeground }]}
-                    placeholder="Add skill..."
+                    placeholder={t("companies.add_skill_placeholder")}
                     placeholderTextColor={theme.muted}
                     onSubmitEditing={(e) => handleArrayInputSubmit(e, "skills")}
-                    accessibilityLabel="Add new skill"
+                    accessibilityLabel={t("companies.add_skill")}
                   />
                 </View>
               ) : (
@@ -687,7 +689,7 @@ export default function JobPostings() {
                     </View>
                   ))
                 ) : (
-                  <Text style={[styles.noContent, { color: theme.muted }]}>None specified.</Text>
+                  <Text style={[styles.noContent, { color: theme.muted }]}>{t("companies.none_specified")}</Text>
                 )
               )}
             </View>
@@ -696,26 +698,26 @@ export default function JobPostings() {
           {/* Pipeline Preview */}
           <Card style={[styles.contentCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
             <Text style={[styles.pipelineHeaderLabel, { color: theme.primary }]}>
-              HIRING PIPELINE
+              {t("companies.hiring_pipeline")}
             </Text>
             <Text style={[styles.pipelineTitle, { color: theme.foreground }]}>
-              {selectedJob.title} Pipeline
+              {t("companies.pipeline_title", { title: selectedJob.title })}
             </Text>
             <Text style={[styles.pipelineSubtitle, { color: theme.muted }]}>
               {loadingStages
-                ? "Loading stages..."
-                : `${pipelineStages.length} stages`}
+                ? t("companies.loading_stages")
+                : t("companies.stages_count", { count: pipelineStages.length })}
             </Text>
 
             {loadingStages ? (
               <View style={styles.pipelineLoading}>
                 <ActivityIndicator size="small" color={theme.primary} />
-                <Text style={[styles.pipelineLoadingText, { color: theme.muted }]}>Loading pipeline...</Text>
+                <Text style={[styles.pipelineLoadingText, { color: theme.muted }]}>{t("companies.loading_pipeline")}</Text>
               </View>
             ) : pipelineStages.length === 0 ? (
               <View style={[styles.emptyPipeline, { borderColor: theme.border }]}>
                 <Ionicons name="git-network-outline" size={32} color={theme.muted} />
-                <Text style={[styles.emptyPipelineText, { color: theme.muted }]}>No stages defined for this pipeline.</Text>
+                <Text style={[styles.emptyPipelineText, { color: theme.muted }]}>{t("companies.no_stages")}</Text>
               </View>
             ) : (
               <ScrollView
@@ -729,7 +731,7 @@ export default function JobPostings() {
                       <Text style={[styles.stageNumberText, { color: theme.primary }]}>{idx + 1}</Text>
                     </View>
                     <Text style={styles.stageMeta}>
-                      <Text style={[styles.stageLabel, { color: theme.muted }]}>Stage {idx + 1}</Text>
+                      <Text style={[styles.stageLabel, { color: theme.muted }]}>{t("companies.stage_number", { number: idx + 1 })}</Text>
                     </Text>
                     <Text style={[styles.stageName, { color: theme.foreground }]} numberOfLines={2}>
                       {stage.name}
@@ -753,13 +755,14 @@ export default function JobPostings() {
               style={[styles.editPipelineBtn, { backgroundColor: theme.primaryLight, borderColor: theme.chipBorder }]}
               onPress={() => navigation.navigate("PipelineBuilder", { jobId: selectedJob.id })}
               accessibilityRole="button"
-              accessibilityLabel="Edit pipeline stages"
+              accessibilityLabel={t("companies.edit_pipeline")}
             >
               <Ionicons name="build-outline" size={16} color={theme.primary} />
-              <Text style={[styles.editPipelineBtnText, { color: theme.primary }]}>Edit Pipeline</Text>
+              <Text style={[styles.editPipelineBtnText, { color: theme.primary }]}>{t("companies.edit_pipeline_btn")}</Text>
             </TouchableOpacity>
           </Card>
         </ScrollView>
+        </KeyboardAvoidingView>
       </View>
     );
   }
@@ -768,23 +771,23 @@ export default function JobPostings() {
     <View style={[styles.listContainer, { backgroundColor: theme.background, paddingTop: insets.top }]}>
       {/* Search + Header */}
       <View style={[styles.listHeader, { borderBottomColor: theme.border }]}>
-        <Text style={[styles.listHeaderLabel, { color: theme.muted }]}>OPEN ROLES</Text>
+        <Text style={[styles.listHeaderLabel, { color: theme.muted }]}>{t("companies.open_roles")}</Text>
         <View style={styles.searchRow}>
           <View style={[styles.searchInputWrap, { backgroundColor: theme.surface, borderColor: theme.border }]}>
             <Ionicons name="search-outline" size={16} color={theme.muted} />
             <TextInput
               style={[styles.searchInput, { color: theme.foreground }]}
-              placeholder="Search jobs..."
+              placeholder={t("companies.search_jobs_placeholder")}
               placeholderTextColor={theme.muted}
               value={searchQuery}
               onChangeText={setSearchQuery}
-              accessibilityLabel="Search job postings"
+              accessibilityLabel={t("companies.search_jobs_accessible")}
             />
             {searchQuery.length > 0 && (
               <TouchableOpacity
                 onPress={() => setSearchQuery("")}
                 accessibilityRole="button"
-                accessibilityLabel="Clear search"
+                accessibilityLabel={t("companies.clear_search")}
               >
                 <Ionicons name="close-circle" size={16} color={theme.muted} />
               </TouchableOpacity>
@@ -804,11 +807,11 @@ export default function JobPostings() {
               style={styles.tab}
               onPress={() => setActiveTab(tab)}
               accessibilityRole="tab"
-              accessibilityLabel={`${tab} jobs tab, ${count} jobs`}
+              accessibilityLabel={t("companies.tab_accessible", { tab: t(`companies.tab_${tab.toLowerCase()}`), count })}
               accessibilityState={{ selected: isActive }}
             >
               <Text style={[styles.tabText, { color: isActive ? theme.primary : theme.muted }, isActive && styles.tabTextActive]}>
-                {tab}
+                {t(`companies.tab_${tab.toLowerCase()}`)}
               </Text>
               <View style={[styles.tabCountBadge, { backgroundColor: isActive ? theme.primary : theme.grayBg }]}>
                 <Text style={[styles.tabCountText, { color: isActive ? "#fff" : theme.grayText }]}>
@@ -832,9 +835,9 @@ export default function JobPostings() {
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Ionicons name="briefcase-outline" size={48} color={theme.muted} />
-            <Text style={[styles.emptyText, { color: theme.muted }]}>No jobs found</Text>
+            <Text style={[styles.emptyText, { color: theme.muted }]}>{t("companies.no_jobs")}</Text>
             <Text style={[styles.emptyHint, { color: theme.muted }]}>
-              {searchQuery ? "Try a different search term" : "Create a new job posting to get started"}
+              {searchQuery ? t("companies.try_different_search") : t("companies.create_job_to_start")}
             </Text>
           </View>
         }

@@ -7,16 +7,21 @@ import {
   ScrollView,
   Modal,
   FlatList,
+  KeyboardAvoidingView,
+  Platform,
   StyleSheet,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { colors } from "../../../src/theme";
+import { useTheme } from "../../../shared/context/ThemeContext";
+import { useTranslation } from "../../../shared/context/I18nContext";
 import { SENIORITY_LEVEL } from "../../../shared/constants/enums";
 import { useNavigation } from "@react-navigation/native";
 import { useCompany } from "./CompanyLayout";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-function PickerDropdown({ options, selected, onSelect, placeholder, error }) {
+function PickerDropdown({ options, selected, onSelect, placeholder, error, c }) {
   const [visible, setVisible] = useState(false);
+  const styles = createStyles(c);
   const displayValue = selected
     ? options.find((o) => o.value === selected)?.label || placeholder
     : placeholder;
@@ -24,7 +29,7 @@ function PickerDropdown({ options, selected, onSelect, placeholder, error }) {
   return (
     <View>
       <TouchableOpacity
-        style={[styles.selectField, error && styles.selectFieldError]}
+        style={[styles.selectField, error && { borderColor: c.destructive }]}
         onPress={() => setVisible(true)}
       >
         <Text
@@ -85,8 +90,13 @@ function PickerDropdown({ options, selected, onSelect, placeholder, error }) {
 }
 
 export default function JDGeneratorPage() {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const c = theme.colors;
+  const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const { company } = useCompany();
+  const styles = createStyles(c);
 
   const [title, setTitle] = useState("");
   const [seniority, setSeniority] = useState("");
@@ -104,23 +114,23 @@ export default function JDGeneratorPage() {
     value: v,
   }));
   const jobTypeOptions = [
-    { label: "Full Time", value: "full_time" },
-    { label: "Part Time", value: "part_time" },
+    { label: t("companies.full_time"), value: "full_time" },
+    { label: t("companies.part_time"), value: "part_time" },
   ];
   const workLocationOptions = [
-    { label: "On-site", value: "on_site" },
-    { label: "Remote", value: "remote" },
-    { label: "Hybrid", value: "hybrid" },
+    { label: t("companies.on_site"), value: "on_site" },
+    { label: t("companies.remote"), value: "remote" },
+    { label: t("companies.hybrid"), value: "hybrid" },
   ];
 
   function validate() {
     const newErrors = {};
-    if (!title) newErrors.title = "Job title is required";
-    if (!seniority) newErrors.seniority = "Please select a seniority level";
-    if (!jobType) newErrors.jobType = "Please select a job type";
-    if (!workLocation) newErrors.workLocation = "Please select a work type";
+    if (!title) newErrors.title = t("companies.title_required");
+    if (!seniority) newErrors.seniority = t("companies.seniority_required");
+    if (!jobType) newErrors.jobType = t("companies.job_type_required");
+    if (!workLocation) newErrors.workLocation = t("companies.work_type_required");
     if (!experienceYears)
-      newErrors.experienceYears = "Please select experience required";
+      newErrors.experienceYears = t("companies.experience_required_error");
     return newErrors;
   }
 
@@ -148,13 +158,17 @@ export default function JDGeneratorPage() {
   const labelClass = styles.label;
 
   return (
-    <ScrollView style={styles.pageContainer} contentContainerStyle={styles.pageContent}>
-      <Text style={styles.pageTitle}>Job Description Generator</Text>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+    <ScrollView style={[styles.pageContainer, { paddingTop: insets.top }]} contentContainerStyle={styles.pageContent}>
+      <Text style={styles.pageTitle}>{t("companies.generate_jd_title")}</Text>
 
       <View style={styles.formCard}>
         <View style={styles.formFields}>
           <View style={styles.fieldGroup}>
-            <Text style={labelClass}>Role title</Text>
+            <Text style={labelClass}>{t("companies.role_title")}</Text>
             <TextInput
               style={[inputClass, errors.title && styles.inputError]}
               value={title}
@@ -162,8 +176,8 @@ export default function JDGeneratorPage() {
                 setTitle(t);
                 setErrors((p) => ({ ...p, title: "" }));
               }}
-              placeholder="Job title"
-              placeholderTextColor={colors.darkAmethyst[300]}
+              placeholder={t("companies.job_title_placeholder")}
+              placeholderTextColor={c['muted-foreground']}
             />
             {errors.title && (
               <Text style={styles.errorText}>{errors.title}</Text>
@@ -172,49 +186,52 @@ export default function JDGeneratorPage() {
 
           <View style={styles.fieldRow}>
             <View style={styles.halfField}>
-              <Text style={labelClass}>Seniority</Text>
+              <Text style={labelClass}>{t("companies.seniority")}</Text>
               <PickerDropdown
+                c={c}
                 options={seniorityOptions}
                 selected={seniority}
                 onSelect={(v) => {
                   setSeniority(v);
                   setErrors((p) => ({ ...p, seniority: "" }));
                 }}
-                placeholder="Select seniority"
+                placeholder={t("companies.select_seniority")}
                 error={errors.seniority}
               />
             </View>
             <View style={styles.halfField}>
-              <Text style={labelClass}>Job type</Text>
+              <Text style={labelClass}>{t("companies.job_type")}</Text>
               <PickerDropdown
+                c={c}
                 options={jobTypeOptions}
                 selected={jobType}
                 onSelect={(v) => {
                   setJobType(v);
                   setErrors((p) => ({ ...p, jobType: "" }));
                 }}
-                placeholder="Select type"
+                placeholder={t("companies.select_type")}
                 error={errors.jobType}
               />
             </View>
           </View>
 
           <View style={styles.fieldGroup}>
-            <Text style={labelClass}>Work type</Text>
+            <Text style={labelClass}>{t("companies.work_type")}</Text>
             <PickerDropdown
+              c={c}
               options={workLocationOptions}
               selected={workLocation}
               onSelect={(v) => {
                 setWorkLocation(v);
                 setErrors((p) => ({ ...p, workLocation: "" }));
               }}
-              placeholder="Select work type"
+              placeholder={t("companies.select_work_type")}
               error={errors.workLocation}
             />
           </View>
 
           <View style={styles.fieldGroup}>
-            <Text style={labelClass}>Experience required</Text>
+            <Text style={labelClass}>{t("companies.experience_required")}</Text>
             <TextInput
               style={[inputClass, errors.experienceYears && styles.inputError]}
               value={experienceYears}
@@ -222,8 +239,8 @@ export default function JDGeneratorPage() {
                 setExperienceYears(t);
                 setErrors((p) => ({ ...p, experienceYears: "" }));
               }}
-              placeholder="e.g. 1-3 years"
-              placeholderTextColor={colors.darkAmethyst[300]}
+              placeholder={t("companies.experience_placeholder")}
+              placeholderTextColor={c['muted-foreground']}
             />
             {errors.experienceYears && (
               <Text style={styles.errorText}>{errors.experienceYears}</Text>
@@ -232,39 +249,39 @@ export default function JDGeneratorPage() {
 
           <View style={styles.fieldGroup}>
             <Text style={labelClass}>
-              Required skills{" "}
-              <Text style={styles.optionalTag}>(optional)</Text>
+              {t("companies.required_skills")}{" "}
+              <Text style={styles.optionalTag}>{t("companies.optional")}</Text>
             </Text>
             <TextInput
               style={inputClass}
               value={requiredSkills}
               onChangeText={setRequiredSkills}
-              placeholder="Required skills"
-              placeholderTextColor={colors.darkAmethyst[300]}
+              placeholder={t("companies.required_skills")}
+              placeholderTextColor={c['muted-foreground']}
             />
           </View>
 
           <View style={styles.fieldGroup}>
             <Text style={labelClass}>
-              Salary range (EGP){" "}
-              <Text style={styles.optionalTag}>(optional)</Text>
+              {t("companies.salary_range")}{" "}
+              <Text style={styles.optionalTag}>{t("companies.optional")}</Text>
             </Text>
             <View style={styles.salaryRow}>
               <TextInput
                 style={[inputClass, styles.salaryInput]}
                 value={salaryMin}
                 onChangeText={setSalaryMin}
-                placeholder="Min"
-                placeholderTextColor={colors.darkAmethyst[300]}
+                placeholder={t("companies.min")}
+                placeholderTextColor={c['muted-foreground']}
                 keyboardType="numeric"
               />
-              <Text style={styles.salarySep}>to</Text>
+              <Text style={styles.salarySep}>{t("companies.to")}</Text>
               <TextInput
                 style={[inputClass, styles.salaryInput]}
                 value={salaryMax}
                 onChangeText={setSalaryMax}
-                placeholder="Max"
-                placeholderTextColor={colors.darkAmethyst[300]}
+                placeholder={t("companies.max")}
+                placeholderTextColor={c['muted-foreground']}
                 keyboardType="numeric"
               />
             </View>
@@ -272,15 +289,15 @@ export default function JDGeneratorPage() {
 
           <View style={styles.fieldGroup}>
             <Text style={labelClass}>
-              Key notes{" "}
-              <Text style={styles.optionalTag}>(optional)</Text>
+              {t("companies.key_notes")}{" "}
+              <Text style={styles.optionalTag}>{t("companies.optional")}</Text>
             </Text>
             <TextInput
               style={styles.textArea}
               value={keyNotes}
               onChangeText={setKeyNotes}
-              placeholder="Additional hiring notes..."
-              placeholderTextColor={colors.darkAmethyst[300]}
+              placeholder={t("companies.notes_placeholder")}
+              placeholderTextColor={c['muted-foreground']}
               multiline
               numberOfLines={5}
               textAlignVertical="top"
@@ -291,175 +308,178 @@ export default function JDGeneratorPage() {
             style={styles.generateBtn}
             onPress={handleGenerate}
           >
-            <Text style={styles.generateBtnText}>Generate JD</Text>
+            <Text style={styles.generateBtnText}>{t("companies.generate_jd")}</Text>
           </TouchableOpacity>
         </View>
       </View>
     </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
-const styles = StyleSheet.create({
-  pageContainer: {
-    flex: 1,
-    backgroundColor: colors.darkAmethyst[50],
-  },
-  pageContent: {
-    padding: 20,
-    paddingBottom: 40,
-  },
-  pageTitle: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: colors.darkAmethyst[950],
-    marginBottom: 20,
-  },
-  formCard: {
-    backgroundColor: colors.white,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colors.darkAmethyst[100],
-    padding: 24,
-  },
-  formFields: {
-    gap: 18,
-  },
-  fieldGroup: {
-    gap: 4,
-  },
-  label: {
-    fontSize: 11,
-    fontWeight: "600",
-    color: colors.darkAmethyst[600],
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-    marginBottom: 2,
-  },
-  optionalTag: {
-    fontWeight: "400",
-    color: colors.darkAmethyst[400],
-    textTransform: "none",
-    letterSpacing: 0,
-  },
-  inputField: {
-    borderWidth: 1,
-    borderColor: colors.darkAmethyst[100],
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 11,
-    fontSize: 13,
-    color: colors.darkAmethyst[700],
-    backgroundColor: colors.white,
-  },
-  inputError: {
-    borderColor: colors.red[400],
-  },
-  selectField: {
-    borderWidth: 1,
-    borderColor: colors.darkAmethyst[100],
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 11,
-    backgroundColor: colors.white,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  selectFieldError: {
-    borderColor: colors.red[400],
-  },
-  selectFieldText: {
-    fontSize: 13,
-    color: colors.darkAmethyst[700],
-  },
-  selectFieldPlaceholder: {
-    color: colors.darkAmethyst[300],
-  },
-  selectArrow: {
-    fontSize: 10,
-    color: colors.darkAmethyst[300],
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.4)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContent: {
-    width: "80%",
-    maxHeight: "60%",
-    backgroundColor: colors.white,
-    borderRadius: 16,
-    padding: 20,
-  },
-  modalTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: colors.darkAmethyst[950],
-    marginBottom: 12,
-  },
-  modalOption: {
-    paddingVertical: 14,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-  },
-  modalOptionSelected: {
-    backgroundColor: colors.darkAmethyst[50],
-  },
-  modalOptionText: {
-    fontSize: 15,
-    color: colors.darkAmethyst[900],
-  },
-  modalOptionTextSelected: {
-    color: colors.darkAmethyst[600],
-    fontWeight: "600",
-  },
-  errorText: {
-    fontSize: 11,
-    color: colors.red[500],
-    marginTop: 2,
-  },
-  fieldRow: {
-    flexDirection: "row",
-    gap: 12,
-  },
-  halfField: {
-    flex: 1,
-  },
-  salaryRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  salaryInput: {
-    flex: 1,
-  },
-  salarySep: {
-    fontSize: 13,
-    color: colors.darkAmethyst[300],
-  },
-  textArea: {
-    borderWidth: 1,
-    borderColor: colors.darkAmethyst[100],
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 11,
-    fontSize: 13,
-    color: colors.darkAmethyst[900],
-    backgroundColor: colors.white,
-    minHeight: 100,
-  },
-  generateBtn: {
-    backgroundColor: colors.darkAmethyst[600],
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 4,
-  },
-  generateBtnText: {
-    color: colors.white,
-    fontSize: 15,
-    fontWeight: "600",
-  },
-});
+function createStyles(c) {
+  return StyleSheet.create({
+    pageContainer: {
+      flex: 1,
+      backgroundColor: c['surface-muted'],
+    },
+    pageContent: {
+      padding: 20,
+      paddingBottom: 40,
+    },
+    pageTitle: {
+      fontSize: 22,
+      fontWeight: "700",
+      color: c.foreground,
+      marginBottom: 20,
+    },
+    formCard: {
+      backgroundColor: c.card,
+      borderRadius: 16,
+      borderWidth: 1,
+      borderColor: c.border,
+      padding: 24,
+    },
+    formFields: {
+      gap: 18,
+    },
+    fieldGroup: {
+      gap: 4,
+    },
+    label: {
+      fontSize: 11,
+      fontWeight: "600",
+      color: c.primary,
+      textTransform: "uppercase",
+      letterSpacing: 0.5,
+      marginBottom: 2,
+    },
+    optionalTag: {
+      fontWeight: "400",
+      color: c['muted-foreground'],
+      textTransform: "none",
+      letterSpacing: 0,
+    },
+    inputField: {
+      borderWidth: 1,
+      borderColor: c.border,
+      borderRadius: 12,
+      paddingHorizontal: 14,
+      paddingVertical: 11,
+      fontSize: 13,
+      color: c.foreground,
+      backgroundColor: c.card,
+    },
+    inputError: {
+      borderColor: c.destructive,
+    },
+    selectField: {
+      borderWidth: 1,
+      borderColor: c.border,
+      borderRadius: 12,
+      paddingHorizontal: 14,
+      paddingVertical: 11,
+      backgroundColor: c.card,
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    selectFieldError: {
+      borderColor: c.destructive,
+    },
+    selectFieldText: {
+      fontSize: 13,
+      color: c.foreground,
+    },
+    selectFieldPlaceholder: {
+      color: c['muted-foreground'],
+    },
+    selectArrow: {
+      fontSize: 10,
+      color: c['muted-foreground'],
+    },
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: `${c.foreground}66`,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    modalContent: {
+      width: "80%",
+      maxHeight: "60%",
+      backgroundColor: c.card,
+      borderRadius: 16,
+      padding: 20,
+    },
+    modalTitle: {
+      fontSize: 16,
+      fontWeight: "700",
+      color: c.foreground,
+      marginBottom: 12,
+    },
+    modalOption: {
+      paddingVertical: 14,
+      paddingHorizontal: 12,
+      borderRadius: 8,
+    },
+    modalOptionSelected: {
+      backgroundColor: c['surface-muted'],
+    },
+    modalOptionText: {
+      fontSize: 15,
+      color: c.foreground,
+    },
+    modalOptionTextSelected: {
+      color: c.primary,
+      fontWeight: "600",
+    },
+    errorText: {
+      fontSize: 11,
+      color: c.destructive,
+      marginTop: 2,
+    },
+    fieldRow: {
+      flexDirection: "row",
+      gap: 12,
+    },
+    halfField: {
+      flex: 1,
+    },
+    salaryRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+    },
+    salaryInput: {
+      flex: 1,
+    },
+    salarySep: {
+      fontSize: 13,
+      color: c['muted-foreground'],
+    },
+    textArea: {
+      borderWidth: 1,
+      borderColor: c.border,
+      borderRadius: 12,
+      paddingHorizontal: 14,
+      paddingVertical: 11,
+      fontSize: 13,
+      color: c.foreground,
+      backgroundColor: c.card,
+      minHeight: 100,
+    },
+    generateBtn: {
+      backgroundColor: c.primary,
+      paddingVertical: 14,
+      borderRadius: 12,
+      alignItems: "center",
+      justifyContent: "center",
+      marginTop: 4,
+    },
+    generateBtnText: {
+      color: c['destructive-foreground'],
+      fontSize: 15,
+      fontWeight: "600",
+    },
+  });
+}

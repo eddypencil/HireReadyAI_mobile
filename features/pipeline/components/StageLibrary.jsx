@@ -1,7 +1,8 @@
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { STAGE_LIBRARY } from "../constants/stageLibrary";
-import { colors } from "../../../src/theme";
+import { useTheme } from "../../../shared/context/ThemeContext";
+import { useTranslation } from "../../../shared/context/I18nContext";
 
 const ICON_MAP = {
   FileText: "document-text-outline",
@@ -17,11 +18,16 @@ const ICON_MAP = {
 };
 
 export default function StageLibrary({ onAddStage }) {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const c = theme.colors;
+  const styles = createStyles(c);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerLabel}>Stage Library</Text>
-        <Text style={styles.headerHint}>Tap to append</Text>
+        <Text style={styles.headerLabel}>{t("pipeline.stage_library")}</Text>
+        <Text style={styles.headerHint}>{t("pipeline.tap_to_append")}</Text>
       </View>
 
       <ScrollView style={styles.list} showsVerticalScrollIndicator={false}>
@@ -35,7 +41,7 @@ export default function StageLibrary({ onAddStage }) {
               activeOpacity={0.7}
             >
               <View style={styles.iconWrap}>
-                <Ionicons name={iconName} size={18} color={colors.darkAmethyst[600]} />
+                <Ionicons name={iconName} size={18} color={c.primary} />
               </View>
               <View style={styles.textWrap}>
                 <Text style={styles.label} numberOfLines={1}>{item.label}</Text>
@@ -49,62 +55,64 @@ export default function StageLibrary({ onAddStage }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.gray[100],
-  },
-  headerLabel: {
-    fontSize: 10,
-    fontWeight: "700",
-    color: colors.gray[400],
-    letterSpacing: 1,
-    textTransform: "uppercase",
-  },
-  headerHint: {
-    fontSize: 12,
-    color: colors.gray[500],
-    marginTop: 2,
-  },
-  list: {
-    flex: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-  },
-  stageButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 8,
-    marginBottom: 6,
-  },
-  iconWrap: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    backgroundColor: colors.gray[100],
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  textWrap: {
-    flex: 1,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: colors.gray[800],
-  },
-  subtitle: {
-    fontSize: 12,
-    color: colors.gray[400],
-    marginTop: 1,
-  },
-});
+function createStyles(c) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    header: {
+      paddingHorizontal: 16,
+      paddingTop: 16,
+      paddingBottom: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: c.border,
+    },
+    headerLabel: {
+      fontSize: 10,
+      fontWeight: "700",
+      color: c['muted-foreground'],
+      letterSpacing: 1,
+      textTransform: "uppercase",
+    },
+    headerHint: {
+      fontSize: 12,
+      color: c['muted-foreground'],
+      marginTop: 2,
+    },
+    list: {
+      flex: 1,
+      paddingHorizontal: 12,
+      paddingVertical: 12,
+    },
+    stageButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      borderRadius: 8,
+      marginBottom: 6,
+    },
+    iconWrap: {
+      width: 32,
+      height: 32,
+      borderRadius: 8,
+      backgroundColor: c.border,
+      justifyContent: "center",
+      alignItems: "center",
+      marginRight: 12,
+    },
+    textWrap: {
+      flex: 1,
+    },
+    label: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: c.foreground,
+    },
+    subtitle: {
+      fontSize: 12,
+      color: c['muted-foreground'],
+      marginTop: 1,
+    },
+  });
+}

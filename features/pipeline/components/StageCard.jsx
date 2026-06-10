@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { colors } from "../../../src/theme";
+import { useTheme } from "../../../shared/context/ThemeContext";
+import { useTranslation } from "../../../shared/context/I18nContext";
 
 export default function StageCard({
   stage,
@@ -12,6 +13,11 @@ export default function StageCard({
   isFirst,
   isLast,
 }) {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const c = theme.colors;
+  const styles = createStyles(c);
+
   return (
     <TouchableOpacity
       onPress={() => onSelect(stage)}
@@ -23,7 +29,7 @@ export default function StageCard({
     >
       <View style={styles.leftCol}>
         {stage.is_locked ? (
-          <Ionicons name="lock-closed-outline" size={16} color={colors.gray[300]} />
+          <Ionicons name="lock-closed-outline" size={16} color={c.border} />
         ) : (
           <>
             <TouchableOpacity
@@ -34,7 +40,7 @@ export default function StageCard({
               <Ionicons
                 name="chevron-up-outline"
                 size={14}
-                color={isFirst ? colors.gray[200] : colors.gray[400]}
+                color={isFirst ? c.border : c['muted-foreground']}
               />
             </TouchableOpacity>
             <TouchableOpacity
@@ -45,7 +51,7 @@ export default function StageCard({
               <Ionicons
                 name="chevron-down-outline"
                 size={14}
-                color={isLast ? colors.gray[200] : colors.gray[400]}
+                color={isLast ? c.border : c['muted-foreground']}
               />
             </TouchableOpacity>
           </>
@@ -67,7 +73,7 @@ export default function StageCard({
       {stage.weight != null && (
         <View style={styles.weightBadge}>
           <Text style={styles.weightText}>
-            {Math.round(stage.weight * 100)}% wt
+            {t("pipeline.weight_label", { pct: Math.round(stage.weight * 100) })}
           </Text>
         </View>
       )}
@@ -78,67 +84,69 @@ export default function StageCard({
           style={styles.deleteBtn}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Ionicons name="trash-outline" size={16} color={colors.gray[300]} />
+          <Ionicons name="trash-outline" size={16} color={c.border} />
         </TouchableOpacity>
       )}
     </TouchableOpacity>
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: colors.white,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.gray[200],
-    paddingVertical: 14,
-    paddingHorizontal: 12,
-    gap: 10,
-  },
-  cardSelected: {
-    borderColor: colors.darkAmethyst[500],
-    backgroundColor: colors.darkAmethyst[50] + "/60",
-  },
-  leftCol: {
-    alignItems: "center",
-    gap: 2,
-    width: 20,
-  },
-  moveBtn: {
-    padding: 2,
-  },
-  info: {
-    flex: 1,
-  },
-  name: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: colors.gray[900],
-  },
-  nameSelected: {
-    color: colors.darkAmethyst[900],
-  },
-  type: {
-    fontSize: 11,
-    color: colors.gray[400],
-    marginTop: 2,
-    textTransform: "capitalize",
-  },
-  weightBadge: {
-    backgroundColor: colors.gray[100],
-    borderRadius: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-  },
-  weightText: {
-    fontSize: 11,
-    color: colors.gray[500],
-    fontWeight: "500",
-  },
-  deleteBtn: {
-    padding: 6,
-    borderRadius: 6,
-  },
-});
+function createStyles(c) {
+  return StyleSheet.create({
+    card: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: c.card,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: c.border,
+      paddingVertical: 14,
+      paddingHorizontal: 12,
+      gap: 10,
+    },
+    cardSelected: {
+      borderColor: c['muted-foreground'],
+      backgroundColor: `${c['surface-muted']}99`,
+    },
+    leftCol: {
+      alignItems: "center",
+      gap: 2,
+      width: 20,
+    },
+    moveBtn: {
+      padding: 2,
+    },
+    info: {
+      flex: 1,
+    },
+    name: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: c.foreground,
+    },
+    nameSelected: {
+      color: c.foreground,
+    },
+    type: {
+      fontSize: 11,
+      color: c['muted-foreground'],
+      marginTop: 2,
+      textTransform: "capitalize",
+    },
+    weightBadge: {
+      backgroundColor: c.border,
+      borderRadius: 6,
+      paddingHorizontal: 8,
+      paddingVertical: 3,
+    },
+    weightText: {
+      fontSize: 11,
+      color: c['muted-foreground'],
+      fontWeight: "500",
+    },
+    deleteBtn: {
+      padding: 6,
+      borderRadius: 6,
+    },
+  });
+}

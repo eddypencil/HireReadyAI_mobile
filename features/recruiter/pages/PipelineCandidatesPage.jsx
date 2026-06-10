@@ -17,10 +17,10 @@ import {
   getPipelineCandidates,
   getJobStages,
   moveToStage,
-  getStageByTypeAndJob,
-  autoAdvanceToShortlist,
 } from '../services/candidatesPipline.service';
-import { colors } from '../../../src/theme';
+import { useTheme } from '../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../shared/context/I18nContext';
+import AutoAdvanceModal from '../components/AutoAdvanceModal';
 
 const STAGE_TYPE_COLORS = {
   cv_review: '#6b7280',
@@ -41,70 +41,221 @@ function getInitials(name = '') {
   return (name || '').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || '?';
 }
 
-function useTheme() {
-  return {
-    background: colors.surface,
-    surface: colors.white,
-    card: colors.white,
-    border: colors.border,
-    foreground: colors.foreground,
-    muted: colors.mutedForeground,
-    primary: colors.primary,
-    accent: colors.accent,
-    primaryLight: colors.primary + '18',
-  };
-}
-
-function CandidateCard({ candidate, stageColor, onTap, onMove }) {
-  const app = typeof candidate.application_stages === 'object' && !Array.isArray(candidate.application_stages)
-    ? candidate
-    : candidate;
-  const name = app.profiles?.full_name || 'Unknown';
-  const score = app.composite_score;
-  const initials = getInitials(name);
-
-  const scoreColor = score >= 80 ? { bg: '#d4edda', text: '#155724' }
-    : score >= 60 ? { bg: '#d1ecf1', text: '#0c5460' }
-    : { bg: '#fff3cd', text: '#856404' };
-
-  return (
-    <TouchableOpacity
-      style={styles.candidateCard}
-      activeOpacity={0.8}
-      onPress={() => onTap(app)}
-      onLongPress={() => onMove(app)}
-      delayLongPress={400}
-    >
-      <View style={styles.candidateTop}>
-        <View style={[styles.avatar, { backgroundColor: stageColor }]}>
-          <Text style={styles.avatarText}>{initials}</Text>
-        </View>
-        <View style={styles.candidateInfo}>
-          <Text style={styles.candidateName} numberOfLines={1}>{name}</Text>
-          <Text style={styles.candidateRole} numberOfLines={1}>{app.job_postings?.title || ''}</Text>
-        </View>
-      </View>
-      {score != null && (
-        <View style={[styles.scoreBadge, { backgroundColor: scoreColor.bg }]}>
-          <Text style={[styles.scoreText, { color: scoreColor.text }]}>{Math.round(score)}</Text>
-        </View>
-      )}
-    </TouchableOpacity>
-  );
+function createStyles(c) {
+  return StyleSheet.create({
+    container: { flex: 1 },
+    centered: { justifyContent: 'center', alignItems: 'center' },
+    loadingText: { marginTop: 12, fontSize: 14 },
+    headerBar: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: c.primary,
+      paddingHorizontal: 16,
+      paddingBottom: 12,
+      gap: 8,
+    },
+    jobSelector: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: 'rgba(255,255,255,0.15)',
+      borderRadius: 10,
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      gap: 8,
+    },
+    jobSelectorText: {
+      flex: 1,
+      fontSize: 15,
+      fontWeight: '600',
+      color: c['destructive-foreground'],
+    },
+    autoAdvanceBtn: {
+      width: 40,
+      height: 40,
+      borderRadius: 10,
+      backgroundColor: 'rgba(255,255,255,0.15)',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    infoBar: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 16,
+      paddingVertical: 10,
+      gap: 6,
+      backgroundColor: c.card,
+      borderBottomWidth: 1,
+      borderBottomColor: c.border,
+    },
+    infoText: {
+      fontSize: 13,
+      fontWeight: '600',
+      color: c.primary,
+      flex: 1,
+    },
+    infoHint: {
+      fontSize: 11,
+      color: c['muted-foreground'],
+    },
+    boardScroll: { flex: 1 },
+    board: {
+      flexDirection: 'row',
+      paddingHorizontal: 16,
+      paddingVertical: 20,
+      gap: 14,
+      alignItems: 'flex-start',
+    },
+    column: { width: 240, maxHeight: '100%' },
+    columnHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 12,
+      paddingHorizontal: 4,
+    },
+    stageDot: { width: 10, height: 10, borderRadius: 5, marginRight: 8 },
+    columnTitle: { fontSize: 14, fontWeight: '700', flex: 1 },
+    countBadge: {
+      backgroundColor: c['surface-muted'],
+      borderRadius: 10,
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+      borderWidth: 1,
+      borderColor: c.border,
+    },
+    countText: { fontSize: 12, fontWeight: '700', color: c.primary },
+    columnBody: { maxHeight: 500 },
+    emptyColumn: {
+      borderWidth: 2,
+      borderStyle: 'dashed',
+      borderColor: c.border,
+      borderRadius: 12,
+      padding: 32,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    emptyColumnText: { fontSize: 12, marginTop: 6 },
+    candidateCard: {
+      backgroundColor: c.card,
+      borderRadius: 12,
+      padding: 14,
+      marginBottom: 10,
+      borderWidth: 1,
+      borderColor: c.border,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    candidateTop: { flexDirection: 'row', alignItems: 'center', flex: 1 },
+    avatar: {
+      width: 38,
+      height: 38,
+      borderRadius: 19,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: 10,
+    },
+    avatarText: { color: c['destructive-foreground'], fontSize: 12, fontWeight: '700' },
+    candidateInfo: { flex: 1 },
+    candidateName: { fontSize: 13, fontWeight: '700', color: c.foreground },
+    candidateRole: { fontSize: 11, color: c['muted-foreground'], marginTop: 1 },
+    scoreBadge: {
+      borderRadius: 8,
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+    },
+    scoreText: { fontSize: 12, fontWeight: '800' },
+    rightActions: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+    },
+    advanceArrow: {
+      width: 36,
+      height: 36,
+      borderRadius: 14,
+      backgroundColor: c.primary + '1a',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0,0,0,0.4)',
+      justifyContent: 'flex-end',
+    },
+    modalContent: {
+      backgroundColor: c.card,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      maxHeight: '70%',
+      paddingBottom: 40,
+    },
+    modalHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 20,
+      paddingVertical: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: c.border,
+    },
+    modalTitle: { fontSize: 17, fontWeight: '700', color: c.foreground },
+    jobOption: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 20,
+      paddingVertical: 14,
+      gap: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: c.border,
+    },
+    jobOptionActive: { backgroundColor: c.primary + '08' },
+    jobOptionInfo: { flex: 1 },
+    jobOptionTitle: { fontSize: 15, fontWeight: '600', color: c.foreground },
+    jobOptionDept: { fontSize: 12, color: c['muted-foreground'], marginTop: 2 },
+    emptyJobsText: { textAlign: 'center', padding: 30, color: c['muted-foreground'], fontSize: 14 },
+    moveModal: {
+      backgroundColor: c.card,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      maxHeight: '60%',
+      paddingBottom: 40,
+    },
+    moveSubtitle: {
+      fontSize: 13,
+      color: c['muted-foreground'],
+      paddingHorizontal: 20,
+      paddingTop: 12,
+      paddingBottom: 8,
+    },
+    moveOption: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 20,
+      paddingVertical: 14,
+      gap: 10,
+      borderBottomWidth: 1,
+      borderBottomColor: c.border,
+    },
+    moveDot: { width: 12, height: 12, borderRadius: 6 },
+    moveOptionText: { flex: 1, fontSize: 15, fontWeight: '500', color: c.foreground },
+  });
 }
 
 export default function PipelineCandidatesPage() {
   const insets = useSafeAreaInsets();
-  const theme = useTheme();
+  const { theme } = useTheme();
+  const c = theme.colors;
   const navigation = useNavigation();
   const { company, jobs } = useCompany();
+  const { t } = useTranslation();
 
   const [candidates, setCandidates] = useState([]);
   const [stages, setStages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedJobId, setSelectedJobId] = useState(null);
   const [showJobPicker, setShowJobPicker] = useState(false);
-  const [moveTarget, setMoveTarget] = useState(null);
+  const [showAutoAdvanceModal, setShowAutoAdvanceModal] = useState(false);
   const [moving, setMoving] = useState(false);
 
   useEffect(() => {
@@ -151,89 +302,134 @@ export default function PipelineCandidatesPage() {
     navigation.navigate('CandidateProfile', { applicationId: candidate.id });
   };
 
-  const handleMoveCandidate = async (candidate) => {
-    setMoveTarget(candidate);
-  };
-
-  const executeMove = async (targetStageId) => {
-    if (!moveTarget) return;
+  const handleAdvanceOneStage = async (candidate, nextStageId) => {
+    if (moving) return;
     setMoving(true);
     try {
-      const { error } = await moveToStage(moveTarget.id, targetStageId);
+      const { error } = await moveToStage(candidate.id, nextStageId);
       if (error) {
-        Alert.alert('Cannot move', error.message);
+        Alert.alert(t("recruiter.cannot_move"), error.message);
       } else {
         fetchData();
       }
     } catch (err) {
-      Alert.alert('Error', err.message);
+      Alert.alert(t("recruiter.error"), err.message);
     } finally {
       setMoving(false);
-      setMoveTarget(null);
     }
   };
 
-  const handleAutoAdvance = async () => {
-    try {
-      const result = await autoAdvanceToShortlist(selectedJobId, 70);
-      if (result.advancedCount > 0) {
-        Alert.alert('Auto-Advance', `${result.advancedCount} candidate(s) advanced to shortlist`);
-        fetchData();
-      } else {
-        Alert.alert('Auto-Advance', 'No candidates met the threshold');
-      }
-    } catch (err) {
-      Alert.alert('Error', err.message);
+  const handleAutoAdvanceComplete = (advancedCount) => {
+    if (advancedCount > 0) {
+      Alert.alert(t("recruiter.auto_advance"), t("recruiter.auto_advanced", { count: advancedCount }));
+      fetchData();
     }
   };
+
+  const precedingStageCandidates = useMemo(() => {
+    const shortlistStage = stages.find(s => s.stage_type === 'shortlist');
+    if (!shortlistStage) return [];
+    const preceding = stages
+      .filter(s => s.order_index < shortlistStage.order_index)
+      .sort((a, b) => b.order_index - a.order_index)[0];
+    if (!preceding) return [];
+    return candidatesByStage[preceding.id] || [];
+  }, [stages, candidatesByStage]);
 
   const selectedJob = jobs.find(j => j.id === selectedJobId);
 
+  const styles = createStyles(c);
+
+  function CandidateCard({ candidate, stageColor, onTap, onAdvance }) {
+    const app = candidate;
+    const name = app.profiles?.full_name || t("recruiter.unknown");
+    const score = app.composite_score;
+    const initials = getInitials(name);
+
+    const scoreColor = score >= 80 ? c.success
+      : score >= 60 ? c.warning
+      : c['muted-foreground'];
+    const scoreBg = score >= 80 ? `${c.success}1a`
+      : score >= 60 ? `${c.warning}1a`
+      : c['surface-muted'];
+
+    return (
+      <TouchableOpacity
+        style={styles.candidateCard}
+        activeOpacity={0.8}
+        onPress={() => onTap(app)}
+      >
+        <View style={styles.candidateTop}>
+          <View style={[styles.avatar, { backgroundColor: stageColor }]}>
+            <Text style={styles.avatarText}>{initials}</Text>
+          </View>
+          <View style={styles.candidateInfo}>
+            <Text style={styles.candidateName} numberOfLines={1}>{name}</Text>
+            <Text style={styles.candidateRole} numberOfLines={1}>{app.job_postings?.title || ''}</Text>
+          </View>
+        </View>
+        <View style={styles.rightActions}>
+          {score != null && (
+            <View style={[styles.scoreBadge, { backgroundColor: scoreBg }]}>
+              <Text style={[styles.scoreText, { color: scoreColor }]}>{Math.round(score)}</Text>
+            </View>
+          )}
+          {onAdvance && (
+            <TouchableOpacity onPress={onAdvance} style={styles.advanceArrow} disabled={moving}>
+              <Ionicons name="chevron-forward" size={18} color={c.primary} />
+            </TouchableOpacity>
+          )}
+        </View>
+      </TouchableOpacity>
+    );
+  }
+
   if (loading && candidates.length === 0) {
     return (
-      <View style={[styles.container, styles.centered, { backgroundColor: theme.background }]}>
-        <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={[styles.loadingText, { color: theme.muted }]}>Loading pipeline...</Text>
+      <View style={[styles.container, styles.centered, { backgroundColor: c.background }]}>
+        <ActivityIndicator size="large" color={c.primary} />
+        <Text style={[styles.loadingText, { color: c['muted-foreground'] }]}>{t("recruiter.loading")}</Text>
       </View>
     );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
+    <View style={[styles.container, { backgroundColor: c.background }]}>
       {/* Job Selector Header */}
       <View style={[styles.headerBar, { paddingTop: insets.top + 12 }]}>
         <TouchableOpacity style={styles.jobSelector} onPress={() => setShowJobPicker(true)}>
-          <Ionicons name="briefcase-outline" size={18} color={colors.white} />
+          <Ionicons name="briefcase-outline" size={18} color={c['destructive-foreground']} />
           <Text style={styles.jobSelectorText} numberOfLines={1}>
-            {selectedJob?.title || 'Select a job'}
+            {selectedJob?.title || t("recruiter.select_job")}
           </Text>
-          <Ionicons name="chevron-down" size={16} color={colors.white} />
+          <Ionicons name="chevron-down" size={16} color={c['destructive-foreground']} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.autoAdvanceBtn} onPress={handleAutoAdvance}>
-          <Ionicons name="flash-outline" size={16} color={colors.white} />
+        <TouchableOpacity style={styles.autoAdvanceBtn} onPress={() => setShowAutoAdvanceModal(true)}>
+          <Ionicons name="flash-outline" size={16} color={c['destructive-foreground']} />
         </TouchableOpacity>
       </View>
 
       {/* Pipeline Info */}
       <View style={styles.infoBar}>
-        <Ionicons name="git-network-outline" size={16} color={colors.primary} />
+        <Ionicons name="git-network-outline" size={16} color={c.primary} />
         <Text style={styles.infoText}>
-          {candidates.length} candidate{candidates.length !== 1 ? 's' : ''} in pipeline
+          {t("recruiter.candidates_in_pipeline", { count: candidates.length })}
         </Text>
-        <Text style={styles.infoHint}>Long-press a card to move stages</Text>
+        <Text style={styles.infoHint}>{t("recruiter.advance_hint")}</Text>
       </View>
 
       {/* Kanban Board */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.boardScroll}>
         <View style={styles.board}>
-          {stages.map((stage) => {
+          {stages.map((stage, stageIndex) => {
+            const nextStage = stages[stageIndex + 1];
             const stageCandidates = candidatesByStage[stage.id] || [];
             const stageColor = STAGE_TYPE_COLORS[stage.stage_type] || STAGE_TYPE_COLORS.default;
             return (
               <View key={stage.id} style={styles.column}>
                 <View style={styles.columnHeader}>
                   <View style={[styles.stageDot, { backgroundColor: stageColor }]} />
-                  <Text style={[styles.columnTitle, { color: theme.foreground }]} numberOfLines={1}>
+                  <Text style={[styles.columnTitle, { color: c.foreground }]} numberOfLines={1}>
                     {stage.name}
                   </Text>
                   <View style={styles.countBadge}>
@@ -244,8 +440,8 @@ export default function PipelineCandidatesPage() {
                 <ScrollView style={styles.columnBody} showsVerticalScrollIndicator={false}>
                   {stageCandidates.length === 0 ? (
                     <View style={styles.emptyColumn}>
-                      <Ionicons name="move-outline" size={24} color={theme.border} />
-                      <Text style={[styles.emptyColumnText, { color: theme.border }]}>Drop here</Text>
+                      <Ionicons name="move-outline" size={24} color={c.border} />
+                      <Text style={[styles.emptyColumnText, { color: c.border }]}>{t("recruiter.drop_here")}</Text>
                     </View>
                   ) : (
                     stageCandidates.map((candidate) => (
@@ -254,7 +450,7 @@ export default function PipelineCandidatesPage() {
                         candidate={candidate}
                         stageColor={stageColor}
                         onTap={handleCandidateTap}
-                        onMove={handleMoveCandidate}
+                        onAdvance={nextStage && !nextStage.is_locked ? () => handleAdvanceOneStage(candidate, nextStage.id) : null}
                       />
                     ))
                   )}
@@ -270,9 +466,9 @@ export default function PipelineCandidatesPage() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Select a Job</Text>
+              <Text style={styles.modalTitle}>{t("recruiter.select_a_job_title")}</Text>
               <TouchableOpacity onPress={() => setShowJobPicker(false)}>
-                <Ionicons name="close" size={24} color={colors.foreground} />
+                <Ionicons name="close" size={24} color={c.foreground} />
               </TouchableOpacity>
             </View>
             <ScrollView>
@@ -285,10 +481,10 @@ export default function PipelineCandidatesPage() {
                   <Ionicons
                     name={job.id === selectedJobId ? 'radio-button-on' : 'radio-button-off'}
                     size={20}
-                    color={job.id === selectedJobId ? colors.primary : colors.gray[400]}
+                    color={job.id === selectedJobId ? c.primary : c['muted-foreground']}
                   />
                   <View style={styles.jobOptionInfo}>
-                    <Text style={[styles.jobOptionTitle, job.id === selectedJobId && { color: colors.primary }]}>
+                    <Text style={[styles.jobOptionTitle, job.id === selectedJobId && { color: c.primary }]}>
                       {job.title}
                     </Text>
                     {job.department && (
@@ -298,235 +494,20 @@ export default function PipelineCandidatesPage() {
                 </TouchableOpacity>
               ))}
               {jobs.length === 0 && (
-                <Text style={styles.emptyJobsText}>No jobs available. Create one first.</Text>
+                <Text style={styles.emptyJobsText}>{t("recruiter.no_jobs_available")}</Text>
               )}
             </ScrollView>
           </View>
         </View>
       </Modal>
 
-      {/* Move to Stage Modal */}
-      <Modal visible={!!moveTarget} transparent animationType="fade" onRequestClose={() => setMoveTarget(null)}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.moveModal}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>
-                Move {moveTarget?.profiles?.full_name || 'candidate'}
-              </Text>
-              <TouchableOpacity onPress={() => setMoveTarget(null)}>
-                <Ionicons name="close" size={24} color={colors.foreground} />
-              </TouchableOpacity>
-            </View>
-            <Text style={styles.moveSubtitle}>Select target stage:</Text>
-            {moving ? (
-              <ActivityIndicator size="small" color={colors.primary} style={{ marginVertical: 20 }} />
-            ) : (
-              <ScrollView>
-                {stages.filter(s => !s.is_locked && s.id !== moveTarget?.current_stage_id).map(stage => {
-                  const stageColor = STAGE_TYPE_COLORS[stage.stage_type] || STAGE_TYPE_COLORS.default;
-                  return (
-                    <TouchableOpacity
-                      key={stage.id}
-                      style={styles.moveOption}
-                      onPress={() => executeMove(stage.id)}
-                    >
-                      <View style={[styles.moveDot, { backgroundColor: stageColor }]} />
-                      <Text style={styles.moveOptionText}>{stage.name}</Text>
-                      <Ionicons name="chevron-forward" size={18} color={colors.gray[400]} />
-                    </TouchableOpacity>
-                  );
-                })}
-              </ScrollView>
-            )}
-          </View>
-        </View>
-      </Modal>
+      <AutoAdvanceModal
+        visible={showAutoAdvanceModal}
+        onClose={() => setShowAutoAdvanceModal(false)}
+        selectedJobId={selectedJobId}
+        precedingStageCandidates={precedingStageCandidates}
+        onComplete={handleAutoAdvanceComplete}
+      />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  centered: { justifyContent: 'center', alignItems: 'center' },
-  loadingText: { marginTop: 12, fontSize: 14 },
-  headerBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.primary,
-    paddingHorizontal: 16,
-    paddingBottom: 12,
-    gap: 8,
-  },
-  jobSelector: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    gap: 8,
-  },
-  jobSelectorText: {
-    flex: 1,
-    fontSize: 15,
-    fontWeight: '600',
-    color: colors.white,
-  },
-  autoAdvanceBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  infoBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    gap: 6,
-    backgroundColor: colors.white,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  infoText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: colors.primary,
-    flex: 1,
-  },
-  infoHint: {
-    fontSize: 11,
-    color: colors.mutedForeground,
-  },
-  boardScroll: { flex: 1 },
-  board: {
-    flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingVertical: 20,
-    gap: 14,
-    alignItems: 'flex-start',
-  },
-  column: { width: 240, maxHeight: '100%' },
-  columnHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-    paddingHorizontal: 4,
-  },
-  stageDot: { width: 10, height: 10, borderRadius: 5, marginRight: 8 },
-  columnTitle: { fontSize: 14, fontWeight: '700', flex: 1 },
-  countBadge: {
-    backgroundColor: colors.surface,
-    borderRadius: 10,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  countText: { fontSize: 12, fontWeight: '700', color: colors.primary },
-  columnBody: { maxHeight: 500 },
-  emptyColumn: {
-    borderWidth: 2,
-    borderStyle: 'dashed',
-    borderColor: colors.border,
-    borderRadius: 12,
-    padding: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyColumnText: { fontSize: 12, marginTop: 6 },
-  candidateCard: {
-    backgroundColor: colors.white,
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: colors.border,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  candidateTop: { flexDirection: 'row', alignItems: 'center', flex: 1 },
-  avatar: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 10,
-  },
-  avatarText: { color: colors.white, fontSize: 12, fontWeight: '700' },
-  candidateInfo: { flex: 1 },
-  candidateName: { fontSize: 13, fontWeight: '700', color: colors.foreground },
-  candidateRole: { fontSize: 11, color: colors.mutedForeground, marginTop: 1 },
-  scoreBadge: {
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  scoreText: { fontSize: 12, fontWeight: '800' },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'flex-end',
-  },
-  modalContent: {
-    backgroundColor: colors.white,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    maxHeight: '70%',
-    paddingBottom: 40,
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  modalTitle: { fontSize: 17, fontWeight: '700', color: colors.foreground },
-  jobOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    gap: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  jobOptionActive: { backgroundColor: colors.primary + '08' },
-  jobOptionInfo: { flex: 1 },
-  jobOptionTitle: { fontSize: 15, fontWeight: '600', color: colors.foreground },
-  jobOptionDept: { fontSize: 12, color: colors.mutedForeground, marginTop: 2 },
-  emptyJobsText: { textAlign: 'center', padding: 30, color: colors.gray[400], fontSize: 14 },
-  moveModal: {
-    backgroundColor: colors.white,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    maxHeight: '60%',
-    paddingBottom: 40,
-  },
-  moveSubtitle: {
-    fontSize: 13,
-    color: colors.mutedForeground,
-    paddingHorizontal: 20,
-    paddingTop: 12,
-    paddingBottom: 8,
-  },
-  moveOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    gap: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  moveDot: { width: 12, height: 12, borderRadius: 6 },
-  moveOptionText: { flex: 1, fontSize: 15, fontWeight: '500', color: colors.foreground },
-});

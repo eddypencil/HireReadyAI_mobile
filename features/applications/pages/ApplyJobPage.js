@@ -11,17 +11,24 @@ import { fetchQuestionsByJobId, createApplication } from '../services/applicatio
 import { triggerCvReview } from '../services/cv-review.service';
 import { supabase } from '../../../shared/services/supabase';
 import QuestionCard from '../components/apply/QuestionCard';
-import { colors } from '../../../src/theme';
+import { useTheme } from '../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../shared/context/I18nContext';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system/legacy';
-
-const STEPS = ['Info', 'Resume', 'Questions'];
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ApplyJobPage() {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const c = theme.colors;
+  const insets = useSafeAreaInsets();
+  const styles = createStyles(c);
   const route = useRoute();
   const navigation = useNavigation();
   const { profile } = useUser();
   const { jobId } = route.params;
+
+  const STEPS = [t("applications.step_info"), t("applications.step_resume"), t("applications.step_questions")];
 
   const [step, setStep] = useState(0);
   const [questions, setQuestions] = useState([]);
@@ -67,15 +74,15 @@ export default function ApplyJobPage() {
     const stepErrors = {};
 
     if (step === 0) {
-      if (!form.fullName.trim()) stepErrors.fullName = 'Full name is required';
-      if (!form.email.trim()) stepErrors.email = 'Email is required';
-      else if (!/\S+@\S+\.\S+/.test(form.email)) stepErrors.email = 'Invalid email format';
-      if (!form.phone.trim()) stepErrors.phone = 'Phone is required';
-      else if (form.phone.length < 10) stepErrors.phone = 'Invalid phone number';
+      if (!form.fullName.trim()) stepErrors.fullName = t("applications.required_field_name");
+      if (!form.email.trim()) stepErrors.email = t("applications.required_field_email");
+      else if (!/\S+@\S+\.\S+/.test(form.email)) stepErrors.email = t("applications.invalid_email");
+      if (!form.phone.trim()) stepErrors.phone = t("applications.required_field_phone");
+      else if (form.phone.length < 10) stepErrors.phone = t("applications.invalid_phone");
     }
 
     if (step === 1 && !resumeFile) {
-      stepErrors.resume = 'Please select a resume file';
+      stepErrors.resume = t("applications.select_resume");
     }
 
     setErrors(stepErrors);
@@ -117,7 +124,7 @@ export default function ApplyJobPage() {
       clearFieldError('resume');
     }
   } catch (err) {
-    Alert.alert('Error', 'Could not open document picker');
+    Alert.alert(t("applications.error"), t("applications.error_document_picker"));
   }
 };
 
@@ -146,7 +153,7 @@ export default function ApplyJobPage() {
     // Validate questions
     const newErrors = {};
     questions.forEach(q => {
-      if (!form.answers[q.id]) newErrors[`question_${q.id}`] = "This field can't be empty";
+      if (!form.answers[q.id]) newErrors[`question_${q.id}`] = t("applications.required_field");
     });
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -164,7 +171,7 @@ export default function ApplyJobPage() {
         .maybeSingle();
 
       if (existing) {
-        Alert.alert('Already Applied', 'You have already applied for this job.');
+        Alert.alert(t("applications.already_applied_title"), t("applications.already_applied_message"));
         return;
       }
 
@@ -212,13 +219,13 @@ export default function ApplyJobPage() {
       triggerCvReview(application.id, cvText.trim());
 
       Alert.alert(
-        'Application Submitted!',
-        'Your application has been submitted successfully.',
-        [{ text: 'OK', onPress: () => navigation.navigate('Main', { screen: 'JobsTab' }) }]
+        t("applications.application_submitted"),
+        t("applications.success_message"),
+        [{ text: t("applications.ok"), onPress: () => navigation.navigate('Main', { screen: 'JobsTab' }) }]
       );
     } catch (err) {
       console.error('Submit error:', err);
-      Alert.alert('Error', 'Something went wrong. Please try again.');
+      Alert.alert(t("applications.error"), t("applications.submit_error"));
     } finally {
       setSubmitting(false);
     }
@@ -229,11 +236,11 @@ export default function ApplyJobPage() {
       style={styles.flex}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <ScrollView style={styles.screen} contentContainerStyle={styles.contentContainer}>
+      <ScrollView style={styles.screen} contentContainerStyle={[styles.contentContainer, { paddingTop: insets.top + 16 }]}>
 
         {/* Progress header */}
         <View style={styles.progressCard}>
-          <Text style={styles.progressTitle}>Apply for Job</Text>
+          <Text style={styles.progressTitle}>{t("applications.apply_title")}</Text>
 
           <View style={styles.stepsRow}>
             {STEPS.map((s, i) => (
@@ -251,28 +258,28 @@ export default function ApplyJobPage() {
         {/* Step 1 — Info */}
         {step === 0 && (
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>Personal Information</Text>
+            <Text style={styles.cardTitle}>{t("applications.personal_info")}</Text>
 
             <View style={styles.fieldGroup}>
-              <Text style={styles.label}>Full Name <Text style={styles.required}>*</Text></Text>
+              <Text style={styles.label}>{t("applications.full_name")} <Text style={styles.required}>*</Text></Text>
               <TextInput
                 style={[styles.input, errors.fullName && styles.inputError]}
                 value={form.fullName}
                 onChangeText={v => { setForm(p => ({ ...p, fullName: v })); clearFieldError('fullName'); }}
-                placeholder="Your full name"
-                placeholderTextColor={colors.gray[400]}
+                placeholder={t("applications.full_name_placeholder")}
+                placeholderTextColor={c['muted-foreground']}
               />
               {errors.fullName && <Text style={styles.errorText}>{errors.fullName}</Text>}
             </View>
 
             <View style={styles.fieldGroup}>
-              <Text style={styles.label}>Email <Text style={styles.required}>*</Text></Text>
+              <Text style={styles.label}>{t("applications.email")} <Text style={styles.required}>*</Text></Text>
               <TextInput
                 style={[styles.input, errors.email && styles.inputError]}
                 value={form.email}
                 onChangeText={v => { setForm(p => ({ ...p, email: v })); clearFieldError('email'); }}
-                placeholder="you@email.com"
-                placeholderTextColor={colors.gray[400]}
+                placeholder={t("applications.email_placeholder")}
+                placeholderTextColor={c['muted-foreground']}
                 keyboardType="email-address"
                 autoCapitalize="none"
               />
@@ -280,13 +287,13 @@ export default function ApplyJobPage() {
             </View>
 
             <View style={styles.fieldGroup}>
-              <Text style={styles.label}>Phone <Text style={styles.required}>*</Text></Text>
+              <Text style={styles.label}>{t("applications.phone")} <Text style={styles.required}>*</Text></Text>
               <TextInput
                 style={[styles.input, errors.phone && styles.inputError]}
                 value={form.phone}
                 onChangeText={v => { setForm(p => ({ ...p, phone: v })); clearFieldError('phone'); }}
-                placeholder="01xxxxxxxxx"
-                placeholderTextColor={colors.gray[400]}
+                placeholder={t("applications.phone_placeholder")}
+                placeholderTextColor={c['muted-foreground']}
                 keyboardType="phone-pad"
               />
               {errors.phone && <Text style={styles.errorText}>{errors.phone}</Text>}
@@ -297,8 +304,8 @@ export default function ApplyJobPage() {
         {/* Step 2 — Resume */}
         {step === 1 && (
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>Upload Resume</Text>
-            <Text style={styles.cardSubtitle}>PDF files only, max 5MB</Text>
+            <Text style={styles.cardTitle}>{t("applications.upload_resume")}</Text>
+            <Text style={styles.cardSubtitle}>{t("applications.resume_subtitle")}</Text>
 
             <TouchableOpacity
               style={[styles.uploadArea, errors.resume && styles.uploadAreaError]}
@@ -308,13 +315,13 @@ export default function ApplyJobPage() {
               <Ionicons
                 name={resumeFile ? 'document-text' : 'cloud-upload-outline'}
                 size={36}
-                color={resumeFile ? colors.primary : colors.gray[400]}
+                color={resumeFile ? c.primary : c['muted-foreground']}
               />
               <Text style={[styles.uploadText, resumeFile && styles.uploadTextSelected]}>
-                {resumeFile ? resumeFile.name : 'Tap to select PDF'}
+                {resumeFile ? resumeFile.name : t("applications.tap_to_select")}
               </Text>
               {resumeFile && (
-                <Text style={styles.uploadSubtext}>Tap to change</Text>
+                <Text style={styles.uploadSubtext}>{t("applications.tap_to_change")}</Text>
               )}
             </TouchableOpacity>
 
@@ -325,11 +332,11 @@ export default function ApplyJobPage() {
         {/* Step 3 — Questions */}
         {step === 2 && (
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>Screening Questions</Text>
+            <Text style={styles.cardTitle}>{t("applications.screening_questions")}</Text>
             {loading ? (
-              <ActivityIndicator color={colors.primary} style={{ marginTop: 20 }} />
+              <ActivityIndicator color={c.primary} style={{ marginTop: 20 }} />
             ) : questions.length === 0 ? (
-              <Text style={styles.noQuestionsText}>No screening questions for this job.</Text>
+              <Text style={styles.noQuestionsText}>{t("applications.no_questions")}</Text>
             ) : (
               <View style={styles.questionsContainer}>
                 {questions.map(q => (
@@ -354,7 +361,7 @@ export default function ApplyJobPage() {
               onPress={() => setStep(step - 1)}
               activeOpacity={0.7}
             >
-              <Text style={styles.backButtonText}>Back</Text>
+              <Text style={styles.backButtonText}>{t("applications.back")}</Text>
             </TouchableOpacity>
           ) : (
             <View style={{ flex: 1 }} />
@@ -368,8 +375,8 @@ export default function ApplyJobPage() {
               }}
               activeOpacity={0.8}
             >
-              <Text style={styles.nextButtonText}>Next</Text>
-              <Ionicons name="arrow-forward" size={16} color={colors.white} />
+              <Text style={styles.nextButtonText}>{t("applications.next")}</Text>
+              <Ionicons name="arrow-forward" size={16} color={c['destructive-foreground']} />
             </TouchableOpacity>
           ) : (
             <TouchableOpacity
@@ -379,9 +386,9 @@ export default function ApplyJobPage() {
               activeOpacity={0.8}
             >
               {submitting ? (
-                <ActivityIndicator color={colors.white} size="small" />
+                <ActivityIndicator color={c['destructive-foreground']} size="small" />
               ) : (
-                <Text style={styles.submitButtonText}>Submit</Text>
+                <Text style={styles.submitButtonText}>{t("applications.submit")}</Text>
               )}
             </TouchableOpacity>
           )}
@@ -392,11 +399,11 @@ export default function ApplyJobPage() {
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(c) { return StyleSheet.create({
   flex: { flex: 1 },
   screen: {
     flex: 1,
-    backgroundColor: colors.surface,
+    backgroundColor: c['surface-muted'],
   },
   contentContainer: {
     padding: 16,
@@ -406,16 +413,16 @@ const styles = StyleSheet.create({
 
   // Progress
   progressCard: {
-    backgroundColor: colors.white,
+    backgroundColor: c.card,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: c.border,
     padding: 20,
   },
   progressTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: colors.foreground,
+    color: c.foreground,
     marginBottom: 16,
   },
   stepsRow: {
@@ -425,41 +432,41 @@ const styles = StyleSheet.create({
   },
   stepLabel: {
     fontSize: 12,
-    color: colors.gray[400],
+    color: c['muted-foreground'],
   },
   stepLabelActive: {
-    color: colors.primary,
+    color: c.primary,
     fontWeight: '600',
   },
   progressBarBg: {
     height: 6,
-    backgroundColor: colors.surface,
+    backgroundColor: c['surface-muted'],
     borderRadius: 999,
     overflow: 'hidden',
   },
   progressBarFill: {
     height: 6,
-    backgroundColor: colors.primary,
+    backgroundColor: c.primary,
     borderRadius: 999,
   },
 
   // Card
   card: {
-    backgroundColor: colors.white,
+    backgroundColor: c.card,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: c.border,
     padding: 20,
     gap: 16,
   },
   cardTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: colors.foreground,
+    color: c.foreground,
   },
   cardSubtitle: {
     fontSize: 13,
-    color: colors.mutedForeground,
+    color: c['muted-foreground'],
     marginTop: -8,
   },
 
@@ -470,55 +477,55 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 13,
     fontWeight: '600',
-    color: colors.foreground,
+    color: c.foreground,
   },
   required: {
-    color: colors.red[500],
+    color: c.destructive,
   },
   input: {
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: c.border,
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 14,
-    color: colors.foreground,
-    backgroundColor: colors.surface,
+    color: c.foreground,
+    backgroundColor: c['surface-muted'],
   },
   inputError: {
-    borderColor: colors.red[400],
+    borderColor: c.destructive,
   },
   errorText: {
     fontSize: 12,
-    color: colors.red[500],
+    color: c.destructive,
   },
 
   // Upload
   uploadArea: {
     borderWidth: 2,
     borderStyle: 'dashed',
-    borderColor: colors.border,
+    borderColor: c.border,
     borderRadius: 12,
     padding: 32,
     alignItems: 'center',
     gap: 8,
-    backgroundColor: colors.surface,
+    backgroundColor: c['surface-muted'],
   },
   uploadAreaError: {
-    borderColor: colors.red[400],
+    borderColor: c.destructive,
   },
   uploadText: {
     fontSize: 14,
-    color: colors.gray[500],
+    color: c['muted-foreground'],
     textAlign: 'center',
   },
   uploadTextSelected: {
-    color: colors.primary,
+    color: c.primary,
     fontWeight: '500',
   },
   uploadSubtext: {
     fontSize: 12,
-    color: colors.gray[400],
+    color: c['muted-foreground'],
   },
 
   // Questions
@@ -527,7 +534,7 @@ const styles = StyleSheet.create({
   },
   noQuestionsText: {
     fontSize: 14,
-    color: colors.mutedForeground,
+    color: c['muted-foreground'],
     textAlign: 'center',
     paddingVertical: 20,
   },
@@ -543,25 +550,25 @@ const styles = StyleSheet.create({
     paddingVertical: 13,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: c.border,
     alignItems: 'center',
-    backgroundColor: colors.white,
+    backgroundColor: c.card,
   },
   backButtonText: {
     fontSize: 15,
     fontWeight: '500',
-    color: colors.foreground,
+    color: c.foreground,
   },
   nextButton: {
     flex: 1,
     flexDirection: 'row',
     paddingVertical: 13,
     borderRadius: 12,
-    backgroundColor: colors.primary,
+    backgroundColor: c.primary,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    shadowColor: colors.primary,
+    shadowColor: c.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -570,16 +577,16 @@ const styles = StyleSheet.create({
   nextButtonText: {
     fontSize: 15,
     fontWeight: '600',
-    color: colors.white,
+    color: c['destructive-foreground'],
   },
   submitButton: {
     flex: 1,
     paddingVertical: 13,
     borderRadius: 12,
-    backgroundColor: colors.emerald[600],
+    backgroundColor: c.success,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: colors.emerald[600],
+    shadowColor: c.success,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -591,6 +598,6 @@ const styles = StyleSheet.create({
   submitButtonText: {
     fontSize: 15,
     fontWeight: '600',
-    color: colors.white,
+    color: c['destructive-foreground'],
   },
-});
+}); }

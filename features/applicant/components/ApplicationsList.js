@@ -1,144 +1,61 @@
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { APPLICATION_STAGE } from "../../../shared/constants/enums";
-import { colors } from "../../../src/theme";
+import { useTheme } from "../../../shared/context/ThemeContext";
+import { useTranslation } from "../../../shared/context/I18nContext";
 
-const stageConfig = {
-  [APPLICATION_STAGE.applied]: {
-    label: "Applied",
-    bg: "rgba(137,194,217,0.15)",
-    text: "#2c7da0",
-    border: "rgba(137,194,217,0.4)",
-    dot: "#89c2d9",
-  },
-  [APPLICATION_STAGE.screening]: {
-    label: "Screening",
-    bg: "rgba(97,165,194,0.15)",
-    text: "#2a6f97",
-    border: "rgba(97,165,194,0.4)",
-    dot: "#61a5c2",
-  },
-  [APPLICATION_STAGE.shorListed]: {
-    label: "Shortlisted",
-    bg: "rgba(44,125,160,0.12)",
-    text: "#01497c",
-    border: "rgba(44,125,160,0.35)",
-    dot: "#2c7da0",
-  },
-  [APPLICATION_STAGE.interview]: {
-    label: "Interview",
-    bg: "rgba(1,73,124,0.12)",
-    text: "#01497c",
-    border: "rgba(1,73,124,0.3)",
-    dot: "#2c7da0",
-  },
-  [APPLICATION_STAGE.hired]: {
-    label: "Hired",
-    bg: "rgba(22,163,74,0.1)",
-    text: "#15803d",
-    border: "rgba(22,163,74,0.25)",
-    dot: "#22c55e",
-  },
-  [APPLICATION_STAGE.rejected]: {
-    label: "Rejected",
-    bg: "rgba(185,28,28,0.08)",
-    text: "#b91c1c",
-    border: "rgba(185,28,28,0.2)",
-    dot: "#ef4444",
-  },
-  cv_review: {
-    label: "CV Review",
-    bg: "rgba(42,111,151,0.1)",
-    text: "#2a6f97",
-    border: "rgba(42,111,151,0.25)",
-    dot: "#2a6f97",
-  },
-  shortlist: {
-    label: "Shortlisting",
-    bg: "rgba(44,125,160,0.12)",
-    text: "#01497c",
-    border: "rgba(44,125,160,0.3)",
-    dot: "#2c7da0",
-  },
-  [APPLICATION_STAGE.cv_screening]: {
-    label: "CV Screening",
-    bg: "rgba(42,111,151,0.1)",
-    text: "#2a6f97",
-    border: "rgba(42,111,151,0.25)",
-    dot: "#2a6f97",
-  },
-  [APPLICATION_STAGE.ai_screening]: {
-    label: "AI Screening",
-    bg: "rgba(70,143,175,0.12)",
-    text: "#01497c",
-    border: "rgba(70,143,175,0.3)",
-    dot: "#468faf",
-  },
-  [APPLICATION_STAGE.assessment_test]: {
-    label: "Assessment Test",
-    bg: "rgba(44,125,160,0.12)",
-    text: "#2c7da0",
-    border: "rgba(44,125,160,0.3)",
-    dot: "#2c7da0",
-  },
-  [APPLICATION_STAGE.coding_test]: {
-    label: "Coding Test",
-    bg: "rgba(1,73,124,0.1)",
-    text: "#01497c",
-    border: "rgba(1,73,124,0.28)",
-    dot: "#01497c",
-  },
-  [APPLICATION_STAGE.video_interview]: {
-    label: "Video Interview",
-    bg: "rgba(97,165,194,0.13)",
-    text: "#2a6f97",
-    border: "rgba(97,165,194,0.35)",
-    dot: "#61a5c2",
-  },
-  [APPLICATION_STAGE.technical_interview]: {
-    label: "Technical Interview",
-    bg: "rgba(1,73,124,0.1)",
-    text: "#01497c",
-    border: "rgba(1,73,124,0.28)",
-    dot: "#2c7da0",
-  },
-  [APPLICATION_STAGE.hr_interview]: {
-    label: "HR Interview",
-    bg: "rgba(70,143,175,0.12)",
-    text: "#01497c",
-    border: "rgba(70,143,175,0.3)",
-    dot: "#468faf",
-  },
-  [APPLICATION_STAGE.manager_interview]: {
-    label: "Manager Interview",
-    bg: "rgba(42,111,151,0.12)",
-    text: "#2a6f97",
-    border: "rgba(42,111,151,0.3)",
-    dot: "#2a6f97",
-  },
-  [APPLICATION_STAGE.background_check]: {
-    label: "Background Check",
-    bg: "rgba(234,179,8,0.1)",
-    text: "#854d0e",
-    border: "rgba(234,179,8,0.25)",
-    dot: "#eab308",
-  },
-  [APPLICATION_STAGE.offer]: {
-    label: "Offer",
-    bg: "rgba(22,163,74,0.12)",
-    text: "#15803d",
-    border: "rgba(22,163,74,0.3)",
-    dot: "#22c55e",
-  },
+const stageColorMap = {
+  [APPLICATION_STAGE.applied]: 'stage-applied',
+  [APPLICATION_STAGE.screening]: 'stage-screening',
+  [APPLICATION_STAGE.shorListed]: 'stage-interview',
+  [APPLICATION_STAGE.interview]: 'stage-interview',
+  [APPLICATION_STAGE.hired]: 'stage-hired',
+  [APPLICATION_STAGE.rejected]: 'destructive',
+  [APPLICATION_STAGE.cv_screening]: 'stage-screening',
+  [APPLICATION_STAGE.ai_screening]: 'stage-final',
+  [APPLICATION_STAGE.assessment_test]: 'stage-assessment',
+  [APPLICATION_STAGE.coding_test]: 'stage-final',
+  [APPLICATION_STAGE.video_interview]: 'stage-screening',
+  [APPLICATION_STAGE.technical_interview]: 'stage-interview',
+  [APPLICATION_STAGE.hr_interview]: 'stage-assessment',
+  [APPLICATION_STAGE.manager_interview]: 'stage-final',
+  [APPLICATION_STAGE.background_check]: 'warning',
+  [APPLICATION_STAGE.offer]: 'success',
+  cv_review: 'stage-assessment',
+  shortlist: 'stage-interview',
 };
 
-const defaultStage = {
-  label: "Processing",
-  bg: "rgba(42,111,151,0.1)",
-  text: "#2a6f97",
-  border: "rgba(42,111,151,0.25)",
-  dot: "#2a6f97",
+const stageLabelMap = {
+  [APPLICATION_STAGE.applied]: "Applied",
+  [APPLICATION_STAGE.screening]: "Screening",
+  [APPLICATION_STAGE.shorListed]: "Shortlisted",
+  [APPLICATION_STAGE.interview]: "Interview",
+  [APPLICATION_STAGE.hired]: "Hired",
+  [APPLICATION_STAGE.rejected]: "Rejected",
+  [APPLICATION_STAGE.cv_screening]: "CV Screening",
+  [APPLICATION_STAGE.ai_screening]: "AI Screening",
+  [APPLICATION_STAGE.assessment_test]: "Assessment Test",
+  [APPLICATION_STAGE.coding_test]: "Coding Test",
+  [APPLICATION_STAGE.video_interview]: "Video Interview",
+  [APPLICATION_STAGE.technical_interview]: "Technical Interview",
+  [APPLICATION_STAGE.hr_interview]: "HR Interview",
+  [APPLICATION_STAGE.manager_interview]: "Manager Interview",
+  [APPLICATION_STAGE.background_check]: "Background Check",
+  [APPLICATION_STAGE.offer]: "Offer",
+  cv_review: "CV Review",
+  shortlist: "Shortlisting",
 };
+
+const defaultLabel = "Processing";
+
+function stageStyle(c) {
+  return {
+    bg: `${c}1a`,
+    text: c,
+    border: `${c}40`,
+    dot: c,
+  };
+}
 
 function formatDate(dateStr) {
   if (!dateStr) return "";
@@ -148,15 +65,15 @@ function formatDate(dateStr) {
   });
 }
 
-function StagePill({ label, config }) {
+function StagePill({ label, cfg }) {
   return (
     <View style={{
       flexDirection: "row",
       alignItems: "center",
       gap: 5,
-      backgroundColor: config.bg,
+      backgroundColor: cfg.bg,
       borderWidth: 1,
-      borderColor: config.border,
+      borderColor: cfg.border,
       borderRadius: 999,
       paddingHorizontal: 10,
       paddingVertical: 3,
@@ -165,12 +82,12 @@ function StagePill({ label, config }) {
         width: 6,
         height: 6,
         borderRadius: 3,
-        backgroundColor: config.dot,
+        backgroundColor: cfg.dot,
       }} />
       <Text style={{
         fontSize: 11,
         fontWeight: "600",
-        color: config.text,
+        color: cfg.text,
         letterSpacing: 0.1,
       }}>{label}</Text>
     </View>
@@ -188,13 +105,18 @@ function getActiveStage(app) {
 }
 
 export default function ApplicationsList({ applications, onViewJob }) {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const c = theme.colors;
+  const defaultCfg = stageStyle(c['stage-final']);
+
   if (!applications || applications.length === 0) {
     return (
       <View style={{
-        backgroundColor: colors.white,
+        backgroundColor: c.card,
         borderRadius: 16,
         borderWidth: 1,
-        borderColor: colors.border,
+        borderColor: c.border,
         padding: 24,
         alignItems: "center",
       }}>
@@ -203,9 +125,9 @@ export default function ApplicationsList({ applications, onViewJob }) {
           alignItems: "center",
           gap: 8,
         }}>
-          <Ionicons name="briefcase-outline" size={32} color={colors.border} />
-          <Text style={{ fontSize: 13, color: colors.mutedForeground }}>
-            No applications yet
+          <Ionicons name="briefcase-outline" size={32} color={c.border} />
+          <Text style={{ fontSize: 13, color: c['muted-foreground'] }}>
+            {t("applicant.no_applications")}
           </Text>
         </View>
       </View>
@@ -214,16 +136,16 @@ export default function ApplicationsList({ applications, onViewJob }) {
 
   return (
     <View style={{
-      backgroundColor: colors.white,
+      backgroundColor: c.card,
       borderRadius: 16,
       borderWidth: 1,
-      borderColor: colors.border,
+      borderColor: c.border,
       overflow: "hidden",
     }}>
       <View style={{
         padding: 20,
         borderBottomWidth: 1,
-        borderBottomColor: colors.border,
+        borderBottomColor: c.border,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
@@ -233,31 +155,31 @@ export default function ApplicationsList({ applications, onViewJob }) {
             width: 34,
             height: 34,
             borderRadius: 8,
-            backgroundColor: colors.surface,
+            backgroundColor: c['surface-muted'],
             alignItems: "center",
             justifyContent: "center",
           }}>
-            <Ionicons name="layers-outline" size={16} color={colors.primary} />
+            <Ionicons name="layers-outline" size={16} color={c.primary} />
           </View>
           <View>
-            <Text style={{ fontSize: 15, fontWeight: "700", color: colors.foreground }}>
-              Applications
+            <Text style={{ fontSize: 15, fontWeight: "700", color: c.foreground }}>
+              {t("applicant.applications")}
             </Text>
-            <Text style={{ fontSize: 12, color: colors.mutedForeground, marginTop: 1 }}>
-              Track your job applications
+            <Text style={{ fontSize: 12, color: c['muted-foreground'], marginTop: 1 }}>
+              {t("applicant.track_applications")}
             </Text>
           </View>
         </View>
         {applications.length > 0 && (
           <View style={{
-            backgroundColor: colors.primary,
+            backgroundColor: c.primary,
             borderRadius: 999,
             width: 22,
             height: 22,
             alignItems: "center",
             justifyContent: "center",
           }}>
-            <Text style={{ fontSize: 11, fontWeight: "700", color: colors.white }}>
+            <Text style={{ fontSize: 11, fontWeight: "700", color: c['destructive-foreground'] }}>
               {applications.length}
             </Text>
           </View>
@@ -276,22 +198,26 @@ export default function ApplicationsList({ applications, onViewJob }) {
             const company = job?.companies;
             const activeStage = getActiveStage(app);
 
-            let displayLabel = app.current_stage;
-            let stageStyle = stageConfig[app.current_stage] || defaultStage;
+            let displayLabel;
+            let cfg;
 
             if (activeStage) {
               const type = activeStage.recruitment_stages?.stage_type;
-              displayLabel = activeStage.recruitment_stages?.name || "Processing";
-              stageStyle = stageConfig[type] || defaultStage;
-            } else if (stageConfig[app.current_stage]) {
-              displayLabel = stageConfig[app.current_stage].label;
+              displayLabel = activeStage.recruitment_stages?.name || stageLabelMap[type] || defaultLabel;
+              const tokenKey = stageColorMap[type] || 'stage-final';
+              cfg = stageStyle(c[tokenKey]);
+            } else {
+              const stageVal = app.current_stage;
+              displayLabel = stageLabelMap[stageVal] || defaultLabel;
+              const tokenKey = stageColorMap[stageVal] || 'stage-final';
+              cfg = stageStyle(c[tokenKey]);
             }
 
             return (
               <View key={app.id} style={{
-                backgroundColor: colors.white,
+                backgroundColor: c.card,
                 borderWidth: 1,
-                borderColor: colors.border,
+                borderColor: c.border,
                 borderRadius: 12,
                 padding: 14,
               }}>
@@ -304,19 +230,19 @@ export default function ApplicationsList({ applications, onViewJob }) {
                   <Text style={{
                     fontSize: 13,
                     fontWeight: "700",
-                    color: colors.foreground,
+                    color: c.foreground,
                     flex: 1,
                     paddingRight: 8,
                   }}>
-                    {job?.title || "Unknown Position"}
+                    {job?.title || t("applicant.unknown_position")}
                   </Text>
-                  <StagePill label={displayLabel} config={stageStyle} />
+                  <StagePill label={displayLabel} cfg={cfg} />
                 </View>
 
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 5, marginBottom: 8 }}>
-                  <Ionicons name="briefcase-outline" size={12} color={colors.mutedForeground} />
-                  <Text style={{ fontSize: 12, color: colors.mutedForeground, fontWeight: "500" }}>
-                    {company?.name || "Unknown Company"}
+                  <Ionicons name="briefcase-outline" size={12} color={c['muted-foreground']} />
+                  <Text style={{ fontSize: 12, color: c['muted-foreground'], fontWeight: "500" }}>
+                    {company?.name || t("applicant.unknown_company")}
                   </Text>
                 </View>
 
@@ -324,21 +250,21 @@ export default function ApplicationsList({ applications, onViewJob }) {
                   flexDirection: "row",
                   gap: 12,
                   borderTopWidth: 1,
-                  borderTopColor: colors.surface,
+                  borderTopColor: c['surface-muted'],
                   paddingTop: 8,
                   alignItems: "center",
                 }}>
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                    <Ionicons name="time-outline" size={10} color={colors.mutedForeground} />
-                    <Text style={{ fontSize: 11, color: colors.mutedForeground }}>
-                      Applied {formatDate(app.applied_at)}
+                    <Ionicons name="time-outline" size={10} color={c['muted-foreground']} />
+                    <Text style={{ fontSize: 11, color: c['muted-foreground'] }}>
+                      {t("applicant.applied")} {formatDate(app.applied_at)}
                     </Text>
                   </View>
                   {job?.closed_at && (
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                      <Ionicons name="calendar-outline" size={10} color={colors.mutedForeground} />
-                      <Text style={{ fontSize: 11, color: colors.mutedForeground }}>
-                        Closes {formatDate(job.closed_at)}
+                      <Ionicons name="calendar-outline" size={10} color={c['muted-foreground']} />
+                      <Text style={{ fontSize: 11, color: c['muted-foreground'] }}>
+                        {t("applicant.closes")} {formatDate(job.closed_at)}
                       </Text>
                     </View>
                   )}
@@ -353,21 +279,21 @@ export default function ApplicationsList({ applications, onViewJob }) {
                     justifyContent: "center",
                     gap: 5,
                     borderWidth: 1,
-                    borderColor: colors.border,
+                    borderColor: c.border,
                     borderRadius: 8,
                     paddingVertical: 6,
-                    backgroundColor: colors.darkAmethyst[600],
-                    shadowColor: colors.darkAmethyst[600],
+                    backgroundColor: c.primary,
+                    shadowColor: c.primary,
                     shadowOffset: { width: 0, height: 4 },
                     shadowOpacity: 0.3,
                     shadowRadius: 8,
                     elevation: 4,
                   }}
                 >
-                  <Text style={{ fontSize: 12, fontWeight: "600", color: colors.white }}>
-                    View Job
+                  <Text style={{ fontSize: 12, fontWeight: "600", color: c['destructive-foreground'] }}>
+                    {t("applicant.view_job")}
                   </Text>
-                  <Ionicons name="arrow-forward" size={12} color={colors.white} />
+                  <Ionicons name="arrow-forward" size={12} color={c['destructive-foreground']} />
                 </TouchableOpacity>
               </View>
             );

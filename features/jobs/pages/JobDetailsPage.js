@@ -1,25 +1,31 @@
 import { useEffect, useState } from 'react';
 import {
-  View, Text, ScrollView, StyleSheet, TouchableOpacity, Image,
+  View, Text, ScrollView, TouchableOpacity, Image,
   ActivityIndicator,
 } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { fetchJobById, fetchSimilarJobs } from '../services/jobs.service';
-import { colors } from '../../../src/theme';
+import { useTheme } from '../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../shared/context/I18nContext';
 import { useUser } from '../../auth/context/user.context';
 import { supabase } from '../../../shared/services/supabase';
+import { fontSize, fontWeight } from '../../../src/theme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function formatJobType(type) {
   return type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 }
 
 export default function JobDetailsPage() {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const c = theme.colors;
+  const insets = useSafeAreaInsets();
   const route = useRoute();
   const navigation = useNavigation();
   const { id } = route.params;
   const { profile } = useUser();
-
 
   const [job, setJob] = useState(null);
   const [similarJobs, setSimilarJobs] = useState([]);
@@ -44,43 +50,88 @@ export default function JobDetailsPage() {
   }, [id]);
 
   useEffect(() => {
-  if (!id || !profile?.id) return;
+    if (!id || !profile?.id) return;
+    async function checkApplication() {
+      const { data } = await supabase
+        .from('applications')
+        .select('id')
+        .eq('job_id', id)
+        .eq('candidate_profile_id', profile.id)
+        .maybeSingle();
+      setHasApplied(!!data);
+    }
+    checkApplication();
+  }, [id, profile?.id]);
 
-  async function checkApplication() {
-    const { data } = await supabase
-      .from('applications')
-      .select('id')
-      .eq('job_id', id)
-      .eq('candidate_profile_id', profile.id)
-      .maybeSingle();
-
-    setHasApplied(!!data);
-  }
-
-  checkApplication();
-}, [id, profile?.id]);
+  const s = {
+    screen: { flex: 1, backgroundColor: c['surface-muted'] },
+    contentContainer: { padding: 16, paddingBottom: 40, gap: 12 },
+    centered: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: c['surface-muted'] },
+    statusText: { marginTop: 12, color: c['muted-foreground'], fontSize: 15 },
+    card: { backgroundColor: c.card, borderRadius: 16, borderWidth: 1, borderColor: c.border, padding: 20 },
+    companyRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 },
+    companyLogo: { width: 44, height: 44, borderRadius: 10, borderWidth: 1, borderColor: c.border, resizeMode: 'contain' },
+    companyLogoPlaceholder: { width: 44, height: 44, borderRadius: 10, backgroundColor: c['surface-muted'], alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: c.border },
+    companyLogoText: { fontSize: 18, fontWeight: '700', color: c.primary },
+    companyName: { fontSize: 15, fontWeight: '600', color: c.foreground },
+    locationRow: { flexDirection: 'row', alignItems: 'center', gap: 3, marginTop: 2 },
+    companyLocation: { fontSize: 12, color: c['muted-foreground'] },
+    jobTitle: { fontSize: 22, fontWeight: '700', color: c.foreground, marginBottom: 12, lineHeight: 30 },
+    tags: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 },
+    tag: { paddingHorizontal: 12, paddingVertical: 5, borderRadius: 999, backgroundColor: c['surface-muted'], borderWidth: 1, borderColor: c.border },
+    tagText: { fontSize: 12, color: c.accent, fontWeight: '500' },
+    salaryRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 16 },
+    salaryText: { fontSize: fontSize.sm, color: c.primary, fontWeight: '600' },
+    salaryConfidential: { fontSize: fontSize.sm, color: c['muted-foreground'] },
+    actions: { flexDirection: 'row', gap: 10 },
+    applyButton: { flex: 1, backgroundColor: c.primary, paddingVertical: 13, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+    applyButtonDisabled: { backgroundColor: c['muted-foreground'] },
+    applyButtonText: { color: c['destructive-foreground'], fontSize: 15, fontWeight: '600' },
+    bookmarkButton: { width: 48, height: 48, borderRadius: 12, borderWidth: 1, borderColor: c.border, backgroundColor: c.card, alignItems: 'center', justifyContent: 'center' },
+    sectionTitle: { fontSize: 16, fontWeight: '700', color: c.foreground, marginBottom: 12 },
+    bodyText: { fontSize: fontSize.sm, color: c['muted-foreground'], lineHeight: 22 },
+    bulletRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 10 },
+    bullet: { width: 6, height: 6, borderRadius: 3, backgroundColor: c.accent, marginTop: 8, marginRight: 10, flexShrink: 0 },
+    bulletText: { fontSize: fontSize.sm, color: c['muted-foreground'], lineHeight: 22, flex: 1 },
+    skillsWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+    skillTag: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 999, backgroundColor: c['surface-muted'], borderWidth: 1, borderColor: c.border },
+    skillTagText: { fontSize: 13, color: c.accent, fontWeight: '500' },
+    similarJobItem: { paddingVertical: 12 },
+    similarJobBorder: { borderBottomWidth: 1, borderBottomColor: c.border },
+    similarJobRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
+    similarJobLogo: { width: 44, height: 44, borderRadius: 10, borderWidth: 1, borderColor: c.border, resizeMode: 'contain' },
+    similarJobLogoPlaceholder: { width: 44, height: 44, borderRadius: 10, backgroundColor: c['surface-muted'], alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: c.border },
+    similarJobLogoText: { fontSize: 16, fontWeight: '700', color: c.primary },
+    similarJobTitleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8 },
+    similarJobTitle: { fontSize: fontSize.sm, fontWeight: '600', color: c.foreground, flex: 1 },
+    similarJobMeta: { fontSize: 12, color: c['muted-foreground'], marginTop: 3 },
+    similarJobTags: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 8 },
+    similarTag: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 999, backgroundColor: c['surface-muted'], borderWidth: 1, borderColor: c.border },
+    similarTagText: { fontSize: 11, color: c.accent, fontWeight: '500' },
+    similarJobDate: { fontSize: 11, color: c['muted-foreground'], marginTop: 6 },
+  };
 
   if (loading) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.statusText}>Loading...</Text>
+      <View style={s.centered}>
+        <ActivityIndicator size="large" color={c.primary} />
+        <Text style={s.statusText}>{t('job_details.loading')}</Text>
       </View>
     );
   }
 
   if (error) {
     return (
-      <View style={styles.centered}>
-        <Text style={[styles.statusText, { color: colors.red[500] }]}>Error: {error}</Text>
+      <View style={s.centered}>
+        <Text style={[s.statusText, { color: c.destructive }]}>{t('job_details.error')}: {error}</Text>
       </View>
     );
   }
 
   if (!job) {
     return (
-      <View style={styles.centered}>
-        <Text style={styles.statusText}>Job not found</Text>
+      <View style={s.centered}>
+        <Text style={s.statusText}>{t('job_details.not_found')}</Text>
       </View>
     );
   }
@@ -88,199 +139,165 @@ export default function JobDetailsPage() {
   const company = job.companies;
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.contentContainer}>
-
-      
-      <View style={styles.card}>
-
-        
-        <View style={styles.companyRow}>
-          
+    <ScrollView style={[s.screen, { paddingTop: insets.top }]} contentContainerStyle={s.contentContainer}>
+      <View style={s.card}>
+        <View style={s.companyRow}>
           {company?.logo_url ? (
-            <Image source={{ uri: company.logo_url }} style={styles.companyLogo} />
+            <Image source={{ uri: company.logo_url }} style={s.companyLogo} />
           ) : (
-            <View style={styles.companyLogoPlaceholder}>
-              <Text style={styles.companyLogoText}>{company?.name?.[0] || '?'}</Text>
+            <View style={s.companyLogoPlaceholder}>
+              <Text style={s.companyLogoText}>{company?.name?.[0] || '?'}</Text>
             </View>
           )}
-          
+
           <View style={{ flex: 1 }}>
-            <Text style={styles.companyName}>{company?.name}</Text>
+            <Text style={s.companyName}>{company?.name}</Text>
             {company?.location && (
-              <View style={styles.locationRow}>
-                <Ionicons name="location-outline" size={12} color={colors.mutedForeground} />
-                <Text style={styles.companyLocation}>{company.location}</Text>
+              <View style={s.locationRow}>
+                <Ionicons name="location-outline" size={12} color={c['muted-foreground']} />
+                <Text style={s.companyLocation}>{company.location}</Text>
               </View>
-            )}  
+            )}
           </View>
-          <TouchableOpacity style={styles.bookmarkButton} onPress={() => {}}>
-            <Ionicons name="bookmark-outline" size={20} color={colors.primary} />
+          <TouchableOpacity style={s.bookmarkButton} onPress={() => {}}>
+            <Ionicons name="bookmark-outline" size={20} color={c.primary} />
           </TouchableOpacity>
         </View>
 
+        <Text style={s.jobTitle}>{job.title}</Text>
 
-        <Text style={styles.jobTitle}>{job.title}</Text>
-
-        
-        <View style={styles.tags}>
+        <View style={s.tags}>
           {job.job_type && (
-            <View style={styles.tag}>
-              <Text style={styles.tagText}>{formatJobType(job.job_type)}</Text>
+            <View style={s.tag}>
+              <Text style={s.tagText}>{formatJobType(job.job_type)}</Text>
             </View>
           )}
           {job.seniority_level && (
-            <View style={styles.tag}>
-              <Text style={[styles.tagText, { textTransform: 'capitalize' }]}>
-                {job.seniority_level}
-              </Text>
+            <View style={s.tag}>
+              <Text style={[s.tagText, { textTransform: 'capitalize' }]}>{job.seniority_level}</Text>
             </View>
           )}
-          {/* {job.experience_years && (
-            <View style={styles.tag}>
-              <Text style={styles.tagText}>{job.experience_years}</Text>
-            </View>
-          )} */}
           {job.work_location && (
-            <View style={styles.tag}>
-              <Text style={[styles.tagText, { textTransform: 'capitalize' }]}>
-                {job.work_location.replace('_', '-')}
-              </Text>
+            <View style={s.tag}>
+              <Text style={[s.tagText, { textTransform: 'capitalize' }]}>{job.work_location.replace('_', '-')}</Text>
             </View>
           )}
         </View>
 
-        
         {(job.salary_min && job.salary_max) ? (
-          <View style={styles.salaryRow}>
-            <Ionicons name="cash-outline" size={14} color={colors.primary} />
-            <Text style={styles.salaryText}>
-              Salary: {job.salary_min.toLocaleString()} – {job.salary_max.toLocaleString()} EGP
+          <View style={s.salaryRow}>
+            <Ionicons name="cash-outline" size={14} color={c.primary} />
+            <Text style={s.salaryText}>
+              {t('job_details.salary')}: {job.salary_min.toLocaleString()} – {job.salary_max.toLocaleString()} EGP
             </Text>
           </View>
         ) : (
-          <View style={styles.salaryRow}>
-            <Ionicons name="cash-outline" size={14} color={colors.mutedForeground} />
-            <Text style={[styles.salaryText, { color: colors.mutedForeground }]}>Salary: Confidential</Text>
+          <View style={s.salaryRow}>
+            <Ionicons name="cash-outline" size={14} color={c['muted-foreground']} />
+            <Text style={s.salaryConfidential}>{t('job_details.salary_confidential')}</Text>
           </View>
         )}
 
-        
-        <View style={styles.actions}>
+        <View style={s.actions}>
           <TouchableOpacity
-            style={[styles.applyButton, hasApplied && styles.applyButtonDisabled]}
+            style={[s.applyButton, hasApplied && s.applyButtonDisabled]}
             activeOpacity={hasApplied ? 1 : 0.8}
             onPress={() => {
               if (hasApplied) return;
               navigation.navigate('Apply', { jobId: job.id });
             }}
           >
-            <Text style={styles.applyButtonText}>
-              {hasApplied ? 'Applied' : 'Apply Now'}
+            <Text style={s.applyButtonText}>
+              {hasApplied ? t('job_details.applied') : t('job_details.apply_now')}
             </Text>
           </TouchableOpacity>
-
-          
         </View>
       </View>
 
-      {/* ── About this role ── */}
-      <View style={styles.card}>
-        <Text style={styles.sectionTitle}>About this role</Text>
-        <Text style={styles.bodyText}>{job.description}</Text>
+      <View style={s.card}>
+        <Text style={s.sectionTitle}>{t('job_details.about_role')}</Text>
+        <Text style={s.bodyText}>{job.description}</Text>
       </View>
 
-      {/* ── Qualifications ── */}
       {job.requirements?.length > 0 && (
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Qualifications</Text>
+        <View style={s.card}>
+          <Text style={s.sectionTitle}>{t('job_details.qualifications')}</Text>
           {job.requirements.map((item, i) => (
-            <View key={i} style={styles.bulletRow}>
-              <View style={styles.bullet} />
-              <Text style={styles.bulletText}>{item}</Text>
+            <View key={i} style={s.bulletRow}>
+              <View style={s.bullet} />
+              <Text style={s.bulletText}>{item}</Text>
             </View>
           ))}
         </View>
       )}
 
-      
       {job.responsibilities?.length > 0 && (
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Responsibilities</Text>
+        <View style={s.card}>
+          <Text style={s.sectionTitle}>{t('job_details.responsibilities')}</Text>
           {job.responsibilities.map((item, i) => (
-            <View key={i} style={styles.bulletRow}>
-              <View style={styles.bullet} />
-              <Text style={styles.bulletText}>{item}</Text>
+            <View key={i} style={s.bulletRow}>
+              <View style={s.bullet} />
+              <Text style={s.bulletText}>{item}</Text>
             </View>
           ))}
         </View>
       )}
 
-      
       {job.skills?.length > 0 && (
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Skills & Tools</Text>
-          <View style={styles.skillsWrap}>
+        <View style={s.card}>
+          <Text style={s.sectionTitle}>{t('job_details.skills')}</Text>
+          <View style={s.skillsWrap}>
             {job.skills.map((skill, i) => (
-              <View key={i} style={styles.skillTag}>
-                <Text style={styles.skillTagText}>{skill}</Text>
+              <View key={i} style={s.skillTag}>
+                <Text style={s.skillTagText}>{skill}</Text>
               </View>
             ))}
           </View>
         </View>
       )}
 
-      
       {similarJobs.length > 0 && (
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Similar Jobs</Text>
+        <View style={s.card}>
+          <Text style={s.sectionTitle}>{t('job_details.similar_jobs')}</Text>
           {similarJobs.map((sj, i) => (
             <TouchableOpacity
               key={sj.id}
-              style={[styles.similarJobItem, i < similarJobs.length - 1 && styles.similarJobBorder]}
+              style={[s.similarJobItem, i < similarJobs.length - 1 && s.similarJobBorder]}
               onPress={() => navigation.replace('JobDetails', { id: sj.id })}
               activeOpacity={0.7}
             >
-              <View style={styles.similarJobRow}>
+              <View style={s.similarJobRow}>
                 {sj.companies?.logo_url ? (
-                  <Image source={{ uri: sj.companies.logo_url }} style={styles.similarJobLogo} />
+                  <Image source={{ uri: sj.companies.logo_url }} style={s.similarJobLogo} />
                 ) : (
-                  <View style={styles.similarJobLogoPlaceholder}>
-                    <Text style={styles.similarJobLogoText}>
-                      {sj.companies?.name?.[0] || '?'}
-                    </Text>
+                  <View style={s.similarJobLogoPlaceholder}>
+                    <Text style={s.similarJobLogoText}>{sj.companies?.name?.[0] || '?'}</Text>
                   </View>
                 )}
 
                 <View style={{ flex: 1 }}>
-                  <View style={styles.similarJobTitleRow}>
-                    <Text style={styles.similarJobTitle} numberOfLines={1}>
-                      {sj.title}
-                    </Text>
+                  <View style={s.similarJobTitleRow}>
+                    <Text style={s.similarJobTitle} numberOfLines={1}>{sj.title}</Text>
                     <TouchableOpacity onPress={() => {}} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                      <Ionicons name="bookmark-outline" size={16} color={colors.mutedForeground} />
+                      <Ionicons name="bookmark-outline" size={16} color={c['muted-foreground']} />
                     </TouchableOpacity>
                   </View>
-
-                  <Text style={styles.similarJobMeta} numberOfLines={1}>
+                  <Text style={s.similarJobMeta} numberOfLines={1}>
                     {sj.companies?.name}{sj.companies?.location && ` • ${sj.companies.location}`}
                   </Text>
-
-                  <View style={styles.similarJobTags}>
+                  <View style={s.similarJobTags}>
                     {sj.job_type && (
-                      <View style={styles.similarTag}>
-                        <Text style={styles.similarTagText}>{formatJobType(sj.job_type)}</Text>
+                      <View style={s.similarTag}>
+                        <Text style={s.similarTagText}>{formatJobType(sj.job_type)}</Text>
                       </View>
                     )}
                     {sj.seniority_level && (
-                      <View style={styles.similarTag}>
-                        <Text style={[styles.similarTagText, { textTransform: 'capitalize' }]}>
-                          {sj.seniority_level}
-                        </Text>
+                      <View style={s.similarTag}>
+                        <Text style={[s.similarTagText, { textTransform: 'capitalize' }]}>{sj.seniority_level}</Text>
                       </View>
                     )}
                   </View>
-
-                  <Text style={styles.similarJobDate}>
+                  <Text style={s.similarJobDate}>
                     {new Date(sj.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                   </Text>
                 </View>
@@ -289,288 +306,6 @@ export default function JobDetailsPage() {
           ))}
         </View>
       )}
-
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.surface,
-  },
-  contentContainer: {
-    padding: 16,
-    paddingBottom: 40,
-    gap: 12,
-  },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-  },
-  statusText: {
-    marginTop: 12,
-    color: colors.gray[500],
-    fontSize: 15,
-  },
-
-  
-  card: {
-    backgroundColor: colors.white,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: 20,
-  },
-
-  
-  companyRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    marginBottom: 12,
-  },
-  companyLogo: {
-    width: 44,
-    height: 44,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: colors.border,
-    resizeMode: 'contain',
-  },
-  companyLogoPlaceholder: {
-    width: 44,
-    height: 44,
-    borderRadius: 10,
-    backgroundColor: colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  companyLogoText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: colors.primary,
-  },
-  companyName: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: colors.foreground,
-  },
-  locationRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 3,
-    marginTop: 2,
-  },
-  companyLocation: {
-    fontSize: 12,
-    color: colors.mutedForeground,
-  },
-  jobTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: colors.foreground,
-    marginBottom: 12,
-    lineHeight: 30,
-  },
-  tags: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginBottom: 12,
-  },
-  tag: {
-    paddingHorizontal: 12,
-    paddingVertical: 5,
-    borderRadius: 999,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  tagText: {
-    fontSize: 12,
-    color: colors.secondary,
-    fontWeight: '500',
-  },
-  salaryRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginBottom: 16,
-  },
-  salaryText: {
-    fontSize: 14,
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: 10,
-  },
-  applyButton: {
-    flex: 1,
-    backgroundColor: colors.primary,
-    paddingVertical: 13,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  applyButtonText: {
-    color: colors.white,
-    fontSize: 15,
-    fontWeight: '600',
-  },
-  applyButtonDisabled: {
-    backgroundColor: colors.gray[300],
-    shadowOpacity: 0,
-    elevation: 0,
-  },
-  bookmarkButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.white,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  // ── Sections ──
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: colors.foreground,
-    marginBottom: 12,
-  },
-  bodyText: {
-    fontSize: 14,
-    color: colors.mutedForeground,
-    lineHeight: 22,
-  },
-  bulletRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 10,
-  },
-  bullet: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.accent,
-    marginTop: 8,
-    marginRight: 10,
-    flexShrink: 0,
-  },
-  bulletText: {
-    fontSize: 14,
-    color: colors.mutedForeground,
-    lineHeight: 22,
-    flex: 1,
-  },
-  skillsWrap: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  skillTag: {
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: 999,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  skillTagText: {
-    fontSize: 13,
-    color: colors.secondary,
-    fontWeight: '500',
-  },
-
-  // ── Similar jobs ──
-  similarJobItem: {
-    paddingVertical: 12,
-  },
-  similarJobBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  similarJobRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 12,
-  },
-  similarJobLogo: {
-    width: 44,
-    height: 44,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: colors.border,
-    resizeMode: 'contain',
-  },
-  similarJobLogoPlaceholder: {
-    width: 44,
-    height: 44,
-    borderRadius: 10,
-    backgroundColor: colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  similarJobLogoText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: colors.primary,
-  },
-  similarJobTitleRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    gap: 8,
-  },
-  similarJobTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.foreground,
-    flex: 1,
-  },
-  similarJobMeta: {
-    fontSize: 12,
-    color: colors.mutedForeground,
-    marginTop: 3,
-  },
-  similarJobTags: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 6,
-    marginTop: 8,
-  },
-  similarTag: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 999,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  similarTagText: {
-    fontSize: 11,
-    color: colors.secondary,
-    fontWeight: '500',
-  },
-  similarJobDate: {
-    fontSize: 11,
-    color: colors.gray[400],
-    marginTop: 6,
-  },
-});

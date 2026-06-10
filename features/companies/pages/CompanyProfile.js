@@ -5,13 +5,21 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
   StyleSheet,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { colors } from "../../../src/theme";
+import { useTheme } from "../../../shared/context/ThemeContext";
+import { useTranslation } from "../../../shared/context/I18nContext";
 import { useCompany } from "./CompanyLayout";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function CompanyProfile() {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const c = theme.colors;
+  const insets = useSafeAreaInsets();
   const { company, members, onInvite, frameworkFile, setFrameworkFile } = useCompany();
   const [memberName, setMemberName] = useState("");
   const [memberEmail, setMemberEmail] = useState("");
@@ -27,16 +35,22 @@ export default function CompanyProfile() {
     setFrameworkFile("framework-" + Date.now() + ".pdf");
   };
 
+  const styles = createStyles(c);
+
   return (
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
     <ScrollView
-      style={styles.container}
+      style={[styles.container, { paddingTop: insets.top }]}
       contentContainerStyle={styles.content}
     >
       {/* Company Profile Card */}
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Company Profile</Text>
+        <Text style={styles.cardTitle}>{t("companies.profile_title")}</Text>
         <Text style={styles.cardSubtitle}>
-          Manage your workspace details and branding.
+          {t("companies.profile_subtitle")}
         </Text>
 
         <View style={styles.profileRow}>
@@ -48,7 +62,7 @@ export default function CompanyProfile() {
 
           <View style={styles.fieldsGrid}>
             <View style={styles.field}>
-              <Text style={styles.fieldLabel}>Company Name</Text>
+              <Text style={styles.fieldLabel}>{t("companies.company_name")}</Text>
               <TextInput
                 style={styles.fieldInput}
                 value={company?.name || ""}
@@ -56,7 +70,7 @@ export default function CompanyProfile() {
               />
             </View>
             <View style={styles.field}>
-              <Text style={styles.fieldLabel}>Industry</Text>
+              <Text style={styles.fieldLabel}>{t("companies.industry")}</Text>
               <TextInput
                 style={styles.fieldInput}
                 value={company?.industry || ""}
@@ -64,19 +78,19 @@ export default function CompanyProfile() {
               />
             </View>
             <View style={styles.field}>
-              <Text style={styles.fieldLabel}>Company Size</Text>
+              <Text style={styles.fieldLabel}>{t("companies.company_size")}</Text>
               <TextInput
                 style={styles.fieldInput}
                 value={
                   company?.size
-                    ? `${company.size.toLocaleString()} employees`
+                    ? t("companies.employees_count", { size: company.size.toLocaleString() })
                     : ""
                 }
                 editable={false}
               />
             </View>
             <View style={styles.field}>
-              <Text style={styles.fieldLabel}>Created At</Text>
+              <Text style={styles.fieldLabel}>{t("companies.created_at")}</Text>
               <TextInput
                 style={styles.fieldInput}
                 value={
@@ -95,9 +109,9 @@ export default function CompanyProfile() {
 
       {/* Team Members Card */}
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Team Members</Text>
+        <Text style={styles.cardTitle}>{t("companies.team_members")}</Text>
         <Text style={styles.cardSubtitle}>
-          Invite and manage your recruitment team permissions.
+          {t("companies.team_members_subtitle")}
         </Text>
 
         <View style={styles.inviteForm}>
@@ -105,19 +119,19 @@ export default function CompanyProfile() {
             style={styles.inviteInput}
             value={memberName}
             onChangeText={setMemberName}
-            placeholder="Full Name"
-            placeholderTextColor={colors.gray[400]}
+            placeholder={t("companies.name_placeholder")}
+            placeholderTextColor={c['muted-foreground']}
           />
           <TextInput
             style={styles.inviteInput}
             value={memberEmail}
             onChangeText={setMemberEmail}
-            placeholder="Email Address"
-            placeholderTextColor={colors.gray[400]}
+            placeholder={t("companies.email_placeholder")}
+            placeholderTextColor={c['muted-foreground']}
             keyboardType="email-address"
           />
           <TouchableOpacity style={styles.inviteBtn} onPress={handleInviteSubmit}>
-            <Text style={styles.inviteBtnText}>+ Invite</Text>
+            <Text style={styles.inviteBtnText}>{t("companies.invite_btn")}</Text>
           </TouchableOpacity>
         </View>
 
@@ -138,16 +152,16 @@ export default function CompanyProfile() {
                 </View>
                 <View style={styles.memberDetails}>
                   <Text style={styles.memberName} numberOfLines={1}>
-                    {member.profiles?.full_name || "Unknown"}
+                    {member.profiles?.full_name || t("companies.unknown_member")}
                   </Text>
                   <Text style={styles.memberRole} numberOfLines={1}>
-                    {member.profiles?.role || "Team Member"}
+                    {member.profiles?.role || t("companies.team_member_role")}
                   </Text>
                 </View>
               </View>
               <View style={styles.roleBadge}>
                 <Text style={styles.roleBadgeText}>
-                  {member.profiles?.role || "Team Member"}
+                  {member.profiles?.role || t("companies.team_member_role")}
                 </Text>
               </View>
             </View>
@@ -155,235 +169,238 @@ export default function CompanyProfile() {
         </View>
       </View>
     </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.gray[50],
-  },
-  content: {
-    padding: 20,
-    paddingBottom: 40,
-  },
-  card: {
-    backgroundColor: colors.white,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.gray[100],
-    padding: 20,
-    marginBottom: 20,
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: colors.darkAmethyst[950],
-    marginBottom: 2,
-  },
-  cardSubtitle: {
-    fontSize: 11,
-    color: colors.gray[400],
-    marginBottom: 20,
-  },
-  profileRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 16,
-  },
-  avatar: {
-    width: 64,
-    height: 64,
-    borderRadius: 12,
-    backgroundColor: colors.darkAmethyst[50],
-    borderWidth: 1,
-    borderColor: colors.darkAmethyst[100],
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  avatarText: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: colors.darkAmethyst[600],
-  },
-  fieldsGrid: {
-    flex: 1,
-    gap: 12,
-  },
-  field: {},
-  fieldLabel: {
-    fontSize: 11,
-    fontWeight: "600",
-    color: colors.gray[500],
-    marginBottom: 4,
-  },
-  fieldInput: {
-    borderWidth: 1,
-    borderColor: colors.gray[200],
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    fontSize: 13,
-    color: colors.gray[700],
-    backgroundColor: colors.gray[50],
-  },
-  uploadArea: {
-    borderWidth: 2,
-    borderStyle: "dashed",
-    borderColor: colors.gray[200],
-    borderRadius: 12,
-    padding: 32,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.gray[50],
-  },
-  uploadIcon: {
-    fontSize: 24,
-    color: colors.gray[400],
-    marginBottom: 8,
-    fontWeight: "700",
-  },
-  uploadText: {
-    fontSize: 13,
-    fontWeight: "500",
-    color: colors.gray[700],
-    textAlign: "center",
-  },
-  uploadHint: {
-    fontSize: 11,
-    color: colors.gray[400],
-    marginTop: 4,
-  },
-  fileRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginTop: 12,
-    backgroundColor: colors.darkAmethyst[50],
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: colors.darkAmethyst[100],
-  },
-  fileInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-    marginRight: 8,
-  },
-  fileIcon: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: colors.darkAmethyst[500],
-    marginRight: 6,
-  },
-  fileName: {
-    fontSize: 12,
-    fontWeight: "500",
-    color: colors.darkAmethyst[950],
-    flexShrink: 1,
-  },
-  badge: {
-    backgroundColor: colors.emerald[50],
-    borderWidth: 1,
-    borderColor: colors.emerald[100],
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  badgeText: {
-    fontSize: 10,
-    fontWeight: "700",
-    color: colors.emerald[600],
-  },
-  inviteForm: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 10,
-    backgroundColor: colors.gray[50],
-    padding: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: colors.gray[100],
-    marginBottom: 20,
-  },
-  inviteInput: {
-    flex: 1,
-    minWidth: 140,
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.gray[200],
-    borderRadius: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 9,
-    fontSize: 12,
-    color: colors.darkAmethyst[700],
-  },
-  inviteBtn: {
-    backgroundColor: colors.darkAmethyst[950],
-    paddingHorizontal: 20,
-    paddingVertical: 9,
-    borderRadius: 6,
-    justifyContent: "center",
-  },
-  inviteBtnText: {
-    color: colors.white,
-    fontSize: 12,
-    fontWeight: "600",
-  },
-  memberList: {
-    gap: 12,
-  },
-  memberRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.gray[50],
-  },
-  memberInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-    marginRight: 8,
-  },
-  memberAvatar: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: colors.darkAmethyst[100],
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 10,
-  },
-  memberAvatarText: {
-    fontSize: 11,
-    fontWeight: "700",
-    color: colors.darkAmethyst[800],
-  },
-  memberDetails: {
-    flex: 1,
-  },
-  memberName: {
-    fontSize: 13,
-    fontWeight: "500",
-    color: colors.darkAmethyst[950],
-  },
-  memberRole: {
-    fontSize: 11,
-    color: colors.gray[400],
-  },
-  roleBadge: {
-    backgroundColor: colors.gray[100],
-    paddingHorizontal: 10,
-    paddingVertical: 2,
-    borderRadius: 6,
-  },
-  roleBadgeText: {
-    fontSize: 11,
-    fontWeight: "500",
-    color: colors.gray[600],
-  },
-});
+function createStyles(c) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: c['surface-muted'],
+    },
+    content: {
+      padding: 20,
+      paddingBottom: 40,
+    },
+    card: {
+      backgroundColor: c.card,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: c.border,
+      padding: 20,
+      marginBottom: 20,
+    },
+    cardTitle: {
+      fontSize: 18,
+      fontWeight: "700",
+      color: c.foreground,
+      marginBottom: 2,
+    },
+    cardSubtitle: {
+      fontSize: 11,
+      color: c['muted-foreground'],
+      marginBottom: 20,
+    },
+    profileRow: {
+      flexDirection: "row",
+      alignItems: "flex-start",
+      gap: 16,
+    },
+    avatar: {
+      width: 64,
+      height: 64,
+      borderRadius: 12,
+      backgroundColor: c['surface-muted'],
+      borderWidth: 1,
+      borderColor: c.border,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    avatarText: {
+      fontSize: 22,
+      fontWeight: "700",
+      color: c.primary,
+    },
+    fieldsGrid: {
+      flex: 1,
+      gap: 12,
+    },
+    field: {},
+    fieldLabel: {
+      fontSize: 11,
+      fontWeight: "600",
+      color: c['muted-foreground'],
+      marginBottom: 4,
+    },
+    fieldInput: {
+      borderWidth: 1,
+      borderColor: c.border,
+      borderRadius: 8,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      fontSize: 13,
+      color: c.foreground,
+      backgroundColor: c['surface-muted'],
+    },
+    uploadArea: {
+      borderWidth: 2,
+      borderStyle: "dashed",
+      borderColor: c.border,
+      borderRadius: 12,
+      padding: 32,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: c['surface-muted'],
+    },
+    uploadIcon: {
+      fontSize: 24,
+      color: c['muted-foreground'],
+      marginBottom: 8,
+      fontWeight: "700",
+    },
+    uploadText: {
+      fontSize: 13,
+      fontWeight: "500",
+      color: c.foreground,
+      textAlign: "center",
+    },
+    uploadHint: {
+      fontSize: 11,
+      color: c['muted-foreground'],
+      marginTop: 4,
+    },
+    fileRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      marginTop: 12,
+      backgroundColor: c['surface-muted'],
+      paddingHorizontal: 14,
+      paddingVertical: 10,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: c.border,
+    },
+    fileInfo: {
+      flexDirection: "row",
+      alignItems: "center",
+      flex: 1,
+      marginRight: 8,
+    },
+    fileIcon: {
+      fontSize: 12,
+      fontWeight: "700",
+      color: c['muted-foreground'],
+      marginRight: 6,
+    },
+    fileName: {
+      fontSize: 12,
+      fontWeight: "500",
+      color: c.foreground,
+      flexShrink: 1,
+    },
+    badge: {
+      backgroundColor: `${c.success}1a`,
+      borderWidth: 1,
+      borderColor: `${c.success}40`,
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+      borderRadius: 4,
+    },
+    badgeText: {
+      fontSize: 10,
+      fontWeight: "700",
+      color: c.success,
+    },
+    inviteForm: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: 10,
+      backgroundColor: c['surface-muted'],
+      padding: 12,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: c.border,
+      marginBottom: 20,
+    },
+    inviteInput: {
+      flex: 1,
+      minWidth: 140,
+      backgroundColor: c.card,
+      borderWidth: 1,
+      borderColor: c.border,
+      borderRadius: 6,
+      paddingHorizontal: 12,
+      paddingVertical: 14,
+      fontSize: 12,
+      color: c.foreground,
+    },
+    inviteBtn: {
+      backgroundColor: c.foreground,
+      paddingHorizontal: 20,
+      paddingVertical: 14,
+      borderRadius: 6,
+      justifyContent: "center",
+    },
+    inviteBtnText: {
+      color: c['destructive-foreground'],
+      fontSize: 12,
+      fontWeight: "600",
+    },
+    memberList: {
+      gap: 12,
+    },
+    memberRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingBottom: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: c['surface-muted'],
+    },
+    memberInfo: {
+      flexDirection: "row",
+      alignItems: "center",
+      flex: 1,
+      marginRight: 8,
+    },
+    memberAvatar: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      backgroundColor: c.border,
+      alignItems: "center",
+      justifyContent: "center",
+      marginRight: 10,
+    },
+    memberAvatarText: {
+      fontSize: 11,
+      fontWeight: "700",
+      color: c.foreground,
+    },
+    memberDetails: {
+      flex: 1,
+    },
+    memberName: {
+      fontSize: 13,
+      fontWeight: "500",
+      color: c.foreground,
+    },
+    memberRole: {
+      fontSize: 11,
+      color: c['muted-foreground'],
+    },
+    roleBadge: {
+      backgroundColor: c.border,
+      paddingHorizontal: 10,
+      paddingVertical: 2,
+      borderRadius: 6,
+    },
+    roleBadgeText: {
+      fontSize: 11,
+      fontWeight: "500",
+      color: c['muted-foreground'],
+    },
+  });
+}

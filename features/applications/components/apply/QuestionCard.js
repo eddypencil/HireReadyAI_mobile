@@ -1,8 +1,13 @@
 // src/features/applications/components/apply/QuestionCard.js
 import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
-import { colors } from '../../../../src/theme';
+import { useTheme } from '../../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../../shared/context/I18nContext';
 
 export default function QuestionCard({ question, value, onChange, error }) {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const c = theme.colors;
+  const styles = createStyles(c);
   return (
     <View style={[styles.card, error && styles.cardError]}>
       <Text style={styles.questionText}>
@@ -18,7 +23,7 @@ export default function QuestionCard({ question, value, onChange, error }) {
             activeOpacity={0.7}
           >
             <Text style={[styles.yesNoText, value === 'yes' && styles.yesNoTextSelected]}>
-              Yes
+              {t("applications.yes")}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -27,7 +32,7 @@ export default function QuestionCard({ question, value, onChange, error }) {
             activeOpacity={0.7}
           >
             <Text style={[styles.yesNoText, value === 'no' && styles.yesNoTextSelected]}>
-              No
+              {t("applications.no")}
             </Text>
           </TouchableOpacity>
         </View>
@@ -38,8 +43,8 @@ export default function QuestionCard({ question, value, onChange, error }) {
           style={[styles.input, error && styles.inputError]}
           value={value || ''}
           onChangeText={onChange}
-          placeholder="Your answer..."
-          placeholderTextColor={colors.gray[400]}
+          placeholder={t("applications.answer_here")}
+          placeholderTextColor={c['muted-foreground']}
         />
       )}
 
@@ -48,8 +53,8 @@ export default function QuestionCard({ question, value, onChange, error }) {
           style={[styles.textarea, error && styles.inputError]}
           value={value || ''}
           onChangeText={onChange}
-          placeholder="Your answer..."
-          placeholderTextColor={colors.gray[400]}
+          placeholder={t("applications.answer_here")}
+          placeholderTextColor={c['muted-foreground']}
           multiline
           numberOfLines={4}
           textAlignVertical="top"
@@ -61,26 +66,26 @@ export default function QuestionCard({ question, value, onChange, error }) {
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(c) { return StyleSheet.create({
   card: {
-    backgroundColor: colors.white,
+    backgroundColor: c.card,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: c.border,
     padding: 16,
     gap: 10,
   },
   cardError: {
-    borderColor: colors.red[300],
+    borderColor: c.destructive,
   },
   questionText: {
     fontSize: 14,
     fontWeight: '500',
-    color: colors.foreground,
+    color: c.foreground,
     lineHeight: 20,
   },
   required: {
-    color: colors.red[500],
+    color: c.destructive,
   },
   yesNoRow: {
     flexDirection: 'row',
@@ -91,48 +96,48 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: c.border,
     alignItems: 'center',
-    backgroundColor: colors.surface,
+    backgroundColor: c['surface-muted'],
   },
   yesNoSelected: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+    backgroundColor: c.primary,
+    borderColor: c.primary,
   },
   yesNoText: {
     fontSize: 14,
     fontWeight: '500',
-    color: colors.mutedForeground,
+    color: c['muted-foreground'],
   },
   yesNoTextSelected: {
-    color: colors.white,
+    color: c['destructive-foreground'],
   },
   input: {
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: c.border,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 14,
-    color: colors.foreground,
-    backgroundColor: colors.surface,
+    color: c.foreground,
+    backgroundColor: c['surface-muted'],
   },
   textarea: {
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: c.border,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 14,
-    color: colors.foreground,
-    backgroundColor: colors.surface,
+    color: c.foreground,
+    backgroundColor: c['surface-muted'],
     minHeight: 100,
   },
   inputError: {
-    borderColor: colors.red[400],
+    borderColor: c.destructive,
   },
   errorText: {
     fontSize: 12,
-    color: colors.red[500],
+    color: c.destructive,
   },
-});
+}); }
