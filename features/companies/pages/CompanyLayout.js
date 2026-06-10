@@ -18,7 +18,9 @@ import {
   fetchCompanyMembers,
 } from "../services/companies.service";
 import { addMembership } from "../services/memberships.service";
+import { MEMBERSHIP_PERMISSION } from "../../../shared/constants/enums";
 import NoCompanyView from "./NoCompanyView";
+import PendingApprovalPage from "./PendingApprovalPage";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const CompanyContext = createContext(null);
@@ -38,6 +40,7 @@ export function CompanyProvider({ children }) {
   const [jobs, setJobs] = useState([]);
   const [members, setMembers] = useState([]);
   const [company, setCompany] = useState(null);
+  const [permission, setPermission] = useState(null);
   const [frameworkFile, setFrameworkFile] = useState("engineering-framework-v3.pdf");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -47,8 +50,9 @@ export function CompanyProvider({ children }) {
     try {
       setLoading(true);
       setError(null);
-      const companyData = await fetchCompanyByProfileId(profile.id);
+      const { company: companyData, permission: perm } = await fetchCompanyByProfileId(profile.id);
       setCompany(companyData);
+      setPermission(perm);
       if (companyData) {
         const [jobsData, membersData] = await Promise.all([
           fetchJobsByCompanyId(companyData.id),
@@ -74,7 +78,7 @@ export function CompanyProvider({ children }) {
       const newMember = await addMembership({
         company_id: company.id,
         profile_id: profile.id,
-        permissions: { role: "recruiter" },
+        permissions: MEMBERSHIP_PERMISSION.pending,
       });
       setMembers((prev) => [...prev, newMember]);
     } catch (err) {
@@ -95,10 +99,15 @@ export function CompanyProvider({ children }) {
     return <NoCompanyView onCompanyJoined={() => fetchCompanyData()} />;
   }
 
+  if (permission === MEMBERSHIP_PERMISSION.pending) {
+    return <PendingApprovalPage companyName={company?.name} />;
+  }
+
   return (
     <CompanyContext.Provider
       value={{
         company,
+        permission,
         jobs,
         members,
         frameworkFile,

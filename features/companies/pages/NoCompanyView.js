@@ -17,13 +17,16 @@ import { fetchAllCompanies, createCompany } from "../services/companies.service"
 import { addMembership } from "../services/memberships.service";
 import { useUser } from "../../auth/context/user.context";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import Snackbar from "../../../shared/ui/Snackbar";
+import { MEMBERSHIP_PERMISSION } from "../../../shared/constants/enums";
 
 export default function NoCompanyView({ onCompanyJoined }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const c = theme.colors;
   const insets = useSafeAreaInsets();
-  const { profile } = useUser();
+  const { profile, signOutUser } = useUser();
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -59,7 +62,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
       await addMembership({
         company_id: companyId,
         profile_id: profile.id,
-        permissions: { role: "recruiter" },
+        permissions: MEMBERSHIP_PERMISSION.pending,
       });
       onCompanyJoined(companyId);
     } catch (err) {
@@ -83,7 +86,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
       await addMembership({
         company_id: created.id,
         profile_id: profile.id,
-        permissions: { role: "admin" },
+        permissions: MEMBERSHIP_PERMISSION.hrManager,
       });
       onCompanyJoined(created.id);
     } catch (err) {
@@ -139,12 +142,19 @@ export default function NoCompanyView({ onCompanyJoined }) {
       style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-    <ScrollView style={[styles.container, { paddingTop: insets.top }]} contentContainerStyle={styles.content}>
-      {error && (
-        <View style={styles.errorBanner}>
-          <Text style={styles.errorText}>{error}</Text>
+      <View style={[styles.headerBar, { paddingTop: insets.top }]}>
+        <View style={styles.logoWrap}>
+          <View style={styles.logoMark}>
+            <Text style={styles.logoText}>H</Text>
+          </View>
+          <Text style={styles.wordmark}>HireReadyAI</Text>
         </View>
-      )}
+        <TouchableOpacity onPress={signOutUser} style={styles.signOutBtn}>
+          <Ionicons name="log-out" size={16} color={c['muted-foreground']} />
+          <Text style={styles.signOutText}>{t("companies.sign_out")}</Text>
+        </TouchableOpacity>
+      </View>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
 
       {isCreating ? (
         <View style={styles.formCard}>
@@ -272,6 +282,11 @@ export default function NoCompanyView({ onCompanyJoined }) {
         </>
       )}
     </ScrollView>
+      <Snackbar
+        message={error}
+        visible={!!error}
+        onDismiss={() => setError(null)}
+      />
     </KeyboardAvoidingView>
   );
 }
@@ -286,6 +301,51 @@ function createStyles(c) {
       padding: 24,
       paddingBottom: 40,
     },
+    headerBar: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 16,
+      paddingBottom: 8,
+      backgroundColor: c.sidebar,
+    },
+    logoWrap: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+    },
+    logoMark: {
+      width: 28,
+      height: 28,
+      borderRadius: 6,
+      backgroundColor: c.accent,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    logoText: {
+      fontSize: 16,
+      fontWeight: "700",
+      color: c['destructive-foreground'],
+    },
+    wordmark: {
+      fontSize: 17,
+      fontWeight: "600",
+      color: c['sidebar-foreground'],
+    },
+    signOutBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      paddingHorizontal: 10,
+      paddingVertical: 6,
+      borderRadius: 6,
+      borderWidth: 1,
+      borderColor: c.border,
+    },
+    signOutText: {
+      fontSize: 12,
+      color: c['muted-foreground'],
+    },
     centered: {
       flex: 1,
       alignItems: "center",
@@ -297,18 +357,7 @@ function createStyles(c) {
       fontSize: 13,
       color: c['muted-foreground'],
     },
-    errorBanner: {
-      backgroundColor: `${c.destructive}1a`,
-      borderColor: `${c.destructive}40`,
-      borderWidth: 1,
-      borderRadius: 8,
-      padding: 12,
-      marginBottom: 16,
-    },
-    errorText: {
-      color: c.destructive,
-      fontSize: 13,
-    },
+
     hero: {
       alignItems: "center",
       marginBottom: 32,

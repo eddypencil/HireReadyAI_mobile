@@ -65,18 +65,19 @@ export const deleteCompany = async (companyId) => {
   if (error) throw error;
 };
 
-// Fetch the company associated with a profile's membership
+// Fetch the company and permission associated with a profile's membership
 export const fetchCompanyByProfileId = async (profileId) => {
   const { data: membership, error: membershipError } = await supabase
     .from("company_memberships")
-    .select("company_id")
+    .select("company_id, permissions")
     .eq("profile_id", profileId)
     .maybeSingle();
 
   if (membershipError) throw membershipError;
-  if (!membership) return null;
+  if (!membership) return { company: null, permission: null };
 
-  return await fetchCompanyById(membership.company_id);
+  const company = await fetchCompanyById(membership.company_id);
+  return { company, permission: membership.permissions };
 };
 
 // Fetch job postings for a company

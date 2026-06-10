@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Animated,
   ScrollView,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -61,10 +62,23 @@ export default function AnimatedSidebar() {
     ]).start();
   }, [isOpen, slideAnim, fadeAnim]);
 
+  const screenExists = (navState, name) => {
+    if (!navState) return false;
+    if (navState.routeNames?.includes(name)) return true;
+    if (navState.routes) {
+      return navState.routes.some(r => r.state ? screenExists(r.state, name) : r.name === name);
+    }
+    return false;
+  };
+
   const handleNavigate = (screenName) => {
     close();
-    if (navigation) {
+    if (!navigation) return;
+    const rootState = navigation.getRootState();
+    if (screenExists(rootState, screenName)) {
       navigation.navigate(screenName);
+    } else {
+      Alert.alert("Unavailable", "Join or create an organization first.");
     }
   };
 
