@@ -115,6 +115,7 @@ export function CompanyProvider({ children }) {
     <CompanyContext.Provider
       value={{
         company,
+        permission,
         jobs,
         members,
         permission,
