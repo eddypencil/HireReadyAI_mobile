@@ -1,0 +1,165 @@
+import { useState } from "react";
+import { View, Text, TouchableOpacity, Modal, Alert } from "react-native";
+import * as ImagePicker from "expo-image-picker";
+import { supabase } from "../../../shared/services/supabase";
+import { useTheme } from "../../../shared/context/ThemeContext";
+import { useTranslation } from "../../../shared/context/I18nContext";
+
+export default function AvatarModal({ open, onClose, userId, currentUrl, onUpdated, onDeleted }) {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const c = theme.colors;
+  const [uploading, setUploading] = useState(false);
+
+  const handlePickImage = async () => {
+    try {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert(t("applicant.permission_needed"), t("applicant.permission_message"));
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
+
+      if (result.canceled || !result.assets?.[0]) return;
+
+      setUploading(true);
+      const file = result.assets[0];
+
+      const response = await fetch(file.uri);
+      const blob = await response.blob();
+
+      const ext = file.uri.split(".").pop() || "jpg";
+      const filePath = `avatars/${userId}.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, blob, { upsert: true, contentType: `image/${ext}` });
+
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(filePath);
+
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ profile_pic: urlData.publicUrl })
+        .eq("id", userId);
+
+      if (updateError) throw updateError;
+
+      onUpdated?.(urlData.publicUrl);
+      onClose();
+    } catch (err) {
+      Alert.alert(t("applicant.error_title"), t("applicant.update_error"));
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleRemove = async () => {
+    try {
+      setUploading(true);
+      const { error } = await supabase
+        .from("profiles")
+        .update({ profile_pic: null })
+        .eq("id", userId);
+      if (error) throw error;
+      onDeleted?.();
+      onClose();
+    } catch (err) {
+      Alert.alert(t("applicant.error_title"), t("applicant.remove_error"));
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <Modal visible={open} transparent animationType="fade" onRequestClose={onClose}>
+      <TouchableOpacity
+        activeOpacity={1}
+        onPress={onClose}
+        style={{
+          flex: 1,
+          backgroundColor: `${c.sidebar}66`,
+          justifyContent: "center",
+          alignItems: "center",
+          padding: 16,
+        }}
+      >
+        <TouchableOpacity activeOpacity={1} onPress={() => {}} style={{
+          backgroundColor: c.card,
+          borderRadius: 20,
+          borderWidth: 1,
+          borderColor: c.border,
+          padding: 24,
+          width: "100%",
+          maxWidth: 340,
+        }}>
+          <Text style={{
+            fontSize: 18,
+            fontWeight: "700",
+            color: c.foreground,
+            marginBottom: 20,
+          }}>
+            {t("applicant.profile_picture")}
+          </Text>
+
+          <View style={{ gap: 10 }}>
+            <TouchableOpacity
+              onPress={handlePickImage}
+              disabled={uploading}
+              style={{
+                backgroundColor: c.primary,
+                borderRadius: 10,
+                paddingVertical: 12,
+                alignItems: "center",
+                opacity: uploading ? 0.5 : 1,
+              }}
+            >
+              <Text style={{ color: c['destructive-foreground'], fontSize: 14, fontWeight: "600" }}>
+                {uploading ? t("applicant.uploading") : t("applicant.upload_photo")}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={handleRemove}
+              disabled={uploading}
+              style={{
+                borderWidth: 1,
+                borderColor: `${c.destructive}4d`,
+                borderRadius: 10,
+                paddingVertical: 12,
+                alignItems: "center",
+                opacity: uploading ? 0.5 : 1,
+              }}
+            >
+              <Text style={{ color: c.destructive, fontSize: 14, fontWeight: "600" }}>
+                {t("applicant.remove_photo")}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={onClose}
+              style={{
+                borderWidth: 1,
+                borderColor: c.border,
+                borderRadius: 10,
+                paddingVertical: 12,
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ color: c['muted-foreground'], fontSize: 14, fontWeight: "600" }}>
+                {t("applicant.cancel")}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </TouchableOpacity>
+    </Modal>
+  );
+}

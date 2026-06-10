@@ -1,17 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import { ScrollView, View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
-const T = {
-  primary: '#01497c',
-  sidebar: '#012a4a',
-  accent: '#468faf',
-  surface: '#eef7fa',
-  border: '#cfe7f2',
-  foreground: '#012a4a',
-  muted: '#2a6f97',
-  white: '#ffffff',
-};
+import { useTheme } from '../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../shared/context/I18nContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const MOCK_QUESTIONS = [
   { id: '1', text: 'Tell us about your experience with React Native.' },
@@ -21,6 +13,12 @@ const MOCK_QUESTIONS = [
 ];
 
 export default function InterviewPage() {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
+  const c = theme.colors;
+  const styles = createStyles(c);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [questions, setQuestions] = useState([]);
@@ -88,17 +86,17 @@ export default function InterviewPage() {
 
   if (loading) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color={T.primary} />
-        <Text style={styles.loadingText}>Loading interview questions...</Text>
+      <View style={[styles.centered, { backgroundColor: c['surface-muted'] }]}>
+        <ActivityIndicator size="large" color={c.primary} />
+        <Text style={styles.loadingText}>{t("interview.loading")}</Text>
       </View>
     );
   }
 
   if (error) {
     return (
-      <View style={styles.centered}>
-        <Ionicons name="alert-circle-outline" size={48} color="#dc2626" />
+      <View style={[styles.centered, { backgroundColor: c['surface-muted'] }]}>
+        <Ionicons name="alert-circle-outline" size={48} color={c.destructive} />
         <Text style={styles.errorText}>{error}</Text>
       </View>
     );
@@ -106,9 +104,9 @@ export default function InterviewPage() {
 
   if (!questions.length) {
     return (
-      <View style={styles.centered}>
-        <Ionicons name="document-outline" size={48} color={T.muted} />
-        <Text style={styles.emptyText}>No questions available for this interview.</Text>
+      <View style={[styles.centered, { backgroundColor: c['surface-muted'] }]}>
+        <Ionicons name="document-outline" size={48} color={c['muted-foreground']} />
+        <Text style={styles.emptyText}>{t("interview.no_questions")}</Text>
       </View>
     );
   }
@@ -116,120 +114,117 @@ export default function InterviewPage() {
   const current = questions[currentIndex];
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View style={[styles.container, { backgroundColor: c['surface-muted'] }]}>
+      <View style={[styles.header, { paddingTop: insets.top + 16, backgroundColor: c.sidebar }]}>
         <View style={styles.headerGradient}>
-          <Ionicons name="videocam" size={28} color={T.white} style={styles.headerIcon} />
-          <Text style={styles.headerTitle}>Interview Session</Text>
-          <Text style={styles.headerSubtitle}>Frontend Developer · Alice Johnson</Text>
+          <Ionicons name="videocam" size={28} color={c['destructive-foreground']} style={styles.headerIcon} />
+          <Text style={styles.headerTitle}>{t("interview.title")}</Text>
         </View>
       </View>
 
-      <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent}>
-        <View style={styles.progressRow}>
-          <Text style={styles.progressText}>
-            Question {currentIndex + 1} of {questions.length}
-          </Text>
-          <View style={styles.progressBar}>
-            <View style={[styles.progressFill, { width: `${((currentIndex + 1) / questions.length) * 100}%` }]} />
-          </View>
-        </View>
-
-        <View style={styles.questionCard}>
-          <Ionicons name="help-circle-outline" size={20} color={T.primary} />
-          <Text style={styles.questionText}>{current.text}</Text>
-        </View>
-
-        <View style={styles.recordingSection}>
-          <View style={styles.timerRow}>
-            <Ionicons name="time-outline" size={18} color={isRecording ? '#dc2626' : T.muted} />
-            <Text style={[styles.timerText, isRecording && styles.timerActive]}>
-              {formatTime(timeLeft)}
+      <View style={styles.body}>
+        <View style={styles.bodyContent}>
+          <View style={styles.progressRow}>
+            <Text style={styles.progressText}>
+              {t("interview.question_progress", { current: currentIndex + 1, total: questions.length })}
             </Text>
-          </View>
-
-          <TouchableOpacity
-            style={[styles.recordButton, isRecording && styles.recordButtonActive]}
-            onPress={handleRecord}
-            activeOpacity={0.7}
-          >
-            <Ionicons
-              name={isRecording ? 'stop-circle' : 'radio-button-on'}
-              size={24}
-              color={T.white}
-            />
-            <Text style={styles.recordButtonText}>
-              {isRecording ? 'Stop Recording' : recorded ? 'Record Again' : 'Start Recording'}
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {transcript ? (
-          <View style={styles.transcriptCard}>
-            <View style={styles.transcriptHeader}>
-              <Ionicons name="document-text-outline" size={16} color={T.primary} />
-              <Text style={styles.transcriptTitle}>Transcript</Text>
+            <View style={styles.progressBar}>
+              <View style={[styles.progressFill, { width: `${((currentIndex + 1) / questions.length) * 100}%` }]} />
             </View>
-            <Text style={styles.transcriptText}>{transcript}</Text>
           </View>
-        ) : (
-          <View style={styles.transcriptEmpty}>
-            <Ionicons name="mic-outline" size={32} color={T.border} />
-            <Text style={styles.transcriptEmptyText}>
-              {isRecording ? 'Recording in progress...' : 'Your transcript will appear here'}
-            </Text>
-          </View>
-        )}
 
-        {recorded && currentIndex < questions.length - 1 && (
-          <TouchableOpacity style={styles.nextButton} onPress={handleNext} activeOpacity={0.7}>
-            <Text style={styles.nextButtonText}>Next Question</Text>
-            <Ionicons name="arrow-forward" size={18} color={T.white} />
-          </TouchableOpacity>
-        )}
-
-        {currentIndex === questions.length - 1 && recorded && (
-          <View style={styles.completeBanner}>
-            <Ionicons name="checkmark-circle" size={20} color="#155724" />
-            <Text style={styles.completeText}>All questions answered. Thank you!</Text>
+          <View style={styles.questionCard}>
+            <Ionicons name="help-circle-outline" size={20} color={c.primary} />
+            <Text style={styles.questionText}>{current.text}</Text>
           </View>
-        )}
-      </ScrollView>
+
+          <View style={styles.recordingSection}>
+            <View style={styles.timerRow}>
+              <Ionicons name="time-outline" size={18} color={isRecording ? c.destructive : c['muted-foreground']} />
+              <Text style={[styles.timerText, isRecording && { color: c.destructive }]}>
+                {formatTime(timeLeft)}
+              </Text>
+            </View>
+
+            <TouchableOpacity
+              style={[styles.recordButton, isRecording && { backgroundColor: c.foreground }]}
+              onPress={handleRecord}
+              activeOpacity={0.7}
+            >
+              <Ionicons
+                name={isRecording ? 'stop-circle' : 'radio-button-on'}
+                size={24}
+                color={c['destructive-foreground']}
+              />
+              <Text style={styles.recordButtonText}>
+                {isRecording ? t("interview.stop_recording") : recorded ? t("interview.record_again") : t("interview.start_recording")}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {transcript ? (
+            <View style={styles.transcriptCard}>
+              <View style={styles.transcriptHeader}>
+                <Ionicons name="document-text-outline" size={16} color={c.primary} />
+                <Text style={styles.transcriptTitle}>{t("interview.transcript_title")}</Text>
+              </View>
+              <Text style={styles.transcriptText}>{transcript}</Text>
+            </View>
+          ) : (
+            <View style={styles.transcriptEmpty}>
+              <Ionicons name="mic-outline" size={32} color={c.border} />
+              <Text style={styles.transcriptEmptyText}>
+                {isRecording ? t("interview.recording_in_progress") : t("interview.transcript_empty")}
+              </Text>
+            </View>
+          )}
+
+          {recorded && currentIndex < questions.length - 1 && (
+            <TouchableOpacity style={styles.nextButton} onPress={handleNext} activeOpacity={0.7}>
+              <Text style={styles.nextButtonText}>{t("interview.next_question")}</Text>
+              <Ionicons name="arrow-forward" size={18} color={c['destructive-foreground']} />
+            </TouchableOpacity>
+          )}
+
+          {currentIndex === questions.length - 1 && recorded && (
+            <View style={[styles.completeBanner, { backgroundColor: `${c.success}1a` }]}>
+              <Ionicons name="checkmark-circle" size={20} color={c.success} />
+              <Text style={[styles.completeText, { color: c.success }]}>{t("interview.complete")}</Text>
+            </View>
+          )}
+        </View>
+      </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(c) { return StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: T.surface,
   },
   centered: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: T.surface,
     padding: 32,
   },
   loadingText: {
     marginTop: 12,
-    color: T.muted,
+    color: c['muted-foreground'],
     fontSize: 15,
   },
   errorText: {
     marginTop: 12,
-    color: '#dc2626',
+    color: c.destructive,
     fontSize: 15,
   },
   emptyText: {
     marginTop: 12,
-    color: T.muted,
+    color: c['muted-foreground'],
     fontSize: 15,
     textAlign: 'center',
   },
   header: {
-    backgroundColor: T.sidebar,
-    paddingTop: 60,
     paddingBottom: 24,
     paddingHorizontal: 24,
   },
@@ -242,12 +237,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 24,
     fontWeight: '800',
-    color: T.white,
-  },
-  headerSubtitle: {
-    fontSize: 13,
-    color: T.accent,
-    marginTop: 2,
+    color: c['destructive-foreground'],
   },
   body: {
     flex: 1,
@@ -262,27 +252,27 @@ const styles = StyleSheet.create({
   },
   progressText: {
     fontSize: 13,
-    color: T.muted,
+    color: c['muted-foreground'],
     fontWeight: '600',
     marginBottom: 8,
   },
   progressBar: {
     height: 6,
-    backgroundColor: T.border,
+    backgroundColor: c.border,
     borderRadius: 3,
     overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
-    backgroundColor: T.primary,
+    backgroundColor: c.primary,
     borderRadius: 3,
   },
   questionCard: {
-    backgroundColor: T.white,
+    backgroundColor: c.card,
     borderRadius: 14,
     padding: 20,
     borderWidth: 1,
-    borderColor: T.border,
+    borderColor: c.border,
     flexDirection: 'row',
     alignItems: 'flex-start',
     marginBottom: 24,
@@ -291,16 +281,16 @@ const styles = StyleSheet.create({
   questionText: {
     fontSize: 16,
     fontWeight: '600',
-    color: T.foreground,
+    color: c.foreground,
     flex: 1,
     lineHeight: 22,
   },
   recordingSection: {
-    backgroundColor: T.white,
+    backgroundColor: c.card,
     borderRadius: 14,
     padding: 20,
     borderWidth: 1,
-    borderColor: T.border,
+    borderColor: c.border,
     alignItems: 'center',
     marginBottom: 20,
   },
@@ -313,35 +303,29 @@ const styles = StyleSheet.create({
   timerText: {
     fontSize: 32,
     fontWeight: '800',
-    color: T.foreground,
+    color: c.foreground,
     fontVariant: ['tabular-nums'],
-  },
-  timerActive: {
-    color: '#dc2626',
   },
   recordButton: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: '#dc2626',
+    backgroundColor: c.destructive,
     paddingVertical: 14,
     paddingHorizontal: 28,
     borderRadius: 30,
   },
-  recordButtonActive: {
-    backgroundColor: T.foreground,
-  },
   recordButtonText: {
-    color: T.white,
+    color: c['destructive-foreground'],
     fontSize: 15,
     fontWeight: '700',
   },
   transcriptCard: {
-    backgroundColor: T.white,
+    backgroundColor: c.card,
     borderRadius: 14,
     padding: 16,
     borderWidth: 1,
-    borderColor: T.border,
+    borderColor: c.border,
     marginBottom: 20,
   },
   transcriptHeader: {
@@ -353,25 +337,25 @@ const styles = StyleSheet.create({
   transcriptTitle: {
     fontSize: 13,
     fontWeight: '700',
-    color: T.primary,
+    color: c.primary,
   },
   transcriptText: {
     fontSize: 14,
-    color: T.foreground,
+    color: c.foreground,
     lineHeight: 20,
   },
   transcriptEmpty: {
-    backgroundColor: T.white,
+    backgroundColor: c.card,
     borderRadius: 14,
     padding: 32,
     borderWidth: 1,
-    borderColor: T.border,
+    borderColor: c.border,
     alignItems: 'center',
     marginBottom: 20,
   },
   transcriptEmptyText: {
     fontSize: 13,
-    color: T.muted,
+    color: c['muted-foreground'],
     marginTop: 8,
   },
   nextButton: {
@@ -379,12 +363,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: T.primary,
+    backgroundColor: c.primary,
     paddingVertical: 14,
     borderRadius: 12,
   },
   nextButtonText: {
-    color: T.white,
+    color: c['destructive-foreground'],
     fontSize: 15,
     fontWeight: '700',
   },
@@ -393,13 +377,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: '#d4edda',
     borderRadius: 12,
     padding: 16,
   },
   completeText: {
-    color: '#155724',
     fontSize: 14,
     fontWeight: '600',
   },
-});
+}); }

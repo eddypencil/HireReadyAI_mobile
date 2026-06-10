@@ -44,7 +44,7 @@ export function UserProvider({ children }) {
 
   return (
     <UserContext.Provider
-      value={{ profile, session, loading, signOutUser, setProfile }}
+      value={{ profile, session, user: session?.user, loading, signOutUser, setProfile }}
     >
       {children}
     </UserContext.Provider>

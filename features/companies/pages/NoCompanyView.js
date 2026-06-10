@@ -5,6 +5,8 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
   ActivityIndicator,
   FlatList,
   StyleSheet,
@@ -17,6 +19,10 @@ import { useUser } from "../../auth/context/user.context";
 import { MEMBERSHIP_PERMISSION } from "../../../shared/constants/enums";
 
 export default function NoCompanyView({ onCompanyJoined }) {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const c = theme.colors;
+  const insets = useSafeAreaInsets();
   const { profile } = useUser();
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -39,6 +45,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
     twitter_url: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const styles = createStyles(c);
 
   useEffect(() => {
     (async () => {
@@ -105,8 +112,8 @@ export default function NoCompanyView({ onCompanyJoined }) {
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="small" color={colors.darkAmethyst[600]} />
-        <Text style={styles.loadingText}>Loading companies...</Text>
+        <ActivityIndicator size="small" color={c.primary} />
+        <Text style={styles.loadingText}>{t("companies.loading_companies")}</Text>
       </View>
     );
   }
@@ -122,13 +129,13 @@ export default function NoCompanyView({ onCompanyJoined }) {
         <View style={styles.cardInfo}>
           <Text style={styles.companyName}>{company.name}</Text>
           <Text style={styles.companyIndustry}>
-            {company.industry || "Organization"}
+            {company.industry || t("companies.organization")}
           </Text>
         </View>
       </View>
       {company.size && (
         <Text style={styles.companySize}>
-          {company.size.toLocaleString()} employees
+          {t("companies.employees_count", { size: company.size.toLocaleString() })}
         </Text>
       )}
       <TouchableOpacity
@@ -137,14 +144,18 @@ export default function NoCompanyView({ onCompanyJoined }) {
         disabled={joining === company.id}
       >
         <Text style={styles.joinBtnText}>
-          {joining === company.id ? "Joining..." : "Join"}
+          {joining === company.id ? t("companies.joining") : t("companies.join")}
         </Text>
       </TouchableOpacity>
     </View>
   );
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+    <ScrollView style={[styles.container, { paddingTop: insets.top }]} contentContainerStyle={styles.content}>
       {error && (
         <View style={styles.errorBanner}>
           <Text style={styles.errorText}>{error}</Text>
@@ -232,7 +243,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
               placeholderTextColor={colors.darkAmethyst[300]}
             />
 
-            <Text style={styles.label}>Industry</Text>
+            <Text style={styles.label}>{t("companies.industry")}</Text>
             <TextInput
               style={styles.input}
               value={newCompany.industry}
@@ -243,7 +254,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
 
             <View style={styles.row}>
               <View style={styles.halfField}>
-                <Text style={styles.label}>Company Size</Text>
+                <Text style={styles.label}>{t("companies.company_size")}</Text>
                 <TextInput
                   style={styles.input}
                   value={newCompany.size}
@@ -254,7 +265,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
                 />
               </View>
               <View style={styles.halfField}>
-                <Text style={styles.label}>Location</Text>
+                <Text style={styles.label}>{t("companies.location")}</Text>
                 <TextInput
                   style={styles.input}
                   value={newCompany.location}
@@ -355,7 +366,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
                 style={styles.cancelBtn}
                 onPress={() => { setIsCreating(false); setSelectedPlan(null); }}
               >
-                <Text style={styles.cancelBtnText}>Cancel</Text>
+                <Text style={styles.cancelBtnText}>{t("companies.cancel")}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.createBtn, isSubmitting && styles.createBtnDisabled]}
@@ -363,7 +374,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
                 disabled={isSubmitting}
               >
                 <Text style={styles.createBtnText}>
-                  {isSubmitting ? "Creating..." : "Create Company"}
+                  {isSubmitting ? t("companies.creating") : t("companies.create_company")}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -378,9 +389,9 @@ export default function NoCompanyView({ onCompanyJoined }) {
             <View style={styles.heroIcon}>
               <Text style={styles.heroIconText}>H</Text>
             </View>
-            <Text style={styles.heroTitle}>Join or Create a Company</Text>
+            <Text style={styles.heroTitle}>{t("companies.join_or_create")}</Text>
             <Text style={styles.heroSubtitle}>
-              Select a company to get started with HireReadyAI or create your own
+              {t("companies.hero_subtitle")}
             </Text>
             {companies.length > 0 && (
               <TouchableOpacity
@@ -388,7 +399,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
                 onPress={() => setShowingPricing(true)}
               >
                 <Text style={styles.createNewBtnText}>
-                  + Create a New Company
+                  {t("companies.create_new")}
                 </Text>
               </TouchableOpacity>
             )}
@@ -397,13 +408,13 @@ export default function NoCompanyView({ onCompanyJoined }) {
           {companies.length === 0 ? (
             <View style={styles.emptyState}>
               <Text style={styles.emptyText}>
-                No companies available to join.
+                {t("companies.no_companies")}
               </Text>
               <TouchableOpacity
                 style={styles.createNewBtn}
                 onPress={() => setShowingPricing(true)}
               >
-                <Text style={styles.createNewBtnText}>+ Create a Company</Text>
+                <Text style={styles.createNewBtnText}>{t("companies.create_a_company")}</Text>
               </TouchableOpacity>
             </View>
           ) : (
@@ -419,6 +430,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
         </>
       )}
     </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 

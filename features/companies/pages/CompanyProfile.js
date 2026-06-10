@@ -5,12 +5,15 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
   StyleSheet,
   Alert,
   Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { colors } from "../../../src/theme";
+import { useTheme } from "../../../shared/context/ThemeContext";
+import { useTranslation } from "../../../shared/context/I18nContext";
 import { useCompany } from "./CompanyLayout";
 import { updateCompany } from "../services/companies.service";
 import { removeMembership, updateMembershipPermission } from "../services/memberships.service";
@@ -322,41 +325,13 @@ export default function CompanyProfile() {
         )}
       </View>
 
-      {/* Competency Framework Card */}
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Competency Framework</Text>
-        <Text style={styles.cardSubtitle}>
-          Upload your grading framework for AI analysis.
-        </Text>
-
-        <TouchableOpacity style={styles.uploadArea} onPress={handleFilePick}>
-          <Text style={styles.uploadIcon}>UPLOAD</Text>
-          <Text style={styles.uploadText}>
-            Click to upload your framework file
-          </Text>
-          <Text style={styles.uploadHint}>PDF or DOCX up to 25MB</Text>
-        </TouchableOpacity>
-
-        {frameworkFile && (
-          <View style={styles.fileRow}>
-            <View style={styles.fileInfo}>
-              <Text style={styles.fileIcon}>F</Text>
-              <Text style={styles.fileName} numberOfLines={1}>
-                {frameworkFile}
-              </Text>
-            </View>
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>Active & Indexed</Text>
-            </View>
-          </View>
-        )}
-      </View>
+      
 
       {/* Team Members Card */}
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Team Members</Text>
+        <Text style={styles.cardTitle}>{t("companies.team_members")}</Text>
         <Text style={styles.cardSubtitle}>
-          Invite and manage your recruitment team permissions.
+          {t("companies.team_members_subtitle")}
         </Text>
 
         {isHrManager && (
@@ -435,7 +410,7 @@ export default function CompanyProfile() {
                 </View>
                 <View style={styles.memberDetails}>
                   <Text style={styles.memberName} numberOfLines={1}>
-                    {member.profiles?.full_name || "Unknown"}
+                    {member.profiles?.full_name || t("companies.unknown_member")}
                   </Text>
                   <Text style={styles.memberRole} numberOfLines={1}>
                     {member.profiles?.headline || member.profiles?.role || "Team Member"}
@@ -475,7 +450,7 @@ export default function CompanyProfile() {
         </View>
       </View>
     </ScrollView>
-  );
+        );
 }
 
 const styles = StyleSheet.create({

@@ -49,6 +49,11 @@ export const getPipeline = async (jobId) => {
 
 // Create a new stage for a job pipeline
 export const createStage = async (jobId, stageData) => {
+  let questionsNum = null;
+  let questionLessStages = ["cv_review", "offer", "shortlist"];
+  if (!questionLessStages.includes(stageData.stage_type)) {
+    questionsNum = stageData.num_questions || null;
+  }
   const { data, error } = await supabase
     .from("recruitment_stages")
     .insert([
@@ -59,7 +64,8 @@ export const createStage = async (jobId, stageData) => {
         description: stageData.description || null,
         order_index: stageData.order_index,
         weight: stageData.weight !== undefined ? stageData.weight : 0.1,
-        pass_score: null,
+        num_questions: questionsNum,
+        pass_score: 70,
         evaluation_criteria: null,
       },
     ])
@@ -71,6 +77,7 @@ export const createStage = async (jobId, stageData) => {
 };
 
 // Update editable fields on an existing stage
+// Note: order_index is NOT updated here — use reorderStages() for that
 export const updateStage = async (stageId, updates) => {
   const { data, error } = await supabase
     .from("recruitment_stages")
@@ -79,6 +86,7 @@ export const updateStage = async (stageId, updates) => {
       stage_type: updates.stage_type,
       weight: updates.weight,
       description: updates.description,
+      num_questions: updates.num_questions,
     })
     .eq("id", stageId)
     .select()
@@ -112,6 +120,7 @@ export const reorderStages = async (stages) => {
         stage_type: s.stage_type,
         description: s.description,
         order_index: s.order_index + 1000,
+        num_questions: s.num_questions,
         weight: s.weight,
         pass_score: s.pass_score,
         evaluation_criteria: s.evaluation_criteria,
@@ -131,6 +140,7 @@ export const reorderStages = async (stages) => {
         stage_type: s.stage_type,
         description: s.description,
         order_index: s.order_index,
+        num_questions: s.num_questions,
         weight: s.weight,
         pass_score: s.pass_score,
         evaluation_criteria: s.evaluation_criteria,

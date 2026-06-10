@@ -1,27 +1,33 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { colors } from '../../../src/theme';
+import { useTheme } from '../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../shared/context/I18nContext';
 
 function getInitials(name) {
   if (!name) return 'NA';
   return name.split(' ').map((n) => n[0]).join('').substring(0, 2).toUpperCase();
 }
 
-function DimensionRow({ name, score }) {
-  return (
-    <View style={styles.dimensionRow}>
-      <Text style={styles.dimensionName} numberOfLines={1}>{name}</Text>
-      <View style={styles.dimensionBarRow}>
-        <View style={styles.dimensionTrack}>
-          <View style={[styles.dimensionFill, { width: `${Math.min(score || 0, 100)}%` }]} />
-        </View>
-        <Text style={styles.dimensionScore}>{score || 0}</Text>
-      </View>
-    </View>
-  );
-}
-
 export default function ComparisonCard({ application }) {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const c = theme.colors;
+  const styles = createStyles(c);
+
+  function DimensionRow({ name, score }) {
+    return (
+      <View style={styles.dimensionRow}>
+        <Text style={styles.dimensionName} numberOfLines={1}>{name}</Text>
+        <View style={styles.dimensionBarRow}>
+          <View style={styles.dimensionTrack}>
+            <View style={[styles.dimensionFill, { width: `${Math.min(score || 0, 100)}%` }]} />
+          </View>
+          <Text style={styles.dimensionScore}>{score || 0}</Text>
+        </View>
+      </View>
+    );
+  }
+
   const profile = application.profiles;
   const dimensions = application.cv_dimension_scores || [];
 
@@ -33,13 +39,13 @@ export default function ComparisonCard({ application }) {
         </View>
         <View style={styles.headerInfo}>
           <Text style={styles.name} numberOfLines={1}>{profile?.full_name}</Text>
-          <Text style={styles.composite}>Composite {application.composite_score}</Text>
+          <Text style={styles.composite}>{t("shortlist.composite")} {application.composite_score}</Text>
         </View>
       </View>
 
       <View style={styles.dimensions}>
         {dimensions.length === 0 && (
-          <Text style={styles.emptyText}>No dimension scores available.</Text>
+          <Text style={styles.emptyText}>{t("shortlist.no_dimension_scores")}</Text>
         )}
         {dimensions.map((dim, idx) => (
           <DimensionRow key={idx} name={dim.dimension_name} score={dim.score} />
@@ -49,12 +55,12 @@ export default function ComparisonCard({ application }) {
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(c) { return StyleSheet.create({
   card: {
-    backgroundColor: colors.white,
+    backgroundColor: c.card,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: colors.gray[100],
+    borderColor: c.border,
     padding: 20,
     width: 280,
     minWidth: 260,
@@ -74,14 +80,14 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: colors.gray[100],
+    backgroundColor: c.border,
     alignItems: 'center',
     justifyContent: 'center',
   },
   avatarText: {
     fontSize: 13,
     fontWeight: '700',
-    color: colors.gray[600],
+    color: c['muted-foreground'],
   },
   headerInfo: {
     flex: 1,
@@ -89,11 +95,11 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#0f172a',
+    color: c.foreground,
   },
   composite: {
     fontSize: 11,
-    color: colors.gray[500],
+    color: c['muted-foreground'],
     marginTop: 1,
   },
   dimensions: {
@@ -106,7 +112,7 @@ const styles = StyleSheet.create({
   },
   dimensionName: {
     fontSize: 13,
-    color: colors.gray[500],
+    color: c['muted-foreground'],
     width: 100,
     marginRight: 8,
   },
@@ -119,25 +125,25 @@ const styles = StyleSheet.create({
   dimensionTrack: {
     flex: 1,
     height: 6,
-    backgroundColor: colors.gray[100],
+    backgroundColor: c.border,
     borderRadius: 3,
     overflow: 'hidden',
   },
   dimensionFill: {
     height: 6,
-    backgroundColor: colors.darkAmethyst[600],
+    backgroundColor: c.primary,
     borderRadius: 3,
   },
   dimensionScore: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#0f172a',
+    color: c.foreground,
     width: 22,
     textAlign: 'right',
   },
   emptyText: {
     fontSize: 12,
-    color: colors.gray[400],
+    color: c['muted-foreground'],
     textAlign: 'center',
   },
-});
+}); }

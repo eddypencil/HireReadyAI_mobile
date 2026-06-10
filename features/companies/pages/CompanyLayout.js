@@ -9,7 +9,8 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
-import { colors } from "../../../src/theme";
+import { useTheme } from "../../../shared/context/ThemeContext";
+import { useTranslation } from "../../../shared/context/I18nContext";
 import { useUser } from "../../auth/context/user.context";
 import {
   fetchCompanyByProfileId,
@@ -20,6 +21,7 @@ import { addMembership } from "../services/memberships.service";
 import { MEMBERSHIP_PERMISSION } from "../../../shared/constants/enums";
 import NoCompanyView from "./NoCompanyView";
 import PendingApprovalPage from "./PendingApprovalPage";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const CompanyContext = createContext(null);
 
@@ -30,6 +32,10 @@ export function useCompany() {
 }
 
 export function CompanyProvider({ children }) {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const c = theme.colors;
+  const styles = createStyles(c);
   const { loading: authLoading, profile } = useUser();
   const [jobs, setJobs] = useState([]);
   const [members, setMembers] = useState([]);
@@ -83,8 +89,8 @@ export function CompanyProvider({ children }) {
   if (authLoading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="small" color={colors.primary} />
-        <Text style={styles.loadingText}>Loading...</Text>
+        <ActivityIndicator size="small" color={c.primary} />
+        <Text style={styles.loadingText}>{t("companies.loading")}</Text>
       </View>
     );
   }
@@ -134,36 +140,41 @@ export function CompanyProvider({ children }) {
 }
 
 export default function CompanyLayout() {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const c = theme.colors;
+  const styles = createStyles(c);
   const navigation = useNavigation();
   const { company, jobs, members, frameworkFile, setFrameworkFile, loading } = useCompany();
+  const insets = useSafeAreaInsets();
 
   if (loading || !company) return null;
 
   const links = [
-    { to: "CompanyProfile", label: "Company Profile", icon: "business", params: { company, members, onInvite: () => {}, frameworkFile, setFrameworkFile } },
-    { to: "JDGenerator", label: "JD Generator", icon: "sparkles", params: { company } },
-    { to: "JobPostings", label: "Job Postings", icon: "briefcase", params: { jobs, searchQuery: "" } },
+    { to: "CompanyProfile", label: t("companies.company_profile"), icon: "business", params: { company, members, onInvite: () => {}, frameworkFile, setFrameworkFile } },
+    { to: "JDGenerator", label: t("companies.jd_generator"), icon: "sparkles", params: { company } },
+    { to: "JobPostings", label: t("companies.job_postings"), icon: "briefcase", params: { jobs, searchQuery: "" } },
   ];
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView style={[styles.container, { paddingTop: insets.top }]} contentContainerStyle={styles.content}>
       <View style={styles.header}>
-        <Text style={styles.welcome}>Welcome back</Text>
+        <Text style={styles.welcome}>{t("companies.welcome_back")}</Text>
         <Text style={styles.companyName}>{company.name}</Text>
       </View>
 
       <View style={styles.statsRow}>
         <View style={styles.statCard}>
           <Text style={styles.statNumber}>{jobs.length}</Text>
-          <Text style={styles.statLabel}>Active Jobs</Text>
+          <Text style={styles.statLabel}>{t("companies.active_jobs")}</Text>
         </View>
         <View style={styles.statCard}>
           <Text style={styles.statNumber}>{members.length}</Text>
-          <Text style={styles.statLabel}>Team Members</Text>
+          <Text style={styles.statLabel}>{t("companies.team_members")}</Text>
         </View>
       </View>
 
-      <Text style={styles.sectionTitle}>Manage</Text>
+      <Text style={styles.sectionTitle}>{t("companies.manage")}</Text>
       {links.map((link) => (
         <TouchableOpacity
           key={link.to}
@@ -172,12 +183,12 @@ export default function CompanyLayout() {
           activeOpacity={0.7}
         >
           <View style={styles.navIconWrap}>
-            <Ionicons name={link.icon} size={22} color={colors.primary} />
+            <Ionicons name={link.icon} size={22} color={c.primary} />
           </View>
           <View style={styles.navTextWrap}>
             <Text style={styles.navLabel}>{link.label}</Text>
           </View>
-          <Ionicons name="chevron-forward" size={18} color={colors.gray[400]} />
+          <Ionicons name="chevron-forward" size={18} color={c['muted-foreground']} />
         </TouchableOpacity>
       ))}
     </ScrollView>

@@ -1,65 +1,118 @@
-import React from "react";
-import {
-  FileText,
-  Sparkles,
-  ClipboardList,
-  Code2,
-  Video,
-  Cpu,
-  Users,
-  UserCheck,
-  ShieldCheck,
-  Award,
-} from "lucide-react";
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { STAGE_LIBRARY } from "../constants/stageLibrary";
+import { useTheme } from "../../../shared/context/ThemeContext";
+import { useTranslation } from "../../../shared/context/I18nContext";
 
 const ICON_MAP = {
-  FileText,
-  Sparkles,
-  ClipboardList,
-  Code2,
-  Video,
-  Cpu,
-  Users,
-  UserCheck,
-  ShieldCheck,
-  Award,
+  FileText: "document-text-outline",
+  Sparkles: "sparkles-outline",
+  ClipboardList: "clipboard-outline",
+  Code2: "code-slash-outline",
+  Video: "videocam-outline",
+  Cpu: "hardware-chip-outline",
+  Users: "people-outline",
+  UserCheck: "person-check-outline",
+  ShieldCheck: "shield-checkmark-outline",
+  Award: "trophy-outline",
 };
 
 export default function StageLibrary({ onAddStage }) {
-  return (
-    <div className="flex flex-col h-full">
-      <div className="px-4 pt-4 pb-3 border-b border-gray-100">
-        <p className="text-[10px] font-semibold text-gray-400 tracking-widest uppercase">
-          Stage Library
-        </p>
-        <p className="text-xs text-gray-500 mt-0.5">Click to append</p>
-      </div>
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const c = theme.colors;
+  const styles = createStyles(c);
 
-      <div className="flex-1 overflow-y-auto px-3 py-3 space-y-1.5">
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.headerLabel}>{t("pipeline.stage_library")}</Text>
+        <Text style={styles.headerHint}>{t("pipeline.tap_to_append")}</Text>
+      </View>
+
+      <ScrollView style={styles.list} showsVerticalScrollIndicator={false}>
         {STAGE_LIBRARY.map((item) => {
-          const Icon = ICON_MAP[item.icon] || FileText;
+          const iconName = ICON_MAP[item.icon] || "document-text-outline";
           return (
-            <button
+            <TouchableOpacity
               key={item.key}
-              onClick={() => onAddStage(item)}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left hover:bg-dark-amethyst-50 hover:border-dark-amethyst-200 border border-transparent transition-colors group cursor-pointer"
+              onPress={() => onAddStage(item)}
+              style={styles.stageButton}
+              activeOpacity={0.7}
             >
-              <div className="w-8 h-8 bg-gray-100 group-hover:bg-dark-amethyst-100 rounded-lg flex items-center justify-center shrink-0 transition-colors">
-                <Icon className="w-4 h-4 text-dark-amethyst-600 " />
-              </div>
-              <div className="min-w-0">
-                <p className="text-sm font-medium text-gray-800 group-hover:text-dark-amethyst-900 leading-tight transition-colors">
-                  {item.label}
-                </p>
-                <p className="text-xs text-gray-400 truncate">
-                  {item.subtitle}
-                </p>
-              </div>
-            </button>
+              <View style={styles.iconWrap}>
+                <Ionicons name={iconName} size={18} color={c.primary} />
+              </View>
+              <View style={styles.textWrap}>
+                <Text style={styles.label} numberOfLines={1}>{item.label}</Text>
+                <Text style={styles.subtitle} numberOfLines={1}>{item.subtitle}</Text>
+              </View>
+            </TouchableOpacity>
           );
         })}
-      </div>
-    </div>
+      </ScrollView>
+    </View>
   );
+}
+
+function createStyles(c) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    header: {
+      paddingHorizontal: 16,
+      paddingTop: 16,
+      paddingBottom: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: c.border,
+    },
+    headerLabel: {
+      fontSize: 10,
+      fontWeight: "700",
+      color: c['muted-foreground'],
+      letterSpacing: 1,
+      textTransform: "uppercase",
+    },
+    headerHint: {
+      fontSize: 12,
+      color: c['muted-foreground'],
+      marginTop: 2,
+    },
+    list: {
+      flex: 1,
+      paddingHorizontal: 12,
+      paddingVertical: 12,
+    },
+    stageButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      borderRadius: 8,
+      marginBottom: 6,
+    },
+    iconWrap: {
+      width: 32,
+      height: 32,
+      borderRadius: 8,
+      backgroundColor: c.border,
+      justifyContent: "center",
+      alignItems: "center",
+      marginRight: 12,
+    },
+    textWrap: {
+      flex: 1,
+    },
+    label: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: c.foreground,
+    },
+    subtitle: {
+      fontSize: 12,
+      color: c['muted-foreground'],
+      marginTop: 1,
+    },
+  });
 }

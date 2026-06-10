@@ -4,7 +4,6 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  StyleSheet,
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
@@ -12,15 +11,19 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import FormField from '../../../shared/ui/FormField';
 import { signUp } from '../services/auth.service';
-import { colors } from '../../../src/theme';
+import { useTheme } from '../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../shared/context/I18nContext';
 import { USER_ROLE } from '../../../shared/constants/enums';
 
 const ROLES = [
-  { label: 'Applicant', value: USER_ROLE.applicant },
-  { label: 'Recruiter', value: USER_ROLE.recruiter },
+  { labelKey: 'sign_up.applicant', value: USER_ROLE.applicant },
+  { labelKey: 'sign_up.recruiter', value: USER_ROLE.recruiter },
 ];
 
 export default function RegisterPage() {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const c = theme.colors;
   const navigation = useNavigation();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -38,17 +41,17 @@ export default function RegisterPage() {
     setError(null);
 
     if (!fullName.trim() || !email.trim() || !password || !confirmPassword) {
-      setError('Please fill in all required fields.');
+      setError(t('sign_up.fill_fields'));
       return;
     }
 
     if (password.length < 8) {
-      setError('Password must be at least 8 characters.');
+      setError(t('sign_up.password_min'));
       return;
     }
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match.');
+      setError(t('sign_up.password_mismatch'));
       return;
     }
 
@@ -56,119 +59,137 @@ export default function RegisterPage() {
     try {
       await signUp(email.trim(), password, fullName.trim(), role);
     } catch (err) {
-      setError(err.message || 'Something went wrong. Please try again.');
+      setError(err.message || t('sign_up.generic_error'));
     } finally {
       setLoading(false);
     }
   }
 
+  const s = {
+    flex: { flex: 1, backgroundColor: c.sidebar },
+    container: { flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24, paddingVertical: 48 },
+    branding: { alignItems: 'center', marginBottom: 32 },
+    logo: { width: 56, height: 56, borderRadius: 14, backgroundColor: c['sidebar-active'], alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
+    logoText: { fontSize: 24, fontWeight: '800', color: c['destructive-foreground'] },
+    appName: { fontSize: 28, fontWeight: '700', color: c['sidebar-foreground'], letterSpacing: -0.5 },
+    aiHighlight: { color: c.accent },
+    headline: { fontSize: 26, fontWeight: '700', color: c['sidebar-foreground'], marginBottom: 4 },
+    subheading: { fontSize: 14, color: c.accent, marginBottom: 24 },
+    roleToggle: { flexDirection: 'row', gap: 8, padding: 4, borderRadius: 12, backgroundColor: c.card, borderWidth: 1, borderColor: c.border, marginBottom: 24 },
+    roleOption: { flex: 1, paddingVertical: 10, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+    roleOptionActive: { backgroundColor: c.primary },
+    roleText: { fontSize: 14, fontWeight: '500', color: c['muted-foreground'] },
+    roleTextActive: { color: c['destructive-foreground'], fontWeight: '600' },
+    form: { gap: 16 },
+    errorContainer: { backgroundColor: `${c.destructive}1a`, borderWidth: 1, borderColor: `${c.destructive}33`, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10 },
+    errorText: { fontSize: 13, color: c.destructive },
+    button: { height: 48, backgroundColor: c.primary, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginTop: 4 },
+    buttonDisabled: { opacity: 0.6 },
+    buttonText: { color: c['destructive-foreground'], fontSize: 15, fontWeight: '600' },
+    linkContainer: { alignItems: 'center', marginTop: 8, paddingVertical: 12 },
+    linkText: { fontSize: 13, color: c['muted-foreground'] },
+    linkHighlight: { color: c.accent, fontWeight: '600' },
+  };
+
   return (
     <KeyboardAvoidingView
-      style={styles.flex}
+      style={s.flex}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
-        contentContainerStyle={styles.container}
+        contentContainerStyle={s.container}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={styles.branding}>
-          <View style={styles.logo}>
-            <Text style={styles.logoText}>H</Text>
+        <View style={s.branding}>
+          <View style={s.logo}>
+            <Text style={s.logoText}>H</Text>
           </View>
-          <Text style={styles.appName}>
-            HireReady<Text style={styles.aiHighlight}>AI</Text>
+          <Text style={s.appName}>
+            HireReady<Text style={s.aiHighlight}>AI</Text>
           </Text>
         </View>
 
-        <Text style={styles.headline}>Create account</Text>
-        <Text style={styles.subheading}>Fill in your details to get started</Text>
+        <Text style={s.headline}>{t('sign_up.title')}</Text>
+        <Text style={s.subheading}>{t('sign_up.subtitle')}</Text>
 
-        <View style={styles.roleToggle}>
-          {ROLES.map(({ label, value }) => (
+        <View style={s.roleToggle}>
+          {ROLES.map(({ labelKey, value }) => (
             <TouchableOpacity
               key={value}
-              style={[
-                styles.roleOption,
-                role === value && styles.roleOptionActive,
-              ]}
+              style={[s.roleOption, role === value && s.roleOptionActive]}
               onPress={() => setRole(value)}
               activeOpacity={0.7}
             >
-              <Text
-                style={[
-                  styles.roleText,
-                  role === value && styles.roleTextActive,
-                ]}
-              >
-                {label}
+              <Text style={[s.roleText, role === value && s.roleTextActive]}>
+                {t(labelKey)}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
 
-        <View style={styles.form}>
+        <View style={s.form}>
           <FormField
-            label="Full name"
+            label={t('sign_up.full_name')}
             type="text"
-            placeholder="Your full name"
+            placeholder={t('sign_up.name_placeholder')}
             value={fullName}
             onChangeText={setFullName}
             required
           />
 
           <FormField
-            label="Email"
+            label={t('sign_up.email')}
             type="email"
-            placeholder="you@gmail.com"
+            placeholder={t('sign_up.email_placeholder')}
             value={email}
             onChangeText={setEmail}
             required
           />
 
           <FormField
-            label="Password"
+            label={t('sign_up.password')}
             type="password"
-            placeholder="Min. 8 characters"
+            placeholder={t('sign_up.password_placeholder')}
             value={password}
             onChangeText={setPassword}
             required
           />
 
           <FormField
-            label="Confirm password"
+            label={t('sign_up.confirm_password')}
             type="password"
-            placeholder="Repeat your password"
+            placeholder={t('sign_up.confirm_placeholder')}
             value={confirmPassword}
             onChangeText={setConfirmPassword}
             required
           />
 
           {error && (
-            <View style={styles.errorContainer}>
-              <Text style={styles.errorText}>{error}</Text>
+            <View style={s.errorContainer}>
+              <Text style={s.errorText}>{error}</Text>
             </View>
           )}
 
           <TouchableOpacity
-            style={[styles.button, loading && styles.buttonDisabled]}
+            style={[s.button, loading && s.buttonDisabled]}
             onPress={handleSignUp}
             disabled={loading}
             activeOpacity={0.8}
           >
             {loading ? (
-              <ActivityIndicator color={colors.white} size="small" />
+              <ActivityIndicator color={c['destructive-foreground']} size="small" />
             ) : (
-              <Text style={styles.buttonText}>Create Account</Text>
+              <Text style={s.buttonText}>{t('sign_up.create_account')}</Text>
             )}
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => navigation.navigate('Login')}
-            style={styles.linkContainer}
+            style={s.linkContainer}
           >
-            <Text style={styles.linkText}>
-              Already have an account?{' '}
-              <Text style={styles.linkHighlight}>Sign in</Text>
+            <Text style={s.linkText}>
+              {t('sign_up.has_account')}{' '}
+              <Text style={s.linkHighlight}>{t('sign_up.sign_in')}</Text>
             </Text>
           </TouchableOpacity>
         </View>
@@ -176,137 +197,3 @@ export default function RegisterPage() {
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  flex: {
-    flex: 1,
-    backgroundColor: colors.darkAmethyst[950],
-  },
-  container: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 48,
-  },
-  branding: {
-    alignItems: 'center',
-    marginBottom: 32,
-  },
-  logo: {
-    width: 56,
-    height: 56,
-    borderRadius: 14,
-    backgroundColor: colors.darkAmethyst[700],
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 12,
-  },
-  logoText: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: colors.white,
-  },
-  appName: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.white,
-    letterSpacing: -0.5,
-  },
-  aiHighlight: {
-    color: colors.darkAmethyst[300],
-  },
-  headline: {
-    fontSize: 26,
-    fontWeight: '700',
-    color: colors.white,
-    marginBottom: 4,
-  },
-  subheading: {
-    fontSize: 14,
-    color: colors.darkAmethyst[300],
-    marginBottom: 24,
-  },
-  roleToggle: {
-    flexDirection: 'row',
-    gap: 8,
-    padding: 4,
-    borderRadius: 12,
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.darkAmethyst[100],
-    marginBottom: 24,
-  },
-  roleOption: {
-    flex: 1,
-    paddingVertical: 10,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  roleOptionActive: {
-    backgroundColor: colors.darkAmethyst[600],
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  roleText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.darkAmethyst[400],
-  },
-  roleTextActive: {
-    color: colors.white,
-    fontWeight: '600',
-  },
-  form: {
-    gap: 16,
-  },
-  errorContainer: {
-    backgroundColor: colors.red[50],
-    borderWidth: 1,
-    borderColor: colors.red[200],
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-  },
-  errorText: {
-    fontSize: 13,
-    color: colors.red[600],
-  },
-  button: {
-    height: 48,
-    backgroundColor: colors.darkAmethyst[600],
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: 'rgba(132, 0, 255, 0.2)',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 12,
-    elevation: 4,
-    marginTop: 4,
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  buttonText: {
-    color: colors.white,
-    fontSize: 15,
-    fontWeight: '600',
-  },
-  linkContainer: {
-    alignItems: 'center',
-    marginTop: 8,
-    paddingVertical: 12,
-  },
-  linkText: {
-    fontSize: 13,
-    color: colors.darkAmethyst[400],
-  },
-  linkHighlight: {
-    color: colors.darkAmethyst[600],
-    fontWeight: '600',
-  },
-});

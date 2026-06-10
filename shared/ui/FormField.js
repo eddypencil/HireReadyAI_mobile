@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '../../src/theme';
+import { useTheme } from '../context/ThemeContext';
+import { spacing, borderRadius, fontSize, fontWeight } from '../../src/theme';
 
 export default function FormField({
   label,
@@ -15,6 +16,8 @@ export default function FormField({
   error,
   ...props
 }) {
+  const { theme } = useTheme();
+  const c = theme.colors;
   const [showPassword, setShowPassword] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const isPassword = type === 'password';
@@ -24,7 +27,7 @@ export default function FormField({
   return (
     <View style={styles.container}>
       <View style={styles.labelRow}>
-        <Text style={styles.label}>
+        <Text style={[styles.label, { color: c.foreground }]}>
           {label}{required ? ' *' : ''}
         </Text>
         {hint}
@@ -34,16 +37,21 @@ export default function FormField({
         <TextInput
           secureTextEntry={isPassword && !showPassword}
           placeholder={placeholder}
-          placeholderTextColor={colors.darkAmethyst[300]}
+          placeholderTextColor={`${c['muted-foreground']}99`}
           value={value}
           onChangeText={handleChangeText}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           style={[
             styles.input,
-            isFocused && styles.inputFocused,
+            {
+              color: c.foreground,
+              backgroundColor: c.background,
+              borderColor: error ? c.destructive : isFocused ? c.ring : c.input,
+            },
+            isFocused && { borderColor: c.ring },
             isPassword && styles.inputWithToggle,
-            error ? styles.inputError : null,
+            error ? { borderColor: c.destructive } : null,
           ]}
           {...props}
         />
@@ -57,14 +65,14 @@ export default function FormField({
             <Ionicons
               name={showPassword ? 'eye-off' : 'eye'}
               size={20}
-              color={colors.darkAmethyst[500]}
+              color={c['muted-foreground']}
             />
           </TouchableOpacity>
         )}
       </View>
 
       {error && (
-        <Text style={styles.error}>{error}</Text>
+        <Text style={[styles.error, { color: c.destructive }]}>{error}</Text>
       )}
     </View>
   );
@@ -72,7 +80,7 @@ export default function FormField({
 
 const styles = StyleSheet.create({
   container: {
-    gap: 6,
+    gap: spacing[1.5],
   },
   labelRow: {
     flexDirection: 'row',
@@ -80,10 +88,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   label: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: colors.darkAmethyst[500],
-    letterSpacing: 0.5,
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.medium,
   },
   inputWrapper: {
     position: 'relative',
@@ -91,28 +97,14 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     height: 44,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    fontSize: 14,
-    color: colors.darkAmethyst[900],
-    backgroundColor: colors.white,
+    borderRadius: borderRadius.lg,
+    paddingHorizontal: spacing[4],
+    fontSize: fontSize.sm,
+    backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: colors.darkAmethyst[100],
-    outlineStyle: 'none',
-  },
-  inputFocused: {
-    borderColor: '#8400ff',
-    shadowColor: 'rgba(132, 0, 255, 0.08)',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1,
-    shadowRadius: 6,
-    elevation: 3,
   },
   inputWithToggle: {
     paddingRight: 48,
-  },
-  inputError: {
-    borderColor: colors.red[400],
   },
   toggleButton: {
     position: 'absolute',
@@ -126,7 +118,6 @@ const styles = StyleSheet.create({
     borderWidth: 0,
   },
   error: {
-    fontSize: 12,
-    color: colors.red[500],
+    fontSize: fontSize.xs,
   },
 });

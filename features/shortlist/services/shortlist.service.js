@@ -14,33 +14,26 @@ export const fetchShortlistForJob = async (jobId) => {
         id,
         rank,
         tags,
-        applications (
+        applications!inner (
           id,
+          job_id,
+          answers,
           composite_score,
           ai_rationale,
           ai_confidence,
           is_rejected,
           rejection_reason,
           applied_at,
-          profiles (
+          profiles!inner (
             id,
             full_name,
             headline,
             role
           ),
-          shortlist_votes (
-            id,
-            vote,
-            voter_id,
-            profiles (
-              full_name,
-              headline,
-              role
-            )
-          ),
           application_stages (
             id,
             score,
+            status,
             recruitment_stages ( name, stage_type )
           )
         )
@@ -50,13 +43,35 @@ export const fetchShortlistForJob = async (jobId) => {
 
     if (error) {
       console.error("Supabase Error fetching shortlist:", error);
+      return generateDummyShortlist();
     }
 
-    if (data && data.length > 0) {
-      return data;
+    if (!data || data.length === 0) {
+      return data || [];
     }
 
-    return generateDummyShortlist();
+    const appIds = data.map(e => e.applications.id);
+    const { data: votes } = await supabase
+      .from("shortlist_votes")
+      .select(`
+        id, application_id, vote, voter_id,
+        profiles!inner ( full_name, headline, role )
+      `)
+      .in("application_id", appIds);
+
+    const votesByApp = (votes || []).reduce((map, v) => {
+      if (!map[v.application_id]) map[v.application_id] = [];
+      map[v.application_id].push(v);
+      return map;
+    }, {});
+
+    return data.map(entry => ({
+      ...entry,
+      applications: {
+        ...entry.applications,
+        shortlist_votes: votesByApp[entry.applications.id] || [],
+      },
+    }));
   } catch (err) {
     console.error("Error in fetchShortlistForJob:", err);
     return generateDummyShortlist();
@@ -65,10 +80,8 @@ export const fetchShortlistForJob = async (jobId) => {
 
 /**
  * Cast or update a vote for an application.
- * Attempts to upsert — falls back to insert if no unique constraint.
  */
 export const castVote = async (applicationId, voterId, vote) => {
-  // Try to find existing vote first
   const { data: existing } = await supabase
     .from("shortlist_votes")
     .select("id")
@@ -92,12 +105,19 @@ export const castVote = async (applicationId, voterId, vote) => {
 
 /**
  * Mark an application as rejected with an optional reason.
- * The reason can be pre-filled from ai_rationale on the client.
  */
 export const rejectApplication = async (applicationId, reason) => {
   const { error } = await supabase
     .from("applications")
     .update({ is_rejected: true, rejection_reason: reason })
+    .eq("id", applicationId);
+  if (error) throw error;
+};
+
+export const unrejectApplication = async (applicationId) => {
+  const { error } = await supabase
+    .from("applications")
+    .update({ is_rejected: false, rejection_reason: null })
     .eq("id", applicationId);
   if (error) throw error;
 };
@@ -114,7 +134,7 @@ export const advanceToOffer = async (applicationId, offerStageId) => {
 };
 
 /**
- * Fetch team notes for a specific application (excludes HR-only notes for applicant view).
+ * Fetch team notes for a specific application.
  */
 export const fetchNotesForApplication = async (applicationId) => {
   const { data, error } = await supabase
@@ -161,7 +181,7 @@ export const postNote = async (applicationId, authorId, body, visibleToTeam = tr
 };
 
 // ---------------------------------------------------------------------------
-// Dummy data — mirrors the exact shape of the Supabase query response
+// Dummy data fallback
 // ---------------------------------------------------------------------------
 const generateDummyShortlist = () => [
   {
@@ -170,6 +190,7 @@ const generateDummyShortlist = () => [
     tags: ["Strong Fit", "Leaning hire"],
     applications: {
       id: "app-1",
+      job_id: "job-1",
       composite_score: 86,
       ai_rationale:
         "Candidate demonstrates strong frontend engineering skills, ships polished UI work, and meets most job requirements. System-design depth is the main gap to probe.",
@@ -177,7 +198,7 @@ const generateDummyShortlist = () => [
       is_rejected: false,
       rejection_reason: null,
       applied_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-      profiles: { id: "prof-1", full_name: "Priya Natarajan", headline: "Senior Frontend Engineer", role: "recruiter" },
+      profiles: { id: "prof-1", full_name: "Priya Natarajan", headline: "Senior Frontend Engineer", role: "recruiter", email: "priya.natarajan@example.com" },
       shortlist_votes: [
         { id: "v1", vote: "up",      voter_id: "voter-1", profiles: { full_name: "Sarah Klein",   headline: "Hiring Manager",     role: "recruiter" } },
         { id: "v2", vote: "up",      voter_id: "voter-2", profiles: { full_name: "Marcus Idowu",  headline: "Engineering Lead",   role: "recruiter" } },
@@ -185,7 +206,8 @@ const generateDummyShortlist = () => [
         { id: "v4", vote: "up",      voter_id: "voter-5", profiles: { full_name: "Priya Nair",    headline: "Engineering Manager",role: "recruiter" } },
       ],
       application_stages: [
-        { id: "as-1", score: 88, recruitment_stages: { name: "CV Review", stage_type: "cv_review" } },
+        { id: "as-1", score: 88, status: "completed", recruitment_stages: { name: "CV Review", stage_type: "cv_review" } },
+        { id: "as-offer", score: null, status: "in_progress", recruitment_stages: { name: "Offer", stage_type: "offer" } },
       ],
     },
   },
@@ -202,7 +224,7 @@ const generateDummyShortlist = () => [
       is_rejected: false,
       rejection_reason: null,
       applied_at: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
-      profiles: { id: "prof-2", full_name: "Marcus Reyes", headline: "Full Stack Developer", role: "recruiter" },
+      profiles: { id: "prof-2", full_name: "Marcus Reyes", headline: "Full Stack Developer", role: "recruiter", email: "marcus.reyes@example.com" },
       shortlist_votes: [
         { id: "v5", vote: "up",      voter_id: "voter-1", profiles: { full_name: "Sarah Klein",  headline: "Hiring Manager",   role: "recruiter" } },
         { id: "v6", vote: "up",      voter_id: "voter-2", profiles: { full_name: "Marcus Idowu", headline: "Engineering Lead", role: "recruiter" } },
@@ -226,7 +248,7 @@ const generateDummyShortlist = () => [
       is_rejected: false,
       rejection_reason: null,
       applied_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-      profiles: { id: "prof-3", full_name: "Sofia Almeida", headline: "UI/UX Engineer", role: "recruiter" },
+      profiles: { id: "prof-3", full_name: "Sofia Almeida", headline: "UI/UX Engineer", role: "recruiter", email: "sofia.almeida@example.com" },
       shortlist_votes: [
         { id: "v8",  vote: "up",      voter_id: "voter-1", profiles: { full_name: "Sarah Klein",  headline: "Hiring Manager",   role: "recruiter" } },
         { id: "v9",  vote: "up",      voter_id: "voter-2", profiles: { full_name: "Marcus Idowu", headline: "Engineering Lead", role: "recruiter" } },
@@ -250,7 +272,7 @@ const generateDummyShortlist = () => [
       is_rejected: false,
       rejection_reason: null,
       applied_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      profiles: { id: "prof-4", full_name: "Daniel Park", headline: "Staff Engineer", role: "recruiter" },
+      profiles: { id: "prof-4", full_name: "Daniel Park", headline: "Staff Engineer", role: "recruiter", email: "daniel.park@example.com" },
       shortlist_votes: [
         { id: "v11", vote: "up",     voter_id: "voter-1", profiles: { full_name: "Sarah Klein",  headline: "Hiring Manager",   role: "recruiter" } },
         { id: "v12", vote: "up",     voter_id: "voter-2", profiles: { full_name: "Marcus Idowu", headline: "Engineering Lead", role: "recruiter" } },
@@ -273,7 +295,7 @@ const generateDummyShortlist = () => [
       is_rejected: false,
       rejection_reason: null,
       applied_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-      profiles: { id: "prof-5", full_name: "Liam O'Connor", headline: "Frontend Developer", role: "recruiter" },
+      profiles: { id: "prof-5", full_name: "Liam O'Connor", headline: "Frontend Developer", role: "recruiter", email: "liam.oconnor@example.com" },
       shortlist_votes: [
         { id: "v13", vote: "up",      voter_id: "voter-1", profiles: { full_name: "Sarah Klein",  headline: "Hiring Manager",   role: "recruiter" } },
         { id: "v14", vote: "up",      voter_id: "voter-2", profiles: { full_name: "Marcus Idowu", headline: "Engineering Lead", role: "recruiter" } },
@@ -297,7 +319,7 @@ const generateDummyShortlist = () => [
       is_rejected: false,
       rejection_reason: null,
       applied_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-      profiles: { id: "prof-6", full_name: "Hana Saito", headline: "Design Engineer", role: "recruiter" },
+      profiles: { id: "prof-6", full_name: "Hana Saito", headline: "Design Engineer", role: "recruiter", email: "hana.saito@example.com" },
       shortlist_votes: [
         { id: "v16", vote: "up",   voter_id: "voter-1", profiles: { full_name: "Sarah Klein",  headline: "Hiring Manager",   role: "recruiter" } },
         { id: "v17", vote: "down", voter_id: "voter-2", profiles: { full_name: "Marcus Idowu", headline: "Engineering Lead", role: "recruiter" } },

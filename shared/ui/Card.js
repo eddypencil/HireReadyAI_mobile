@@ -1,33 +1,46 @@
 import { View, StyleSheet } from 'react-native';
-import { colors } from '../../src/theme';
+import { useTheme } from '../context/ThemeContext';
+import { spacing, borderRadius, shadow } from '../../src/theme';
 
-export function Card({ children, style }) {
+export function Card({ children, style, variant = 'default', onPress }) {
+  const { theme } = useTheme();
+  const c = theme.colors;
+
+  const variantCardStyle = variant === 'stat'
+    ? { padding: spacing[5], ...shadow.xs }
+    : variant === 'empty'
+    ? { padding: spacing[8], alignItems: 'center' }
+    : { padding: spacing[4], ...shadow.sm };
+
+  const Container = onPress ? require('react-native').TouchableOpacity : View;
+
   return (
-    <View style={[styles.card, style]}>
+    <Container
+      onPress={onPress}
+      activeOpacity={onPress ? 0.7 : undefined}
+      style={[
+        styles.card,
+        {
+          backgroundColor: c.card,
+          borderColor: c.border,
+        },
+        variantCardStyle,
+        style,
+      ]}
+    >
       {children}
-    </View>
+    </Container>
   );
 }
 
 export function CardContent({ children, style }) {
-  return (
-    <View style={[styles.content, style]}>
-      {children}
-    </View>
-  );
+  return <View style={[styles.content, style]}>{children}</View>;
 }
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 8,
+    borderRadius: borderRadius.xl,
     borderWidth: 1,
-    borderColor: colors.gray[200],
-    backgroundColor: colors.white,
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 3,
-    elevation: 2,
   },
   content: {},
 });
