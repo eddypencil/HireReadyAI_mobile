@@ -50,6 +50,9 @@ async function deleteCertificateImage(url) {
 }
 
 function Field({ label, value, onChangeText, placeholder, optional, keyboardType }) {
+  const { theme } = useTheme();
+  const c = theme.colors;
+  const styles = createStyles(c);
   return (
     <View style={styles.fieldGroup}>
       <Text style={styles.label}>
@@ -86,7 +89,6 @@ export default function EditCertificatesScreen() {
     organization: item?.organization || '',
     field:        item?.field        || '',
     date:         item?.date         || '',
-    url:          item?.url          || '',
   });
 
   const set = k => v => setForm(p => ({ ...p, [k]: v }));
@@ -145,7 +147,6 @@ export default function EditCertificatesScreen() {
         organization: form.organization.trim(),
         field:        form.field.trim(),
         date:         form.date.trim(),
-        url:          form.url.trim(),
         image:        imageUrl || null,
       });
       if (isEdit) {
@@ -169,7 +170,6 @@ export default function EditCertificatesScreen() {
         <Field label="Issuing Organization" value={form.organization} onChangeText={set('organization')} placeholder="e.g. Amazon Web Services" optional />
         <Field label="Field / Subject" value={form.field} onChangeText={set('field')} placeholder="e.g. Cloud Computing" optional />
         <Field label="Date" value={form.date} onChangeText={set('date')} placeholder="e.g. 2024-03 or March 2024" optional />
-        <Field label="Certificate URL" value={form.url} onChangeText={set('url')} placeholder="https://credential.link..." optional keyboardType="url" />
 
         {/* Image section */}
         <View style={styles.divider} />

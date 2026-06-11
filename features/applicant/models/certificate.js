@@ -1,8 +1,7 @@
 export class Certificate {
-  constructor({ name, date, url, organization, field, image } = {}) {
+  constructor({ name, date, organization, field, image } = {}) {
     this.name = name;
     this.date = date;
-    this.url = url;
     this.organization = organization;
     this.field = field;
     this.image = image;
@@ -12,7 +11,6 @@ export class Certificate {
     return {
       name: this.name,
       date: this.date,
-      url: this.url,
       organization: this.organization,
       field: this.field,
       image: this.image,
@@ -24,7 +22,6 @@ export class Certificate {
     return new Certificate({
       name: data.name,
       date: data.date,
-      url: data.url,
       organization: data.organization,
       field: data.field,
       image: data.image,

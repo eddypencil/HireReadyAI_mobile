@@ -27,10 +27,10 @@ export default function PipelineBuilder({
   const { theme } = useTheme();
   const { t } = useTranslation();
   const c = theme.colors;
-  const styles = createStyles(c);
   const insets = useSafeAreaInsets();
   const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = useWindowDimensions();
   const BOTTOM_SHEET_HEIGHT = Math.min(SCREEN_HEIGHT * 0.75, 560);
+  const styles = createStyles(c, BOTTOM_SHEET_HEIGHT);
   const [selectedStageId, setSelectedStageId] = useState(null);
   const [libraryOpen, setLibraryOpen] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
@@ -191,7 +191,7 @@ export default function PipelineBuilder({
   );
 }
 
-function createStyles(c) {
+function createStyles(c, BOTTOM_SHEET_HEIGHT) {
   return StyleSheet.create({
     // Mobile
     mobileLayout: {

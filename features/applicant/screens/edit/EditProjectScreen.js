@@ -93,9 +93,6 @@ export default function EditProjectScreen() {
   });
 
   const [images, setImages] = useState(item?.images || []);
-  const [videoLinks, setVideoLinks] = useState(item?.videoLinks || []);
-  const [videoUrl, setVideoUrl] = useState('');
-  const [videoCaption, setVideoCaption] = useState('');
 
   const set = k => v => setForm(p => ({ ...p, [k]: v }));
 
@@ -139,23 +136,6 @@ export default function EditProjectScreen() {
     ]);
   };
 
-  const handleAddVideo = () => {
-    if (!videoUrl.trim()) return;
-    const isYoutube = videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be');
-    const isVimeo = videoUrl.includes('vimeo.com');
-    if (!isYoutube && !isVimeo) {
-      Alert.alert('Invalid URL', 'Please enter a valid YouTube or Vimeo link.');
-      return;
-    }
-    setVideoLinks(prev => [...prev, { url: videoUrl.trim(), caption: videoCaption.trim() }]);
-    setVideoUrl('');
-    setVideoCaption('');
-  };
-
-  const handleRemoveVideo = (index) => {
-    setVideoLinks(prev => prev.filter((_, i) => i !== index));
-  };
-
   const handleSave = async () => {
     if (!form.name.trim()) {
       Alert.alert('Required', 'Project name is required.');
@@ -174,7 +154,7 @@ export default function EditProjectScreen() {
         url:         form.url.trim(),
       });
 
-      const projectJson = { ...project.toJson(), videoLinks };
+      const projectJson = project.toJson();
 
       if (isEdit) {
         await updateProject(profileId, itemIndex, projectJson);
@@ -189,11 +169,6 @@ export default function EditProjectScreen() {
       setSaving(false);
     }
   };
-
-  function getYoutubeThumbnail(url) {
-    const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
-    return match ? `https://img.youtube.com/vi/${match[1]}/mqdefault.jpg` : null;
-  }
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
@@ -241,64 +216,6 @@ export default function EditProjectScreen() {
           </Text>
         </TouchableOpacity>
 
-        {/* Video links */}
-        <View style={styles.divider} />
-        <View style={styles.mediaSectionHeader}>
-          <Ionicons name="videocam-outline" size={18} color={c.accent} />
-          <View>
-            <Text style={styles.mediaSectionTitle}>Video Links</Text>
-            <Text style={styles.mediaSectionSubtitle}>Paste a YouTube or Vimeo link</Text>
-          </View>
-        </View>
-
-        {videoLinks.length > 0 && (
-          <View style={styles.videoList}>
-            {videoLinks.map((v, i) => {
-              const thumb = getYoutubeThumbnail(v.url);
-              return (
-                <View key={i} style={styles.videoItem}>
-                  {thumb
-                    ? <Image source={{ uri: thumb }} style={styles.videoThumb} resizeMode="cover" />
-                    : <View style={[styles.videoThumb, styles.videoThumbPlaceholder]}>
-                        <Ionicons name="logo-youtube" size={20} color="#ff0000" />
-                      </View>}
-                  <View style={styles.videoInfo}>
-                    <Text style={styles.videoUrl} numberOfLines={1}>{v.url}</Text>
-                    {v.caption ? <Text style={styles.videoCaption}>{v.caption}</Text> : null}
-                  </View>
-                  <TouchableOpacity onPress={() => handleRemoveVideo(i)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                    <Ionicons name="trash-outline" size={16} color="#ef4444" />
-                  </TouchableOpacity>
-                </View>
-              );
-            })}
-          </View>
-        )}
-
-        <View style={styles.videoInputGroup}>
-          <TextInput
-            style={styles.input}
-            value={videoUrl}
-            onChangeText={setVideoUrl}
-            placeholder="https://youtube.com/watch?v=..."
-            placeholderTextColor={c['muted-foreground']}
-            autoCapitalize="none"
-            autoCorrect={false}
-            keyboardType="url"
-          />
-          <TextInput
-            style={styles.input}
-            value={videoCaption}
-            onChangeText={setVideoCaption}
-            placeholder="Caption (optional)"
-            placeholderTextColor={c['muted-foreground']}
-          />
-          <TouchableOpacity style={styles.addVideoBtn} onPress={handleAddVideo} activeOpacity={0.75}>
-            <Ionicons name="add-circle-outline" size={16} color={c.white} />
-            <Text style={styles.addVideoBtnText}>Add Video Link</Text>
-          </TouchableOpacity>
-        </View>
-
         <TouchableOpacity
           style={[styles.saveBtn, saving && { opacity: 0.6 }]}
           onPress={handleSave} disabled={saving} activeOpacity={0.85}
@@ -341,24 +258,6 @@ function createStyles(c) {
     backgroundColor: `${c.accent}08`,
   },
   addImageBtnText: { fontSize: 14, color: c.accent, fontWeight: '600' },
-  videoList: { gap: 10 },
-  videoItem: {
-    flexDirection: 'row', alignItems: 'center', gap: 10,
-    backgroundColor: c.white, borderRadius: 12,
-    borderWidth: 1, borderColor: c.border, padding: 10,
-  },
-  videoThumb: { width: 60, height: 42, borderRadius: 8 },
-  videoThumbPlaceholder: { backgroundColor: '#111', alignItems: 'center', justifyContent: 'center' },
-  videoInfo: { flex: 1 },
-  videoUrl: { fontSize: 12, color: c.accent },
-  videoCaption: { fontSize: 11, color: c['muted-foreground'], marginTop: 2 },
-  videoInputGroup: { gap: 10 },
-  addVideoBtn: {
-    flexDirection: 'row', alignItems: 'center', gap: 6,
-    backgroundColor: c.accent, borderRadius: 10,
-    paddingVertical: 10, paddingHorizontal: 16, alignSelf: 'flex-start',
-  },
-  addVideoBtnText: { color: c.white, fontSize: 13, fontWeight: '600' },
   saveBtn: {
     backgroundColor: c.primary, borderRadius: 12, paddingVertical: 14,
     alignItems: 'center', marginTop: 4,

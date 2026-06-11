@@ -132,7 +132,7 @@ export default function JobsPage() {
   }
 
   return (
-    <View style={[s.screen, { paddingTop: insets.top }]}>
+    <View style={[s.screen]}>
       <FlatList
         data={filteredJobs}
         keyExtractor={item => item.id}

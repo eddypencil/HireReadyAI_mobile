@@ -41,6 +41,7 @@ const QUESTION_TYPES = [
 function TypePickerModal({ visible, selected, onSelect, onClose }) {
   const { theme } = useTheme();
   const c = theme.colors;
+  const styles = createStyles(c);
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <TouchableOpacity style={styles.typeOverlay} activeOpacity={1} onPress={onClose}>

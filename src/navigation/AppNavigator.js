@@ -291,9 +291,9 @@ function RootNavigator({ onboardingSeen }) {
   if (!session) {
     return (
       <RootStack.Navigator screenOptions={{ headerShown: false }}>
-        {!onboardingSeen && (
+        {/* {!onboardingSeen && (
           <RootStack.Screen name="Onboarding" component={OnboardingScreen} />
-        )}
+        )} */}
         <RootStack.Screen name="Auth" component={AuthNavigator} options={{ animation: 'fade_from_bottom'}} />
       </RootStack.Navigator>
     );
