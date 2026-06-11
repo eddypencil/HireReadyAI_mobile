@@ -16,6 +16,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useUser } from '../../features/auth/context/user.context';
 import { USER_ROLE } from '../constants/enums';
 import { spacing, borderRadius, fontSize, fontWeight } from '../../src/theme';
+import { useTranslation } from '../context/I18nContext';
 import LanguageSwitcher from '../i18n/LanguageSwitcher';
 
 const SIDEBAR_WIDTH = 280;
@@ -23,25 +24,26 @@ const SIDEBAR_WIDTH = 280;
 export default function AnimatedSidebar() {
   const { isOpen, close } = useSidebar();
   const { theme, toggleTheme, isDark } = useTheme();
+  const { language, t } = useTranslation();
   const c = theme.colors;
   const navigation = useNavigation();
   const { profile, signOutUser } = useUser();
   const isApplicant = profile?.role === USER_ROLE.applicant;
 
   const applicantLinks = [
-    { name: 'Jobs', label: 'Explore Jobs', icon: 'briefcase', screen: 'JobsTab' },
-    { name: 'MyApplications', label: 'My Applications', icon: 'document-text', screen: 'ApplicantHome' },
-    { name: 'Feedback', label: 'My Feedback', icon: 'bar-chart', screen: 'ApplicantFeedback' },
-    { name: 'Profile', label: 'My Profile', icon: 'person-circle-outline', screen: 'ApplicantProfile' },
+    { name: 'Jobs', label: 'nav.explore_jobs', icon: 'briefcase', screen: 'JobsTab' },
+    { name: 'MyApplications', label: 'nav.my_applications', icon: 'document-text', screen: 'ApplicantHome' },
+    { name: 'Feedback', label: 'nav.my_feedback', icon: 'bar-chart', screen: 'ApplicantFeedback' },
+    { name: 'Profile', label: 'nav.my_profile', icon: 'person-circle-outline', screen: 'ApplicantProfile' },
   ];
 
   const recruiterLinks = [
-    { name: 'Dashboard', label: 'Dashboard', icon: 'grid', screen: 'RecruiterHome' },
-    { name: 'CompanyProfile', label: 'Company Profile', icon: 'business', screen: 'CompanyProfile' },
-    { name: 'JobPostings', label: 'Job Postings', icon: 'briefcase', screen: 'JobPostings' },
-    { name: 'Shortlists', label: 'Shortlists', icon: 'heart', screen: 'Shortlists' },
-    { name: 'JDGenerator', label: 'JD Generator', icon: 'sparkles', screen: 'JDGenerator' },
-    { name: 'Pipeline', label: 'Pipeline', icon: 'git-branch', screen: 'Pipeline' },
+    { name: 'Dashboard', label: 'nav.dashboard', icon: 'grid', screen: 'RecruiterHome' },
+    { name: 'CompanyProfile', label: 'nav.company_profile', icon: 'business', screen: 'CompanyProfile' },
+    { name: 'JobPostings', label: 'nav.job_postings', icon: 'briefcase', screen: 'JobPostings' },
+    { name: 'Shortlists', label: 'nav.shortlists', icon: 'heart', screen: 'Shortlists' },
+    { name: 'JDGenerator', label: 'nav.jd_generator', icon: 'sparkles', screen: 'JDGenerator' },
+    { name: 'Pipeline', label: 'nav.pipeline', icon: 'git-branch', screen: 'Pipeline' },
   ];
 
   const links = isApplicant ? applicantLinks : recruiterLinks;
@@ -63,6 +65,10 @@ export default function AnimatedSidebar() {
       }),
     ]).start();
   }, [isOpen, slideAnim, fadeAnim]);
+
+  useEffect(() => {
+    close();
+  }, [language]);
 
   const screenExists = (navState, name) => {
     if (!navState) return false;
@@ -148,7 +154,7 @@ export default function AnimatedSidebar() {
                   style={styles.navIcon}
                 />
                 <Text style={[styles.navLabel, { color: `${c['destructive-foreground']}cc` }]}>
-                  {link.label}
+                  {t(link.label)}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -165,13 +171,13 @@ export default function AnimatedSidebar() {
               color={c['muted-foreground']}
             />
             <Text style={[styles.themeText, { color: c['muted-foreground'] }]}>
-              {isDark ? 'Light Mode' : 'Dark Mode'}
+              {t(isDark ? 'light_mode' : 'dark_mode')}
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity onPress={handleSignOut} style={[styles.logoutButton, { borderTopColor: `${c['destructive-foreground']}14` }]} activeOpacity={0.7}>
             <Ionicons name="log-out" size={18} color={c.destructive} />
-            <Text style={[styles.logoutText, { color: c.destructive }]}>Logout</Text>
+            <Text style={[styles.logoutText, { color: c.destructive }]}>{t('logout')}</Text>
           </TouchableOpacity>
         </SafeAreaView>
       </Animated.View>

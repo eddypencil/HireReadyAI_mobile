@@ -13,6 +13,7 @@ import FormField from '../../../shared/ui/FormField';
 import { signUp } from '../services/auth.service';
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../shared/context/I18nContext';
+import LanguageSwitcher from '../../../shared/i18n/LanguageSwitcher';
 import { USER_ROLE } from '../../../shared/constants/enums';
 
 const ROLES = [
@@ -89,111 +90,115 @@ export default function RegisterPage() {
     linkContainer: { alignItems: 'center', marginTop: 8, paddingVertical: 12 },
     linkText: { fontSize: 13, color: c['muted-foreground'] },
     linkHighlight: { color: c.accent, fontWeight: '600' },
+    languageSwitcher: { position: 'absolute', top: 42, end: 22, zIndex: 10 },
   };
 
   return (
-    <KeyboardAvoidingView
-      style={s.flex}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <ScrollView
-        contentContainerStyle={s.container}
-        keyboardShouldPersistTaps="handled"
+    <View style={{ flex: 1, position: 'relative' }}>
+      <KeyboardAvoidingView
+        style={s.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <View style={s.branding}>
-          <View style={s.logo}>
-            <Text style={s.logoText}>H</Text>
+        <ScrollView
+          contentContainerStyle={s.container}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={s.branding}>
+            <View style={s.logo}>
+              <Text style={s.logoText}>H</Text>
+            </View>
+            <Text style={s.appName}>
+              HireReady<Text style={s.aiHighlight}>AI</Text>
+            </Text>
           </View>
-          <Text style={s.appName}>
-            HireReady<Text style={s.aiHighlight}>AI</Text>
-          </Text>
-        </View>
 
-        <Text style={s.headline}>{t('sign_up.title')}</Text>
-        <Text style={s.subheading}>{t('sign_up.subtitle')}</Text>
+          <Text style={s.headline}>{t('sign_up.title')}</Text>
+          <Text style={s.subheading}>{t('sign_up.subtitle')}</Text>
 
-        <View style={s.roleToggle}>
-          {ROLES.map(({ labelKey, value }) => (
+          <View style={s.roleToggle}>
+            {ROLES.map(({ labelKey, value }) => (
+              <TouchableOpacity
+                key={value}
+                style={[s.roleOption, role === value && s.roleOptionActive]}
+                onPress={() => setRole(value)}
+                activeOpacity={0.7}
+              >
+                <Text style={[s.roleText, role === value && s.roleTextActive]}>
+                  {t(labelKey)}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          <View style={s.form}>
+            <FormField
+              label={t('sign_up.full_name')}
+              type="text"
+              placeholder={t('sign_up.name_placeholder')}
+              value={fullName}
+              onChangeText={setFullName}
+              required
+            />
+
+            <FormField
+              label={t('sign_up.email')}
+              type="email"
+              placeholder={t('sign_up.email_placeholder')}
+              value={email}
+              onChangeText={setEmail}
+              required
+            />
+
+            <FormField
+              label={t('sign_up.password')}
+              type="password"
+              placeholder={t('sign_up.password_placeholder')}
+              value={password}
+              onChangeText={setPassword}
+              required
+            />
+
+            <FormField
+              label={t('sign_up.confirm_password')}
+              type="password"
+              placeholder={t('sign_up.confirm_placeholder')}
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              required
+            />
+
+            {error && (
+              <View style={s.errorContainer}>
+                <Text style={s.errorText}>{error}</Text>
+              </View>
+            )}
+
             <TouchableOpacity
-              key={value}
-              style={[s.roleOption, role === value && s.roleOptionActive]}
-              onPress={() => setRole(value)}
-              activeOpacity={0.7}
+              style={[s.button, loading && s.buttonDisabled]}
+              onPress={handleSignUp}
+              disabled={loading}
+              activeOpacity={0.8}
             >
-              <Text style={[s.roleText, role === value && s.roleTextActive]}>
-                {t(labelKey)}
+              {loading ? (
+                <ActivityIndicator color={c['destructive-foreground']} size="small" />
+              ) : (
+                <Text style={s.buttonText}>{t('sign_up.create_account')}</Text>
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Login')}
+              style={s.linkContainer}
+            >
+              <Text style={s.linkText}>
+                {t('sign_up.has_account')}{' '}
+                <Text style={s.linkHighlight}>{t('sign_up.sign_in')}</Text>
               </Text>
             </TouchableOpacity>
-          ))}
-        </View>
-
-        <View style={s.form}>
-          <FormField
-            label={t('sign_up.full_name')}
-            type="text"
-            placeholder={t('sign_up.name_placeholder')}
-            value={fullName}
-            onChangeText={setFullName}
-            required
-          />
-
-          <FormField
-            label={t('sign_up.email')}
-            type="email"
-            placeholder={t('sign_up.email_placeholder')}
-            value={email}
-            onChangeText={setEmail}
-            required
-          />
-
-          <FormField
-            label={t('sign_up.password')}
-            type="password"
-            placeholder={t('sign_up.password_placeholder')}
-            value={password}
-            onChangeText={setPassword}
-            required
-          />
-
-          <FormField
-            label={t('sign_up.confirm_password')}
-            type="password"
-            placeholder={t('sign_up.confirm_placeholder')}
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            required
-          />
-
-          {error && (
-            <View style={s.errorContainer}>
-              <Text style={s.errorText}>{error}</Text>
-            </View>
-          )}
-
-          <TouchableOpacity
-            style={[s.button, loading && s.buttonDisabled]}
-            onPress={handleSignUp}
-            disabled={loading}
-            activeOpacity={0.8}
-          >
-            {loading ? (
-              <ActivityIndicator color={c['destructive-foreground']} size="small" />
-            ) : (
-              <Text style={s.buttonText}>{t('sign_up.create_account')}</Text>
-            )}
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => navigation.navigate('Login')}
-            style={s.linkContainer}
-          >
-            <Text style={s.linkText}>
-              {t('sign_up.has_account')}{' '}
-              <Text style={s.linkHighlight}>{t('sign_up.sign_in')}</Text>
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+      <LanguageSwitcher style={s.languageSwitcher} />
+    </View>
   );
 }

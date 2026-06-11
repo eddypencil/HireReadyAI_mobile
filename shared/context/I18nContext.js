@@ -4,6 +4,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import en from '../i18n/locales/en.json';
 import ar from '../i18n/locales/ar.json';
 
+I18nManager.allowRTL(true);
+I18nManager.swapLeftAndRightInRTL(false);
+
 const STORAGE_KEY = 'app_language';
 const locales = { en, ar };
 
@@ -34,7 +37,10 @@ export function I18nProvider({ children }) {
 
   useEffect(() => {
     AsyncStorage.getItem(STORAGE_KEY).then((stored) => {
-      if (stored && locales[stored]) setLanguageState(stored);
+      if (stored && locales[stored]) {
+        setLanguageState(stored);
+        I18nManager.forceRTL(stored === 'ar');
+      }
       setLoaded(true);
     });
   }, []);
