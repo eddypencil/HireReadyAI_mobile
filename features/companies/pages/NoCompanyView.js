@@ -19,13 +19,15 @@ import { fetchAllCompanies, createCompany } from "../services/companies.service"
 import { addMembership } from "../services/memberships.service";
 import { useUser } from "../../auth/context/user.context";
 import { MEMBERSHIP_PERMISSION } from "../../../shared/constants/enums";
+import { useSidebar } from "../../../shared/context/SidebarContext";
+import Snackbar from "../../../shared/ui/Snackbar";
 
 export default function NoCompanyView({ onCompanyJoined }) {
-  const { theme } = useTheme();
+  const { colors: c } = useTheme();
   const { t } = useTranslation();
-  const colors = theme.colors;
   const insets = useSafeAreaInsets();
   const { profile, signOutUser } = useUser();
+  const { toggle } = useSidebar();
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -47,7 +49,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
     twitter_url: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const styles = createStyles(colors);
+  const styles = createStyles(c);
 
   useEffect(() => {
     (async () => {
@@ -111,10 +113,25 @@ export default function NoCompanyView({ onCompanyJoined }) {
     }
   };
 
+  const handleSignOut = () => {
+    
+    signOutUser();
+  };
+
+  const renderHeader = () => (
+    <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
+      <TouchableOpacity onPress={toggle} style={styles.menuBtn}>
+        <Ionicons name="menu" size={22} color={c.white} />
+      </TouchableOpacity>
+      <Text style={styles.headerTitle}>Company Setup</Text>
+      <View style={{ width: 40 }} />
+    </View>
+  );
+
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="small" color={colors.primary} />
+        <ActivityIndicator size="small" color={c.primary} />
         <Text style={styles.loadingText}>{t("companies.loading_companies")}</Text>
       </View>
     );
@@ -212,7 +229,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
                 <Text style={styles.premiumBadgeText}>Coming Soon</Text>
               </View>
               <View style={styles.planIconWrap}>
-                <Text style={[styles.planIcon, { color: colors.amber[500] }]}>★</Text>
+                <Text style={[styles.planIcon, { color: c.amber[500] }]}>★</Text>
               </View>
               <Text style={styles.planName}>Premium</Text>
               <Text style={styles.planPrice}>$29</Text>
@@ -231,12 +248,21 @@ export default function NoCompanyView({ onCompanyJoined }) {
             </View>
           </View>
         </View>
-      )}
+        )}
+      {showingPricing && (
+        <View style={{ flex: 1, backgroundColor: c['surface-muted'] }}>
+          {renderHeader()}
+          <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+          {error && (
+            <View style={styles.errorBanner}>
+              <Text style={styles.errorText}>{error}</Text>
+            </View>
+          )}
 
-      {/* Create Company Form */}
-      {isCreating && selectedPlan === "free" && (
-        <View style={styles.formCard}>
-          <View style={styles.formHeader}>
+          {/* Create Company Form */}
+          {isCreating && selectedPlan === "free" && (
+            <View style={styles.formCard}>
+              <View style={styles.formHeader}>
             <TouchableOpacity onPress={() => { setIsCreating(false); setSelectedPlan(null); setShowingPricing(true); }}>
               <Text style={styles.formBackArrow}>{"<"}</Text>
             </TouchableOpacity>
@@ -249,7 +275,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
               value={newCompany.name}
               onChangeText={(t) => setNewCompany({ ...newCompany, name: t })}
               placeholder="Acme Corp"
-              placeholderTextColor={colors.darkAmethyst[300]}
+              placeholderTextColor={c['muted-foreground']}
             />
 
             <Text style={styles.label}>{t("companies.industry")}</Text>
@@ -258,7 +284,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
               value={newCompany.industry}
               onChangeText={(t) => setNewCompany({ ...newCompany, industry: t })}
               placeholder="e.g. Technology, Healthcare"
-              placeholderTextColor={colors.darkAmethyst[300]}
+              placeholderTextColor={c['muted-foreground']}
             />
 
             <View style={styles.row}>
@@ -269,7 +295,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
                   value={newCompany.size}
                   onChangeText={(t) => setNewCompany({ ...newCompany, size: t })}
                   placeholder="Employees"
-                  placeholderTextColor={colors.darkAmethyst[300]}
+                  placeholderTextColor={c['muted-foreground']}
                   keyboardType="numeric"
                 />
               </View>
@@ -280,7 +306,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
                   value={newCompany.location}
                   onChangeText={(t) => setNewCompany({ ...newCompany, location: t })}
                   placeholder="City, Country"
-                  placeholderTextColor={colors.darkAmethyst[300]}
+                  placeholderTextColor={c['muted-foreground']}
                 />
               </View>
             </View>
@@ -291,7 +317,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
               value={newCompany.founding_date}
               onChangeText={(t) => setNewCompany({ ...newCompany, founding_date: t })}
               placeholder="YYYY-MM-DD"
-              placeholderTextColor={colors.darkAmethyst[300]}
+              placeholderTextColor={c['muted-foreground']}
             />
 
             <Text style={styles.label}>About</Text>
@@ -300,7 +326,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
               value={newCompany.description}
               onChangeText={(t) => setNewCompany({ ...newCompany, description: t })}
               placeholder="Tell applicants about your company..."
-              placeholderTextColor={colors.darkAmethyst[300]}
+              placeholderTextColor={c['muted-foreground']}
               multiline
               numberOfLines={3}
               textAlignVertical="top"
@@ -314,7 +340,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
                   value={newCompany.culture}
                   onChangeText={(t) => setNewCompany({ ...newCompany, culture: t })}
                   placeholder="Company values, culture..."
-                  placeholderTextColor={colors.darkAmethyst[300]}
+                  placeholderTextColor={c['muted-foreground']}
                   multiline
                   numberOfLines={2}
                   textAlignVertical="top"
@@ -327,7 +353,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
                   value={newCompany.benefits}
                   onChangeText={(t) => setNewCompany({ ...newCompany, benefits: t })}
                   placeholder="Perks, benefits..."
-                  placeholderTextColor={colors.darkAmethyst[300]}
+                  placeholderTextColor={c['muted-foreground']}
                   multiline
                   numberOfLines={2}
                   textAlignVertical="top"
@@ -341,7 +367,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
               value={newCompany.website_url}
               onChangeText={(t) => setNewCompany({ ...newCompany, website_url: t })}
               placeholder="https://example.com"
-              placeholderTextColor={colors.darkAmethyst[300]}
+              placeholderTextColor={c['muted-foreground']}
               keyboardType="url"
             />
 
@@ -353,7 +379,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
                   value={newCompany.linkedin_url}
                   onChangeText={(t) => setNewCompany({ ...newCompany, linkedin_url: t })}
                   placeholder="LinkedIn URL"
-                  placeholderTextColor={colors.darkAmethyst[300]}
+                  placeholderTextColor={c['muted-foreground']}
                   keyboardType="url"
                 />
               </View>
@@ -364,7 +390,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
                   value={newCompany.twitter_url}
                   onChangeText={(t) => setNewCompany({ ...newCompany, twitter_url: t })}
                   placeholder="Twitter URL"
-                  placeholderTextColor={colors.darkAmethyst[300]}
+                  placeholderTextColor={c['muted-foreground']}
                   keyboardType="url"
                 />
               </View>
@@ -389,6 +415,9 @@ export default function NoCompanyView({ onCompanyJoined }) {
             </View>
           </ScrollView>
         </View>
+      )}
+        </ScrollView>
+      </View>
       )}
 
       {/* Main View */}
@@ -452,11 +481,28 @@ function createStyles(c) {
   return StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: c.darkAmethyst[50],
+      backgroundColor: c['surface-muted'],
     },
     content: {
       padding: 24,
       paddingBottom: 40,
+    },
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 16,
+      paddingBottom: 12,
+      backgroundColor: c.sidebar,
+    },
+    menuBtn: {
+      padding: 4,
+      marginRight: 12,
+    },
+    headerTitle: {
+      flex: 1,
+      fontSize: 17,
+      fontWeight: "600",
+      color: c['sidebar-foreground'],
     },
     headerBar: {
       flexDirection: "row",
@@ -534,7 +580,7 @@ function createStyles(c) {
       width: 64,
       height: 64,
       borderRadius: 16,
-      backgroundColor: c.darkAmethyst[100],
+      backgroundColor: c.border,
       alignItems: "center",
       justifyContent: "center",
       marginBottom: 16,
@@ -542,12 +588,12 @@ function createStyles(c) {
     heroIconText: {
       fontSize: 28,
       fontWeight: "700",
-      color: c.darkAmethyst[700],
+      color: c.foreground,
     },
     heroTitle: {
       fontSize: 26,
       fontWeight: "700",
-      color: c.darkAmethyst[950],
+      color: c.foreground,
       marginBottom: 8,
       textAlign: "center",
     },
@@ -561,7 +607,7 @@ function createStyles(c) {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: c.darkAmethyst[950],
+      backgroundColor: c.primary,
       paddingHorizontal: 24,
       paddingVertical: 12,
       borderRadius: 8,
@@ -607,7 +653,7 @@ function createStyles(c) {
       width: 44,
       height: 44,
       borderRadius: 8,
-      backgroundColor: c.darkAmethyst[100],
+      backgroundColor: c.border,
       alignItems: "center",
       justifyContent: "center",
       marginRight: 10,
@@ -615,7 +661,7 @@ function createStyles(c) {
     avatarLetter: {
       fontSize: 18,
       fontWeight: "700",
-      color: c.darkAmethyst[700],
+      color: c.foreground,
     },
     cardInfo: {
       flex: 1,
@@ -623,7 +669,7 @@ function createStyles(c) {
     companyName: {
       fontSize: 15,
       fontWeight: "600",
-      color: c.darkAmethyst[950],
+      color: c.foreground,
       marginBottom: 2,
     },
     companyIndustry: {
@@ -636,7 +682,7 @@ function createStyles(c) {
       marginBottom: 12,
     },
     joinBtn: {
-      backgroundColor: c.darkAmethyst[50],
+      backgroundColor: c['surface-muted'],
       paddingVertical: 10,
       borderRadius: 8,
       alignItems: "center",
@@ -645,7 +691,7 @@ function createStyles(c) {
       opacity: 0.5,
     },
     joinBtnText: {
-      color: c.darkAmethyst[700],
+      color: c.foreground,
       fontSize: 13,
       fontWeight: "500",
     },
@@ -675,8 +721,8 @@ function createStyles(c) {
       marginBottom: 12,
     },
     planCardPremium: {
-      borderColor: c.darkAmethyst[300],
-      backgroundColor: c.darkAmethyst[50],
+      borderColor: c.accent,
+      backgroundColor: c['surface-muted'],
       position: "relative",
       overflow: "hidden",
     },
@@ -684,7 +730,7 @@ function createStyles(c) {
       position: "absolute",
       top: 12,
       right: 12,
-      backgroundColor: c.darkAmethyst[600],
+      backgroundColor: c.primary,
       borderRadius: 12,
       paddingHorizontal: 10,
       paddingVertical: 3,
@@ -698,7 +744,7 @@ function createStyles(c) {
       width: 40,
       height: 40,
       borderRadius: 10,
-      backgroundColor: c.darkAmethyst[50],
+      backgroundColor: c['surface-muted'],
       alignItems: "center",
       justifyContent: "center",
       marginBottom: 12,
@@ -706,18 +752,18 @@ function createStyles(c) {
     planIcon: {
       fontSize: 20,
       fontWeight: "700",
-      color: c.darkAmethyst[600],
+      color: c.primary,
     },
     planName: {
       fontSize: 18,
       fontWeight: "700",
-      color: c.darkAmethyst[950],
+      color: c.foreground,
       marginBottom: 4,
     },
     planPrice: {
       fontSize: 28,
       fontWeight: "800",
-      color: c.darkAmethyst[950],
+      color: c.foreground,
     },
     planPeriod: {
       fontSize: 12,
@@ -744,7 +790,7 @@ function createStyles(c) {
       flex: 1,
     },
     selectPlanBtn: {
-      backgroundColor: c.darkAmethyst[950],
+      backgroundColor: c.primary,
       paddingVertical: 12,
       borderRadius: 8,
       alignItems: "center",
@@ -788,7 +834,7 @@ function createStyles(c) {
     formTitle: {
       fontSize: 18,
       fontWeight: "700",
-      color: c.darkAmethyst[950],
+      color: c.foreground,
     },
     formBody: {
       padding: 20,
@@ -807,7 +853,7 @@ function createStyles(c) {
       paddingHorizontal: 14,
       paddingVertical: 10,
       fontSize: 14,
-      color: c.darkAmethyst[700],
+      color: c.foreground,
       backgroundColor: c.white,
     },
     row: {
@@ -824,7 +870,7 @@ function createStyles(c) {
       paddingHorizontal: 14,
       paddingVertical: 10,
       fontSize: 14,
-      color: c.darkAmethyst[700],
+      color: c.foreground,
       backgroundColor: c.white,
       minHeight: 80,
       textAlignVertical: "top",
@@ -836,7 +882,7 @@ function createStyles(c) {
       paddingHorizontal: 14,
       paddingVertical: 10,
       fontSize: 14,
-      color: c.darkAmethyst[700],
+      color: c.foreground,
       backgroundColor: c.white,
       minHeight: 60,
       textAlignVertical: "top",
@@ -867,7 +913,7 @@ function createStyles(c) {
       paddingHorizontal: 20,
       paddingVertical: 10,
       borderRadius: 8,
-      backgroundColor: c.darkAmethyst[950],
+      backgroundColor: c.primary,
     },
     createBtnDisabled: {
       opacity: 0.5,

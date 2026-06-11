@@ -169,46 +169,53 @@ export const shadow = {
   },
 };
 
+const FALLBACK_COLOR = '#e5e7eb';
+
 export function createTheme(isDark = false) {
   const c = isDark ? darkColors : lightColors;
-  return {
-    colors: {
-      ...c,
-      white: '#ffffff',
-      black: '#000000',
-      gray: {
-        50: '#f9fafb', 100: '#f3f4f6', 200: '#e5e7eb',
-        300: '#d1d5db', 400: '#9ca3af', 500: '#6b7280',
-        600: '#4b5563', 700: '#374151', 800: '#1f2937', 900: '#111827',
-      },
-      emerald: {
-        50: '#ecfdf5', 100: '#d1fae5', 200: '#a7f3d0',
-        300: '#6ee7b7', 400: '#34d399', 500: '#10b981',
-        600: '#059669', 700: '#047857', 800: '#065f46', 900: '#064e3b',
-      },
-      red: {
-        50: '#fef2f2', 100: '#fee2e2', 200: '#fecaca',
-        300: '#fca5a5', 400: '#f87171', 500: '#ef4444',
-        600: '#dc2626', 700: '#b91c1c', 800: '#991b1b', 900: '#7f1d1d',
-      },
-      amber: {
-        50: '#fffbeb', 100: '#fef3c7', 200: '#fde68a',
-        300: '#fcd34d', 400: '#fbbf24', 500: '#f59e0b',
-        600: '#d97706', 700: '#b45309', 800: '#92400e', 900: '#78350f',
-      },
-      stage: { applied: '#89c2d9', screening: '#61a5c2', interview: '#2c7da0', assessment: '#2a6f97', final: '#01497c', hired: '#468faf' },
-      chart: ['#01497c', '#2a6f97', '#468faf', '#89c2d9', '#61a5c2'],
-      darkAmethyst: {
-        50: '#eef7fa', 100: '#cfe7f2', 200: '#b0d7ea',
-        300: '#89c2d9', 400: '#61a5c2', 500: '#468faf',
-        600: '#01497c', 700: '#013a63', 800: '#012a4a', 900: '#011e36', 950: '#001529',
-      },
-      mauveMagic: {
-        50: '#eef7fa', 100: '#cfe7f2', 200: '#b0d7ea',
-        300: '#89c2d9', 400: '#61a5c2', 500: '#468faf',
-        600: '#01497c', 700: '#013a63', 800: '#012a4a', 900: '#011e36', 950: '#001529',
-      },
+  const raw = {
+    ...c,
+    white: '#ffffff',
+    black: '#000000',
+    gray: {
+      50: '#f9fafb', 100: '#f3f4f6', 200: '#e5e7eb',
+      300: '#d1d5db', 400: '#9ca3af', 500: '#6b7280',
+      600: '#4b5563', 700: '#374151', 800: '#1f2937', 900: '#111827',
     },
+    emerald: {
+      50: '#ecfdf5', 100: '#d1fae5', 200: '#a7f3d0',
+      300: '#6ee7b7', 400: '#34d399', 500: '#10b981',
+      600: '#059669', 700: '#047857', 800: '#065f46', 900: '#064e3b',
+    },
+    red: {
+      50: '#fef2f2', 100: '#fee2e2', 200: '#fecaca',
+      300: '#fca5a5', 400: '#f87171', 500: '#ef4444',
+      600: '#dc2626', 700: '#b91c1c', 800: '#991b1b', 900: '#7f1d1d',
+    },
+    amber: {
+      50: '#fffbeb', 100: '#fef3c7', 200: '#fde68a',
+      300: '#fcd34d', 400: '#fbbf24', 500: '#f59e0b',
+      600: '#d97706', 700: '#b45309', 800: '#92400e', 900: '#78350f',
+    },
+    stage: { applied: '#89c2d9', screening: '#61a5c2', interview: '#2c7da0', assessment: '#2a6f97', final: '#01497c', hired: '#468faf' },
+    chart: ['#01497c', '#2a6f97', '#468faf', '#89c2d9', '#61a5c2'],
+    darkAmethyst: {
+      50: '#eef7fa', 100: '#cfe7f2', 200: '#b0d7ea',
+      300: '#89c2d9', 400: '#61a5c2', 500: '#468faf',
+      600: '#01497c', 700: '#013a63', 800: '#012a4a', 900: '#011e36', 950: '#001529',
+    },
+  };
+
+  const colors = new Proxy(raw, {
+    get(target, key) {
+      if (key in target) return target[key];
+      console.warn(`[theme] Missing color token: "${String(key)}" — using fallback`);
+      return FALLBACK_COLOR;
+    },
+  });
+
+  return {
+    colors,
     isDark,
     spacing,
     borderRadius,
@@ -329,38 +336,4 @@ export const commonStyles = StyleSheet.create({
   gap6: { gap: spacing[6] },
 });
 
-// Backward compatibility — legacy color palette used by feature components
-export const colors = {
-  primary: lightColors.primary,
-  primaryHover: lightColors['primary-hover'],
-  sidebarBg: lightColors.sidebar,
-  secondary: lightColors.accent,
-  accent: lightColors.accent,
-  background: lightColors.background,
-  surface: lightColors['surface-muted'],
-  surfaceHover: lightColors['surface-hover'],
-  border: lightColors.border,
-  foreground: lightColors.foreground,
-  mutedForeground: lightColors['muted-foreground'],
-  white: '#ffffff',
-  black: '#000000',
-  gray: {
-    50: '#f9fafb',
-    100: '#f3f4f6',
-    200: '#e5e7eb',
-    300: '#d1d5db',
-    400: '#9ca3af',
-    500: '#6b7280',
-    600: '#4b5563',
-    700: '#374151',
-    800: '#1f2937',
-    900: '#111827',
-  },
-  emerald: { 50: '#ecfdf5', 100: '#d1fae5', 200: '#a7f3d0', 300: '#6ee7b7', 400: '#34d399', 500: '#10b981', 600: '#059669', 700: '#047857', 800: '#065f46', 900: '#064e3b' },
-  red: { 50: '#fef2f2', 100: '#fee2e2', 200: '#fecaca', 300: '#fca5a5', 400: '#f87171', 500: '#ef4444', 600: '#dc2626', 700: '#b91c1c', 800: '#991b1b', 900: '#7f1d1d' },
-  amber: { 50: '#fffbeb', 100: '#fef3c7', 200: '#fde68a', 300: '#fcd34d', 400: '#fbbf24', 500: '#f59e0b', 600: '#d97706', 700: '#b45309', 800: '#92400e', 900: '#78350f' },
-  stage: { applied: '#89c2d9', screening: '#61a5c2', interview: '#2c7da0', assessment: '#2a6f97', final: '#01497c', hired: '#468faf' },
-  chart: ['#01497c', '#2a6f97', '#468faf', '#89c2d9', '#61a5c2'],
-  darkAmethyst: { 50: '#eef7fa', 100: '#cfe7f2', 200: '#b0d7ea', 300: '#89c2d9', 400: '#61a5c2', 500: '#468faf', 600: '#01497c', 700: '#013a63', 800: '#012a4a', 900: '#011e36', 950: '#001529' },
-  mauveMagic: { 50: '#eef7fa', 100: '#cfe7f2', 200: '#b0d7ea', 300: '#89c2d9', 400: '#61a5c2', 500: '#468faf', 600: '#01497c', 700: '#013a63', 800: '#012a4a', 900: '#011e36', 950: '#001529' },
-};
+

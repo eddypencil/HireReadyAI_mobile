@@ -30,6 +30,7 @@ export const fetchApplicationsByApplicantId = async (applicantId) => {
       application_stages (
         id,
         stage_id,
+        status,
         score,
         recruitment_stages (
           id,

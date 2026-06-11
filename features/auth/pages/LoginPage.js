@@ -105,6 +105,14 @@ export default function LoginPage() {
             required
           />
 
+          
+          {/* <TouchableOpacity
+            onPress={() => navigation.navigate('ForgotPassword')}
+            style={styles.forgotContainer}
+          >
+            <Text style={styles.forgotText}>Forgot password?</Text>
+          </TouchableOpacity> */}
+
           {error && (
             <View style={s.errorContainer}>
               <Text style={s.errorText}>{error}</Text>
@@ -138,3 +146,5 @@ export default function LoginPage() {
     </KeyboardAvoidingView>
   );
 }
+
+

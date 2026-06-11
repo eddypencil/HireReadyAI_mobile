@@ -6,6 +6,7 @@ import {
   ScrollView,
   ActivityIndicator,
   StyleSheet,
+  Modal,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../shared/context/ThemeContext";
@@ -17,7 +18,7 @@ import { useUser } from "../../auth/context/user.context";
 import { seedAnchorStages } from "../../recruiter/services/candidatesPipline.service";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-export default function JDGeneratorResultPage({ route }) {
+export default function JDGeneratorResultPage({ route, navigation }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const c = theme.colors;
@@ -35,6 +36,8 @@ export default function JDGeneratorResultPage({ route }) {
   const [publishing, setPublishing] = useState(false);
   const [publishError, setPublishError] = useState(null);
   const [published, setPublished] = useState(false);
+
+  const [showQuestionsPrompt, setShowQuestionsPrompt] = useState(false);
 
   useEffect(() => {
     generateJD();
@@ -66,7 +69,27 @@ export default function JDGeneratorResultPage({ route }) {
     }
   }
 
-  async function handlePublish() {
+  function handlePublishPress() {
+    setPublishError(null);
+    setShowQuestionsPrompt(true);
+  }
+
+  async function publishWithoutQuestions() {
+    setShowQuestionsPrompt(false);
+    await executePublish(null);
+  }
+
+  function goToQuestionsPage() {
+    setShowQuestionsPrompt(false);
+    navigation.navigate("ApplicationQuestions", {
+      jobParams: params,
+      aiResult,
+      companyId: company?.id,
+      profileId: profile?.id || null,
+    });
+  }
+
+  async function executePublish(questions) {
     if (!aiResult || !company?.id) return;
     setPublishing(true);
     setPublishError(null);
@@ -89,6 +112,23 @@ export default function JDGeneratorResultPage({ route }) {
 
       if (newJob?.id) {
         await seedAnchorStages(newJob.id);
+
+        if (questions && questions.length > 0) {
+          const questionRows = questions
+            .filter((q) => q.question.trim())
+            .map((q, i) => ({
+              job_id: newJob.id,
+              question: q.question.trim(),
+              type: q.type,
+              order_index: i,
+            }));
+          if (questionRows.length > 0) {
+            const { error: qError } = await supabase
+              .from("questions")
+              .insert(questionRows);
+            if (qError) throw new Error(`Failed to save questions: ${qError.message}`);
+          }
+        }
       }
 
       setPublished(true);
@@ -138,121 +178,160 @@ export default function JDGeneratorResultPage({ route }) {
   }
 
   return (
-    <ScrollView style={[styles.pageContainer, { paddingTop: insets.top }]} contentContainerStyle={styles.pageContent}>
-      <View style={styles.previewColumn}>
-        <View style={styles.previewContent}>
-          <View style={styles.aiBadge}>
-            <Ionicons name="sparkles" size={14} color={c['muted-foreground']} />
-            <Text style={styles.aiBadgeText}> {t("companies.ai_generated")}</Text>
-          </View>
-
-          <Text style={styles.previewTitle}>{params.title}</Text>
-
-          <View style={styles.previewMeta}>
-            {company?.name && (
-              <View style={styles.metaTag}>
-                <Text style={styles.metaText}>{company.name}</Text>
-              </View>
-            )}
-            {params.workLocation && (
-              <View style={styles.metaTag}>
-                <Text style={styles.metaText}>
-                  {params.workLocation.replace(/_/g, " ")}
-                </Text>
-              </View>
-            )}
-            {params.jobType && (
-              <View style={styles.metaTag}>
-                <Text style={styles.metaText}>
-                  {params.jobType.replace(/_/g, " ")}
-                </Text>
-              </View>
-            )}
-            {params.seniority && (
-              <View style={styles.metaTag}>
-                <Text style={styles.metaText}>
-                  {params.seniority}
-                </Text>
-              </View>
-            )}
-          </View>
-
-          <View style={styles.salaryDisplay}>
-            <Ionicons name="cash-outline" size={14} color={c['muted-foreground']} />
-            <Text style={styles.salaryDisplayText}>
-              {params.salaryMin && params.salaryMax
-                ? t("companies.salary_range_display", { min: Number(params.salaryMin).toLocaleString(), max: Number(params.salaryMax).toLocaleString() })
-                : t("companies.salary_confidential")}
-            </Text>
-          </View>
-
-          <View style={styles.divider} />
-
-          <View style={styles.previewSection}>
-            <Text style={styles.previewSectionTitle}>{t("companies.about_role")}</Text>
-            <Text style={styles.previewSectionBody}>
-              {aiResult?.description}
-            </Text>
-          </View>
-
-          {aiResult?.responsibilities?.length > 0 && (
-            <View style={styles.previewSection}>
-              <Text style={styles.previewSectionTitle}>{t("companies.what_youll_do")}</Text>
-              {aiResult.responsibilities.map((item, i) => (
-                <View key={i} style={styles.listRow}>
-                  <View style={styles.bullet} />
-                  <Text style={styles.listItem}>{item}</Text>
-                </View>
-              ))}
+    <>
+      <ScrollView style={[styles.pageContainer, { paddingTop: insets.top }]} contentContainerStyle={styles.pageContent}>
+        <View style={styles.previewColumn}>
+          <View style={styles.previewContent}>
+            <View style={styles.aiBadge}>
+              <Ionicons name="sparkles" size={14} color={c['muted-foreground']} />
+              <Text style={styles.aiBadgeText}> {t("companies.ai_generated")}</Text>
             </View>
-          )}
 
-          {aiResult?.requirements?.length > 0 && (
-            <View style={styles.previewSection}>
-              <Text style={styles.previewSectionTitle}>{t("companies.what_were_looking_for")}</Text>
-              {aiResult.requirements.map((item, i) => (
-                <View key={i} style={styles.listRow}>
-                  <View style={styles.bullet} />
-                  <Text style={styles.listItem}>{item}</Text>
+            <Text style={styles.previewTitle}>{params.title}</Text>
+
+            <View style={styles.previewMeta}>
+              {company?.name && (
+                <View style={styles.metaTag}>
+                  <Text style={styles.metaText}>{company.name}</Text>
                 </View>
-              ))}
+              )}
+              {params.workLocation && (
+                <View style={styles.metaTag}>
+                  <Text style={styles.metaText}>
+                    {params.workLocation.replace(/_/g, " ")}
+                  </Text>
+                </View>
+              )}
+              {params.jobType && (
+                <View style={styles.metaTag}>
+                  <Text style={styles.metaText}>
+                    {params.jobType.replace(/_/g, " ")}
+                  </Text>
+                </View>
+              )}
+              {params.seniority && (
+                <View style={styles.metaTag}>
+                  <Text style={styles.metaText}>
+                    {params.seniority}
+                  </Text>
+                </View>
+              )}
             </View>
-          )}
 
-          {aiResult?.skills?.length > 0 && (
+            <View style={styles.salaryDisplay}>
+              <Ionicons name="cash-outline" size={14} color={c['muted-foreground']} />
+              <Text style={styles.salaryDisplayText}>
+                {params.salaryMin && params.salaryMax
+                  ? t("companies.salary_range_display", { min: Number(params.salaryMin).toLocaleString(), max: Number(params.salaryMax).toLocaleString() })
+                  : t("companies.salary_confidential")}
+              </Text>
+            </View>
+
+            <View style={styles.divider} />
+
             <View style={styles.previewSection}>
-              <Text style={styles.previewSectionTitle}>{t("companies.skills_and_tools")}</Text>
-              <View style={styles.skillsGrid}>
-                {aiResult.skills.map((skill, i) => (
-                  <View key={i} style={styles.skillRow}>
-                    <View style={styles.skillBullet} />
-                    <Text style={styles.skillText}>{skill}</Text>
+              <Text style={styles.previewSectionTitle}>{t("companies.about_role")}</Text>
+              <Text style={styles.previewSectionBody}>
+                {aiResult?.description}
+              </Text>
+            </View>
+
+            {aiResult?.responsibilities?.length > 0 && (
+              <View style={styles.previewSection}>
+                <Text style={styles.previewSectionTitle}>{t("companies.what_youll_do")}</Text>
+                {aiResult.responsibilities.map((item, i) => (
+                  <View key={i} style={styles.listRow}>
+                    <View style={styles.bullet} />
+                    <Text style={styles.listItem}>{item}</Text>
                   </View>
                 ))}
               </View>
-            </View>
-          )}
-
-          {publishError && (
-            <View style={styles.errorBanner}>
-              <Text style={styles.errorBannerText}>{publishError}</Text>
-            </View>
-          )}
-
-          <TouchableOpacity
-            style={[styles.publishBtn, publishing && styles.publishBtnDisabled]}
-            onPress={handlePublish}
-            disabled={publishing}
-          >
-            {publishing ? (
-              <ActivityIndicator size="small" color={c['destructive-foreground']} />
-            ) : (
-              <Text style={styles.publishBtnText}>{t("companies.publish_jd")}</Text>
             )}
-          </TouchableOpacity>
+
+            {aiResult?.requirements?.length > 0 && (
+              <View style={styles.previewSection}>
+                <Text style={styles.previewSectionTitle}>{t("companies.what_were_looking_for")}</Text>
+                {aiResult.requirements.map((item, i) => (
+                  <View key={i} style={styles.listRow}>
+                    <View style={styles.bullet} />
+                    <Text style={styles.listItem}>{item}</Text>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            {aiResult?.skills?.length > 0 && (
+              <View style={styles.previewSection}>
+                <Text style={styles.previewSectionTitle}>{t("companies.skills_and_tools")}</Text>
+                <View style={styles.skillsGrid}>
+                  {aiResult.skills.map((skill, i) => (
+                    <View key={i} style={styles.skillRow}>
+                      <View style={styles.skillBullet} />
+                      <Text style={styles.skillText}>{skill}</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            )}
+
+            {publishError && (
+              <View style={styles.errorBanner}>
+                <Text style={styles.errorBannerText}>{publishError}</Text>
+              </View>
+            )}
+
+            <TouchableOpacity
+              style={[styles.publishBtn, publishing && styles.publishBtnDisabled]}
+              onPress={handlePublishPress}
+              disabled={publishing}
+            >
+              {publishing ? (
+                <ActivityIndicator size="small" color={c['destructive-foreground']} />
+              ) : (
+                <>
+                  <Ionicons name="arrow-up-circle-outline" size={18} color={c['destructive-foreground']} />
+                  <Text style={styles.publishBtnText}>{t("companies.publish_jd")}</Text>
+                </>
+              )}
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+
+      <Modal
+        visible={showQuestionsPrompt}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowQuestionsPrompt(false)}
+      >
+        <View style={styles.promptOverlay}>
+          <View style={styles.promptCard}>
+            <View style={styles.promptIconWrapper}>
+              <Ionicons name="help-circle-outline" size={32} color={c.primary} />
+            </View>
+            <Text style={styles.promptTitle}>{t("companies.add_screening_questions")}</Text>
+            <Text style={styles.promptBody}>{t("companies.add_screening_subtitle")}</Text>
+
+            <TouchableOpacity
+              style={styles.promptPrimaryBtn}
+              onPress={goToQuestionsPage}
+              activeOpacity={0.85}
+            >
+              <Ionicons name="add-circle-outline" size={18} color={c['destructive-foreground']} />
+              <Text style={styles.promptPrimaryBtnText}>{t("companies.add_questions")}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.promptSecondaryBtn}
+              onPress={publishWithoutQuestions}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.promptSecondaryBtnText}>{t("companies.skip_publish")}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </>
   );
 }
 
@@ -428,6 +507,8 @@ function createStyles(c) {
       borderRadius: 12,
       alignItems: "center",
       justifyContent: "center",
+      flexDirection: "row",
+      gap: 8,
     },
     publishBtnDisabled: {
       backgroundColor: c['muted-foreground'],
@@ -467,6 +548,75 @@ function createStyles(c) {
       color: c.foreground,
       textAlign: "center",
       lineHeight: 22,
+    },
+    promptOverlay: {
+      flex: 1,
+      backgroundColor: "rgba(0,0,0,0.45)",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 28,
+    },
+    promptCard: {
+      backgroundColor: c.card,
+      borderRadius: 20,
+      padding: 28,
+      width: "100%",
+      maxWidth: 360,
+      alignItems: "center",
+    },
+    promptIconWrapper: {
+      width: 64,
+      height: 64,
+      borderRadius: 32,
+      backgroundColor: c['surface-muted'],
+      borderWidth: 1,
+      borderColor: c.border,
+      alignItems: "center",
+      justifyContent: "center",
+      marginBottom: 16,
+    },
+    promptTitle: {
+      fontSize: 18,
+      fontWeight: "700",
+      color: c.foreground,
+      textAlign: "center",
+      marginBottom: 10,
+    },
+    promptBody: {
+      fontSize: 13,
+      color: c['muted-foreground'],
+      textAlign: "center",
+      lineHeight: 20,
+      marginBottom: 24,
+    },
+    promptPrimaryBtn: {
+      backgroundColor: c.primary,
+      borderRadius: 12,
+      paddingVertical: 14,
+      width: "100%",
+      alignItems: "center",
+      justifyContent: "center",
+      flexDirection: "row",
+      gap: 8,
+      marginBottom: 10,
+    },
+    promptPrimaryBtnText: {
+      color: c['destructive-foreground'],
+      fontSize: 15,
+      fontWeight: "600",
+    },
+    promptSecondaryBtn: {
+      borderWidth: 1,
+      borderColor: c.border,
+      borderRadius: 12,
+      paddingVertical: 13,
+      width: "100%",
+      alignItems: "center",
+    },
+    promptSecondaryBtnText: {
+      color: c['muted-foreground'],
+      fontSize: 14,
+      fontWeight: "500",
     },
   });
 }

@@ -1,12 +1,12 @@
-import { supabase } from "../../../shared/services/supabase";
+import { supabase } from '../../../shared/services/supabase';
 
 export async function getCandidateProfile(applicationId) {
   const { data, error } = await supabase
-    .from("applications")
+    .from('applications')
     .select(`
       *,
       profiles ( full_name, headline, phone, profile_pic ),
-      job_postings ( id, title, company_id ),
+      job_postings ( id, title, company_id, seniority_level, job_type ),
       application_stages (
         id,
         status,
@@ -18,7 +18,7 @@ export async function getCandidateProfile(applicationId) {
         application_stage_evaluations ( ai_score, confidence, recommendation, reasoning, strengths, weaknesses )
       )
     `)
-    .eq("id", applicationId)
+    .eq('id', applicationId)
     .single();
 
   return { data, error };
@@ -26,7 +26,7 @@ export async function getCandidateProfile(applicationId) {
 
 export async function getCandidateStageQuestions(applicationStageId) {
   const { data, error } = await supabase
-    .from("application_questions")
+    .from('application_questions')
     .select(`
       *,
       application_answers (
@@ -41,8 +41,8 @@ export async function getCandidateStageQuestions(applicationStageId) {
         created_at
       )
     `)
-    .eq("application_stage_id", applicationStageId)
-    .order("order_index", { ascending: true });
+    .eq('application_stage_id', applicationStageId)
+    .order('order_index', { ascending: true });
 
   return { data, error };
 }
@@ -51,15 +51,15 @@ export async function getJobScorePercentile(jobId, compositeScore) {
   if (!jobId || compositeScore == null) return { percentile: null, total: 0 };
 
   const { data, error } = await supabase
-    .from("applications")
-    .select("composite_score")
-    .eq("job_id", jobId)
-    .not("composite_score", "is", null);
+    .from('applications')
+    .select('composite_score')
+    .eq('job_id', jobId)
+    .not('composite_score', 'is', null);
 
   if (error) return { percentile: null, total: 0, error };
 
-  const scores = data.map(a => Number(a.composite_score)).filter(s => !isNaN(s));
-  const below = scores.filter(s => s <= Number(compositeScore)).length;
+  const scores = data.map((a) => Number(a.composite_score)).filter((s) => !isNaN(s));
+  const below = scores.filter((s) => s <= Number(compositeScore)).length;
   const percentile = Math.round((below / scores.length) * 100);
 
   return { percentile, total: scores.length, error: null };

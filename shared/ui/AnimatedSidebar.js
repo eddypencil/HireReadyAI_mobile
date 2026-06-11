@@ -31,6 +31,8 @@ export default function AnimatedSidebar() {
   const applicantLinks = [
     { name: 'Jobs', label: 'Explore Jobs', icon: 'briefcase', screen: 'JobsTab' },
     { name: 'MyApplications', label: 'My Applications', icon: 'document-text', screen: 'ApplicantHome' },
+    { name: 'Feedback', label: 'My Feedback', icon: 'bar-chart', screen: 'ApplicantFeedback' },
+    { name: 'Profile', label: 'My Profile', icon: 'person-circle-outline', screen: 'ApplicantProfile' },
   ];
 
   const recruiterLinks = [
@@ -76,7 +78,11 @@ export default function AnimatedSidebar() {
     if (!navigation) return;
     const rootState = navigation.getRootState();
     if (screenExists(rootState, screenName)) {
-      navigation.navigate(screenName);
+      if (screenName === 'ApplicantProfile') {
+        navigation.navigate('ApplicantProfile', { profileId: profile?.id, viewOnly: false });
+      } else {
+        navigation.navigate(screenName);
+      }
     } else {
       Alert.alert("Unavailable", "Join or create an organization first.");
     }

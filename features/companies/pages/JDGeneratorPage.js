@@ -5,10 +5,10 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  Modal,
-  FlatList,
   KeyboardAvoidingView,
   Platform,
+  Modal,
+  FlatList,
   StyleSheet,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -159,11 +159,11 @@ export default function JDGeneratorPage() {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    style={{ flex: 1 }}
+    behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-    <ScrollView style={[styles.pageContainer, { paddingTop: insets.top }]} contentContainerStyle={styles.pageContent}>
-      <Text style={styles.pageTitle}>{t("companies.generate_jd_title")}</Text>
+    <ScrollView style={styles.pageContainer} contentContainerStyle={styles.pageContent}>
+      <Text style={styles.pageTitle}>Job Description Generator</Text>
 
       <View style={styles.formCard}>
         <View style={styles.formFields}>
@@ -313,7 +313,7 @@ export default function JDGeneratorPage() {
         </View>
       </View>
     </ScrollView>
-    </KeyboardAvoidingView>
+  </KeyboardAvoidingView>
   );
 }
 

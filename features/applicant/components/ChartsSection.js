@@ -1,0 +1,306 @@
+// features/applicant/components/ChartsSection.js
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import Svg, { Circle, G, Path, Rect, Text as SvgText } from 'react-native-svg';
+import { colors } from '../../../src/theme';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const CHART_WIDTH = SCREEN_WIDTH - 64;
+
+// ── Color by label
+const LABEL_COLORS = {
+  'Hired':       '#22c55e',
+  'Offer':       '#22c55e',
+  'In Progress': '#468faf',
+  'Rejected':    '#ef4444',
+};
+const FALLBACK_COLORS = ['#2a6f97', '#89c2d9', '#61a5c2'];
+
+function getSliceColor(label, fallbackIndex) {
+  return LABEL_COLORS[label] || FALLBACK_COLORS[fallbackIndex % FALLBACK_COLORS.length];
+}
+
+// ── Build donut slices
+function buildDonutSlices(data, cx, cy, r) {
+  const total = data.reduce((s, d) => s + d.value, 0);
+  if (total === 0) return [];
+  let angle = -Math.PI / 2;
+  return data.map((item, i) => {
+    const slice = (item.value / total) * 2 * Math.PI;
+    const x1 = cx + r * Math.cos(angle);
+    const y1 = cy + r * Math.sin(angle);
+    const x2 = cx + r * Math.cos(angle + slice);
+    const y2 = cy + r * Math.sin(angle + slice);
+    const large = slice > Math.PI ? 1 : 0;
+    const path = `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} Z`;
+    const color = getSliceColor(item.label, i);
+    angle += slice;
+    return { path, color, label: item.label, value: item.value };
+  });
+}
+
+// ── Donut Chart — shows per-application status (not per-stage)
+function DonutChart({ applications }) {
+  const SIZE = Math.min(CHART_WIDTH * 0.55, 180);
+  const cx = SIZE / 2;
+  const cy = SIZE / 2;
+  const outerR = SIZE * 0.42;
+  const innerR = SIZE * 0.26;
+
+  // ── Count by application-level outcome
+  const statusMap = {};
+  (applications || []).forEach(app => {
+    let label;
+    if (app.is_rejected || app.current_stage === 'rejected') {
+      label = 'Rejected';
+    } else if (app.current_stage === 'hired') {
+      label = 'Hired';
+    } else if (app.current_stage === 'offer') {
+      label = 'Offer';
+    } else {
+      label = 'In Progress';
+    }
+    statusMap[label] = (statusMap[label] || 0) + 1;
+  });
+
+  const data = Object.entries(statusMap)
+    .filter(([, v]) => v > 0)
+    .map(([label, value]) => ({ label, value }));
+
+  const total = data.reduce((s, d) => s + d.value, 0);
+  const slices = data.length === 1
+    ? []
+    : buildDonutSlices(data, cx, cy, outerR);
+  const singleColor = data.length === 1 ? getSliceColor(data[0]?.label, 0) : null;
+
+  return (
+    <View style={styles.chartCard}>
+      <Text style={styles.chartTitle}>Application Status</Text>
+      <Text style={styles.chartSubtitle}>Overview of all your applications</Text>
+
+      {total === 0 ? (
+        <View style={styles.chartEmpty}>
+          <Text style={styles.chartEmptyText}>No applications yet</Text>
+        </View>
+      ) : (
+        <View style={styles.donutRow}>
+          <Svg width={SIZE} height={SIZE}>
+            <G>
+              {data.length === 1 ? (
+                <Circle cx={cx} cy={cy} r={outerR} fill={singleColor} />
+              ) : (
+                slices.map((s, i) => (
+                  <Path key={i} d={s.path} fill={s.color} />
+                ))
+              )}
+              <Circle cx={cx} cy={cy} r={innerR} fill={colors.white} />
+              <SvgText
+                x={cx} y={cy - 8}
+                textAnchor="middle"
+                fontSize={22} fontWeight="700"
+                fill={colors.foreground}
+              >
+                {total}
+              </SvgText>
+              <SvgText
+                x={cx} y={cy + 12}
+                textAnchor="middle"
+                fontSize={10}
+                fill={colors.mutedForeground}
+              >
+                applications
+              </SvgText>
+            </G>
+          </Svg>
+
+          <View style={styles.legendCol}>
+            {data.map((item, i) => (
+              <View key={i} style={styles.legendItem}>
+                <View style={[styles.legendDot, { backgroundColor: getSliceColor(item.label, i) }]} />
+                <Text style={styles.legendText}>
+                  {item.label}
+                  <Text style={styles.legendCount}> ({item.value})</Text>
+                </Text>
+              </View>
+            ))}
+          </View>
+        </View>
+      )}
+    </View>
+  );
+}
+
+// ── Bar Chart — full width
+function BarChart({ applications }) {
+  const SIZE_W = CHART_WIDTH;
+  const SIZE_H = 160;
+  const padLeft = 28;
+  const padBottom = 32;
+  const padTop = 12;
+  const padRight = 12;
+  const chartW = SIZE_W - padLeft - padRight;
+  const chartH = SIZE_H - padBottom - padTop;
+
+  const monthMap = {};
+  (applications || []).forEach(app => {
+    if (!app.applied_at) return;
+    const d = new Date(app.applied_at);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    const label = d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    if (!monthMap[key]) monthMap[key] = { label, count: 0 };
+    monthMap[key].count++;
+  });
+
+  const sorted = Object.entries(monthMap)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .slice(-6)
+    .map(([, v]) => v);
+
+  const maxVal = Math.max(...sorted.map(d => d.count), 1);
+  const barCount = sorted.length;
+  const barWidth = barCount > 0 ? Math.min((chartW / barCount) * 0.5, 36) : 24;
+  const gap = barCount > 1 ? (chartW - barWidth * barCount) / (barCount - 1) : 0;
+  const ticks = [0, Math.ceil(maxVal / 2), maxVal];
+
+  return (
+    <View style={styles.chartCard}>
+      <Text style={styles.chartTitle}>Applications Over Time</Text>
+      <Text style={styles.chartSubtitle}>Monthly submissions</Text>
+
+      {sorted.length === 0 ? (
+        <View style={styles.chartEmpty}>
+          <Text style={styles.chartEmptyText}>No data yet</Text>
+        </View>
+      ) : (
+        <Svg width={SIZE_W} height={SIZE_H} style={{ marginTop: 12 }}>
+          {ticks.map((tick, i) => {
+            const y = padTop + chartH - (tick / maxVal) * chartH;
+            return (
+              <G key={i}>
+                <Path
+                  d={`M ${padLeft} ${y} L ${SIZE_W - padRight} ${y}`}
+                  stroke={colors.border}
+                  strokeWidth={0.8}
+                  strokeDasharray="4,4"
+                />
+                <SvgText
+                  x={padLeft - 5} y={y + 4}
+                  textAnchor="end"
+                  fontSize={9}
+                  fill={colors.mutedForeground}
+                >
+                  {tick}
+                </SvgText>
+              </G>
+            );
+          })}
+
+          {sorted.map((item, i) => {
+            const barH = Math.max((item.count / maxVal) * chartH, 2);
+            const x = padLeft + i * (barWidth + gap);
+            const y = padTop + chartH - barH;
+            const shortLabel = item.label.split(' ')[0];
+            return (
+              <G key={i}>
+                <Rect
+                  x={x} y={y}
+                  width={barWidth} height={barH}
+                  rx={5}
+                  fill={colors.primary}
+                  opacity={0.9}
+                />
+                <SvgText
+                  x={x + barWidth / 2}
+                  y={SIZE_H - padBottom + 16}
+                  textAnchor="middle"
+                  fontSize={9}
+                  fill={colors.mutedForeground}
+                >
+                  {shortLabel}
+                </SvgText>
+              </G>
+            );
+          })}
+
+          <Path
+            d={`M ${padLeft} ${padTop + chartH} L ${SIZE_W - padRight} ${padTop + chartH}`}
+            stroke={colors.border}
+            strokeWidth={1}
+          />
+        </Svg>
+      )}
+    </View>
+  );
+}
+
+export default function ChartsSection({ applications }) {
+  return (
+    <View style={styles.container}>
+      <DonutChart applications={applications} />
+      <BarChart applications={applications} />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    gap: 14,
+  },
+  chartCard: {
+    backgroundColor: colors.white,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: 20,
+  },
+  chartTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: colors.foreground,
+  },
+  chartSubtitle: {
+    fontSize: 11,
+    color: colors.mutedForeground,
+    marginTop: 2,
+    marginBottom: 4,
+  },
+  chartEmpty: {
+    height: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  chartEmptyText: {
+    fontSize: 12,
+    color: colors.mutedForeground,
+  },
+  donutRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 20,
+    marginTop: 8,
+  },
+  legendCol: {
+    flex: 1,
+    gap: 10,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  legendDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    flexShrink: 0,
+  },
+  legendText: {
+    fontSize: 13,
+    color: colors.foreground,
+    fontWeight: '500',
+  },
+  legendCount: {
+    fontSize: 12,
+    color: colors.mutedForeground,
+    fontWeight: '400',
+  },
+});
