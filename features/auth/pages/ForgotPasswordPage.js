@@ -62,11 +62,11 @@ export default function ForgotPasswordPage() {
     appName: { fontSize: 28, fontWeight: '700', color: c['sidebar-foreground'], letterSpacing: -0.5 },
     aiHighlight: { color: c.accent },
     headline: { fontSize: 26, fontWeight: '700', color: c['sidebar-foreground'], marginBottom: 4 },
-    subheading: { fontSize: 14, color: c.accent, marginBottom: 32 },
+    subheading: { fontSize: 14, color: c['sidebar-foreground'], marginBottom: 32 },
     emailHighlight: { fontWeight: '600', color: c['sidebar-foreground'] },
     form: { gap: 16 },
     fieldGroup: { gap: 6 },
-    label: { fontSize: 12, fontWeight: '600', color: c.accent, letterSpacing: 0.5 },
+    label: { fontSize: 12, fontWeight: '600', color: c['sidebar-foreground'], letterSpacing: 0.5 },
     input: { width: '100%', height: 44, borderRadius: 12, paddingHorizontal: 16, fontSize: 14, color: c.foreground, backgroundColor: c.card, borderWidth: 1, borderColor: c.border },
     errorContainer: { backgroundColor: `${c.destructive}1a`, borderWidth: 1, borderColor: `${c.destructive}33`, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10 },
     errorText: { fontSize: 13, color: c.destructive },
@@ -77,7 +77,7 @@ export default function ForgotPasswordPage() {
     linkText: { fontSize: 13, color: c['muted-foreground'] },
     successCard: { backgroundColor: c['surface-muted'], borderRadius: 12, padding: 16, gap: 8 },
     successText: { fontSize: 14, color: c.foreground, lineHeight: 20 },
-    spamNote: { fontSize: 12, color: c.accent },
+    spamNote: { fontSize: 12, color: c['sidebar-foreground'] },
   };
 
   if (submitted) {

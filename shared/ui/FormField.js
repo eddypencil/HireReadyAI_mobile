@@ -27,7 +27,7 @@ export default function FormField({
   return (
     <View style={styles.container}>
       <View style={styles.labelRow}>
-        <Text style={[styles.label, { color: c.foreground }]}>
+        <Text style={[styles.label, { color: c['sidebar-foreground'] }]}>
           {label}{required ? ' *' : ''}
         </Text>
         {hint}

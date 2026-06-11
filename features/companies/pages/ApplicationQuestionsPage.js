@@ -340,7 +340,7 @@ function createStyles(c) {
 
     // ── Header info card
     headerCard: {
-      backgroundColor: c.white,
+      backgroundColor: c.card,
       borderRadius: 14,
       borderWidth: 1,
       borderColor: c.border,
@@ -393,7 +393,7 @@ function createStyles(c) {
 
     // ── Question card
     questionCard: {
-      backgroundColor: c.white,
+      backgroundColor: c.card,
       borderRadius: 14,
       borderWidth: 1,
       borderColor: c.border,
@@ -456,13 +456,13 @@ function createStyles(c) {
     // ── Type picker modal
     typeOverlay: {
       flex: 1,
-      backgroundColor: "rgba(1,26,74,0.45)",
+      backgroundColor: "rgba(0,0,0,0.45)",
       justifyContent: "center",
       alignItems: "center",
       padding: 32,
     },
     typeModal: {
-      backgroundColor: c.white,
+      backgroundColor: c.card,
       borderRadius: 16,
       padding: 20,
       width: "100%",
@@ -505,7 +505,7 @@ function createStyles(c) {
       borderStyle: "dashed",
       borderRadius: 14,
       paddingVertical: 14,
-      backgroundColor: c.white,
+      backgroundColor: c.card,
     },
     addQuestionBtnText: {
       fontSize: 14,
@@ -532,7 +532,7 @@ function createStyles(c) {
 
     // ── Sticky bottom bar
     bottomBar: {
-      backgroundColor: c.white,
+      backgroundColor: c.card,
       borderTopWidth: 1,
       borderTopColor: c.border,
       paddingHorizontal: 20,

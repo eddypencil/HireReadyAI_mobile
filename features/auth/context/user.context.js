@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { supabase } from "../../../shared/services/supabase";
 import { getProfile, signUp, signIn, signOut, makeProfile } from "../services/auth.service";
+import { USER_ROLE } from "../../../shared/constants/enums";
 
 const UserContext = createContext(null);
 
@@ -44,7 +45,7 @@ export function UserProvider({ children }) {
           setProfile({
             id: session.user.id,
             full_name: meta.full_name || null,
-            role: meta.role || null,
+            role: meta.role || USER_ROLE.applicant,
             email: session.user.email,
           });
           setTimeout(() => fetchAndSetProfile(session.user.id), 0);
@@ -64,7 +65,9 @@ export function UserProvider({ children }) {
       const registeredUser = await signUp(email, password, userProfile);
       if (!registeredUser) throw new Error("Sign up returned no user");
       const userId = registeredUser.id;
-      await makeProfile(userId, userProfile);
+      try {
+        await makeProfile(userId, userProfile);
+      } catch {}
       await fetchAndSetProfile(userId);
     } catch (err) {
       throw err;
@@ -77,6 +80,19 @@ export function UserProvider({ children }) {
     setLoading(true);
     try {
       const loggedInUser = await signIn(email, password);
+      const existing = await getProfile(loggedInUser.id);
+      if (!existing) {
+        const meta = loggedInUser.user_metadata || {};
+        try {
+          await makeProfile(loggedInUser.id, {
+            fullName: meta.full_name || loggedInUser.email?.split("@")[0] || "User",
+            role: meta.role || USER_ROLE.applicant,
+            phone: meta.phone || "",
+            headline: meta.headline || "",
+            isActive: true,
+          });
+        } catch {}
+      }
       await fetchAndSetProfile(loggedInUser.id);
     } catch (err) {
       throw err;

@@ -29,7 +29,8 @@ export const makeProfile = async (userId, userProfile) => {
     id: userId,
     full_name: userProfile.fullName,
     role: userProfile.role,
-    email: userProfile.email,
+    phone: userProfile.phone || null,
+    is_active: userProfile.isActive ?? true,
   }]);
   if (error) throw error;
 };

@@ -65,7 +65,7 @@ export default function ResetPasswordPage() {
     subheading: { fontSize: 14, color: c.accent, marginBottom: 32 },
     form: { gap: 16 },
     fieldGroup: { gap: 6 },
-    label: { fontSize: 12, fontWeight: '600', color: c.accent, letterSpacing: 0.5 },
+    label: { fontSize: 12, fontWeight: '600', color: c['sidebar-foreground'], letterSpacing: 0.5 },
     input: { width: '100%', height: 44, borderRadius: 12, paddingHorizontal: 16, fontSize: 14, color: c.foreground, backgroundColor: c.card, borderWidth: 1, borderColor: c.border },
     errorContainer: { backgroundColor: `${c.destructive}1a`, borderWidth: 1, borderColor: `${c.destructive}33`, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10 },
     errorText: { fontSize: 13, color: c.destructive },

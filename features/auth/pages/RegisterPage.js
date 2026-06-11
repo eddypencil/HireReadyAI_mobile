@@ -61,7 +61,9 @@ export default function RegisterPage() {
       await signUpUser(email.trim(), password, {
         fullName: fullName.trim(),
         role: role,
-        email: email.trim(),
+        phone: "",
+        headline: "",
+        isActive: true,
       });
     } catch (err) {
       setError(err.message || t('sign_up.generic_error'));
