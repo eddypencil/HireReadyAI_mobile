@@ -1,14 +1,15 @@
-// features/applicant/components/feedback/SimilarOpportunities.js
 import { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../../shared/context/I18nContext';
 import { fetchSimilarJobs } from '../../../jobs/services/jobs.service';
 
 export default function SimilarOpportunities({ jobId, seniorityLevel, jobType }) {
   const { theme } = useTheme();
   const c = theme.colors;
+  const { t } = useTranslation();
   const styles = createStyles(c);
   const navigation = useNavigation();
   const [jobs, setJobs] = useState([]);
@@ -27,7 +28,7 @@ export default function SimilarOpportunities({ jobId, seniorityLevel, jobType })
         <View style={styles.iconWrap}>
           <Ionicons name="briefcase-outline" size={14} color={c.primary} />
         </View>
-        <Text style={styles.heading}>Similar Opportunities</Text>
+        <Text style={styles.heading}>{t('applicant.feedback.similar_opportunities')}</Text>
       </View>
       {jobs.slice(0, 3).map((job, idx, arr) => {
         const company = job.companies;

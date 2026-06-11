@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../../shared/context/I18nContext';
 import ScoreRing from './ScoreRing';
 
 function getInitials(name = '') {
@@ -12,6 +13,7 @@ function getInitials(name = '') {
 export default function CandidateHeader({ app, percentile, percentileTag }) {
   const { theme } = useTheme();
   const c = theme.colors;
+  const { t } = useTranslation();
   const styles = createStyles(c);
   if (!app) return null;
 
@@ -53,12 +55,12 @@ export default function CandidateHeader({ app, percentile, percentileTag }) {
             </Text>
             {isRejected && (
               <View style={styles.rejectedBadge}>
-                <Text style={styles.rejectedText}>Rejected</Text>
+                <Text style={styles.rejectedText}>{t('applicant.feedback.rejected_badge')}</Text>
               </View>
             )}
             {!isRejected && app?.current_stage === 'hired' && (
               <View style={styles.hiredBadge}>
-                <Text style={styles.hiredText}>Hired</Text>
+                <Text style={styles.hiredText}>{t('applicant.feedback.hired_badge')}</Text>
               </View>
             )}
           </View>
@@ -80,7 +82,7 @@ export default function CandidateHeader({ app, percentile, percentileTag }) {
               <View style={styles.metaItem}>
                 <Ionicons name="document-text-outline" size={12} color="rgba(255,255,255,0.7)" />
                 <Text style={styles.metaText} numberOfLines={1}>
-                  Applied for: <Text style={styles.metaBold}>{job.title}</Text>
+                  {t('applicant.feedback.applied_for')} <Text style={styles.metaBold}>{job.title}</Text>
                 </Text>
               </View>
             )}
@@ -92,14 +94,14 @@ export default function CandidateHeader({ app, percentile, percentileTag }) {
       <View style={styles.scoreCard}>
         <ScoreRing score={computedComposite} percentileTag={percentileTag} onDark />
         <View style={styles.scoreText}>
-          <Text style={styles.scoreLabel}>Composite score</Text>
+          <Text style={styles.scoreLabel}>{t('applicant.feedback.composite_score')}</Text>
           {percentileTag ? (
             <Text style={styles.scoreSub}>
-              {percentileTag.label} — top performers for this role
+              {percentileTag.label} — {t('applicant.feedback.top_performers')}
             </Text>
           ) : (
             <Text style={styles.scoreSub}>
-              Averaged across {scoredStages.length} scored stages
+              {t('applicant.feedback.scored_stages', { count: scoredStages.length })}
             </Text>
           )}
         </View>

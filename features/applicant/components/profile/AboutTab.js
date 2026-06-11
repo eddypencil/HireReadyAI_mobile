@@ -1,10 +1,11 @@
-// features/applicant/components/profile/AboutTab.js
 import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../../shared/context/I18nContext';
 
 function SectionCard({ title, icon, onEdit, viewOnly, children, empty, emptyText, styles }) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const c = theme.colors;
   return (
     <View style={styles.card}>
@@ -22,7 +23,7 @@ function SectionCard({ title, icon, onEdit, viewOnly, children, empty, emptyText
       {empty ? (
         <TouchableOpacity onPress={!viewOnly ? onEdit : null} disabled={viewOnly} activeOpacity={0.75}>
           <Text style={styles.emptyText}>
-            {viewOnly ? 'Not added yet' : emptyText || 'Tap to add...'}
+            {viewOnly ? t('profile.not_added_yet') : emptyText || t('profile.tap_to_add')}
           </Text>
         </TouchableOpacity>
       ) : children}
@@ -32,6 +33,7 @@ function SectionCard({ title, icon, onEdit, viewOnly, children, empty, emptyText
 
 export default function AboutTab({ profile, viewOnly, onEdit }) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const c = theme.colors;
   const styles = createStyles(c);
   const handleLink = (url) => {
@@ -45,12 +47,12 @@ export default function AboutTab({ profile, viewOnly, onEdit }) {
 
       {/* Bio */}
       <SectionCard styles={styles}
-        title="Bio"
+        title={t('profile.bio')}
         icon="person-outline"
         onEdit={() => onEdit('bio')}
         viewOnly={viewOnly}
         empty={!profile?.bio && !profile?.headline}
-        emptyText="Add a headline and summary about yourself..."
+        emptyText={t('profile.add_bio')}
       >
         {profile?.headline && <Text style={styles.headline}>{profile.headline}</Text>}
         {profile?.bio && <Text style={styles.bioText}>{profile.bio}</Text>}
@@ -58,12 +60,12 @@ export default function AboutTab({ profile, viewOnly, onEdit }) {
 
       {/* Contact Info */}
       <SectionCard styles={styles}
-        title="Contact Info"
+        title={t('profile.contact_info')}
         icon="call-outline"
         onEdit={() => onEdit('contact')}
         viewOnly={viewOnly}
         empty={!profile?.phone && !profile?.location}
-        emptyText="Add your phone and location..."
+        emptyText={t('profile.add_contact')}
       >
         <View style={styles.list}>
           {profile?.phone && (
@@ -72,7 +74,7 @@ export default function AboutTab({ profile, viewOnly, onEdit }) {
                 <Ionicons name="call-outline" size={14} color="#2563eb" />
               </View>
               <View>
-                <Text style={styles.listLabel}>Phone</Text>
+                <Text style={styles.listLabel}>{t('profile.phone')}</Text>
                 <Text style={styles.listValue}>{profile.phone}</Text>
               </View>
             </View>
@@ -83,7 +85,7 @@ export default function AboutTab({ profile, viewOnly, onEdit }) {
                 <Ionicons name="location-outline" size={14} color="#db2777" />
               </View>
               <View>
-                <Text style={styles.listLabel}>Location</Text>
+                <Text style={styles.listLabel}>{t('profile.location')}</Text>
                 <Text style={styles.listValue}>{profile.location}</Text>
               </View>
             </View>
@@ -93,12 +95,12 @@ export default function AboutTab({ profile, viewOnly, onEdit }) {
 
       {/* Links — LinkedIn only */}
       <SectionCard styles={styles}
-        title="Links"
+        title={t('profile.links')}
         icon="link-outline"
         onEdit={() => onEdit('links')}
         viewOnly={viewOnly}
         empty={!profile?.linkedin_url}
-        emptyText="Add your LinkedIn profile link..."
+        emptyText={t('profile.add_links')}
       >
         <View style={styles.list}>
           {profile?.linkedin_url && (
@@ -107,7 +109,7 @@ export default function AboutTab({ profile, viewOnly, onEdit }) {
                 <Ionicons name="logo-linkedin" size={14} color="#0a66c2" />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={styles.listLabel}>LinkedIn</Text>
+                <Text style={styles.listLabel}>{t('profile.linkedin')}</Text>
                 <Text style={[styles.listValue, styles.link]} numberOfLines={1}>{profile.linkedin_url}</Text>
               </View>
               <Ionicons name="open-outline" size={14} color={c.accent} />

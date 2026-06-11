@@ -1,11 +1,7 @@
-// features/applicant/components/profile/ExperienceTab.js
-// ── Field names come from model .toJson() output:
-//   Experience:   title, company_name, industry, from, to, description
-//   Education:    level, university, faculty, major, start_year, end_year, grade
-//   Volunteering: organization, role, start, end, description
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../../shared/context/I18nContext';
 
 function SectionHeader({ title, icon, onAdd, viewOnly }) {
   const { theme } = useTheme();
@@ -28,6 +24,7 @@ function SectionHeader({ title, icon, onAdd, viewOnly }) {
 
 function EmptySection({ text, onAdd, viewOnly }) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const c = theme.colors;
   const styles = createStyles(c);
   return (
@@ -38,7 +35,7 @@ function EmptySection({ text, onAdd, viewOnly }) {
       activeOpacity={0.75}
     >
       <Ionicons name="add-circle-outline" size={20} color={c.border} />
-      <Text style={styles.emptyText}>{viewOnly ? 'Nothing added yet' : text}</Text>
+      <Text style={styles.emptyText}>{viewOnly ? t('profile.nothing_added') : text}</Text>
     </TouchableOpacity>
   );
 }
@@ -75,6 +72,7 @@ function ItemCard({ iconName, iconBg, iconColor, title, subtitle, date, extra, d
 
 export default function ExperienceTab({ profile, viewOnly, onEdit, onDelete }) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const c = theme.colors;
   const styles = createStyles(c);
   // Data comes from Supabase as JSON (snake_case from toJson())
@@ -88,13 +86,13 @@ export default function ExperienceTab({ profile, viewOnly, onEdit, onDelete }) {
       {/* ── Work Experience */}
       <View style={styles.section}>
         <SectionHeader
-          title="Work Experience"
+          title={t('profile.work_experience')}
           icon="briefcase-outline"
           onAdd={() => onEdit('experience', null, null)}
           viewOnly={viewOnly}
         />
         {experience.length === 0
-          ? <EmptySection text="Add your work experience" onAdd={() => onEdit('experience', null, null)} viewOnly={viewOnly} />
+          ? <EmptySection text={t('profile.add_experience')} onAdd={() => onEdit('experience', null, null)} viewOnly={viewOnly} />
           : experience.map((item, index) => (
             <ItemCard
               key={index}
@@ -103,7 +101,7 @@ export default function ExperienceTab({ profile, viewOnly, onEdit, onDelete }) {
               iconColor={c.accent}
               title={item.title}
               subtitle={[item.company_name, item.industry].filter(Boolean).join(' · ')}
-              date={[item.from, item.to || 'Present'].filter(Boolean).join(' — ')}
+              date={[item.from, item.to || t('profile.present')].filter(Boolean).join(' — ')}
               description={item.description}
               onEdit={() => onEdit('experience', item, index)}
               onDelete={() => onDelete('experience', index)}
@@ -115,23 +113,23 @@ export default function ExperienceTab({ profile, viewOnly, onEdit, onDelete }) {
       {/* ── Education */}
       <View style={styles.section}>
         <SectionHeader
-          title="Education"
+          title={t('profile.education')}
           icon="school-outline"
           onAdd={() => onEdit('education', null, null)}
           viewOnly={viewOnly}
         />
         {education.length === 0
-          ? <EmptySection text="Add your education" onAdd={() => onEdit('education', null, null)} viewOnly={viewOnly} />
+          ? <EmptySection text={t('profile.add_education')} onAdd={() => onEdit('education', null, null)} viewOnly={viewOnly} />
           : education.map((item, index) => (
             <ItemCard
               key={index}
               iconName="school-outline"
               iconBg="#ede9fe"
               iconColor="#7c3aed"
-              title={[item.level, item.major].filter(Boolean).join(' in ') || item.university}
+              title={[item.level, item.major].filter(Boolean).join(t('profile.education_in')) || item.university}
               subtitle={item.university}
-              extra={[item.faculty, item.grade ? `Grade: ${item.grade}` : null].filter(Boolean).join(' · ')}
-              date={[item.start_year, item.end_year || 'Present'].filter(Boolean).join(' — ')}
+              extra={[item.faculty, item.grade ? `${t('profile.grade_prefix')}${item.grade}` : null].filter(Boolean).join(' · ')}
+              date={[item.start_year, item.end_year || t('profile.present')].filter(Boolean).join(' — ')}
               description={null}
               onEdit={() => onEdit('education', item, index)}
               onDelete={() => onDelete('education', index)}
@@ -143,13 +141,13 @@ export default function ExperienceTab({ profile, viewOnly, onEdit, onDelete }) {
       {/* ── Volunteering */}
       <View style={styles.section}>
         <SectionHeader
-          title="Volunteering"
+          title={t('profile.volunteering')}
           icon="heart-outline"
           onAdd={() => onEdit('volunteering', null, null)}
           viewOnly={viewOnly}
         />
         {volunteering.length === 0
-          ? <EmptySection text="Add volunteering experience" onAdd={() => onEdit('volunteering', null, null)} viewOnly={viewOnly} />
+          ? <EmptySection text={t('profile.add_volunteering')} onAdd={() => onEdit('volunteering', null, null)} viewOnly={viewOnly} />
           : volunteering.map((item, index) => (
             <ItemCard
               key={index}
@@ -158,7 +156,7 @@ export default function ExperienceTab({ profile, viewOnly, onEdit, onDelete }) {
               iconColor="#16a34a"
               title={item.role}
               subtitle={item.organization}
-              date={[item.start, item.end || 'Present'].filter(Boolean).join(' — ')}
+              date={[item.start, item.end || t('profile.present')].filter(Boolean).join(' — ')}
               description={item.description}
               onEdit={() => onEdit('volunteering', item, index)}
               onDelete={() => onDelete('volunteering', index)}

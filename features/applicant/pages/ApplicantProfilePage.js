@@ -7,6 +7,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import { useTheme } from '../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../shared/context/I18nContext';
 import { fetchApplicantProfile } from '../services/profile.service';
 import { deleteExperience } from '../services/experience.service';
 import { deleteEducation } from '../services/education.service';
@@ -52,6 +53,7 @@ async function deleteAward(userId, index) {
 
 function TabBar({ active, onSelect, styles }) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const c = theme.colors;
   return (
     <ScrollView
@@ -66,7 +68,7 @@ function TabBar({ active, onSelect, styles }) {
           activeOpacity={0.75}
         >
           <Ionicons name={tab.icon} size={14} color={active === tab.key ? c.primary : c['muted-foreground']} />
-          <Text style={[styles.tabLabel, active === tab.key && styles.tabLabelActive]}>{tab.label}</Text>
+          <Text style={[styles.tabLabel, active === tab.key && styles.tabLabelActive]}>{t(`profile.tab_${tab.key}`)}</Text>
         </TouchableOpacity>
       ))}
     </ScrollView>
@@ -78,6 +80,7 @@ export default function ApplicantProfilePage() {
   const route = useRoute();
   const { profileId, viewOnly = false } = route.params || {};
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const c = theme.colors;
   const styles = createStyles(c);
 
@@ -95,20 +98,20 @@ export default function ApplicantProfilePage() {
       const data = await fetchApplicantProfile(profileId);
       setProfile(data);
     } catch {
-      Alert.alert('Error', 'Could not load profile.');
+      Alert.alert(t('profile.error_title'), t('profile.error_load'));
     } finally {
       setLoading(false);
     }
-  }, [profileId]);
+  }, [profileId, t]);
 
   useFocusEffect(useCallback(() => { loadProfile(); }, [loadProfile]));
 
   // ── Delete by index
   const handleDelete = (field, index) => {
-    Alert.alert('Delete', 'Are you sure you want to remove this?', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('profile.delete'), t('profile.delete_confirm'), [
+      { text: t('profile.cancel'), style: 'cancel' },
       {
-        text: 'Delete', style: 'destructive',
+        text: t('profile.delete'), style: 'destructive',
         onPress: async () => {
           try {
             if (field === 'awards') {
@@ -119,7 +122,7 @@ export default function ApplicantProfilePage() {
             }
             await loadProfile();
           } catch {
-            Alert.alert('Error', 'Could not delete item.');
+            Alert.alert(t('profile.error_title'), t('profile.error_delete'));
           }
         },
       },
@@ -161,24 +164,24 @@ export default function ApplicantProfilePage() {
 
   const { score, missing } = profile ? calcCompleteness(profile) : { score: 0, missing: [] };
 
-  const handleMissingFieldPress = (field) => {
+  const handleMissingFieldPress = (fieldKey) => {
     const actions = {
-      'Profile photo':  () => setAvatarOpen(true),
-      'Headline':       () => handleEdit('bio', null, null),
-      'Bio / Summary':  () => handleEdit('bio', null, null),
-      'Location':       () => handleEdit('contact', null, null),
-      'Phone number':   () => handleEdit('contact', null, null),
-      'LinkedIn URL':   () => handleEdit('links', null, null),
-      'Work experience':() => { setActiveTab('experience'); handleEdit('experience', null, null); },
-      'Education':      () => { setActiveTab('experience'); handleEdit('education', null, null); },
-      'Skills':         () => { setActiveTab('skills'); handleEdit('skills', null, null); },
-      'Projects':       () => { setActiveTab('projects'); handleEditProject(null, null); },
+      profile_pic:  () => setAvatarOpen(true),
+      headline:       () => handleEdit('bio', null, null),
+      bio:  () => handleEdit('bio', null, null),
+      location:       () => handleEdit('contact', null, null),
+      phone:   () => handleEdit('contact', null, null),
+      linkedin_url:   () => handleEdit('links', null, null),
+      experience:() => { setActiveTab('experience'); handleEdit('experience', null, null); },
+      education:      () => { setActiveTab('experience'); handleEdit('education', null, null); },
+      skills:         () => { setActiveTab('skills'); handleEdit('skills', null, null); },
+      projects:       () => { setActiveTab('projects'); handleEditProject(null, null); },
     };
-    actions[field]?.();
+    actions[fieldKey]?.();
   };
 
   if (loading) return <View style={styles.centered}><ActivityIndicator size="large" color={c.primary} /></View>;
-  if (!profile) return <View style={styles.centered}><Text style={styles.errorText}>Profile not found.</Text></View>;
+  if (!profile) return <View style={styles.centered}><Text style={styles.errorText}>{t('profile.profile_not_found')}</Text></View>;
 
   return (
     <View style={styles.root}>

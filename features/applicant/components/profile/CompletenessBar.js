@@ -1,14 +1,7 @@
-// features/applicant/components/profile/CompletenessBar.js
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../../shared/context/ThemeContext';
-
-function getLabel(score, accent) {
-  if (score >= 91) return { text: 'Your profile is complete and recruiter-ready! 🎉', color: '#16a34a' };
-  if (score >= 71) return { text: 'Almost there! A few more fields will make you shine.', color: accent };
-  if (score >= 41) return { text: 'Good start! Add more details to stand out.', color: '#d97706' };
-  return { text: 'Your profile needs work — recruiters may skip incomplete profiles.', color: '#dc2626' };
-}
+import { useTranslation } from '../../../../shared/context/I18nContext';
 
 function getBarColor(score, accent) {
   if (score >= 91) return '#22c55e';
@@ -19,16 +12,16 @@ function getBarColor(score, accent) {
 
 export function calcCompleteness(profile) {
   const fields = [
-    { key: 'profile_pic',  label: 'Profile photo',  weight: 10 },
-    { key: 'headline',     label: 'Headline',        weight: 10 },
-    { key: 'bio',          label: 'Bio / Summary',   weight: 15 },
-    { key: 'location',     label: 'Location',        weight: 5  },
-    { key: 'phone',        label: 'Phone number',    weight: 5  },
-    { key: 'linkedin_url', label: 'LinkedIn URL',    weight: 5  },
-    { key: 'experience',   label: 'Work experience', weight: 20 },
-    { key: 'education',    label: 'Education',       weight: 15 },
-    { key: 'skills',       label: 'Skills',          weight: 10 },
-    { key: 'projects',     label: 'Projects',        weight: 5  },
+    { key: 'profile_pic',  weight: 10 },
+    { key: 'headline',     weight: 10 },
+    { key: 'bio',          weight: 15 },
+    { key: 'location',     weight: 5  },
+    { key: 'phone',        weight: 5  },
+    { key: 'linkedin_url', weight: 5  },
+    { key: 'experience',   weight: 20 },
+    { key: 'education',    weight: 15 },
+    { key: 'skills',       weight: 10 },
+    { key: 'projects',     weight: 5  },
   ];
 
   let score = 0;
@@ -38,7 +31,7 @@ export function calcCompleteness(profile) {
     const val = profile?.[f.key];
     const filled = Array.isArray(val) ? val.length > 0 : !!val;
     if (filled) score += f.weight;
-    else missing.push(f.label);
+    else missing.push(f.key);
   });
 
   return { score, missing };
@@ -46,10 +39,33 @@ export function calcCompleteness(profile) {
 
 export default function CompletenessBar({ score, missing, onFieldPress }) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const c = theme.colors;
   const styles = createStyles(c);
-  const { text, color } = getLabel(score, c.accent);
+  
+  let labelText = '';
+  let labelColor = '';
+  if (score >= 91) {
+    labelText = t('profile.msg_complete');
+    labelColor = '#16a34a';
+  } else if (score >= 71) {
+    labelText = t('profile.msg_almost');
+    labelColor = c.accent;
+  } else if (score >= 41) {
+    labelText = t('profile.msg_good');
+    labelColor = '#d97706';
+  } else {
+    labelText = t('profile.msg_incomplete');
+    labelColor = '#dc2626';
+  }
+
   const barColor = getBarColor(score, c.accent);
+
+  let badgeText = '';
+  if (score >= 91) badgeText = t('profile.complete_badge');
+  else if (score >= 71) badgeText = t('profile.almost_badge');
+  else if (score >= 41) badgeText = t('profile.in_progress_badge');
+  else badgeText = t('profile.incomplete_badge');
 
   return (
     <View style={styles.card}>
@@ -57,11 +73,11 @@ export default function CompletenessBar({ score, missing, onFieldPress }) {
       <View style={styles.scoreRow}>
         <View style={styles.scoreLeft}>
           <Text style={styles.scoreNum}>{score}%</Text>
-          <Text style={styles.scoreLabel}>Profile Complete</Text>
+          <Text style={styles.scoreLabel}>{t('profile.profile_complete')}</Text>
         </View>
         <View style={[styles.scoreBadge, { backgroundColor: `${barColor}18`, borderColor: `${barColor}40` }]}>
           <Text style={[styles.scoreBadgeText, { color: barColor }]}>
-            {score >= 91 ? 'Complete' : score >= 71 ? 'Almost' : score >= 41 ? 'In Progress' : 'Incomplete'}
+            {badgeText}
           </Text>
         </View>
       </View>
@@ -72,27 +88,27 @@ export default function CompletenessBar({ score, missing, onFieldPress }) {
       </View>
 
       {/* Message */}
-      <Text style={[styles.message, { color }]}>{text}</Text>
+      <Text style={[styles.message, { color: labelColor }]}>{labelText}</Text>
 
       {/* Missing fields */}
       {missing.length > 0 && (
         <View style={styles.missingSection}>
-          <Text style={styles.missingTitle}>Add these to boost your profile:</Text>
+          <Text style={styles.missingTitle}>{t('profile.boost_profile')}</Text>
           <View style={styles.missingPills}>
-            {missing.slice(0, 4).map((field, i) => (
+            {missing.slice(0, 4).map((fieldKey, i) => (
               <TouchableOpacity
                 key={i}
                 style={styles.missingPill}
-                onPress={() => onFieldPress?.(field)}
+                onPress={() => onFieldPress?.(fieldKey)}
                 activeOpacity={0.75}
               >
                 <Ionicons name="add-circle-outline" size={12} color={c.accent} />
-                <Text style={styles.missingPillText}>{field}</Text>
+                <Text style={styles.missingPillText}>{t(`profile.fields.${fieldKey}`)}</Text>
               </TouchableOpacity>
             ))}
             {missing.length > 4 && (
               <View style={styles.morePill}>
-                <Text style={styles.morePillText}>+{missing.length - 4} more</Text>
+                <Text style={styles.morePillText}>{t('profile.more_fields', { count: missing.length - 4 })}</Text>
               </View>
             )}
           </View>

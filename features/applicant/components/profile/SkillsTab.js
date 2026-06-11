@@ -1,7 +1,7 @@
-// features/applicant/components/profile/SkillsTab.js
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../../shared/context/I18nContext';
 
 const LEVEL_COLORS = {
   beginner:     { bg: '#fef9c3', text: '#854d0e', border: '#fde047' },
@@ -38,18 +38,20 @@ function SectionHeader({ title, icon, onAdd, viewOnly }) {
 
 function EmptySection({ text, onAdd, viewOnly }) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const c = theme.colors;
   const styles = createStyles(c);
   return (
     <TouchableOpacity style={styles.emptyRow} onPress={!viewOnly ? onAdd : null} disabled={viewOnly}>
       <Ionicons name="add-circle-outline" size={18} color={c.border} />
-      <Text style={styles.emptyText}>{viewOnly ? 'Nothing added yet' : text}</Text>
+      <Text style={styles.emptyText}>{viewOnly ? t('profile.nothing_added') : text}</Text>
     </TouchableOpacity>
   );
 }
 
 export default function SkillsTab({ profile, viewOnly, onEdit, onDelete }) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const c = theme.colors;
   const styles = createStyles(c);
   const skills       = profile?.skills       || [];
@@ -62,9 +64,9 @@ export default function SkillsTab({ profile, viewOnly, onEdit, onDelete }) {
 
       {/* ── Skills */}
       <View style={styles.section}>
-        <SectionHeader title="Skills" icon="code-slash-outline" onAdd={() => onEdit('skills', null, null)} viewOnly={viewOnly} />
+        <SectionHeader title={t('profile.skills')} icon="code-slash-outline" onAdd={() => onEdit('skills', null, null)} viewOnly={viewOnly} />
         {skills.length === 0
-          ? <EmptySection text="Add your skills" onAdd={() => onEdit('skills', null, null)} viewOnly={viewOnly} />
+          ? <EmptySection text={t('profile.add_skills')} onAdd={() => onEdit('skills', null, null)} viewOnly={viewOnly} />
           : (
             <View style={styles.pillsContainer}>
               {skills.map((item, index) => {
@@ -80,7 +82,7 @@ export default function SkillsTab({ profile, viewOnly, onEdit, onDelete }) {
                     <Text style={[styles.skillPillText, { color: lc.text }]}>{item.name}</Text>
                     {item.level && (
                       <Text style={[styles.skillLevel, { color: lc.text }]}>
-                        · {item.level.charAt(0).toUpperCase() + item.level.slice(1)}
+                        · {t(`profile.levels.${item.level.toLowerCase()}`)}
                       </Text>
                     )}
                     {!viewOnly && (
@@ -100,9 +102,9 @@ export default function SkillsTab({ profile, viewOnly, onEdit, onDelete }) {
 
       {/* ── Languages */}
       <View style={styles.section}>
-        <SectionHeader title="Languages" icon="language-outline" onAdd={() => onEdit('languages', null, null)} viewOnly={viewOnly} />
+        <SectionHeader title={t('profile.languages')} icon="language-outline" onAdd={() => onEdit('languages', null, null)} viewOnly={viewOnly} />
         {languages.length === 0
-          ? <EmptySection text="Add languages you speak" onAdd={() => onEdit('languages', null, null)} viewOnly={viewOnly} />
+          ? <EmptySection text={t('profile.add_languages')} onAdd={() => onEdit('languages', null, null)} viewOnly={viewOnly} />
           : languages.map((item, index) => {
             const ls = LANG_LEVEL_COLORS[item.level?.toLowerCase()] || LANG_LEVEL_COLORS.conversational;
             return (
@@ -115,7 +117,7 @@ export default function SkillsTab({ profile, viewOnly, onEdit, onDelete }) {
                   {item.level && (
                     <View style={[styles.levelBadge, { backgroundColor: ls.bg }]}>
                       <Text style={[styles.levelBadgeText, { color: ls.text }]}>
-                        {item.level.charAt(0).toUpperCase() + item.level.slice(1)}
+                        {t(`profile.levels.${item.level.toLowerCase()}`)}
                       </Text>
                     </View>
                   )}
@@ -137,9 +139,9 @@ export default function SkillsTab({ profile, viewOnly, onEdit, onDelete }) {
 
       {/* ── Certificates */}
       <View style={styles.section}>
-        <SectionHeader title="Certificates" icon="ribbon-outline" onAdd={() => onEdit('certificates', null, null)} viewOnly={viewOnly} />
+        <SectionHeader title={t('profile.certificates')} icon="ribbon-outline" onAdd={() => onEdit('certificates', null, null)} viewOnly={viewOnly} />
         {certificates.length === 0
-          ? <EmptySection text="Add your certifications" onAdd={() => onEdit('certificates', null, null)} viewOnly={viewOnly} />
+          ? <EmptySection text={t('profile.add_certificates')} onAdd={() => onEdit('certificates', null, null)} viewOnly={viewOnly} />
           : certificates.map((item, index) => (
             <View key={index} style={styles.certCard}>
               {/* Info row */}
@@ -182,9 +184,9 @@ export default function SkillsTab({ profile, viewOnly, onEdit, onDelete }) {
 
       {/* ── Awards */}
       <View style={styles.section}>
-        <SectionHeader title="Awards & Honors" icon="trophy-outline" onAdd={() => onEdit('awards', null, null)} viewOnly={viewOnly} />
+        <SectionHeader title={t('profile.awards')} icon="trophy-outline" onAdd={() => onEdit('awards', null, null)} viewOnly={viewOnly} />
         {awards.length === 0
-          ? <EmptySection text="Add awards or honors" onAdd={() => onEdit('awards', null, null)} viewOnly={viewOnly} />
+          ? <EmptySection text={t('profile.add_awards')} onAdd={() => onEdit('awards', null, null)} viewOnly={viewOnly} />
           : awards.map((item, index) => (
             <View key={index} style={styles.certRow}>
               <View style={[styles.certIcon, { backgroundColor: '#fce7f3' }]}>

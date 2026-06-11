@@ -1,17 +1,18 @@
-// features/applicant/components/profile/ProfileHero.js
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../../shared/context/I18nContext';
 
 export default function ProfileHero({ profile, viewOnly, onEditAvatar, onViewApplications }) {
   const { theme } = useTheme();
+  const { t, language } = useTranslation();
   const c = theme.colors;
   const styles = createStyles(c);
   const initials = (profile?.full_name || 'U')
     .split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
 
   const joinDate = profile?.created_at
-    ? new Date(profile.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+    ? new Date(profile.created_at).toLocaleDateString(language === 'ar' ? 'ar-EG' : 'en-US', { month: 'long', year: 'numeric' })
     : null;
 
   return (
@@ -42,7 +43,7 @@ export default function ProfileHero({ profile, viewOnly, onEditAvatar, onViewApp
         {onViewApplications && (
           <TouchableOpacity style={styles.appsBtn} onPress={onViewApplications} activeOpacity={0.85}>
             <Ionicons name="layers-outline" size={14} color={c.white} />
-            <Text style={styles.appsBtnText}>My Applications</Text>
+            <Text style={styles.appsBtnText}>{t('profile.my_applications')}</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -53,7 +54,7 @@ export default function ProfileHero({ profile, viewOnly, onEditAvatar, onViewApp
         {profile?.headline ? (
           <Text style={styles.headline}>{profile.headline}</Text>
         ) : !viewOnly ? (
-          <Text style={styles.headlinePlaceholder}>Add a headline...</Text>
+          <Text style={styles.headlinePlaceholder}>{t('profile.add_headline')}</Text>
         ) : null}
       </View>
 
@@ -68,7 +69,7 @@ export default function ProfileHero({ profile, viewOnly, onEditAvatar, onViewApp
         {joinDate && (
           <View style={styles.metaItem}>
             <Ionicons name="calendar-outline" size={13} color="rgba(255,255,255,0.7)" />
-            <Text style={styles.metaText}>Joined {joinDate}</Text>
+            <Text style={styles.metaText}>{t('profile.joined')} {joinDate}</Text>
           </View>
         )}
       </View>

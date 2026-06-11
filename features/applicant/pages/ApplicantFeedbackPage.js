@@ -20,6 +20,7 @@ import {
   getPercentileTag,
 } from '../../recruiter/services/candidateProfile.service';
 import { useTheme } from '../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../shared/context/I18nContext';
 
 // ── Sub-components
 import AppSelector from '../components/feedback/AppSelector';
@@ -42,13 +43,17 @@ const INTERVIEW_STAGE_TYPES = [
   'ai_screening', 'assessment',
 ];
 
-const TABS = ['Overview', 'CV Review', 'Assessments'];
-
 // ── Segmented Tab bar (gradient active state, no black)
 function TabBar({ active, onSelect }) {
   const { theme } = useTheme();
   const c = theme.colors;
+  const { t } = useTranslation();
   const { tb } = createStyles(c);
+  const TABS = [
+    t('applicant.feedback.tab_overview'),
+    t('applicant.feedback.tab_cv_review'),
+    t('applicant.feedback.tab_assessments'),
+  ];
   return (
     <View style={tb.outer}>
       <View style={tb.bar}>
@@ -89,6 +94,7 @@ export default function ApplicantFeedbackPage() {
   const { theme } = useTheme();
   const c = theme.colors;
   const { styles } = createStyles(c);
+  const { t } = useTranslation();
   const { user } = useUser();
   const navigation = useNavigation();
   const route = useRoute();
@@ -172,7 +178,7 @@ export default function ApplicantFeedbackPage() {
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" color={c.primary} />
-        <Text style={styles.loadingText}>Loading feedback...</Text>
+        <Text style={styles.loadingText}>{t('applicant.feedback.loading')}</Text>
       </View>
     );
   }
@@ -185,16 +191,16 @@ export default function ApplicantFeedbackPage() {
           <View style={styles.emptyIcon}>
             <Ionicons name="document-text-outline" size={32} color="#cbd5e1" />
           </View>
-          <Text style={styles.emptyTitle}>No feedback available yet</Text>
+          <Text style={styles.emptyTitle}>{t('applicant.feedback.no_feedback_title')}</Text>
           <Text style={styles.emptySubtitle}>
-            Feedback will appear here once your applications have been reviewed.
+            {t('applicant.feedback.no_feedback_subtitle')}
           </Text>
           <TouchableOpacity
             style={styles.emptyBtn}
             onPress={() => navigation.navigate('JobsTab')}
             activeOpacity={0.85}
           >
-            <Text style={styles.emptyBtnText}>Explore Jobs</Text>
+            <Text style={styles.emptyBtnText}>{t('applicant.feedback.explore_jobs')}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -212,7 +218,7 @@ export default function ApplicantFeedbackPage() {
       {!app && (
         <View style={styles.centered}>
           <ActivityIndicator size="small" color={c.primary} />
-          <Text style={styles.loadingText}>Loading...</Text>
+          <Text style={styles.loadingText}>{t('applicant.feedback.loading_short')}</Text>
         </View>
       )}
 
@@ -243,8 +249,8 @@ export default function ApplicantFeedbackPage() {
               {!cvFeedback ? (
                 <View style={styles.emptyTab}>
                   <Ionicons name="document-text-outline" size={44} color={c.gray[300]} />
-                  <Text style={styles.emptyTabTitle}>No CV Review Data</Text>
-                  <Text style={styles.emptyTabSubtitle}>CV has not been reviewed for this application yet.</Text>
+                  <Text style={styles.emptyTabTitle}>{t('applicant.feedback.no_cv_review')}</Text>
+                  <Text style={styles.emptyTabSubtitle}>{t('applicant.feedback.no_cv_review_sub')}</Text>
                 </View>
               ) : (
                 <CvReviewSection app={app} />
@@ -259,8 +265,8 @@ export default function ApplicantFeedbackPage() {
               {stagesWithQuestions.length === 0 ? (
                 <View style={styles.emptyTab}>
                   <Ionicons name="bulb-outline" size={44} color="#cbd5e1" />
-                  <Text style={styles.emptyTabTitle}>No Assessments Yet</Text>
-                  <Text style={styles.emptyTabSubtitle}>No interviews or assessments have been completed for this application.</Text>
+                  <Text style={styles.emptyTabTitle}>{t('applicant.feedback.no_assessments')}</Text>
+                  <Text style={styles.emptyTabSubtitle}>{t('applicant.feedback.no_assessments_sub')}</Text>
                 </View>
               ) : (
                 <AssessmentsSection
