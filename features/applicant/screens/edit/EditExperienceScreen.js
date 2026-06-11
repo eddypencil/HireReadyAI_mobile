@@ -6,7 +6,7 @@ import {
   KeyboardAvoidingView, Platform,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { colors } from '../../../../src/theme';
+import { useTheme } from '../../../../shared/context/ThemeContext';
 import { addExperience, updateExperience } from '../../services/experience.service';
 import { Experience } from '../../models';
 
@@ -22,7 +22,7 @@ function Field({ label, value, onChangeText, placeholder, multiline, optional, k
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor={colors.mutedForeground}
+        placeholderTextColor={c['muted-foreground']}
         multiline={multiline}
         numberOfLines={multiline ? 4 : 1}
         textAlignVertical={multiline ? 'top' : 'center'}
@@ -34,6 +34,9 @@ function Field({ label, value, onChangeText, placeholder, multiline, optional, k
 }
 
 export default function EditExperienceScreen() {
+  const { theme } = useTheme();
+  const c = theme.colors;
+  const styles = createStyles(c);
   const navigation = useNavigation();
   const route = useRoute();
   // item = the existing Experience object (or null for new)
@@ -102,7 +105,7 @@ export default function EditExperienceScreen() {
           onPress={handleSave} disabled={saving} activeOpacity={0.85}
         >
           {saving
-            ? <ActivityIndicator color={colors.white} size="small" />
+            ? <ActivityIndicator color={c.white} size="small" />
             : <Text style={styles.saveBtnText}>{isEdit ? 'Save Changes' : 'Add Experience'}</Text>}
         </TouchableOpacity>
       </ScrollView>
@@ -110,23 +113,25 @@ export default function EditExperienceScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  scroll: { flex: 1, backgroundColor: colors.surface },
+function createStyles(c) {
+  return StyleSheet.create({
+  scroll: { flex: 1, backgroundColor: c.surface },
   content: { padding: 20, gap: 16, paddingBottom: 40 },
   fieldGroup: { gap: 6 },
-  label: { fontSize: 12, fontWeight: '600', color: colors.foreground, textTransform: 'uppercase', letterSpacing: 0.4 },
-  optional: { fontWeight: '400', color: colors.mutedForeground, textTransform: 'none' },
+  label: { fontSize: 12, fontWeight: '600', color: c.foreground, textTransform: 'uppercase', letterSpacing: 0.4 },
+  optional: { fontWeight: '400', color: c['muted-foreground'], textTransform: 'none' },
   input: {
-    backgroundColor: colors.white, borderWidth: 1, borderColor: colors.border,
+    backgroundColor: c.white, borderWidth: 1, borderColor: c.border,
     borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12,
-    fontSize: 14, color: colors.foreground,
+    fontSize: 14, color: c.foreground,
   },
   inputMulti: { minHeight: 120, paddingTop: 12 },
   saveBtn: {
-    backgroundColor: colors.primary, borderRadius: 12, paddingVertical: 14,
+    backgroundColor: c.primary, borderRadius: 12, paddingVertical: 14,
     alignItems: 'center', marginTop: 8,
-    shadowColor: colors.primary, shadowOffset: { width: 0, height: 4 },
+    shadowColor: c.primary, shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
   },
-  saveBtnText: { color: colors.white, fontSize: 15, fontWeight: '700' },
-});
+  saveBtnText: { color: c.white, fontSize: 15, fontWeight: '700' },
+  });
+}

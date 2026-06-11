@@ -7,10 +7,13 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { colors } from '../../../../src/theme';
+import { useTheme } from '../../../../shared/context/ThemeContext';
 import { fetchApplicantProfile, updateApplicantProfile } from '../../services/profile.service';
 
 export default function EditContactScreen() {
+  const { theme } = useTheme();
+  const c = theme.colors;
+  const styles = createStyles(c);
   const navigation = useNavigation();
   const { profileId } = useRoute().params || {};
 
@@ -44,7 +47,7 @@ export default function EditContactScreen() {
     }
   };
 
-  if (loading) return <View style={styles.centered}><ActivityIndicator color={colors.primary} /></View>;
+  if (loading) return <View style={styles.centered}><ActivityIndicator color={c.primary} /></View>;
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
@@ -62,7 +65,7 @@ export default function EditContactScreen() {
             value={phone}
             onChangeText={setPhone}
             placeholder="+20 1XX XXXX XXX"
-            placeholderTextColor={colors.mutedForeground}
+            placeholderTextColor={c['muted-foreground']}
             keyboardType="phone-pad"
           />
         </View>
@@ -79,7 +82,7 @@ export default function EditContactScreen() {
             value={location}
             onChangeText={setLocation}
             placeholder="e.g. Cairo, Egypt"
-            placeholderTextColor={colors.mutedForeground}
+            placeholderTextColor={c['muted-foreground']}
             autoCapitalize="words"
           />
         </View>
@@ -91,7 +94,7 @@ export default function EditContactScreen() {
           activeOpacity={0.85}
         >
           {saving
-            ? <ActivityIndicator color={colors.white} size="small" />
+            ? <ActivityIndicator color={c.white} size="small" />
             : <Text style={styles.saveBtnText}>Save Changes</Text>}
         </TouchableOpacity>
 
@@ -100,24 +103,26 @@ export default function EditContactScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  scroll: { flex: 1, backgroundColor: colors.surface },
+function createStyles(c) {
+  return StyleSheet.create({
+  scroll: { flex: 1, backgroundColor: c.surface },
   content: { padding: 20, gap: 20, paddingBottom: 40 },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   fieldGroup: { gap: 8 },
   labelRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   labelIcon: { width: 30, height: 30, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
-  label: { fontSize: 13, fontWeight: '700', color: colors.foreground },
+  label: { fontSize: 13, fontWeight: '700', color: c.foreground },
   input: {
-    backgroundColor: colors.white, borderWidth: 1, borderColor: colors.border,
+    backgroundColor: c.white, borderWidth: 1, borderColor: c.border,
     borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12,
-    fontSize: 14, color: colors.foreground,
+    fontSize: 14, color: c.foreground,
   },
   saveBtn: {
-    backgroundColor: colors.primary, borderRadius: 12,
+    backgroundColor: c.primary, borderRadius: 12,
     paddingVertical: 14, alignItems: 'center', marginTop: 8,
-    shadowColor: colors.primary, shadowOffset: { width: 0, height: 4 },
+    shadowColor: c.primary, shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
   },
-  saveBtnText: { color: colors.white, fontSize: 15, fontWeight: '700' },
-});
+  saveBtnText: { color: c.white, fontSize: 15, fontWeight: '700' },
+  });
+}

@@ -1,18 +1,18 @@
 // features/applicant/components/profile/CompletenessBar.js
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '../../../../src/theme';
+import { useTheme } from '../../../../shared/context/ThemeContext';
 
-function getLabel(score) {
+function getLabel(score, accent) {
   if (score >= 91) return { text: 'Your profile is complete and recruiter-ready! 🎉', color: '#16a34a' };
-  if (score >= 71) return { text: 'Almost there! A few more fields will make you shine.', color: colors.accent };
+  if (score >= 71) return { text: 'Almost there! A few more fields will make you shine.', color: accent };
   if (score >= 41) return { text: 'Good start! Add more details to stand out.', color: '#d97706' };
   return { text: 'Your profile needs work — recruiters may skip incomplete profiles.', color: '#dc2626' };
 }
 
-function getBarColor(score) {
+function getBarColor(score, accent) {
   if (score >= 91) return '#22c55e';
-  if (score >= 71) return colors.accent;
+  if (score >= 71) return accent;
   if (score >= 41) return '#f59e0b';
   return '#ef4444';
 }
@@ -45,8 +45,11 @@ export function calcCompleteness(profile) {
 }
 
 export default function CompletenessBar({ score, missing, onFieldPress }) {
-  const { text, color } = getLabel(score);
-  const barColor = getBarColor(score);
+  const { theme } = useTheme();
+  const c = theme.colors;
+  const styles = createStyles(c);
+  const { text, color } = getLabel(score, c.accent);
+  const barColor = getBarColor(score, c.accent);
 
   return (
     <View style={styles.card}>
@@ -83,7 +86,7 @@ export default function CompletenessBar({ score, missing, onFieldPress }) {
                 onPress={() => onFieldPress?.(field)}
                 activeOpacity={0.75}
               >
-                <Ionicons name="add-circle-outline" size={12} color={colors.accent} />
+                <Ionicons name="add-circle-outline" size={12} color={c.accent} />
                 <Text style={styles.missingPillText}>{field}</Text>
               </TouchableOpacity>
             ))}
@@ -99,34 +102,36 @@ export default function CompletenessBar({ score, missing, onFieldPress }) {
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(c) {
+  return StyleSheet.create({
   card: {
-    backgroundColor: colors.white, borderRadius: 16,
-    borderWidth: 1, borderColor: colors.border,
+    backgroundColor: c.white, borderRadius: 16,
+    borderWidth: 1, borderColor: c.border,
     padding: 18, gap: 12,
   },
   scoreRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   scoreLeft: { gap: 1 },
-  scoreNum: { fontSize: 26, fontWeight: '800', color: colors.foreground },
-  scoreLabel: { fontSize: 11, color: colors.mutedForeground, fontWeight: '500' },
+  scoreNum: { fontSize: 26, fontWeight: '800', color: c.foreground },
+  scoreLabel: { fontSize: 11, color: c['muted-foreground'], fontWeight: '500' },
   scoreBadge: { borderWidth: 1, borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4 },
   scoreBadgeText: { fontSize: 11, fontWeight: '700' },
-  track: { height: 8, backgroundColor: colors.surface, borderRadius: 4, overflow: 'hidden' },
+  track: { height: 8, backgroundColor: c.surface, borderRadius: 4, overflow: 'hidden' },
   fill: { height: '100%', borderRadius: 4 },
   message: { fontSize: 13, lineHeight: 19, fontWeight: '500' },
   missingSection: { gap: 8 },
-  missingTitle: { fontSize: 12, color: colors.mutedForeground, fontWeight: '600' },
+  missingTitle: { fontSize: 12, color: c['muted-foreground'], fontWeight: '600' },
   missingPills: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   missingPill: {
     flexDirection: 'row', alignItems: 'center', gap: 4,
-    backgroundColor: `${colors.accent}12`,
-    borderWidth: 1, borderColor: `${colors.accent}30`,
+    backgroundColor: `${c.accent}12`,
+    borderWidth: 1, borderColor: `${c.accent}30`,
     borderRadius: 20, paddingHorizontal: 10, paddingVertical: 5,
   },
-  missingPillText: { fontSize: 11, color: colors.accent, fontWeight: '600' },
+  missingPillText: { fontSize: 11, color: c.accent, fontWeight: '600' },
   morePill: {
-    backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border,
+    backgroundColor: c.surface, borderWidth: 1, borderColor: c.border,
     borderRadius: 20, paddingHorizontal: 10, paddingVertical: 5,
   },
-  morePillText: { fontSize: 11, color: colors.mutedForeground },
-});
+  morePillText: { fontSize: 11, color: c['muted-foreground'] },
+  });
+}

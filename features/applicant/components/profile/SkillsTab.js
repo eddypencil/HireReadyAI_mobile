@@ -1,7 +1,7 @@
 // features/applicant/components/profile/SkillsTab.js
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '../../../../src/theme';
+import { useTheme } from '../../../../shared/context/ThemeContext';
 
 const LEVEL_COLORS = {
   beginner:     { bg: '#fef9c3', text: '#854d0e', border: '#fde047' },
@@ -18,15 +18,17 @@ const LANG_LEVEL_COLORS = {
 };
 
 function SectionHeader({ title, icon, onAdd, viewOnly }) {
+  const { theme } = useTheme();
+  const c = theme.colors;
   return (
     <View style={styles.sectionHeader}>
       <View style={styles.sectionHeaderLeft}>
-        <Ionicons name={icon} size={16} color={colors.accent} />
+        <Ionicons name={icon} size={16} color={c.accent} />
         <Text style={styles.sectionTitle}>{title}</Text>
       </View>
       {!viewOnly && (
         <TouchableOpacity onPress={onAdd} style={styles.addBtn} activeOpacity={0.75}>
-          <Ionicons name="add" size={16} color={colors.white} />
+          <Ionicons name="add" size={16} color={c.white} />
         </TouchableOpacity>
       )}
     </View>
@@ -34,15 +36,20 @@ function SectionHeader({ title, icon, onAdd, viewOnly }) {
 }
 
 function EmptySection({ text, onAdd, viewOnly }) {
+  const { theme } = useTheme();
+  const c = theme.colors;
   return (
     <TouchableOpacity style={styles.emptyRow} onPress={!viewOnly ? onAdd : null} disabled={viewOnly}>
-      <Ionicons name="add-circle-outline" size={18} color={colors.border} />
+      <Ionicons name="add-circle-outline" size={18} color={c.border} />
       <Text style={styles.emptyText}>{viewOnly ? 'Nothing added yet' : text}</Text>
     </TouchableOpacity>
   );
 }
 
 export default function SkillsTab({ profile, viewOnly, onEdit, onDelete }) {
+  const { theme } = useTheme();
+  const c = theme.colors;
+  const styles = createStyles(c);
   const skills       = profile?.skills       || [];
   const languages    = profile?.languages    || [];
   const certificates = profile?.certificates || [];
@@ -99,7 +106,7 @@ export default function SkillsTab({ profile, viewOnly, onEdit, onDelete }) {
             return (
               <View key={index} style={styles.langRow}>
                 <View style={styles.langLeft}>
-                  <Ionicons name="chatbubble-outline" size={16} color={colors.accent} />
+                  <Ionicons name="chatbubble-outline" size={16} color={c.accent} />
                   <Text style={styles.langName}>{item.name}</Text>
                 </View>
                 <View style={styles.langRight}>
@@ -113,7 +120,7 @@ export default function SkillsTab({ profile, viewOnly, onEdit, onDelete }) {
                   {!viewOnly && (
                     <View style={styles.rowActions}>
                       <TouchableOpacity onPress={() => onEdit('languages', item, index)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                        <Ionicons name="pencil-outline" size={14} color={colors.mutedForeground} />
+                        <Ionicons name="pencil-outline" size={14} color={c['muted-foreground']} />
                       </TouchableOpacity>
                       <TouchableOpacity onPress={() => onDelete('languages', index)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
                         <Ionicons name="trash-outline" size={14} color="#ef4444" />
@@ -148,7 +155,7 @@ export default function SkillsTab({ profile, viewOnly, onEdit, onDelete }) {
                 {!viewOnly && (
                   <View style={styles.rowActions}>
                     <TouchableOpacity onPress={() => onEdit('certificates', item, index)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                      <Ionicons name="pencil-outline" size={14} color={colors.mutedForeground} />
+                      <Ionicons name="pencil-outline" size={14} color={c['muted-foreground']} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => onDelete('certificates', index)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
                       <Ionicons name="trash-outline" size={14} color="#ef4444" />
@@ -191,7 +198,7 @@ export default function SkillsTab({ profile, viewOnly, onEdit, onDelete }) {
               {!viewOnly && (
                 <View style={styles.rowActions}>
                   <TouchableOpacity onPress={() => onEdit('awards', item, index)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                    <Ionicons name="pencil-outline" size={14} color={colors.mutedForeground} />
+                    <Ionicons name="pencil-outline" size={14} color={c['muted-foreground']} />
                   </TouchableOpacity>
                   <TouchableOpacity onPress={() => onDelete('awards', index)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
                     <Ionicons name="trash-outline" size={14} color="#ef4444" />
@@ -206,24 +213,25 @@ export default function SkillsTab({ profile, viewOnly, onEdit, onDelete }) {
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(c) {
+  return StyleSheet.create({
   container: { gap: 16 },
   section: {
-    backgroundColor: colors.white, borderRadius: 16,
-    borderWidth: 1, borderColor: colors.border, overflow: 'hidden',
+    backgroundColor: c.white, borderRadius: 16,
+    borderWidth: 1, borderColor: c.border, overflow: 'hidden',
   },
   sectionHeader: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    padding: 16, borderBottomWidth: 1, borderBottomColor: colors.border,
+    padding: 16, borderBottomWidth: 1, borderBottomColor: c.border,
   },
   sectionHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  sectionTitle: { fontSize: 15, fontWeight: '700', color: colors.foreground },
+  sectionTitle: { fontSize: 15, fontWeight: '700', color: c.foreground },
   addBtn: {
     width: 28, height: 28, borderRadius: 14,
-    backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center',
   },
   emptyRow: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 16 },
-  emptyText: { fontSize: 13, color: colors.mutedForeground, fontStyle: 'italic' },
+  emptyText: { fontSize: 13, color: c['muted-foreground'], fontStyle: 'italic' },
   pillsContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, padding: 16 },
   skillPill: {
     flexDirection: 'row', alignItems: 'center', gap: 5,
@@ -233,17 +241,17 @@ const styles = StyleSheet.create({
   skillLevel: { fontSize: 11, fontWeight: '500' },
   langRow: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    padding: 14, borderTopWidth: 1, borderTopColor: colors.border,
+    padding: 14, borderTopWidth: 1, borderTopColor: c.border,
   },
   langLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  langName: { fontSize: 14, fontWeight: '600', color: colors.foreground },
+  langName: { fontSize: 14, fontWeight: '600', color: c.foreground },
   langRight: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   levelBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20 },
   levelBadgeText: { fontSize: 11, fontWeight: '600' },
 
   // Certificate card — wraps info row + image
   certCard: {
-    borderTopWidth: 1, borderTopColor: colors.border,
+    borderTopWidth: 1, borderTopColor: c.border,
   },
   certRow: {
     flexDirection: 'row', alignItems: 'flex-start', gap: 12,
@@ -254,10 +262,10 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center', flexShrink: 0,
   },
   certInfo: { flex: 1, gap: 3 },
-  certName: { fontSize: 14, fontWeight: '700', color: colors.foreground },
-  certMeta: { fontSize: 12, color: colors.mutedForeground },
-  certField: { fontSize: 12, color: colors.accent },
-  certDesc: { fontSize: 13, color: colors.foreground, lineHeight: 18, marginTop: 2 },
+  certName: { fontSize: 14, fontWeight: '700', color: c.foreground },
+  certMeta: { fontSize: 12, color: c['muted-foreground'] },
+  certField: { fontSize: 12, color: c.accent },
+  certDesc: { fontSize: 13, color: c.foreground, lineHeight: 18, marginTop: 2 },
   rowActions: {
     flexDirection: 'column', gap: 8, flexShrink: 0,
     alignItems: 'center', justifyContent: 'center',
@@ -265,17 +273,18 @@ const styles = StyleSheet.create({
 
   // Certificate image gallery — same style as project screenshots
   certImageContainer: {
-    borderTopWidth: 1, borderTopColor: colors.border,
+    borderTopWidth: 1, borderTopColor: c.border,
   },
   certImageGallery: {
     padding: 12, gap: 8,
   },
   certMediaTile: {
     width: 120, height: 90, borderRadius: 10, overflow: 'hidden',
-    backgroundColor: colors.surface,
-    borderWidth: 1, borderColor: colors.border,
+    backgroundColor: c.surface,
+    borderWidth: 1, borderColor: c.border,
   },
   certMediaImg: {
     width: '100%', height: '100%',
   },
-});
+  });
+}

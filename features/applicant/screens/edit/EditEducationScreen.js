@@ -6,7 +6,7 @@ import {
   KeyboardAvoidingView, Platform,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { colors } from '../../../../src/theme';
+import { useTheme } from '../../../../shared/context/ThemeContext';
 import { addEducation, updateEducation } from '../../services/education.service';
 import { Education } from '../../models';
 
@@ -24,7 +24,7 @@ function Field({ label, value, onChangeText, placeholder, multiline, optional })
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor={colors.mutedForeground}
+        placeholderTextColor={c['muted-foreground']}
         multiline={multiline}
         numberOfLines={multiline ? 4 : 1}
         textAlignVertical={multiline ? 'top' : 'center'}
@@ -35,6 +35,9 @@ function Field({ label, value, onChangeText, placeholder, multiline, optional })
 }
 
 export default function EditEducationScreen() {
+  const { theme } = useTheme();
+  const c = theme.colors;
+  const styles = createStyles(c);
   const navigation = useNavigation();
   const route = useRoute();
   const { profileId, item, itemIndex, onSave } = route.params || {};
@@ -119,7 +122,7 @@ export default function EditEducationScreen() {
           onPress={handleSave} disabled={saving} activeOpacity={0.85}
         >
           {saving
-            ? <ActivityIndicator color={colors.white} size="small" />
+            ? <ActivityIndicator color={c.white} size="small" />
             : <Text style={styles.saveBtnText}>{isEdit ? 'Save Changes' : 'Add Education'}</Text>}
         </TouchableOpacity>
       </ScrollView>
@@ -127,31 +130,33 @@ export default function EditEducationScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  scroll: { flex: 1, backgroundColor: colors.surface },
+function createStyles(c) {
+  return StyleSheet.create({
+  scroll: { flex: 1, backgroundColor: c.surface },
   content: { padding: 20, gap: 16, paddingBottom: 40 },
   fieldGroup: { gap: 8 },
-  label: { fontSize: 12, fontWeight: '600', color: colors.foreground, textTransform: 'uppercase', letterSpacing: 0.4 },
-  optional: { fontWeight: '400', color: colors.mutedForeground, textTransform: 'none' },
+  label: { fontSize: 12, fontWeight: '600', color: c.foreground, textTransform: 'uppercase', letterSpacing: 0.4 },
+  optional: { fontWeight: '400', color: c['muted-foreground'], textTransform: 'none' },
   input: {
-    backgroundColor: colors.white, borderWidth: 1, borderColor: colors.border,
+    backgroundColor: c.white, borderWidth: 1, borderColor: c.border,
     borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12,
-    fontSize: 14, color: colors.foreground,
+    fontSize: 14, color: c.foreground,
   },
   inputMulti: { minHeight: 120, paddingTop: 12 },
   levelRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   levelPill: {
-    borderWidth: 1.5, borderColor: colors.border, borderRadius: 20,
-    paddingHorizontal: 14, paddingVertical: 7, backgroundColor: colors.white,
+    borderWidth: 1.5, borderColor: c.border, borderRadius: 20,
+    paddingHorizontal: 14, paddingVertical: 7, backgroundColor: c.white,
   },
-  levelPillActive: { backgroundColor: `${colors.primary}15`, borderColor: colors.primary },
-  levelPillText: { fontSize: 13, fontWeight: '500', color: colors.mutedForeground },
-  levelPillTextActive: { color: colors.primary, fontWeight: '700' },
+  levelPillActive: { backgroundColor: `${c.primary}15`, borderColor: c.primary },
+  levelPillText: { fontSize: 13, fontWeight: '500', color: c['muted-foreground'] },
+  levelPillTextActive: { color: c.primary, fontWeight: '700' },
   saveBtn: {
-    backgroundColor: colors.primary, borderRadius: 12, paddingVertical: 14,
+    backgroundColor: c.primary, borderRadius: 12, paddingVertical: 14,
     alignItems: 'center', marginTop: 8,
-    shadowColor: colors.primary, shadowOffset: { width: 0, height: 4 },
+    shadowColor: c.primary, shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
   },
-  saveBtnText: { color: colors.white, fontSize: 15, fontWeight: '700' },
-});
+  saveBtnText: { color: c.white, fontSize: 15, fontWeight: '700' },
+  });
+}

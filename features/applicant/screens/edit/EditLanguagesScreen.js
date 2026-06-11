@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { colors } from '../../../../src/theme';
+import { useTheme } from '../../../../shared/context/ThemeContext';
 import { addLanguage, updateLanguage } from '../../services/languages.service';
 import { Language } from '../../models';
 
@@ -26,6 +26,9 @@ const LEVEL_COLORS = {
 };
 
 export default function EditLanguagesScreen() {
+  const { theme } = useTheme();
+  const c = theme.colors;
+  const styles = createStyles(c);
   const navigation = useNavigation();
   const { profileId, item, itemIndex } = useRoute().params || {};
   const isEdit = item != null && itemIndex != null;
@@ -63,7 +66,7 @@ export default function EditLanguagesScreen() {
             value={name}
             onChangeText={setName}
             placeholder="e.g. Arabic, English, French"
-            placeholderTextColor={colors.mutedForeground}
+            placeholderTextColor={c['muted-foreground']}
             autoCapitalize="words"
             autoCorrect={false}
           />
@@ -80,23 +83,23 @@ export default function EditLanguagesScreen() {
                   key={l.key}
                   style={[
                     styles.levelCard,
-                    { borderColor: active ? cfg.border : colors.border },
+                    { borderColor: active ? cfg.border : c.border },
                     active && { backgroundColor: cfg.bg },
                   ]}
                   onPress={() => setLevel(l.key)}
                   activeOpacity={0.75}
                 >
                   <View style={styles.levelCardTop}>
-                    <Text style={[styles.levelLabel, { color: active ? cfg.text : colors.foreground }]}>
+                    <Text style={[styles.levelLabel, { color: active ? cfg.text : c.foreground }]}>
                       {l.label}
                     </Text>
                     {active && (
                       <View style={[styles.levelCheck, { backgroundColor: cfg.text }]}>
-                        <Ionicons name="checkmark" size={10} color={colors.white} />
+                        <Ionicons name="checkmark" size={10} color={c.white} />
                       </View>
                     )}
                   </View>
-                  <Text style={[styles.levelDesc, { color: active ? cfg.text : colors.mutedForeground }]}>
+                  <Text style={[styles.levelDesc, { color: active ? cfg.text : c['muted-foreground'] }]}>
                     {l.desc}
                   </Text>
                 </TouchableOpacity>
@@ -112,7 +115,7 @@ export default function EditLanguagesScreen() {
           activeOpacity={0.85}
         >
           {saving
-            ? <ActivityIndicator color={colors.white} size="small" />
+            ? <ActivityIndicator color={c.white} size="small" />
             : <Text style={styles.saveBtnText}>{isEdit ? 'Save Changes' : 'Add Language'}</Text>}
         </TouchableOpacity>
 
@@ -121,18 +124,20 @@ export default function EditLanguagesScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  scroll: { flex: 1, backgroundColor: colors.surface },
+function createStyles(c) {
+  return StyleSheet.create({
+  scroll: { flex: 1, backgroundColor: c.surface },
   content: { padding: 20, gap: 20, paddingBottom: 40 },
   fieldGroup: { gap: 10 },
-  label: { fontSize: 12, fontWeight: '600', color: colors.foreground, textTransform: 'uppercase', letterSpacing: 0.4 },
-  input: { backgroundColor: colors.white, borderWidth: 1, borderColor: colors.border, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, fontSize: 14, color: colors.foreground },
+  label: { fontSize: 12, fontWeight: '600', color: c.foreground, textTransform: 'uppercase', letterSpacing: 0.4 },
+  input: { backgroundColor: c.white, borderWidth: 1, borderColor: c.border, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, fontSize: 14, color: c.foreground },
   levelsContainer: { gap: 10 },
-  levelCard: { borderWidth: 2, borderRadius: 14, padding: 14, backgroundColor: colors.white },
+  levelCard: { borderWidth: 2, borderRadius: 14, padding: 14, backgroundColor: c.white },
   levelCardTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },
   levelLabel: { fontSize: 14, fontWeight: '700' },
   levelCheck: { width: 18, height: 18, borderRadius: 9, alignItems: 'center', justifyContent: 'center' },
   levelDesc: { fontSize: 12, lineHeight: 17 },
-  saveBtn: { backgroundColor: colors.primary, borderRadius: 12, paddingVertical: 14, alignItems: 'center', marginTop: 4, shadowColor: colors.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 },
-  saveBtnText: { color: colors.white, fontSize: 15, fontWeight: '700' },
-});
+  saveBtn: { backgroundColor: c.primary, borderRadius: 12, paddingVertical: 14, alignItems: 'center', marginTop: 4, shadowColor: c.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 },
+  saveBtnText: { color: c.white, fontSize: 15, fontWeight: '700' },
+  });
+}

@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
-import { colors } from '../../../src/theme';
+import { useTheme } from '../../../shared/context/ThemeContext';
 import { fetchApplicantProfile } from '../services/profile.service';
 import { deleteExperience } from '../services/experience.service';
 import { deleteEducation } from '../services/education.service';
@@ -50,7 +50,9 @@ async function deleteAward(userId, index) {
   await supabase.from('profiles').update({ awards }).eq('id', userId);
 }
 
-function TabBar({ active, onSelect }) {
+function TabBar({ active, onSelect, styles }) {
+  const { theme } = useTheme();
+  const c = theme.colors;
   return (
     <ScrollView
       horizontal showsHorizontalScrollIndicator={false}
@@ -63,7 +65,7 @@ function TabBar({ active, onSelect }) {
           onPress={() => onSelect(tab.key)}
           activeOpacity={0.75}
         >
-          <Ionicons name={tab.icon} size={14} color={active === tab.key ? colors.primary : colors.mutedForeground} />
+          <Ionicons name={tab.icon} size={14} color={active === tab.key ? c.primary : c['muted-foreground']} />
           <Text style={[styles.tabLabel, active === tab.key && styles.tabLabelActive]}>{tab.label}</Text>
         </TouchableOpacity>
       ))}
@@ -75,6 +77,9 @@ export default function ApplicantProfilePage() {
   const navigation = useNavigation();
   const route = useRoute();
   const { profileId, viewOnly = false } = route.params || {};
+  const { theme } = useTheme();
+  const c = theme.colors;
+  const styles = createStyles(c);
 
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -172,7 +177,7 @@ export default function ApplicantProfilePage() {
     actions[field]?.();
   };
 
-  if (loading) return <View style={styles.centered}><ActivityIndicator size="large" color={colors.primary} /></View>;
+  if (loading) return <View style={styles.centered}><ActivityIndicator size="large" color={c.primary} /></View>;
   if (!profile) return <View style={styles.centered}><Text style={styles.errorText}>Profile not found.</Text></View>;
 
   return (
@@ -189,7 +194,7 @@ export default function ApplicantProfilePage() {
           <CompletenessBar score={score} missing={missing} onFieldPress={handleMissingFieldPress} />
         )}
 
-        <TabBar active={activeTab} onSelect={setActiveTab} />
+        <TabBar active={activeTab} onSelect={setActiveTab} styles={styles} />
 
         {activeTab === 'about' && (
           <AboutTab profile={profile} viewOnly={viewOnly} onEdit={handleEdit} />
@@ -226,16 +231,18 @@ export default function ApplicantProfilePage() {
   );
 }
 
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.surface },
-  scroll: { flex: 1 },
-  content: { padding: 16, gap: 14, paddingBottom: 40 },
-  centered: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.surface },
-  errorText: { fontSize: 14, color: colors.mutedForeground },
-  tabBarScroll: { backgroundColor: colors.white, borderRadius: 14, borderWidth: 1, borderColor: colors.border },
-  tabBarContent: { flexDirection: 'row', padding: 4, gap: 2 },
-  tab: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 10 },
-  tabActive: { backgroundColor: `${colors.primary}12` },
-  tabLabel: { fontSize: 13, fontWeight: '600', color: colors.mutedForeground },
-  tabLabelActive: { color: colors.primary },
-});
+function createStyles(c) {
+  return StyleSheet.create({
+    root: { flex: 1, backgroundColor: c.surface },
+    scroll: { flex: 1 },
+    content: { padding: 16, gap: 14, paddingBottom: 40 },
+    centered: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: c.surface },
+    errorText: { fontSize: 14, color: c['muted-foreground'] },
+    tabBarScroll: { backgroundColor: c.white, borderRadius: 14, borderWidth: 1, borderColor: c.border },
+    tabBarContent: { flexDirection: 'row', padding: 4, gap: 2 },
+    tab: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 10 },
+    tabActive: { backgroundColor: `${c.primary}12` },
+    tabLabel: { fontSize: 13, fontWeight: '600', color: c['muted-foreground'] },
+    tabLabelActive: { color: c.primary },
+  });
+}

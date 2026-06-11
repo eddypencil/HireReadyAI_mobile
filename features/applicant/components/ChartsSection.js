@@ -1,7 +1,7 @@
 // features/applicant/components/ChartsSection.js
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import Svg, { Circle, G, Path, Rect, Text as SvgText } from 'react-native-svg';
-import { colors } from '../../../src/theme';
+import { useTheme } from '../../../shared/context/ThemeContext';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CHART_WIDTH = SCREEN_WIDTH - 64;
@@ -40,6 +40,9 @@ function buildDonutSlices(data, cx, cy, r) {
 
 // ── Donut Chart — shows per-application status (not per-stage)
 function DonutChart({ applications }) {
+  const { theme } = useTheme();
+  const c = theme.colors;
+  const styles = createStyles(c);
   const SIZE = Math.min(CHART_WIDTH * 0.55, 180);
   const cx = SIZE / 2;
   const cy = SIZE / 2;
@@ -92,12 +95,12 @@ function DonutChart({ applications }) {
                   <Path key={i} d={s.path} fill={s.color} />
                 ))
               )}
-              <Circle cx={cx} cy={cy} r={innerR} fill={colors.white} />
+              <Circle cx={cx} cy={cy} r={innerR} fill={c.white} />
               <SvgText
                 x={cx} y={cy - 8}
                 textAnchor="middle"
                 fontSize={22} fontWeight="700"
-                fill={colors.foreground}
+                fill={c.foreground}
               >
                 {total}
               </SvgText>
@@ -105,7 +108,7 @@ function DonutChart({ applications }) {
                 x={cx} y={cy + 12}
                 textAnchor="middle"
                 fontSize={10}
-                fill={colors.mutedForeground}
+                fill={c['muted-foreground']}
               >
                 applications
               </SvgText>
@@ -131,6 +134,9 @@ function DonutChart({ applications }) {
 
 // ── Bar Chart — full width
 function BarChart({ applications }) {
+  const { theme } = useTheme();
+  const c = theme.colors;
+  const styles = createStyles(c);
   const SIZE_W = CHART_WIDTH;
   const SIZE_H = 160;
   const padLeft = 28;
@@ -178,7 +184,7 @@ function BarChart({ applications }) {
               <G key={i}>
                 <Path
                   d={`M ${padLeft} ${y} L ${SIZE_W - padRight} ${y}`}
-                  stroke={colors.border}
+                  stroke={c.border}
                   strokeWidth={0.8}
                   strokeDasharray="4,4"
                 />
@@ -186,7 +192,7 @@ function BarChart({ applications }) {
                   x={padLeft - 5} y={y + 4}
                   textAnchor="end"
                   fontSize={9}
-                  fill={colors.mutedForeground}
+                  fill={c['muted-foreground']}
                 >
                   {tick}
                 </SvgText>
@@ -205,7 +211,7 @@ function BarChart({ applications }) {
                   x={x} y={y}
                   width={barWidth} height={barH}
                   rx={5}
-                  fill={colors.primary}
+                  fill={c.primary}
                   opacity={0.9}
                 />
                 <SvgText
@@ -213,7 +219,7 @@ function BarChart({ applications }) {
                   y={SIZE_H - padBottom + 16}
                   textAnchor="middle"
                   fontSize={9}
-                  fill={colors.mutedForeground}
+                  fill={c['muted-foreground']}
                 >
                   {shortLabel}
                 </SvgText>
@@ -223,7 +229,7 @@ function BarChart({ applications }) {
 
           <Path
             d={`M ${padLeft} ${padTop + chartH} L ${SIZE_W - padRight} ${padTop + chartH}`}
-            stroke={colors.border}
+            stroke={c.border}
             strokeWidth={1}
           />
         </Svg>
@@ -233,6 +239,9 @@ function BarChart({ applications }) {
 }
 
 export default function ChartsSection({ applications }) {
+  const { theme } = useTheme();
+  const c = theme.colors;
+  const styles = createStyles(c);
   return (
     <View style={styles.container}>
       <DonutChart applications={applications} />
@@ -241,66 +250,68 @@ export default function ChartsSection({ applications }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    gap: 14,
-  },
-  chartCard: {
-    backgroundColor: colors.white,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: 20,
-  },
-  chartTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: colors.foreground,
-  },
-  chartSubtitle: {
-    fontSize: 11,
-    color: colors.mutedForeground,
-    marginTop: 2,
-    marginBottom: 4,
-  },
-  chartEmpty: {
-    height: 100,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  chartEmptyText: {
-    fontSize: 12,
-    color: colors.mutedForeground,
-  },
-  donutRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 20,
-    marginTop: 8,
-  },
-  legendCol: {
-    flex: 1,
-    gap: 10,
-  },
-  legendItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  legendDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    flexShrink: 0,
-  },
-  legendText: {
-    fontSize: 13,
-    color: colors.foreground,
-    fontWeight: '500',
-  },
-  legendCount: {
-    fontSize: 12,
-    color: colors.mutedForeground,
-    fontWeight: '400',
-  },
-});
+function createStyles(c) {
+  return StyleSheet.create({
+    container: {
+      gap: 14,
+    },
+    chartCard: {
+      backgroundColor: c.white,
+      borderRadius: 16,
+      borderWidth: 1,
+      borderColor: c.border,
+      padding: 20,
+    },
+    chartTitle: {
+      fontSize: 14,
+      fontWeight: '700',
+      color: c.foreground,
+    },
+    chartSubtitle: {
+      fontSize: 11,
+      color: c['muted-foreground'],
+      marginTop: 2,
+      marginBottom: 4,
+    },
+    chartEmpty: {
+      height: 100,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    chartEmptyText: {
+      fontSize: 12,
+      color: c['muted-foreground'],
+    },
+    donutRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 20,
+      marginTop: 8,
+    },
+    legendCol: {
+      flex: 1,
+      gap: 10,
+    },
+    legendItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
+    legendDot: {
+      width: 10,
+      height: 10,
+      borderRadius: 5,
+      flexShrink: 0,
+    },
+    legendText: {
+      fontSize: 13,
+      color: c.foreground,
+      fontWeight: '500',
+    },
+    legendCount: {
+      fontSize: 12,
+      color: c['muted-foreground'],
+      fontWeight: '400',
+    },
+  });
+}

@@ -2,31 +2,32 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '../../../../src/theme';
+import { useTheme } from '../../../../shared/context/ThemeContext';
 import StageSelector from './StageSelector';
 import ExpandableQuestion from './ExpandableQuestion';
 
-const GRADIENT = colors.gradient;
-
 export default function AssessmentsSection({ stagesWithQuestions, activeStage, onSelectStage, candidateName, jobTitle }) {
+  const { theme } = useTheme();
+  const c = theme.colors;
+  const styles = createStyles(c);
   const isEmpty = stagesWithQuestions.length === 0 || stagesWithQuestions.every(s => s.questions.length === 0);
   const totalQ = stagesWithQuestions.reduce((a, s) => a + s.questions.length, 0);
   const evalData = (() => { const e = activeStage?.application_stage_evaluations; return Array.isArray(e) ? e[0] : e; })();
 
-  const stageScoreColor = activeStage?.score >= 80 ? { bg: colors.emerald[100], text: colors.emerald[600] }
-    : activeStage?.score >= 60 ? { bg: colors.accentSoftBg, text: colors.primary }
-    : { bg: colors.amber[100], text: colors.amber[800] };
+  const stageScoreColor = activeStage?.score >= 80 ? { bg: c.emerald[100], text: c.emerald[600] }
+    : activeStage?.score >= 60 ? { bg: c['surface-muted'], text: c.primary }
+    : { bg: c.amber[100], text: c.amber[800] };
 
-  const statusColor = activeStage?.status === 'passed' ? colors.emerald[600]
-    : activeStage?.status === 'failed' ? colors.red[600]
-    : activeStage?.status === 'in_progress' ? colors.primary
-    : colors.muted;
+  const statusColor = activeStage?.status === 'passed' ? c.emerald[600]
+    : activeStage?.status === 'failed' ? c.red[600]
+    : activeStage?.status === 'in_progress' ? c.primary
+    : c.muted;
 
   return (
     <View style={styles.container}>
       {/* Gradient Hero */}
       <LinearGradient
-        colors={GRADIENT}
+        colors={['#01497c', '#468faf']}
         start={{ x: 0, y: 0 }}
         end={{ x: 0.3, y: 1 }}
         style={styles.hero}
@@ -52,7 +53,7 @@ export default function AssessmentsSection({ stagesWithQuestions, activeStage, o
 
         {isEmpty && (
           <View style={styles.empty}>
-            <Ionicons name="bulb-outline" size={40} color={colors.gray[300]} />
+            <Ionicons name="bulb-outline" size={40} color={c.gray[300]} />
             <Text style={styles.emptyTitle}>No Assessment Data</Text>
             <Text style={styles.emptySub}>No interviews or assessments completed yet.</Text>
           </View>
@@ -89,8 +90,8 @@ export default function AssessmentsSection({ stagesWithQuestions, activeStage, o
             <View style={styles.evalCell}>
               <Text style={styles.evalLabel}>Recommendation</Text>
               <Text style={[styles.evalVal, {
-                color: evalData.recommendation === 'proceed' ? colors.emerald[600]
-                  : evalData.recommendation === 'review' ? colors.amber[600] : colors.red[600]
+                color: evalData.recommendation === 'proceed' ? c.emerald[600]
+                  : evalData.recommendation === 'review' ? c.amber[600] : c.red[600]
               }]}>
                 {evalData.recommendation?.charAt(0).toUpperCase() + evalData.recommendation?.slice(1) || 'N/A'}
               </Text>
@@ -121,12 +122,13 @@ export default function AssessmentsSection({ stagesWithQuestions, activeStage, o
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(c) {
+  return StyleSheet.create({
   container: { gap: 14 },
 
   hero: {
     borderRadius: 20, padding: 20, overflow: 'hidden',
-    shadowColor: colors.primary, shadowOpacity: 0.2, shadowRadius: 12, shadowOffset: { width: 0, height: 6 },
+    shadowColor: c.primary, shadowOpacity: 0.2, shadowRadius: 12, shadowOffset: { width: 0, height: 6 },
   },
   b1: {
     position: 'absolute', top: -40, right: -40,
@@ -139,34 +141,34 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.06)',
   },
   heroRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative' },
-  heroTitle: { fontSize: 17, fontWeight: '700', color: colors.white, letterSpacing: -0.2 },
+  heroTitle: { fontSize: 17, fontWeight: '700', color: c.white, letterSpacing: -0.2 },
   heroSub: { fontSize: 13, color: 'rgba(255,255,255,0.75)', marginTop: 3 },
   totalBadge: {
     backgroundColor: 'rgba(255,255,255,0.18)',
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.28)',
     paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999,
   },
-  totalText: { fontSize: 11, fontWeight: '700', color: colors.white },
+  totalText: { fontSize: 11, fontWeight: '700', color: c.white },
 
   card: {
-    backgroundColor: colors.white, borderRadius: 18,
-    borderWidth: 1, borderColor: colors.line, overflow: 'hidden',
-    shadowColor: colors.primary, shadowOpacity: 0.04, shadowRadius: 4, shadowOffset: { width: 0, height: 1 },
+    backgroundColor: c.white, borderRadius: 18,
+    borderWidth: 1, borderColor: c.border, overflow: 'hidden',
+    shadowColor: c.primary, shadowOpacity: 0.04, shadowRadius: 4, shadowOffset: { width: 0, height: 1 },
   },
   empty: { alignItems: 'center', padding: 40, gap: 10 },
-  emptyTitle: { fontSize: 15, fontWeight: '700', color: colors.ink },
-  emptySub: { fontSize: 13, color: colors.muted, textAlign: 'center', lineHeight: 19 },
+  emptyTitle: { fontSize: 15, fontWeight: '700', color: c.foreground },
+  emptySub: { fontSize: 13, color: c.muted, textAlign: 'center', lineHeight: 19 },
 
   stageHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16 },
   stageLeft: { flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 },
   stageIcon: {
     width: 40, height: 40, borderRadius: 12,
-    backgroundColor: colors.primary,
+    backgroundColor: c.primary,
     alignItems: 'center', justifyContent: 'center', flexShrink: 0,
   },
   stageInfo: { flex: 1 },
-  stageName: { fontSize: 14, fontWeight: '700', color: colors.ink },
-  stageType: { fontSize: 11, color: colors.muted, textTransform: 'capitalize', marginTop: 2 },
+  stageName: { fontSize: 14, fontWeight: '700', color: c.foreground },
+  stageType: { fontSize: 11, color: c.muted, textTransform: 'capitalize', marginTop: 2 },
   stageRight: { alignItems: 'flex-end', gap: 4, flexShrink: 0 },
   stagScore: { paddingHorizontal: 9, paddingVertical: 4, borderRadius: 8 },
   stagScoreText: { fontSize: 12, fontWeight: '700' },
@@ -174,11 +176,12 @@ const styles = StyleSheet.create({
 
   evalGrid: {
     flexDirection: 'row',
-    borderTopWidth: 1, borderTopColor: colors.line,
+    borderTopWidth: 1, borderTopColor: c.border,
     paddingVertical: 14, paddingHorizontal: 16,
   },
   evalCell: { flex: 1 },
-  evalLabel: { fontSize: 9, fontWeight: '700', color: colors.muted, textTransform: 'uppercase', letterSpacing: 0.6 },
-  evalVal: { fontSize: 13, fontWeight: '700', color: colors.ink, marginTop: 4 },
+  evalLabel: { fontSize: 9, fontWeight: '700', color: c.muted, textTransform: 'uppercase', letterSpacing: 0.6 },
+  evalVal: { fontSize: 13, fontWeight: '700', color: c.foreground, marginTop: 4 },
   questions: { gap: 10 },
 });
+}

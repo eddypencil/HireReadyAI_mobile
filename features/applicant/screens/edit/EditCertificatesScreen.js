@@ -9,7 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import { decode } from 'base64-arraybuffer';
-import { colors } from '../../../../src/theme';
+import { useTheme } from '../../../../shared/context/ThemeContext';
 import { addCertificate, updateCertificate } from '../../services/certificates.service';
 import { Certificate } from '../../models';
 import { supabase } from '../../../../shared/services/supabase';
@@ -60,7 +60,7 @@ function Field({ label, value, onChangeText, placeholder, optional, keyboardType
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor={colors.mutedForeground}
+        placeholderTextColor={c['muted-foreground']}
         autoCapitalize="sentences"
         autoCorrect={false}
         keyboardType={keyboardType || 'default'}
@@ -70,6 +70,9 @@ function Field({ label, value, onChangeText, placeholder, optional, keyboardType
 }
 
 export default function EditCertificatesScreen() {
+  const { theme } = useTheme();
+  const c = theme.colors;
+  const styles = createStyles(c);
   const navigation = useNavigation();
   const { profileId, item, itemIndex } = useRoute().params || {};
   const isEdit = item != null && itemIndex != null;
@@ -171,7 +174,7 @@ export default function EditCertificatesScreen() {
         {/* Image section */}
         <View style={styles.divider} />
         <View style={styles.imageSectionHeader}>
-          <Ionicons name="image-outline" size={18} color={colors.accent} />
+          <Ionicons name="image-outline" size={18} color={c.accent} />
           <View>
             <Text style={styles.imageSectionTitle}>Certificate Image</Text>
             <Text style={styles.imageSectionSubtitle}>Upload a photo of your certificate</Text>
@@ -182,7 +185,7 @@ export default function EditCertificatesScreen() {
           <View style={styles.imagePreviewContainer}>
             <Image source={{ uri: imageUrl }} style={styles.imagePreview} resizeMode="cover" />
             <TouchableOpacity style={styles.removeImageBtn} onPress={handleRemoveImage} activeOpacity={0.8}>
-              <Ionicons name="trash-outline" size={16} color={colors.white} />
+              <Ionicons name="trash-outline" size={16} color={c.white} />
               <Text style={styles.removeImageText}>Remove Image</Text>
             </TouchableOpacity>
           </View>
@@ -194,8 +197,8 @@ export default function EditCertificatesScreen() {
             activeOpacity={0.75}
           >
             {uploadingImage
-              ? <ActivityIndicator size="small" color={colors.accent} />
-              : <Ionicons name="cloud-upload-outline" size={20} color={colors.accent} />}
+              ? <ActivityIndicator size="small" color={c.accent} />
+              : <Ionicons name="cloud-upload-outline" size={20} color={c.accent} />}
             <Text style={styles.addImageBtnText}>
               {uploadingImage ? 'Uploading...' : 'Upload Certificate Image'}
             </Text>
@@ -209,7 +212,7 @@ export default function EditCertificatesScreen() {
           activeOpacity={0.85}
         >
           {saving
-            ? <ActivityIndicator color={colors.white} size="small" />
+            ? <ActivityIndicator color={c.white} size="small" />
             : <Text style={styles.saveBtnText}>{isEdit ? 'Save Changes' : 'Add Certificate'}</Text>}
         </TouchableOpacity>
 
@@ -218,33 +221,35 @@ export default function EditCertificatesScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  scroll: { flex: 1, backgroundColor: colors.surface },
+function createStyles(c) {
+  return StyleSheet.create({
+  scroll: { flex: 1, backgroundColor: c.surface },
   content: { padding: 20, gap: 16, paddingBottom: 40 },
   fieldGroup: { gap: 6 },
-  label: { fontSize: 12, fontWeight: '600', color: colors.foreground, textTransform: 'uppercase', letterSpacing: 0.4 },
-  optional: { fontWeight: '400', color: colors.mutedForeground, textTransform: 'none' },
-  input: { backgroundColor: colors.white, borderWidth: 1, borderColor: colors.border, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, fontSize: 14, color: colors.foreground },
-  divider: { height: 1, backgroundColor: colors.border },
+  label: { fontSize: 12, fontWeight: '600', color: c.foreground, textTransform: 'uppercase', letterSpacing: 0.4 },
+  optional: { fontWeight: '400', color: c['muted-foreground'], textTransform: 'none' },
+  input: { backgroundColor: c.white, borderWidth: 1, borderColor: c.border, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, fontSize: 14, color: c.foreground },
+  divider: { height: 1, backgroundColor: c.border },
   imageSectionHeader: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
-  imageSectionTitle: { fontSize: 15, fontWeight: '700', color: colors.foreground },
-  imageSectionSubtitle: { fontSize: 12, color: colors.mutedForeground, marginTop: 2 },
+  imageSectionTitle: { fontSize: 15, fontWeight: '700', color: c.foreground },
+  imageSectionSubtitle: { fontSize: 12, color: c['muted-foreground'], marginTop: 2 },
   imagePreviewContainer: { gap: 10 },
-  imagePreview: { width: '100%', height: 200, borderRadius: 14, borderWidth: 1, borderColor: colors.border },
+  imagePreview: { width: '100%', height: 200, borderRadius: 14, borderWidth: 1, borderColor: c.border },
   removeImageBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
     backgroundColor: '#ef4444', borderRadius: 10,
     paddingVertical: 10, paddingHorizontal: 16, alignSelf: 'flex-start',
   },
-  removeImageText: { color: colors.white, fontSize: 13, fontWeight: '600' },
+  removeImageText: { color: c.white, fontSize: 13, fontWeight: '600' },
   addImageBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
-    borderWidth: 1.5, borderColor: `${colors.accent}50`,
+    borderWidth: 1.5, borderColor: `${c.accent}50`,
     borderStyle: 'dashed', borderRadius: 12,
     paddingVertical: 16, paddingHorizontal: 16,
-    backgroundColor: `${colors.accent}08`,
+    backgroundColor: `${c.accent}08`,
   },
-  addImageBtnText: { fontSize: 14, color: colors.accent, fontWeight: '600' },
-  saveBtn: { backgroundColor: colors.primary, borderRadius: 12, paddingVertical: 14, alignItems: 'center', marginTop: 4, shadowColor: colors.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 },
-  saveBtnText: { color: colors.white, fontSize: 15, fontWeight: '700' },
-});
+  addImageBtnText: { fontSize: 14, color: c.accent, fontWeight: '600' },
+  saveBtn: { backgroundColor: c.primary, borderRadius: 12, paddingVertical: 14, alignItems: 'center', marginTop: 4, shadowColor: c.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 },
+  saveBtnText: { color: c.white, fontSize: 15, fontWeight: '700' },
+  });
+}

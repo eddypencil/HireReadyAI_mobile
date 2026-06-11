@@ -5,18 +5,20 @@
 //   Volunteering: organization, role, start, end, description
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '../../../../src/theme';
+import { useTheme } from '../../../../shared/context/ThemeContext';
 
 function SectionHeader({ title, icon, onAdd, viewOnly }) {
+  const { theme } = useTheme();
+  const c = theme.colors;
   return (
     <View style={styles.sectionHeader}>
       <View style={styles.sectionHeaderLeft}>
-        <Ionicons name={icon} size={16} color={colors.accent} />
+        <Ionicons name={icon} size={16} color={c.accent} />
         <Text style={styles.sectionTitle}>{title}</Text>
       </View>
       {!viewOnly && (
         <TouchableOpacity onPress={onAdd} style={styles.addBtn} activeOpacity={0.75}>
-          <Ionicons name="add" size={16} color={colors.white} />
+          <Ionicons name="add" size={16} color={c.white} />
         </TouchableOpacity>
       )}
     </View>
@@ -24,6 +26,8 @@ function SectionHeader({ title, icon, onAdd, viewOnly }) {
 }
 
 function EmptySection({ text, onAdd, viewOnly }) {
+  const { theme } = useTheme();
+  const c = theme.colors;
   return (
     <TouchableOpacity
       style={styles.emptyRow}
@@ -31,13 +35,15 @@ function EmptySection({ text, onAdd, viewOnly }) {
       disabled={viewOnly}
       activeOpacity={0.75}
     >
-      <Ionicons name="add-circle-outline" size={20} color={colors.border} />
+      <Ionicons name="add-circle-outline" size={20} color={c.border} />
       <Text style={styles.emptyText}>{viewOnly ? 'Nothing added yet' : text}</Text>
     </TouchableOpacity>
   );
 }
 
 function ItemCard({ iconName, iconBg, iconColor, title, subtitle, date, extra, description, onEdit, onDelete, viewOnly }) {
+  const { theme } = useTheme();
+  const c = theme.colors;
   return (
     <View style={styles.itemCard}>
       <View style={[styles.itemIcon, { backgroundColor: iconBg }]}>
@@ -53,7 +59,7 @@ function ItemCard({ iconName, iconBg, iconColor, title, subtitle, date, extra, d
       {!viewOnly && (
         <View style={styles.itemActions}>
           <TouchableOpacity onPress={onEdit} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <Ionicons name="pencil-outline" size={14} color={colors.mutedForeground} />
+            <Ionicons name="pencil-outline" size={14} color={c['muted-foreground']} />
           </TouchableOpacity>
           <TouchableOpacity onPress={onDelete} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
             <Ionicons name="trash-outline" size={14} color="#ef4444" />
@@ -65,6 +71,9 @@ function ItemCard({ iconName, iconBg, iconColor, title, subtitle, date, extra, d
 }
 
 export default function ExperienceTab({ profile, viewOnly, onEdit, onDelete }) {
+  const { theme } = useTheme();
+  const c = theme.colors;
+  const styles = createStyles(c);
   // Data comes from Supabase as JSON (snake_case from toJson())
   const experience  = profile?.experience  || [];
   const education   = profile?.education   || [];
@@ -87,8 +96,8 @@ export default function ExperienceTab({ profile, viewOnly, onEdit, onDelete }) {
             <ItemCard
               key={index}
               iconName="briefcase-outline"
-              iconBg={`${colors.accent}18`}
-              iconColor={colors.accent}
+              iconBg={`${c.accent}18`}
+              iconColor={c.accent}
               title={item.title}
               subtitle={[item.company_name, item.industry].filter(Boolean).join(' · ')}
               date={[item.from, item.to || 'Present'].filter(Boolean).join(' — ')}
@@ -159,37 +168,39 @@ export default function ExperienceTab({ profile, viewOnly, onEdit, onDelete }) {
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(c) {
+  return StyleSheet.create({
   container: { gap: 20 },
   section: {
-    backgroundColor: colors.white, borderRadius: 16,
-    borderWidth: 1, borderColor: colors.border, overflow: 'hidden',
+    backgroundColor: c.white, borderRadius: 16,
+    borderWidth: 1, borderColor: c.border, overflow: 'hidden',
   },
   sectionHeader: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    padding: 18, borderBottomWidth: 1, borderBottomColor: colors.border,
+    padding: 18, borderBottomWidth: 1, borderBottomColor: c.border,
   },
   sectionHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  sectionTitle: { fontSize: 15, fontWeight: '700', color: colors.foreground },
+  sectionTitle: { fontSize: 15, fontWeight: '700', color: c.foreground },
   addBtn: {
     width: 28, height: 28, borderRadius: 14,
-    backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center',
   },
   emptyRow: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 18 },
-  emptyText: { fontSize: 13, color: colors.mutedForeground, fontStyle: 'italic' },
+  emptyText: { fontSize: 13, color: c['muted-foreground'], fontStyle: 'italic' },
   itemCard: {
     flexDirection: 'row', alignItems: 'flex-start', gap: 12,
-    padding: 16, borderTopWidth: 1, borderTopColor: colors.border,
+    padding: 16, borderTopWidth: 1, borderTopColor: c.border,
   },
   itemIcon: {
     width: 40, height: 40, borderRadius: 10,
     alignItems: 'center', justifyContent: 'center', flexShrink: 0,
   },
   itemContent: { flex: 1, gap: 3 },
-  itemTitle: { fontSize: 14, fontWeight: '700', color: colors.foreground },
-  itemSubtitle: { fontSize: 13, color: colors.mutedForeground, fontWeight: '500' },
-  itemExtra: { fontSize: 12, color: colors.mutedForeground },
-  itemDate: { fontSize: 12, color: colors.mutedForeground },
-  itemDesc: { fontSize: 13, color: colors.foreground, lineHeight: 19, marginTop: 4 },
+  itemTitle: { fontSize: 14, fontWeight: '700', color: c.foreground },
+  itemSubtitle: { fontSize: 13, color: c['muted-foreground'], fontWeight: '500' },
+  itemExtra: { fontSize: 12, color: c['muted-foreground'] },
+  itemDate: { fontSize: 12, color: c['muted-foreground'] },
+  itemDesc: { fontSize: 13, color: c.foreground, lineHeight: 19, marginTop: 4 },
   itemActions: { gap: 8, flexShrink: 0 },
-});
+  });
+}

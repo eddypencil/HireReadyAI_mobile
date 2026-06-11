@@ -23,7 +23,8 @@ import { useSidebar } from "../../../shared/context/SidebarContext";
 import Snackbar from "../../../shared/ui/Snackbar";
 
 export default function NoCompanyView({ onCompanyJoined }) {
-  const { colors: c } = useTheme();
+  const { theme } = useTheme();
+  const c = theme.colors;
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const { profile, signOutUser } = useUser();

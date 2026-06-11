@@ -1,9 +1,12 @@
 // features/applicant/components/profile/ProfileHero.js
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '../../../../src/theme';
+import { useTheme } from '../../../../shared/context/ThemeContext';
 
 export default function ProfileHero({ profile, viewOnly, onEditAvatar, onViewApplications }) {
+  const { theme } = useTheme();
+  const c = theme.colors;
+  const styles = createStyles(c);
   const initials = (profile?.full_name || 'U')
     .split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
 
@@ -30,7 +33,7 @@ export default function ProfileHero({ profile, viewOnly, onEditAvatar, onViewApp
             )}
             {!viewOnly && (
               <View style={styles.avatarEdit}>
-                <Ionicons name="camera" size={12} color={colors.white} />
+                <Ionicons name="camera" size={12} color={c.white} />
               </View>
             )}
           </View>
@@ -38,7 +41,7 @@ export default function ProfileHero({ profile, viewOnly, onEditAvatar, onViewApp
 
         {onViewApplications && (
           <TouchableOpacity style={styles.appsBtn} onPress={onViewApplications} activeOpacity={0.85}>
-            <Ionicons name="layers-outline" size={14} color={colors.white} />
+            <Ionicons name="layers-outline" size={14} color={c.white} />
             <Text style={styles.appsBtnText}>My Applications</Text>
           </TouchableOpacity>
         )}
@@ -83,8 +86,9 @@ export default function ProfileHero({ profile, viewOnly, onEditAvatar, onViewApp
   );
 }
 
-const styles = StyleSheet.create({
-  card: { backgroundColor: colors.primary, borderRadius: 20, padding: 20, gap: 14 },
+function createStyles(c) {
+  return StyleSheet.create({
+  card: { backgroundColor: c.primary, borderRadius: 20, padding: 20, gap: 14 },
   topRow: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
   avatarWrapper: { position: 'relative' },
   avatar: {
@@ -97,12 +101,12 @@ const styles = StyleSheet.create({
     borderWidth: 3, borderColor: 'rgba(255,255,255,0.3)',
     alignItems: 'center', justifyContent: 'center',
   },
-  avatarInitials: { fontSize: 28, fontWeight: '700', color: colors.white },
+  avatarInitials: { fontSize: 28, fontWeight: '700', color: c.white },
   avatarEdit: {
     position: 'absolute', bottom: 2, right: 2,
     width: 24, height: 24, borderRadius: 12,
-    backgroundColor: colors.accent,
-    borderWidth: 2, borderColor: colors.primary,
+    backgroundColor: c.accent,
+    borderWidth: 2, borderColor: c.primary,
     alignItems: 'center', justifyContent: 'center',
   },
   appsBtn: {
@@ -111,9 +115,9 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.25)',
     borderRadius: 20, paddingHorizontal: 14, paddingVertical: 8,
   },
-  appsBtnText: { fontSize: 12, fontWeight: '600', color: colors.white },
+  appsBtnText: { fontSize: 12, fontWeight: '600', color: c.white },
   nameSection: { gap: 4 },
-  name: { fontSize: 24, fontWeight: '800', color: colors.white, letterSpacing: -0.3 },
+  name: { fontSize: 24, fontWeight: '800', color: c.white, letterSpacing: -0.3 },
   headline: { fontSize: 14, color: 'rgba(255,255,255,0.8)', lineHeight: 20 },
   headlinePlaceholder: { fontSize: 14, color: 'rgba(255,255,255,0.4)', fontStyle: 'italic' },
   metaRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 14 },
@@ -127,4 +131,5 @@ const styles = StyleSheet.create({
     borderRadius: 20, paddingHorizontal: 10, paddingVertical: 5,
   },
   linkText: { fontSize: 11, color: 'rgba(255,255,255,0.85)', fontWeight: '500' },
-});
+  });
+}

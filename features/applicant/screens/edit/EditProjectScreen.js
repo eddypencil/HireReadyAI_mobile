@@ -9,7 +9,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { decode } from 'base64-arraybuffer';
-import { colors } from '../../../../src/theme';
+import { useTheme } from '../../../../shared/context/ThemeContext';
 import { addProject, updateProject } from '../../services/projects.service';
 import { Project } from '../../models';
 import { supabase } from '../../../../shared/services/supabase';
@@ -26,7 +26,7 @@ function Field({ label, value, onChangeText, placeholder, multiline, optional, k
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor={colors.mutedForeground}
+        placeholderTextColor={c['muted-foreground']}
         multiline={multiline}
         numberOfLines={multiline ? 4 : 1}
         textAlignVertical={multiline ? 'top' : 'center'}
@@ -74,6 +74,9 @@ async function deleteImage(url) {
 }
 
 export default function EditProjectScreen() {
+  const { theme } = useTheme();
+  const c = theme.colors;
+  const styles = createStyles(c);
   const navigation = useNavigation();
   const route = useRoute();
   const { profileId, item, itemIndex } = route.params || {};
@@ -204,7 +207,7 @@ export default function EditProjectScreen() {
         {/* Screenshots */}
         <View style={styles.divider} />
         <View style={styles.mediaSectionHeader}>
-          <Ionicons name="images-outline" size={18} color={colors.accent} />
+          <Ionicons name="images-outline" size={18} color={c.accent} />
           <View>
             <Text style={styles.mediaSectionTitle}>Screenshots</Text>
             <Text style={styles.mediaSectionSubtitle}>Images are uploaded to cloud storage</Text>
@@ -231,8 +234,8 @@ export default function EditProjectScreen() {
           activeOpacity={0.75}
         >
           {uploadingImage
-            ? <ActivityIndicator size="small" color={colors.accent} />
-            : <Ionicons name="image-outline" size={18} color={colors.accent} />}
+            ? <ActivityIndicator size="small" color={c.accent} />
+            : <Ionicons name="image-outline" size={18} color={c.accent} />}
           <Text style={styles.addImageBtnText}>
             {uploadingImage ? 'Uploading...' : 'Add Screenshot from Gallery'}
           </Text>
@@ -241,7 +244,7 @@ export default function EditProjectScreen() {
         {/* Video links */}
         <View style={styles.divider} />
         <View style={styles.mediaSectionHeader}>
-          <Ionicons name="videocam-outline" size={18} color={colors.accent} />
+          <Ionicons name="videocam-outline" size={18} color={c.accent} />
           <View>
             <Text style={styles.mediaSectionTitle}>Video Links</Text>
             <Text style={styles.mediaSectionSubtitle}>Paste a YouTube or Vimeo link</Text>
@@ -278,7 +281,7 @@ export default function EditProjectScreen() {
             value={videoUrl}
             onChangeText={setVideoUrl}
             placeholder="https://youtube.com/watch?v=..."
-            placeholderTextColor={colors.mutedForeground}
+            placeholderTextColor={c['muted-foreground']}
             autoCapitalize="none"
             autoCorrect={false}
             keyboardType="url"
@@ -288,10 +291,10 @@ export default function EditProjectScreen() {
             value={videoCaption}
             onChangeText={setVideoCaption}
             placeholder="Caption (optional)"
-            placeholderTextColor={colors.mutedForeground}
+            placeholderTextColor={c['muted-foreground']}
           />
           <TouchableOpacity style={styles.addVideoBtn} onPress={handleAddVideo} activeOpacity={0.75}>
-            <Ionicons name="add-circle-outline" size={16} color={colors.white} />
+            <Ionicons name="add-circle-outline" size={16} color={c.white} />
             <Text style={styles.addVideoBtnText}>Add Video Link</Text>
           </TouchableOpacity>
         </View>
@@ -301,7 +304,7 @@ export default function EditProjectScreen() {
           onPress={handleSave} disabled={saving} activeOpacity={0.85}
         >
           {saving
-            ? <ActivityIndicator color={colors.white} size="small" />
+            ? <ActivityIndicator color={c.white} size="small" />
             : <Text style={styles.saveBtnText}>{isEdit ? 'Save Changes' : 'Add Project'}</Text>}
         </TouchableOpacity>
       </ScrollView>
@@ -309,57 +312,59 @@ export default function EditProjectScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  scroll: { flex: 1, backgroundColor: colors.surface },
+function createStyles(c) {
+  return StyleSheet.create({
+  scroll: { flex: 1, backgroundColor: c.surface },
   content: { padding: 20, gap: 16, paddingBottom: 40 },
   fieldGroup: { gap: 6 },
-  label: { fontSize: 12, fontWeight: '600', color: colors.foreground, textTransform: 'uppercase', letterSpacing: 0.4 },
-  optional: { fontWeight: '400', color: colors.mutedForeground, textTransform: 'none' },
+  label: { fontSize: 12, fontWeight: '600', color: c.foreground, textTransform: 'uppercase', letterSpacing: 0.4 },
+  optional: { fontWeight: '400', color: c['muted-foreground'], textTransform: 'none' },
   input: {
-    backgroundColor: colors.white, borderWidth: 1, borderColor: colors.border,
+    backgroundColor: c.white, borderWidth: 1, borderColor: c.border,
     borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12,
-    fontSize: 14, color: colors.foreground,
+    fontSize: 14, color: c.foreground,
   },
   inputMulti: { minHeight: 120, paddingTop: 12 },
-  divider: { height: 1, backgroundColor: colors.border },
+  divider: { height: 1, backgroundColor: c.border },
   mediaSectionHeader: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
-  mediaSectionTitle: { fontSize: 15, fontWeight: '700', color: colors.foreground },
-  mediaSectionSubtitle: { fontSize: 12, color: colors.mutedForeground, marginTop: 2 },
+  mediaSectionTitle: { fontSize: 15, fontWeight: '700', color: c.foreground },
+  mediaSectionSubtitle: { fontSize: 12, color: c['muted-foreground'], marginTop: 2 },
   imagesGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   imageTile: { width: '47%', aspectRatio: 16 / 10, borderRadius: 12, overflow: 'hidden', position: 'relative' },
   imageTileImg: { width: '100%', height: '100%' },
   imageRemoveBtn: { position: 'absolute', top: 4, right: 4 },
   addImageBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
-    borderWidth: 1.5, borderColor: `${colors.accent}50`,
+    borderWidth: 1.5, borderColor: `${c.accent}50`,
     borderStyle: 'dashed', borderRadius: 12,
     paddingVertical: 14, paddingHorizontal: 16,
-    backgroundColor: `${colors.accent}08`,
+    backgroundColor: `${c.accent}08`,
   },
-  addImageBtnText: { fontSize: 14, color: colors.accent, fontWeight: '600' },
+  addImageBtnText: { fontSize: 14, color: c.accent, fontWeight: '600' },
   videoList: { gap: 10 },
   videoItem: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
-    backgroundColor: colors.white, borderRadius: 12,
-    borderWidth: 1, borderColor: colors.border, padding: 10,
+    backgroundColor: c.white, borderRadius: 12,
+    borderWidth: 1, borderColor: c.border, padding: 10,
   },
   videoThumb: { width: 60, height: 42, borderRadius: 8 },
   videoThumbPlaceholder: { backgroundColor: '#111', alignItems: 'center', justifyContent: 'center' },
   videoInfo: { flex: 1 },
-  videoUrl: { fontSize: 12, color: colors.accent },
-  videoCaption: { fontSize: 11, color: colors.mutedForeground, marginTop: 2 },
+  videoUrl: { fontSize: 12, color: c.accent },
+  videoCaption: { fontSize: 11, color: c['muted-foreground'], marginTop: 2 },
   videoInputGroup: { gap: 10 },
   addVideoBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
-    backgroundColor: colors.accent, borderRadius: 10,
+    backgroundColor: c.accent, borderRadius: 10,
     paddingVertical: 10, paddingHorizontal: 16, alignSelf: 'flex-start',
   },
-  addVideoBtnText: { color: colors.white, fontSize: 13, fontWeight: '600' },
+  addVideoBtnText: { color: c.white, fontSize: 13, fontWeight: '600' },
   saveBtn: {
-    backgroundColor: colors.primary, borderRadius: 12, paddingVertical: 14,
+    backgroundColor: c.primary, borderRadius: 12, paddingVertical: 14,
     alignItems: 'center', marginTop: 4,
-    shadowColor: colors.primary, shadowOffset: { width: 0, height: 4 },
+    shadowColor: c.primary, shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
   },
-  saveBtnText: { color: colors.white, fontSize: 15, fontWeight: '700' },
-});
+  saveBtnText: { color: c.white, fontSize: 15, fontWeight: '700' },
+  });
+}

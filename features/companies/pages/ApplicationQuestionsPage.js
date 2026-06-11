@@ -7,8 +7,8 @@
 // Register in AppNavigator inside the recruiter stack:
 //   <RootStack.Screen name="ApplicationQuestions" component={ApplicationQuestionsPage}
 //     options={{ headerShown: true, headerTitle: 'Screening Questions',
-//                headerStyle: { backgroundColor: colors.primary },
-//                headerTintColor: colors.white }} />
+//                headerStyle: { backgroundColor: c.primary },
+//                headerTintColor: c.white }} />
 // ============================================================================
 
 import { useState } from "react";
@@ -24,7 +24,7 @@ import {
   FlatList,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { colors } from "../../../src/theme";
+import { useTheme } from "../../../shared/context/ThemeContext";
 import { supabase } from "../../../shared/services/supabase";
 import { useJobs } from "../../jobs/hooks/useJobs";
 import { useCompany } from "./CompanyLayout";
@@ -39,6 +39,8 @@ const QUESTION_TYPES = [
 
 // ── Small inline type picker modal
 function TypePickerModal({ visible, selected, onSelect, onClose }) {
+  const { theme } = useTheme();
+  const c = theme.colors;
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <TouchableOpacity style={styles.typeOverlay} activeOpacity={1} onPress={onClose}>
@@ -59,7 +61,7 @@ function TypePickerModal({ visible, selected, onSelect, onClose }) {
               <Ionicons
                 name={t.icon}
                 size={18}
-                color={selected === t.value ? colors.darkAmethyst[600] : colors.darkAmethyst[400]}
+                color={selected === t.value ? c.primary : c.accent}
               />
               <Text
                 style={[
@@ -70,7 +72,7 @@ function TypePickerModal({ visible, selected, onSelect, onClose }) {
                 {t.label}
               </Text>
               {selected === t.value && (
-                <Ionicons name="checkmark" size={16} color={colors.darkAmethyst[600]} style={{ marginLeft: "auto" }} />
+                <Ionicons name="checkmark" size={16} color={c.primary} style={{ marginLeft: "auto" }} />
               )}
             </TouchableOpacity>
           ))}
@@ -82,6 +84,9 @@ function TypePickerModal({ visible, selected, onSelect, onClose }) {
 
 // ── Single question card
 function QuestionCard({ question, index, total, onChange, onRemove }) {
+  const { theme } = useTheme();
+  const c = theme.colors;
+  const styles = createStyles(c);
   const [typePickerVisible, setTypePickerVisible] = useState(false);
   const typeLabel = QUESTION_TYPES.find((t) => t.value === question.type)?.label || "Short answer";
 
@@ -97,7 +102,7 @@ function QuestionCard({ question, index, total, onChange, onRemove }) {
           onPress={onRemove}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Ionicons name="trash-outline" size={16} color={colors.red[400]} />
+          <Ionicons name="trash-outline" size={16} color={c.red[400]} />
         </TouchableOpacity>
       </View>
 
@@ -107,7 +112,7 @@ function QuestionCard({ question, index, total, onChange, onRemove }) {
         value={question.question}
         onChangeText={(t) => onChange("question", t)}
         placeholder="Write your question here..."
-        placeholderTextColor={colors.darkAmethyst[300]}
+        placeholderTextColor={c['muted-foreground']}
         multiline
         textAlignVertical="top"
       />
@@ -121,10 +126,10 @@ function QuestionCard({ question, index, total, onChange, onRemove }) {
         <Ionicons
           name={QUESTION_TYPES.find((t) => t.value === question.type)?.icon || "text-outline"}
           size={15}
-          color={colors.darkAmethyst[500]}
+          color={c['muted-foreground']}
         />
         <Text style={styles.typeSelectorText}>{typeLabel}</Text>
-        <Ionicons name="chevron-down" size={14} color={colors.darkAmethyst[400]} />
+        <Ionicons name="chevron-down" size={14} color={c.accent} />
       </TouchableOpacity>
 
       <TypePickerModal
@@ -139,6 +144,9 @@ function QuestionCard({ question, index, total, onChange, onRemove }) {
 
 // ── Main page
 export default function ApplicationQuestionsPage({ route, navigation }) {
+  const { theme } = useTheme();
+  const c = theme.colors;
+  const styles = createStyles(c);
   const { jobParams, aiResult, companyId, profileId } = route.params;
   const { createJob } = useJobs();
   const { reload: reloadCompany } = useCompany();
@@ -231,7 +239,7 @@ export default function ApplicationQuestionsPage({ route, navigation }) {
       >
         {/* ── Page header info */}
         <View style={styles.headerCard}>
-          <Ionicons name="help-circle-outline" size={28} color={colors.darkAmethyst[500]} />
+          <Ionicons name="help-circle-outline" size={28} color={c['muted-foreground']} />
           <View style={styles.headerCardText}>
             <Text style={styles.headerCardTitle}>Application Questions</Text>
             <Text style={styles.headerCardSubtitle}>
@@ -244,7 +252,7 @@ export default function ApplicationQuestionsPage({ route, navigation }) {
         {/* ── Questions list */}
         {questions.length === 0 ? (
           <View style={styles.emptyState}>
-            <Ionicons name="chatbox-ellipses-outline" size={40} color={colors.darkAmethyst[200]} />
+            <Ionicons name="chatbox-ellipses-outline" size={40} color={c['muted-foreground']} />
             <Text style={styles.emptyTitle}>No questions yet</Text>
             <Text style={styles.emptySubtitle}>
               Tap "Add Question" below to get started
@@ -271,14 +279,14 @@ export default function ApplicationQuestionsPage({ route, navigation }) {
           onPress={addQuestion}
           activeOpacity={0.75}
         >
-          <Ionicons name="add-circle-outline" size={20} color={colors.darkAmethyst[600]} />
+          <Ionicons name="add-circle-outline" size={20} color={c.primary} />
           <Text style={styles.addQuestionBtnText}>Add Question</Text>
         </TouchableOpacity>
 
         {/* ── Error banner */}
         {publishError && (
           <View style={styles.errorBanner}>
-            <Ionicons name="alert-circle-outline" size={15} color={colors.red[500]} />
+            <Ionicons name="alert-circle-outline" size={15} color={c.red[500]} />
             <Text style={styles.errorBannerText}>{publishError}</Text>
           </View>
         )}
@@ -301,10 +309,10 @@ export default function ApplicationQuestionsPage({ route, navigation }) {
           activeOpacity={0.85}
         >
           {publishing ? (
-            <ActivityIndicator size="small" color={colors.white} />
+            <ActivityIndicator size="small" color={c.white} />
           ) : (
             <>
-              <Ionicons name="arrow-up-circle-outline" size={18} color={colors.white} />
+              <Ionicons name="arrow-up-circle-outline" size={18} color={c.white} />
               <Text style={styles.publishBtnText}>Publish with Questions</Text>
             </>
           )}
@@ -314,241 +322,243 @@ export default function ApplicationQuestionsPage({ route, navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: colors.darkAmethyst[50],
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: 20,
-    paddingBottom: 16,
-    gap: 16,
-  },
+function createStyles(c) {
+  return StyleSheet.create({
+    root: {
+      flex: 1,
+      backgroundColor: c['surface-muted'],
+    },
+    scroll: {
+      flex: 1,
+    },
+    scrollContent: {
+      padding: 20,
+      paddingBottom: 16,
+      gap: 16,
+    },
 
-  // ── Header info card
-  headerCard: {
-    backgroundColor: colors.white,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: colors.darkAmethyst[100],
-    padding: 16,
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 14,
-  },
-  headerCardText: {
-    flex: 1,
-    gap: 4,
-  },
-  headerCardTitle: {
-    fontSize: 15,
-    fontWeight: "700",
-    color: colors.darkAmethyst[950],
-  },
-  headerCardSubtitle: {
-    fontSize: 13,
-    color: colors.darkAmethyst[500],
-    lineHeight: 19,
-  },
-  headerCardJob: {
-    fontWeight: "600",
-    color: colors.darkAmethyst[700],
-  },
+    // ── Header info card
+    headerCard: {
+      backgroundColor: c.white,
+      borderRadius: 14,
+      borderWidth: 1,
+      borderColor: c.border,
+      padding: 16,
+      flexDirection: "row",
+      alignItems: "flex-start",
+      gap: 14,
+    },
+    headerCardText: {
+      flex: 1,
+      gap: 4,
+    },
+    headerCardTitle: {
+      fontSize: 15,
+      fontWeight: "700",
+      color: c.foreground,
+    },
+    headerCardSubtitle: {
+      fontSize: 13,
+      color: c['muted-foreground'],
+      lineHeight: 19,
+    },
+    headerCardJob: {
+      fontWeight: "600",
+      color: c.foreground,
+    },
 
-  // ── Empty state
-  emptyState: {
-    alignItems: "center",
-    paddingVertical: 48,
-    gap: 8,
-  },
-  emptyTitle: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: colors.darkAmethyst[400],
-    marginTop: 8,
-  },
-  emptySubtitle: {
-    fontSize: 13,
-    color: colors.darkAmethyst[300],
-    textAlign: "center",
-  },
+    // ── Empty state
+    emptyState: {
+      alignItems: "center",
+      paddingVertical: 48,
+      gap: 8,
+    },
+    emptyTitle: {
+      fontSize: 15,
+      fontWeight: "600",
+      color: c.accent,
+      marginTop: 8,
+    },
+    emptySubtitle: {
+      fontSize: 13,
+      color: c['muted-foreground'],
+      textAlign: "center",
+    },
 
-  // ── Questions list
-  questionsList: {
-    gap: 12,
-  },
+    // ── Questions list
+    questionsList: {
+      gap: 12,
+    },
 
-  // ── Question card
-  questionCard: {
-    backgroundColor: colors.white,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: colors.darkAmethyst[100],
-    padding: 16,
-    gap: 12,
-  },
-  questionCardHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  questionNumberBadge: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    backgroundColor: colors.darkAmethyst[600],
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  questionNumberText: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: colors.white,
-  },
-  removeBtn: {
-    padding: 4,
-  },
-  questionInput: {
-    borderWidth: 1,
-    borderColor: colors.darkAmethyst[100],
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 14,
-    color: colors.darkAmethyst[900],
-    backgroundColor: colors.darkAmethyst[50],
-    minHeight: 72,
-    lineHeight: 20,
-  },
+    // ── Question card
+    questionCard: {
+      backgroundColor: c.white,
+      borderRadius: 14,
+      borderWidth: 1,
+      borderColor: c.border,
+      padding: 16,
+      gap: 12,
+    },
+    questionCardHeader: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    questionNumberBadge: {
+      width: 26,
+      height: 26,
+      borderRadius: 13,
+      backgroundColor: c.primary,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    questionNumberText: {
+      fontSize: 12,
+      fontWeight: "700",
+      color: c.white,
+    },
+    removeBtn: {
+      padding: 4,
+    },
+    questionInput: {
+      borderWidth: 1,
+      borderColor: c.border,
+      borderRadius: 10,
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      fontSize: 14,
+      color: c.foreground,
+      backgroundColor: c['surface-muted'],
+      minHeight: 72,
+      lineHeight: 20,
+    },
 
-  // ── Type selector pill
-  typeSelector: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    alignSelf: "flex-start",
-    backgroundColor: colors.darkAmethyst[50],
-    borderWidth: 1,
-    borderColor: colors.darkAmethyst[100],
-    borderRadius: 20,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-  },
-  typeSelectorText: {
-    fontSize: 12,
-    color: colors.darkAmethyst[600],
-    fontWeight: "500",
-  },
+    // ── Type selector pill
+    typeSelector: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      alignSelf: "flex-start",
+      backgroundColor: c['surface-muted'],
+      borderWidth: 1,
+      borderColor: c.border,
+      borderRadius: 20,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+    },
+    typeSelectorText: {
+      fontSize: 12,
+      color: c.primary,
+      fontWeight: "500",
+    },
 
-  // ── Type picker modal
-  typeOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(1,26,74,0.45)",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 32,
-  },
-  typeModal: {
-    backgroundColor: colors.white,
-    borderRadius: 16,
-    padding: 20,
-    width: "100%",
-    gap: 4,
-  },
-  typeModalTitle: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: colors.darkAmethyst[950],
-    marginBottom: 8,
-  },
-  typeOption: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    paddingVertical: 13,
-    paddingHorizontal: 12,
-    borderRadius: 10,
-  },
-  typeOptionSelected: {
-    backgroundColor: colors.darkAmethyst[50],
-  },
-  typeOptionText: {
-    fontSize: 14,
-    color: colors.darkAmethyst[700],
-  },
-  typeOptionTextSelected: {
-    color: colors.darkAmethyst[600],
-    fontWeight: "600",
-  },
+    // ── Type picker modal
+    typeOverlay: {
+      flex: 1,
+      backgroundColor: "rgba(1,26,74,0.45)",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 32,
+    },
+    typeModal: {
+      backgroundColor: c.white,
+      borderRadius: 16,
+      padding: 20,
+      width: "100%",
+      gap: 4,
+    },
+    typeModalTitle: {
+      fontSize: 14,
+      fontWeight: "700",
+      color: c.foreground,
+      marginBottom: 8,
+    },
+    typeOption: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
+      paddingVertical: 13,
+      paddingHorizontal: 12,
+      borderRadius: 10,
+    },
+    typeOptionSelected: {
+      backgroundColor: c['surface-muted'],
+    },
+    typeOptionText: {
+      fontSize: 14,
+      color: c.foreground,
+    },
+    typeOptionTextSelected: {
+      color: c.primary,
+      fontWeight: "600",
+    },
 
-  // ── Add question button
-  addQuestionBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    borderWidth: 1.5,
-    borderColor: colors.darkAmethyst[200],
-    borderStyle: "dashed",
-    borderRadius: 14,
-    paddingVertical: 14,
-    backgroundColor: colors.white,
-  },
-  addQuestionBtnText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: colors.darkAmethyst[600],
-  },
+    // ── Add question button
+    addQuestionBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 8,
+      borderWidth: 1.5,
+      borderColor: c['muted-foreground'],
+      borderStyle: "dashed",
+      borderRadius: 14,
+      paddingVertical: 14,
+      backgroundColor: c.white,
+    },
+    addQuestionBtnText: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: c.primary,
+    },
 
-  // ── Error banner
-  errorBanner: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    backgroundColor: colors.red[50],
-    borderWidth: 1,
-    borderColor: colors.red[200],
-    borderRadius: 10,
-    padding: 12,
-  },
-  errorBannerText: {
-    fontSize: 12,
-    color: colors.red[600],
-    flex: 1,
-  },
+    // ── Error banner
+    errorBanner: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+      backgroundColor: c.red[50],
+      borderWidth: 1,
+      borderColor: c.red[200],
+      borderRadius: 10,
+      padding: 12,
+    },
+    errorBannerText: {
+      fontSize: 12,
+      color: c.red[600],
+      flex: 1,
+    },
 
-  // ── Sticky bottom bar
-  bottomBar: {
-    backgroundColor: colors.white,
-    borderTopWidth: 1,
-    borderTopColor: colors.darkAmethyst[100],
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    gap: 8,
-  },
-  questionCount: {
-    fontSize: 12,
-    color: colors.darkAmethyst[400],
-    textAlign: "center",
-  },
-  publishBtn: {
-    backgroundColor: colors.darkAmethyst[600],
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-    gap: 8,
-  },
-  publishBtnDisabled: {
-    backgroundColor: colors.darkAmethyst[300],
-  },
-  publishBtnText: {
-    color: colors.white,
-    fontSize: 15,
-    fontWeight: "600",
-  },
-});
+    // ── Sticky bottom bar
+    bottomBar: {
+      backgroundColor: c.white,
+      borderTopWidth: 1,
+      borderTopColor: c.border,
+      paddingHorizontal: 20,
+      paddingVertical: 14,
+      gap: 8,
+    },
+    questionCount: {
+      fontSize: 12,
+      color: c.accent,
+      textAlign: "center",
+    },
+    publishBtn: {
+      backgroundColor: c.primary,
+      borderRadius: 12,
+      paddingVertical: 14,
+      alignItems: "center",
+      justifyContent: "center",
+      flexDirection: "row",
+      gap: 8,
+    },
+    publishBtnDisabled: {
+      backgroundColor: c['muted-foreground'],
+    },
+    publishBtnText: {
+      color: c.white,
+      fontSize: 15,
+      fontWeight: "600",
+    },
+  });
+}

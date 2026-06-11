@@ -1,8 +1,11 @@
 // features/applicant/components/feedback/AppSelector.js
 import { ScrollView, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
-import { colors } from '../../../../src/theme';
+import { useTheme } from '../../../../shared/context/ThemeContext';
 
 export default function AppSelector({ applications, selectedId, onSelect }) {
+  const { theme } = useTheme();
+  const c = theme.colors;
+  const styles = createStyles(c);
   if (!applications || applications.length === 0) return null;
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
@@ -48,31 +51,33 @@ export default function AppSelector({ applications, selectedId, onSelect }) {
     </ScrollView>
   );
 }
-const styles = StyleSheet.create({
+function createStyles(c) {
+  return StyleSheet.create({
   row: { flexDirection: 'row', gap: 8, paddingRight: 4 },
   tab: {
     paddingHorizontal: 14, paddingVertical: 10,
     borderRadius: 12, borderWidth: 1,
-    borderColor: colors.line, backgroundColor: colors.white, maxWidth: 220,
+    borderColor: c.border, backgroundColor: c.white, maxWidth: 220,
   },
   tabSelected: {
-    backgroundColor: colors.darkAmethyst[600],
-    borderColor: colors.darkAmethyst[600],
-    shadowColor: colors.darkAmethyst[600],
+    backgroundColor: c.primary,
+    borderColor: c.primary,
+    shadowColor: c.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 4,
   },
   inner: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  title: { fontSize: 13, fontWeight: '600', color: colors.ink, flexShrink: 1 },
-  titleSelected: { color: colors.white },
+  title: { fontSize: 13, fontWeight: '600', color: c.foreground, flexShrink: 1 },
+  titleSelected: { color: c.white },
   badge: { paddingHorizontal: 7, paddingVertical: 2, borderRadius: 5, flexShrink: 0 },
   badgeWhite: { backgroundColor: 'rgba(255,255,255,0.22)' },
-  badgeRed: { backgroundColor: colors.red[100] },
-  badgeGreen: { backgroundColor: colors.emerald[100] },
+  badgeRed: { backgroundColor: c.red[100] },
+  badgeGreen: { backgroundColor: c.emerald[100] },
   badgeText: { fontSize: 10, fontWeight: '700', letterSpacing: 0.3 },
-  textWhite: { color: colors.white },
-  textRed: { color: colors.red[600] },
-  textGreen: { color: colors.emerald[600] },
+  textWhite: { color: c.white },
+  textRed: { color: c.red[600] },
+  textGreen: { color: c.emerald[600] },
 });
+}

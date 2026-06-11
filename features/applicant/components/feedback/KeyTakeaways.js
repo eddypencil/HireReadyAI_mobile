@@ -1,7 +1,7 @@
 // features/applicant/components/feedback/KeyTakeaways.js
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '../../../../src/theme';
+import { useTheme } from '../../../../shared/context/ThemeContext';
 
 function collectStrings(arrays) {
   const map = new Map();
@@ -13,6 +13,9 @@ function collectStrings(arrays) {
 }
 
 export default function KeyTakeaways({ cvFeedback, stages }) {
+  const { theme } = useTheme();
+  const c = theme.colors;
+  const styles = createStyles(c);
   const allStrengths = [cvFeedback?.strengths || []];
   const allWeaknesses = [cvFeedback?.weaknesses || []];
   const allGaps = [cvFeedback?.gaps || []];
@@ -37,7 +40,7 @@ export default function KeyTakeaways({ cvFeedback, stages }) {
     <View style={styles.card}>
       <View style={styles.header}>
         <View style={styles.iconWrap}>
-          <Ionicons name="bulb-outline" size={14} color={colors.primary} />
+          <Ionicons name="bulb-outline" size={14} color={c.primary} />
         </View>
         <Text style={styles.heading}>Key Takeaways</Text>
       </View>
@@ -45,7 +48,7 @@ export default function KeyTakeaways({ cvFeedback, stages }) {
         {cvFeedback?.feedback && <Text style={styles.feedback}>{cvFeedback.feedback}</Text>}
         {topS.length > 0 && (
           <View style={styles.row}>
-            <Ionicons name="checkmark-circle" size={16} color={colors.emerald[500]} style={styles.icon} />
+            <Ionicons name="checkmark-circle" size={16} color={c.emerald[500]} style={styles.icon} />
             <Text style={styles.itemText}>
               <Text style={styles.sLabel}>Strength: </Text>
               <Text>{topS[0]}</Text>
@@ -55,7 +58,7 @@ export default function KeyTakeaways({ cvFeedback, stages }) {
         )}
         {topW.length > 0 && (
           <View style={styles.row}>
-            <Ionicons name="close-circle" size={16} color={colors.red[500]} style={styles.icon} />
+            <Ionicons name="close-circle" size={16} color={c.red[500]} style={styles.icon} />
             <Text style={styles.itemText}>
               <Text style={styles.wLabel}>Area to improve: </Text>
               <Text>{topW[0]}</Text>
@@ -65,7 +68,7 @@ export default function KeyTakeaways({ cvFeedback, stages }) {
         )}
         {topG.length > 0 && (
           <View style={styles.row}>
-            <Ionicons name="warning" size={16} color={colors.amber[500]} style={styles.icon} />
+            <Ionicons name="warning" size={16} color={c.amber[500]} style={styles.icon} />
             <Text style={styles.itemText}>
               <Text style={styles.gLabel}>Gap: </Text>
               <Text>{topG.slice(0, 2).join(', ')}</Text>
@@ -76,26 +79,28 @@ export default function KeyTakeaways({ cvFeedback, stages }) {
     </View>
   );
 }
-const styles = StyleSheet.create({
+function createStyles(c) {
+  return StyleSheet.create({
   card: {
-    backgroundColor: colors.white, borderRadius: 18,
-    borderWidth: 1, borderColor: colors.line, padding: 18,
-    shadowColor: colors.primary, shadowOpacity: 0.04, shadowRadius: 4, shadowOffset: { width: 0, height: 1 },
+    backgroundColor: c.white, borderRadius: 18,
+    borderWidth: 1, borderColor: c.border, padding: 18,
+    shadowColor: c.primary, shadowOpacity: 0.04, shadowRadius: 4, shadowOffset: { width: 0, height: 1 },
   },
   header: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 14 },
   iconWrap: {
     width: 26, height: 26, borderRadius: 8,
-    backgroundColor: colors.accentSoftBg,
+    backgroundColor: c['surface-muted'],
     alignItems: 'center', justifyContent: 'center',
   },
-  heading: { fontSize: 14, fontWeight: '700', color: colors.ink, letterSpacing: -0.1 },
+  heading: { fontSize: 14, fontWeight: '700', color: c.foreground, letterSpacing: -0.1 },
   body: { gap: 12 },
-  feedback: { fontSize: 14, color: colors.ink2, lineHeight: 22 },
+  feedback: { fontSize: 14, color: c['muted-foreground'], lineHeight: 22 },
   row: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
   icon: { marginTop: 1, flexShrink: 0 },
-  itemText: { flex: 1, fontSize: 14, color: colors.ink2, lineHeight: 22 },
-  sLabel: { fontWeight: '700', color: colors.emerald[600] },
-  wLabel: { fontWeight: '700', color: colors.red[600] },
-  gLabel: { fontWeight: '700', color: colors.amber[600] },
-  muted: { color: colors.muted },
+  itemText: { flex: 1, fontSize: 14, color: c['muted-foreground'], lineHeight: 22 },
+  sLabel: { fontWeight: '700', color: c.emerald[600] },
+  wLabel: { fontWeight: '700', color: c.red[600] },
+  gLabel: { fontWeight: '700', color: c.amber[600] },
+  muted: { color: c.muted },
 });
+}

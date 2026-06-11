@@ -1,7 +1,7 @@
 // features/applicant/components/feedback/StageSelector.js
 import { ScrollView, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '../../../../src/theme';
+import { useTheme } from '../../../../shared/context/ThemeContext';
 
 const ICONS = {
   hr_interview: 'chatbubble-outline',
@@ -12,6 +12,9 @@ const ICONS = {
 };
 
 export default function StageSelector({ stages, activeStage, onSelect }) {
+  const { theme } = useTheme();
+  const c = theme.colors;
+  const styles = createStyles(c);
   if (stages.length <= 1) return null;
   return (
     <View style={styles.container}>
@@ -27,7 +30,7 @@ export default function StageSelector({ stages, activeStage, onSelect }) {
                 style={[styles.tab, active && styles.tabActive]}
                 activeOpacity={0.7}
               >
-                <Ionicons name={icon} size={14} color={active ? colors.primary : colors.muted} />
+                <Ionicons name={icon} size={14} color={active ? c.primary : c.muted} />
                 <Text style={[styles.label, active && styles.labelActive]}>
                   {stage.recruitment_stages?.name || 'Unknown'}
                 </Text>
@@ -39,15 +42,17 @@ export default function StageSelector({ stages, activeStage, onSelect }) {
     </View>
   );
 }
-const styles = StyleSheet.create({
-  container: { borderBottomWidth: 1, borderBottomColor: colors.line },
+function createStyles(c) {
+  return StyleSheet.create({
+  container: { borderBottomWidth: 1, borderBottomColor: c.border },
   row: { flexDirection: 'row' },
   tab: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
     paddingHorizontal: 18, paddingVertical: 13,
     borderBottomWidth: 2, borderBottomColor: 'transparent',
   },
-  tabActive: { borderBottomColor: colors.primary },
-  label: { fontSize: 13, fontWeight: '600', color: colors.muted },
-  labelActive: { color: colors.primary },
+  tabActive: { borderBottomColor: c.primary },
+  label: { fontSize: 13, fontWeight: '600', color: c.muted },
+  labelActive: { color: c.primary },
 });
+}

@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '../../../../src/theme';
+import { useTheme } from '../../../../shared/context/ThemeContext';
 import { addSkill, updateSkill } from '../../services/skills.service';
 import { Skill } from '../../models';
 
@@ -21,6 +21,9 @@ const LEVEL_CONFIG = {
 };
 
 export default function EditSkillsScreen() {
+  const { theme } = useTheme();
+  const c = theme.colors;
+  const styles = createStyles(c);
   const navigation = useNavigation();
   const route = useRoute();
   const { profileId, item, itemIndex, onSave } = route.params || {};
@@ -64,7 +67,7 @@ export default function EditSkillsScreen() {
             value={name}
             onChangeText={setName}
             placeholder="e.g. React Native"
-            placeholderTextColor={colors.mutedForeground}
+            placeholderTextColor={c['muted-foreground']}
             autoCapitalize="words"
             autoCorrect={false}
           />
@@ -82,7 +85,7 @@ export default function EditSkillsScreen() {
                   key={l}
                   style={[
                     styles.levelCard,
-                    { borderColor: active ? cfg.border : colors.border },
+                    { borderColor: active ? cfg.border : c.border },
                     active && { backgroundColor: cfg.bg },
                   ]}
                   onPress={() => setLevel(l)}
@@ -90,13 +93,13 @@ export default function EditSkillsScreen() {
                 >
                   {active && (
                     <View style={[styles.levelCheck, { backgroundColor: cfg.text }]}>
-                      <Ionicons name="checkmark" size={10} color={colors.white} />
+                      <Ionicons name="checkmark" size={10} color={c.white} />
                     </View>
                   )}
-                  <Text style={[styles.levelCardLabel, { color: active ? cfg.text : colors.foreground }]}>
+                  <Text style={[styles.levelCardLabel, { color: active ? cfg.text : c.foreground }]}>
                     {cfg.label}
                   </Text>
-                  <Text style={[styles.levelCardDesc, { color: active ? cfg.text : colors.mutedForeground }]}>
+                  <Text style={[styles.levelCardDesc, { color: active ? cfg.text : c['muted-foreground'] }]}>
                     {cfg.desc}
                   </Text>
                 </TouchableOpacity>
@@ -110,7 +113,7 @@ export default function EditSkillsScreen() {
           onPress={handleSave} disabled={saving} activeOpacity={0.85}
         >
           {saving
-            ? <ActivityIndicator color={colors.white} size="small" />
+            ? <ActivityIndicator color={c.white} size="small" />
             : <Text style={styles.saveBtnText}>{isEdit ? 'Save Changes' : 'Add Skill'}</Text>}
         </TouchableOpacity>
       </ScrollView>
@@ -118,20 +121,21 @@ export default function EditSkillsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  scroll: { flex: 1, backgroundColor: colors.surface },
+function createStyles(c) {
+  return StyleSheet.create({
+  scroll: { flex: 1, backgroundColor: c.surface },
   content: { padding: 20, gap: 20, paddingBottom: 40 },
   fieldGroup: { gap: 10 },
-  label: { fontSize: 12, fontWeight: '600', color: colors.foreground, textTransform: 'uppercase', letterSpacing: 0.4 },
+  label: { fontSize: 12, fontWeight: '600', color: c.foreground, textTransform: 'uppercase', letterSpacing: 0.4 },
   input: {
-    backgroundColor: colors.white, borderWidth: 1, borderColor: colors.border,
+    backgroundColor: c.white, borderWidth: 1, borderColor: c.border,
     borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12,
-    fontSize: 14, color: colors.foreground,
+    fontSize: 14, color: c.foreground,
   },
   levelsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   levelCard: {
     width: '47%', borderWidth: 2, borderRadius: 14,
-    padding: 14, gap: 4, backgroundColor: colors.white,
+    padding: 14, gap: 4, backgroundColor: c.white,
     position: 'relative',
   },
   levelCheck: {
@@ -142,10 +146,11 @@ const styles = StyleSheet.create({
   levelCardLabel: { fontSize: 14, fontWeight: '700' },
   levelCardDesc: { fontSize: 11, lineHeight: 16 },
   saveBtn: {
-    backgroundColor: colors.primary, borderRadius: 12, paddingVertical: 14,
+    backgroundColor: c.primary, borderRadius: 12, paddingVertical: 14,
     alignItems: 'center', marginTop: 4,
-    shadowColor: colors.primary, shadowOffset: { width: 0, height: 4 },
+    shadowColor: c.primary, shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
   },
-  saveBtnText: { color: colors.white, fontSize: 15, fontWeight: '700' },
-});
+  saveBtnText: { color: c.white, fontSize: 15, fontWeight: '700' },
+  });
+}

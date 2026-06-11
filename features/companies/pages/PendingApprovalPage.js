@@ -9,20 +9,20 @@ import { useTheme } from "../../../shared/context/ThemeContext";
 
 export default function PendingApprovalPage({ companyName }) {
   const { theme } = useTheme();
-  const colors = theme.colors;
-  const styles = createStyles(colors);
+  const c = theme.colors;
+  const styles = createStyles(c);
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.logoWrap}>
-          <Ionicons name="time-outline" size={18} color={colors.white} />
+          <Ionicons name="time-outline" size={18} color={c.white} />
         </View>
         <Text style={styles.logoText}>HireReadyAI</Text>
       </View>
 
       <View style={styles.body}>
         <View style={styles.iconCircle}>
-          <Ionicons name="time-outline" size={36} color={colors.amber[500]} />
+          <Ionicons name="time-outline" size={36} color={c.amber[500]} />
         </View>
         <Text style={styles.title}>Pending Approval</Text>
         <Text style={styles.subtitle}>
@@ -55,14 +55,14 @@ function createStyles(c) {
       width: 28,
       height: 28,
       borderRadius: 6,
-      backgroundColor: c.darkAmethyst[600],
+      backgroundColor: c.primary,
       alignItems: "center",
       justifyContent: "center",
     },
     logoText: {
       fontSize: 18,
       fontWeight: "700",
-      color: c.darkAmethyst[950],
+      color: c.foreground,
     },
     body: {
       flex: 1,
@@ -82,7 +82,7 @@ function createStyles(c) {
     title: {
       fontSize: 22,
       fontWeight: "700",
-      color: c.darkAmethyst[950],
+      color: c.foreground,
       marginBottom: 8,
     },
     subtitle: {

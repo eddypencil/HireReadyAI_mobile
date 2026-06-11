@@ -35,9 +35,9 @@ export default function CompanyProfile() {
     permission,
   } = useCompany();
   const { theme } = useTheme();
-  const colors = theme.colors;
+  const c = theme.colors;
   const { t } = useTranslation();
-  const styles = createStyles(colors);
+  const styles = createStyles(c);
   const [memberName, setMemberName] = useState("");
   const [memberEmail, setMemberEmail] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -181,11 +181,11 @@ export default function CompanyProfile() {
 
   const permissionColor = (perm) => {
     if (perm === MEMBERSHIP_PERMISSION.hrManager)
-      return colors.darkAmethyst[600];
+      return c.primary;
     if (perm === MEMBERSHIP_PERMISSION.recruiter)
-      return colors.darkAmethyst[500];
-    if (perm === MEMBERSHIP_PERMISSION.pending) return colors.amber[500];
-    return colors.gray[500];
+      return c['muted-foreground'];
+    if (perm === MEMBERSHIP_PERMISSION.pending) return c.amber[500];
+    return c.gray[500];
   };
 
   const handlePickLogo = async () => {
@@ -280,13 +280,13 @@ export default function CompanyProfile() {
       <View style={styles.coverWrap}>
         {uploading ? (
           <View style={styles.coverPlaceholder}>
-            <ActivityIndicator size="large" color={colors.darkAmethyst[400]} />
+            <ActivityIndicator size="large" color={c.accent} />
           </View>
         ) : editing ? (
           <TouchableOpacity style={styles.coverEditWrap} onPress={handlePickCover} activeOpacity={0.7}>
             {hasCover && <Image source={{ uri: company.cover_url }} style={styles.coverImg} />}
             <View style={styles.coverEditOverlay}>
-              <Ionicons name="camera-outline" size={28} color={colors.white} />
+              <Ionicons name="camera-outline" size={28} color={c.white} />
               <Text style={styles.uploadOverlayText}>Upload Cover</Text>
             </View>
           </TouchableOpacity>
@@ -297,7 +297,7 @@ export default function CompanyProfile() {
         ) : (
           <TouchableOpacity style={styles.coverPlaceholder} onPress={handlePickCover} activeOpacity={0.9}>
             <View style={styles.coverEmptyIcon}>
-              <Ionicons name="image-outline" size={40} color={colors.darkAmethyst[300]} />
+              <Ionicons name="image-outline" size={40} color={c['muted-foreground']} />
             </View>
           </TouchableOpacity>
         )}
@@ -305,7 +305,7 @@ export default function CompanyProfile() {
         {/* Edit button in top right */}
         {isHrManager && !editing && (
           <TouchableOpacity style={styles.editTopBtn} onPress={handleEditStart}>
-            <Ionicons name="pencil" size={18} color={colors.white} />
+            <Ionicons name="pencil" size={18} color={c.white} />
           </TouchableOpacity>
         )}
       </View>
@@ -314,7 +314,7 @@ export default function CompanyProfile() {
       <View style={styles.logoWrap}>
         {uploading ? (
           <View style={styles.logoSquare}>
-            <ActivityIndicator size="small" color={colors.darkAmethyst[600]} />
+            <ActivityIndicator size="small" color={c.primary} />
           </View>
         ) : editing ? (
           <TouchableOpacity onPress={handlePickLogo} activeOpacity={0.7}>
@@ -328,7 +328,7 @@ export default function CompanyProfile() {
               </View>
             )}
             <View style={styles.logoOverlay}>
-              <Ionicons name="camera-outline" size={18} color={colors.white} />
+              <Ionicons name="camera-outline" size={18} color={c.white} />
               <Text style={styles.logoOverlayText}>Upload Logo</Text>
             </View>
           </TouchableOpacity>
@@ -338,7 +338,7 @@ export default function CompanyProfile() {
               <Image source={{ uri: company.logo_url }} style={[styles.logoSquare, styles.logoSquareImg]} />
             ) : (
               <View style={styles.logoSquare}>
-                <Ionicons name="camera-outline" size={24} color={colors.darkAmethyst[400]} />
+                <Ionicons name="camera-outline" size={24} color={c.accent} />
               </View>
             )}
           </TouchableOpacity>
@@ -491,8 +491,8 @@ export default function CompanyProfile() {
             {pendingMembers.map((member) => (
               <View key={member.id} style={styles.pendingRow}>
                 <View style={styles.memberInfo}>
-                  <View style={[styles.memberAvatar, { backgroundColor: colors.amber[100] }]}>
-                    <Text style={[styles.memberAvatarText, { color: colors.amber[700] }]}>
+                  <View style={[styles.memberAvatar, { backgroundColor: c.amber[100] }]}>
+                    <Text style={[styles.memberAvatarText, { color: c.amber[700] }]}>
                       {member.profiles?.full_name
                         ? member.profiles.full_name.split(" ").map((n) => n[0]).join("").toUpperCase()
                         : "?"}
@@ -601,7 +601,7 @@ function createStyles(c) {
     },
     coverPlaceholder: {
       flex: 1,
-      backgroundColor: c.darkAmethyst[100],
+      backgroundColor: c.border,
       alignItems: "center",
       justifyContent: "center",
     },
@@ -642,7 +642,7 @@ function createStyles(c) {
       borderRadius: 16,
       backgroundColor: c.white,
       borderWidth: 3,
-      borderColor: c.darkAmethyst[300],
+      borderColor: c['muted-foreground'],
       alignItems: "center",
       justifyContent: "center",
       shadowColor: "#000",
@@ -658,7 +658,7 @@ function createStyles(c) {
     logoLetter: {
       fontSize: 26,
       fontWeight: "700",
-      color: c.darkAmethyst[600],
+      color: c.primary,
     },
     logoOverlay: {
       position: "absolute",
@@ -702,7 +702,7 @@ function createStyles(c) {
     cardTitle: {
       fontSize: 18,
       fontWeight: "700",
-      color: c.darkAmethyst[950],
+      color: c.foreground,
       marginBottom: 2,
     },
     cardSubtitle: {
@@ -731,11 +731,11 @@ function createStyles(c) {
       paddingHorizontal: 10,
       paddingVertical: 7,
       fontSize: 13,
-      color: c.darkAmethyst[700],
+      color: c.foreground,
       backgroundColor: c.white,
     },
     fieldInputEditing: {
-      borderColor: c.darkAmethyst[400],
+      borderColor: c.accent,
       backgroundColor: c.white,
     },
     fieldTextArea: {
@@ -752,7 +752,7 @@ function createStyles(c) {
     },
     fieldValueText: {
       fontSize: 13,
-      color: c.darkAmethyst[700],
+      color: c.foreground,
     },
     linksSection: {
       marginTop: 12,
@@ -770,7 +770,7 @@ function createStyles(c) {
       paddingHorizontal: 10,
       paddingVertical: 8,
       fontSize: 12,
-      color: c.darkAmethyst[500],
+      color: c['muted-foreground'],
       borderWidth: 1,
       borderColor: c.gray[200],
       overflow: "hidden",
@@ -800,7 +800,7 @@ function createStyles(c) {
       paddingHorizontal: 16,
       paddingVertical: 8,
       borderRadius: 6,
-      backgroundColor: c.darkAmethyst[600],
+      backgroundColor: c.primary,
     },
     saveBtnText: {
       fontSize: 12,
@@ -828,10 +828,10 @@ function createStyles(c) {
       paddingHorizontal: 12,
       paddingVertical: 9,
       fontSize: 12,
-      color: c.darkAmethyst[700],
+      color: c.foreground,
     },
     inviteBtn: {
-      backgroundColor: c.darkAmethyst[950],
+      backgroundColor: c.primary,
       paddingHorizontal: 20,
       paddingVertical: 9,
       borderRadius: 6,
@@ -916,7 +916,7 @@ function createStyles(c) {
       width: 36,
       height: 36,
       borderRadius: 18,
-      backgroundColor: c.darkAmethyst[100],
+      backgroundColor: c.border,
       alignItems: "center",
       justifyContent: "center",
       marginRight: 10,
@@ -924,7 +924,7 @@ function createStyles(c) {
     memberAvatarText: {
       fontSize: 11,
       fontWeight: "700",
-      color: c.darkAmethyst[800],
+      color: c.foreground,
     },
     memberDetails: {
       flex: 1,
@@ -932,7 +932,7 @@ function createStyles(c) {
     memberName: {
       fontSize: 13,
       fontWeight: "500",
-      color: c.darkAmethyst[950],
+      color: c.foreground,
     },
     memberRole: {
       fontSize: 11,

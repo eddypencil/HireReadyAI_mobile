@@ -14,13 +14,13 @@ import { fetchCompanyById, fetchJobsByCompanyId } from "../services/companies.se
 
 export default function PublicCompanyProfile({ route }) {
   const { theme } = useTheme();
-  const colors = theme.colors;
+  const c = theme.colors;
   const { id } = route?.params || {};
   const [company, setCompany] = useState(null);
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const styles = createStyles(colors);
+  const styles = createStyles(c);
 
   useEffect(() => {
     if (!id) { setError("No company ID"); setLoading(false); return; }
@@ -43,7 +43,7 @@ export default function PublicCompanyProfile({ route }) {
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="small" color={colors.darkAmethyst[600]} />
+        <ActivityIndicator size="small" color={c.primary} />
         <Text style={styles.loadingText}>Loading company...</Text>
       </View>
     );
@@ -91,19 +91,19 @@ export default function PublicCompanyProfile({ route }) {
         <Text style={styles.sectionTitle}>Company Details</Text>
         {company.location && (
           <View style={styles.detailRow}>
-            <Ionicons name="location-outline" size={16} color={colors.darkAmethyst[500]} />
+            <Ionicons name="location-outline" size={16} color={c['muted-foreground']} />
             <Text style={styles.detailText}>{company.location}</Text>
           </View>
         )}
         {company.size && (
           <View style={styles.detailRow}>
-            <Ionicons name="people-outline" size={16} color={colors.darkAmethyst[500]} />
+            <Ionicons name="people-outline" size={16} color={c['muted-foreground']} />
             <Text style={styles.detailText}>{company.size.toLocaleString()} employees</Text>
           </View>
         )}
         {company.founding_date && (
           <View style={styles.detailRow}>
-            <Ionicons name="calendar-outline" size={16} color={colors.darkAmethyst[500]} />
+            <Ionicons name="calendar-outline" size={16} color={c['muted-foreground']} />
             <Text style={styles.detailText}>Founded {company.founding_date}</Text>
           </View>
         )}
@@ -115,7 +115,7 @@ export default function PublicCompanyProfile({ route }) {
           <Text style={styles.sectionTitle}>Links</Text>
           {company.website_url && (
             <TouchableOpacity style={styles.linkRow} onPress={() => Linking.openURL(company.website_url)}>
-              <Ionicons name="globe-outline" size={16} color={colors.darkAmethyst[500]} />
+              <Ionicons name="globe-outline" size={16} color={c['muted-foreground']} />
               <Text style={styles.linkText} numberOfLines={1}>
                 {company.website_url.replace(/^https?:\/\//, "").replace(/\/$/, "")}
               </Text>
@@ -123,13 +123,13 @@ export default function PublicCompanyProfile({ route }) {
           )}
           {company.linkedin_url && (
             <TouchableOpacity style={styles.linkRow} onPress={() => Linking.openURL(company.linkedin_url)}>
-              <Ionicons name="globe-outline" size={16} color={colors.darkAmethyst[500]} />
+              <Ionicons name="globe-outline" size={16} color={c['muted-foreground']} />
               <Text style={styles.linkText}>LinkedIn</Text>
             </TouchableOpacity>
           )}
           {company.twitter_url && (
             <TouchableOpacity style={styles.linkRow} onPress={() => Linking.openURL(company.twitter_url)}>
-              <Ionicons name="globe-outline" size={16} color={colors.darkAmethyst[500]} />
+              <Ionicons name="globe-outline" size={16} color={c['muted-foreground']} />
               <Text style={styles.linkText}>Twitter</Text>
             </TouchableOpacity>
           )}
@@ -140,7 +140,7 @@ export default function PublicCompanyProfile({ route }) {
       {company.description && (
         <View style={styles.detailsCard}>
           <Text style={styles.sectionTitle}>
-            <Ionicons name="business-outline" size={14} color={colors.darkAmethyst[500]} /> About
+            <Ionicons name="business-outline" size={14} color={c['muted-foreground']} /> About
           </Text>
           <Text style={styles.bodyText}>{company.description}</Text>
         </View>
@@ -165,7 +165,7 @@ export default function PublicCompanyProfile({ route }) {
       {/* Open Positions */}
       <View style={styles.detailsCard}>
         <Text style={styles.sectionTitle}>
-          <Ionicons name="briefcase-outline" size={14} color={colors.darkAmethyst[500]} /> Open Positions ({jobs.length})
+          <Ionicons name="briefcase-outline" size={14} color={c['muted-foreground']} /> Open Positions ({jobs.length})
         </Text>
         {jobs.length === 0 ? (
           <Text style={styles.bodyText}>No open positions at the moment.</Text>
@@ -227,11 +227,11 @@ function createStyles(c) {
     },
     cover: {
       height: 160,
-      backgroundColor: c.darkAmethyst[50],
+      backgroundColor: c['surface-muted'],
     },
     coverGradient: {
       flex: 1,
-      backgroundColor: c.darkAmethyst[50],
+      backgroundColor: c['surface-muted'],
     },
     headerRow: {
       flexDirection: "row",
@@ -258,7 +258,7 @@ function createStyles(c) {
     logoText: {
       fontSize: 22,
       fontWeight: "700",
-      color: c.darkAmethyst[600],
+      color: c.primary,
     },
     headerInfo: {
       marginLeft: 14,
@@ -268,12 +268,12 @@ function createStyles(c) {
     companyName: {
       fontSize: 22,
       fontWeight: "700",
-      color: c.darkAmethyst[950],
+      color: c.foreground,
       marginBottom: 4,
     },
     industryBadge: {
       alignSelf: "flex-start",
-      backgroundColor: c.darkAmethyst[50],
+      backgroundColor: c['surface-muted'],
       paddingHorizontal: 10,
       paddingVertical: 3,
       borderRadius: 6,
@@ -281,7 +281,7 @@ function createStyles(c) {
     industryText: {
       fontSize: 11,
       fontWeight: "600",
-      color: c.darkAmethyst[600],
+      color: c.primary,
     },
     detailsCard: {
       backgroundColor: c.white,
@@ -295,7 +295,7 @@ function createStyles(c) {
     sectionTitle: {
       fontSize: 13,
       fontWeight: "700",
-      color: c.darkAmethyst[950],
+      color: c.foreground,
       marginBottom: 12,
     },
     detailRow: {
@@ -316,7 +316,7 @@ function createStyles(c) {
     },
     linkText: {
       fontSize: 14,
-      color: c.darkAmethyst[500],
+      color: c['muted-foreground'],
       flex: 1,
     },
     bodyText: {
@@ -335,7 +335,7 @@ function createStyles(c) {
     jobTitle: {
       fontSize: 15,
       fontWeight: "600",
-      color: c.darkAmethyst[950],
+      color: c.foreground,
       marginBottom: 4,
     },
     jobMeta: {

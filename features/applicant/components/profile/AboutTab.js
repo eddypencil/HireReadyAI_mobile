@@ -1,19 +1,21 @@
 // features/applicant/components/profile/AboutTab.js
 import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '../../../../src/theme';
+import { useTheme } from '../../../../shared/context/ThemeContext';
 
-function SectionCard({ title, icon, onEdit, viewOnly, children, empty, emptyText }) {
+function SectionCard({ title, icon, onEdit, viewOnly, children, empty, emptyText, styles }) {
+  const { theme } = useTheme();
+  const c = theme.colors;
   return (
     <View style={styles.card}>
       <View style={styles.cardHeader}>
         <View style={styles.cardHeaderLeft}>
-          <Ionicons name={icon} size={16} color={colors.accent} />
+          <Ionicons name={icon} size={16} color={c.accent} />
           <Text style={styles.cardTitle}>{title}</Text>
         </View>
         {!viewOnly && onEdit && (
           <TouchableOpacity onPress={onEdit} style={styles.editBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <Ionicons name="pencil-outline" size={15} color={colors.mutedForeground} />
+            <Ionicons name="pencil-outline" size={15} color={c['muted-foreground']} />
           </TouchableOpacity>
         )}
       </View>
@@ -29,6 +31,9 @@ function SectionCard({ title, icon, onEdit, viewOnly, children, empty, emptyText
 }
 
 export default function AboutTab({ profile, viewOnly, onEdit }) {
+  const { theme } = useTheme();
+  const c = theme.colors;
+  const styles = createStyles(c);
   const handleLink = (url) => {
     if (!url) return;
     const full = url.startsWith('http') ? url : `https://${url}`;
@@ -39,7 +44,7 @@ export default function AboutTab({ profile, viewOnly, onEdit }) {
     <View style={styles.container}>
 
       {/* Bio */}
-      <SectionCard
+      <SectionCard styles={styles}
         title="Bio"
         icon="person-outline"
         onEdit={() => onEdit('bio')}
@@ -52,7 +57,7 @@ export default function AboutTab({ profile, viewOnly, onEdit }) {
       </SectionCard>
 
       {/* Contact Info */}
-      <SectionCard
+      <SectionCard styles={styles}
         title="Contact Info"
         icon="call-outline"
         onEdit={() => onEdit('contact')}
@@ -87,7 +92,7 @@ export default function AboutTab({ profile, viewOnly, onEdit }) {
       </SectionCard>
 
       {/* Links — LinkedIn only */}
-      <SectionCard
+      <SectionCard styles={styles}
         title="Links"
         icon="link-outline"
         onEdit={() => onEdit('links')}
@@ -105,7 +110,7 @@ export default function AboutTab({ profile, viewOnly, onEdit }) {
                 <Text style={styles.listLabel}>LinkedIn</Text>
                 <Text style={[styles.listValue, styles.link]} numberOfLines={1}>{profile.linkedin_url}</Text>
               </View>
-              <Ionicons name="open-outline" size={14} color={colors.accent} />
+              <Ionicons name="open-outline" size={14} color={c.accent} />
             </TouchableOpacity>
           )}
         </View>
@@ -115,20 +120,22 @@ export default function AboutTab({ profile, viewOnly, onEdit }) {
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(c) {
+  return StyleSheet.create({
   container: { gap: 14 },
-  card: { backgroundColor: colors.white, borderRadius: 16, borderWidth: 1, borderColor: colors.border, padding: 18, gap: 12 },
+  card: { backgroundColor: c.white, borderRadius: 16, borderWidth: 1, borderColor: c.border, padding: 18, gap: 12 },
   cardHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   cardHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  cardTitle: { fontSize: 15, fontWeight: '700', color: colors.foreground },
+  cardTitle: { fontSize: 15, fontWeight: '700', color: c.foreground },
   editBtn: { padding: 4 },
-  emptyText: { fontSize: 13, color: colors.mutedForeground, fontStyle: 'italic', lineHeight: 20 },
-  headline: { fontSize: 14, fontWeight: '600', color: colors.foreground, marginBottom: 4 },
-  bioText: { fontSize: 14, color: colors.foreground, lineHeight: 22 },
+  emptyText: { fontSize: 13, color: c['muted-foreground'], fontStyle: 'italic', lineHeight: 20 },
+  headline: { fontSize: 14, fontWeight: '600', color: c.foreground, marginBottom: 4 },
+  bioText: { fontSize: 14, color: c.foreground, lineHeight: 22 },
   list: { gap: 12 },
   listItem: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   listIcon: { width: 34, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
-  listLabel: { fontSize: 11, color: colors.mutedForeground, fontWeight: '500' },
-  listValue: { fontSize: 13, color: colors.foreground, fontWeight: '500', marginTop: 1 },
-  link: { color: colors.accent },
-});
+  listLabel: { fontSize: 11, color: c['muted-foreground'], fontWeight: '500' },
+  listValue: { fontSize: 13, color: c.foreground, fontWeight: '500', marginTop: 1 },
+  link: { color: c.accent },
+  });
+}

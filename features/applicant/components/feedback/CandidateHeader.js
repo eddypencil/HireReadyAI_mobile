@@ -2,16 +2,17 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '../../../../src/theme';
+import { useTheme } from '../../../../shared/context/ThemeContext';
 import ScoreRing from './ScoreRing';
-
-const GRADIENT = colors.gradient;
 
 function getInitials(name = '') {
   return (name || '').split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() || '?';
 }
 
 export default function CandidateHeader({ app, percentile, percentileTag }) {
+  const { theme } = useTheme();
+  const c = theme.colors;
+  const styles = createStyles(c);
   if (!app) return null;
 
   const candidate = app.profiles || {};
@@ -29,7 +30,7 @@ export default function CandidateHeader({ app, percentile, percentileTag }) {
 
   return (
     <LinearGradient
-      colors={GRADIENT}
+      colors={['#01497c', '#468faf']}
       start={{ x: 0, y: 0 }}
       end={{ x: 0.3, y: 1 }}
       style={styles.hero}
@@ -107,7 +108,8 @@ export default function CandidateHeader({ app, percentile, percentileTag }) {
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(c) {
+  return StyleSheet.create({
   hero: {
     borderRadius: 20,
     padding: 20,
@@ -131,27 +133,27 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.25)',
     alignItems: 'center', justifyContent: 'center',
   },
-  avatarText: { fontSize: 19, fontWeight: '700', color: colors.white, letterSpacing: 0.5 },
+  avatarText: { fontSize: 19, fontWeight: '700', color: c.white, letterSpacing: 0.5 },
   info: { flex: 1 },
   nameRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
-  name: { fontSize: 18, fontWeight: '700', color: colors.white, flexShrink: 1, letterSpacing: -0.2 },
+  name: { fontSize: 18, fontWeight: '700', color: c.white, flexShrink: 1, letterSpacing: -0.2 },
   rejectedBadge: {
     backgroundColor: 'rgba(239,68,68,0.18)',
     borderWidth: 1, borderColor: 'rgba(239,68,68,0.35)',
     paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6,
   },
-  rejectedText: { fontSize: 10, fontWeight: '700', color: colors.red[100], letterSpacing: 0.5 },
+  rejectedText: { fontSize: 10, fontWeight: '700', color: c.red[100], letterSpacing: 0.5 },
   hiredBadge: {
     backgroundColor: 'rgba(34,197,94,0.2)',
     borderWidth: 1, borderColor: 'rgba(34,197,94,0.4)',
     paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6,
   },
-  hiredText: { fontSize: 10, fontWeight: '700', color: colors.emerald[200], letterSpacing: 0.5 },
+  hiredText: { fontSize: 10, fontWeight: '700', color: c.emerald[200], letterSpacing: 0.5 },
   headline: { fontSize: 12, color: 'rgba(255,255,255,0.75)', marginTop: 4, lineHeight: 17 },
   metaList: { marginTop: 8, gap: 4 },
   metaItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   metaText: { fontSize: 12, color: 'rgba(255,255,255,0.75)', flex: 1 },
-  metaBold: { fontWeight: '600', color: colors.white },
+  metaBold: { fontWeight: '600', color: c.white },
 
   scoreCard: {
     marginTop: 18,
@@ -171,5 +173,6 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.7)',
     textTransform: 'uppercase', letterSpacing: 1.4,
   },
-  scoreSub: { fontSize: 13, color: colors.white, marginTop: 4, lineHeight: 18 },
+  scoreSub: { fontSize: 13, color: c.white, marginTop: 4, lineHeight: 18 },
 });
+}

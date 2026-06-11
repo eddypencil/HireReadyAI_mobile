@@ -19,7 +19,7 @@ import {
   getJobScorePercentile,
   getPercentileTag,
 } from '../../recruiter/services/candidateProfile.service';
-import { colors } from '../../../src/theme';
+import { useTheme } from '../../../shared/context/ThemeContext';
 
 // ── Sub-components
 import AppSelector from '../components/feedback/AppSelector';
@@ -46,6 +46,9 @@ const TABS = ['Overview', 'CV Review', 'Assessments'];
 
 // ── Segmented Tab bar (gradient active state, no black)
 function TabBar({ active, onSelect }) {
+  const { theme } = useTheme();
+  const c = theme.colors;
+  const { tb } = createStyles(c);
   return (
     <View style={tb.outer}>
       <View style={tb.bar}>
@@ -78,33 +81,14 @@ function TabBar({ active, onSelect }) {
     </View>
   );
 }
-const tb = StyleSheet.create({
-  outer: { paddingHorizontal: 16, paddingTop: 14, paddingBottom: 4 },
-  bar: {
-    flexDirection: 'row',
-    backgroundColor: colors.white,
-    borderRadius: 14,
-    padding: 4,
-    borderWidth: 1, borderColor: colors.line,
-  },
-  tabWrapper: { flex: 1, borderRadius: 10, overflow: 'hidden' },
-  tab: { paddingVertical: 10, alignItems: 'center', justifyContent: 'center' },
-  tabActive: {
-    backgroundColor: colors.darkAmethyst[600],
-    shadowColor: colors.darkAmethyst[600],
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  label: { fontSize: 13, fontWeight: '600', color: colors.muted },
-  labelActive: { fontSize: 13, fontWeight: '700', color: colors.white },
-});
 
 // ══════════════════════════════════════════════════════════
 // MAIN PAGE
 // ══════════════════════════════════════════════════════════
 export default function ApplicantFeedbackPage() {
+  const { theme } = useTheme();
+  const c = theme.colors;
+  const { styles } = createStyles(c);
   const { user } = useUser();
   const navigation = useNavigation();
   const route = useRoute();
@@ -187,7 +171,7 @@ export default function ApplicantFeedbackPage() {
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <ActivityIndicator size="large" color={c.primary} />
         <Text style={styles.loadingText}>Loading feedback...</Text>
       </View>
     );
@@ -227,7 +211,7 @@ export default function ApplicantFeedbackPage() {
       {/* No app selected */}
       {!app && (
         <View style={styles.centered}>
-          <ActivityIndicator size="small" color={colors.primary} />
+          <ActivityIndicator size="small" color={c.primary} />
           <Text style={styles.loadingText}>Loading...</Text>
         </View>
       )}
@@ -258,7 +242,7 @@ export default function ApplicantFeedbackPage() {
             <ScrollView style={styles.tabScroll} contentContainerStyle={styles.tabContent}>
               {!cvFeedback ? (
                 <View style={styles.emptyTab}>
-                  <Ionicons name="document-text-outline" size={44} color={colors.gray[300]} />
+                  <Ionicons name="document-text-outline" size={44} color={c.gray[300]} />
                   <Text style={styles.emptyTabTitle}>No CV Review Data</Text>
                   <Text style={styles.emptyTabSubtitle}>CV has not been reviewed for this application yet.</Text>
                 </View>
@@ -296,54 +280,81 @@ export default function ApplicantFeedbackPage() {
   );
 }
 
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.background },
+function createStyles(c) {
+  const tb = StyleSheet.create({
+    outer: { paddingHorizontal: 16, paddingTop: 14, paddingBottom: 4 },
+    bar: {
+      flexDirection: 'row',
+      backgroundColor: c.white,
+      borderRadius: 14,
+      padding: 4,
+      borderWidth: 1, borderColor: c.border,
+    },
+    tabWrapper: { flex: 1, borderRadius: 10, overflow: 'hidden' },
+    tab: { paddingVertical: 10, alignItems: 'center', justifyContent: 'center' },
+    tabActive: {
+      backgroundColor: c.primary,
+      shadowColor: c.primary,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 8,
+      elevation: 4,
+    },
+    label: { fontSize: 13, fontWeight: '600', color: c.muted },
+    labelActive: { fontSize: 13, fontWeight: '700', color: c.white },
+  });
 
-  selectorBar: {
-    backgroundColor: colors.white,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.line,
-  },
+  const styles = StyleSheet.create({
+    root: { flex: 1, backgroundColor: c.background },
 
-  tabScroll: { flex: 1 },
-  tabContent: { padding: 16, gap: 14 },
+    selectorBar: {
+      backgroundColor: c.white,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: c.border,
+    },
 
-  centered: {
-    flex: 1, alignItems: 'center', justifyContent: 'center',
-    backgroundColor: colors.background, padding: 24,
-  },
-  loadingText: { fontSize: 14, color: colors.muted, marginTop: 10 },
+    tabScroll: { flex: 1 },
+    tabContent: { padding: 16, gap: 14 },
 
-  emptyCard: {
-    backgroundColor: colors.white, borderRadius: 20,
-    borderWidth: 1, borderColor: colors.line,
-    padding: 32, alignItems: 'center', gap: 12, maxWidth: 320,
-    shadowColor: colors.primary, shadowOpacity: 0.06, shadowRadius: 12, shadowOffset: { width: 0, height: 4 },
-  },
-  emptyIcon: {
-    width: 64, height: 64, borderRadius: 18,
-    backgroundColor: colors.accentSoftBg,
-    alignItems: 'center', justifyContent: 'center',
-  },
-  emptyTitle: { fontSize: 16, fontWeight: '700', color: colors.ink, textAlign: 'center' },
-  emptySubtitle: { fontSize: 13, color: colors.muted, textAlign: 'center', lineHeight: 20 },
-  emptyBtn: {
-    paddingHorizontal: 26,
-    paddingVertical: 12,
-    borderRadius: 12,
-    backgroundColor: colors.darkAmethyst[600],
-    shadowColor: colors.darkAmethyst[600],
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
-    marginTop: 6,
-  },
-  emptyBtnText: { color: colors.white, fontSize: 14, fontWeight: '700', letterSpacing: 0.2 },
+    centered: {
+      flex: 1, alignItems: 'center', justifyContent: 'center',
+      backgroundColor: c.background, padding: 24,
+    },
+    loadingText: { fontSize: 14, color: c.muted, marginTop: 10 },
 
-  emptyTab: { alignItems: 'center', paddingVertical: 60, gap: 10 },
-  emptyTabTitle: { fontSize: 15, fontWeight: '700', color: colors.ink },
-  emptyTabSubtitle: { fontSize: 13, color: colors.muted, textAlign: 'center', lineHeight: 20, maxWidth: 260 },
-});
+    emptyCard: {
+      backgroundColor: c.white, borderRadius: 20,
+      borderWidth: 1, borderColor: c.border,
+      padding: 32, alignItems: 'center', gap: 12, maxWidth: 320,
+      shadowColor: c.primary, shadowOpacity: 0.06, shadowRadius: 12, shadowOffset: { width: 0, height: 4 },
+    },
+    emptyIcon: {
+      width: 64, height: 64, borderRadius: 18,
+      backgroundColor: c['surface-muted'],
+      alignItems: 'center', justifyContent: 'center',
+    },
+    emptyTitle: { fontSize: 16, fontWeight: '700', color: c.foreground, textAlign: 'center' },
+    emptySubtitle: { fontSize: 13, color: c.muted, textAlign: 'center', lineHeight: 20 },
+    emptyBtn: {
+      paddingHorizontal: 26,
+      paddingVertical: 12,
+      borderRadius: 12,
+      backgroundColor: c.primary,
+      shadowColor: c.primary,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 8,
+      elevation: 4,
+      marginTop: 6,
+    },
+    emptyBtnText: { color: c.white, fontSize: 14, fontWeight: '700', letterSpacing: 0.2 },
+
+    emptyTab: { alignItems: 'center', paddingVertical: 60, gap: 10 },
+    emptyTabTitle: { fontSize: 15, fontWeight: '700', color: c.foreground },
+    emptyTabSubtitle: { fontSize: 13, color: c.muted, textAlign: 'center', lineHeight: 20, maxWidth: 260 },
+  });
+
+  return { tb, styles };
+}
