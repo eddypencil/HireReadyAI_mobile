@@ -19,7 +19,8 @@ const ICON_MAP = {
 
 export default function StageLibrary({ onAddStage }) {
   const { theme } = useTheme();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const isRtl = language === 'ar';
   const c = theme.colors;
   const styles = createStyles(c);
 
@@ -37,15 +38,15 @@ export default function StageLibrary({ onAddStage }) {
             <TouchableOpacity
               key={item.key}
               onPress={() => onAddStage(item)}
-              style={styles.stageButton}
+              style={[styles.stageButton, isRtl && styles.rowReverse]}
               activeOpacity={0.7}
             >
-              <View style={styles.iconWrap}>
+              <View style={[styles.iconWrap, isRtl && styles.iconWrapRtl]}>
                 <Ionicons name={iconName} size={18} color={c.primary} />
               </View>
-              <View style={styles.textWrap}>
-                <Text style={styles.label} numberOfLines={1}>{item.label}</Text>
-                <Text style={styles.subtitle} numberOfLines={1}>{item.subtitle}</Text>
+              <View style={[styles.textWrap, isRtl && styles.textRight]}>
+                <Text style={[styles.label, isRtl && styles.textRight]} numberOfLines={1}>{item.label}</Text>
+                <Text style={[styles.subtitle, isRtl && styles.textRight]} numberOfLines={1}>{item.subtitle}</Text>
               </View>
             </TouchableOpacity>
           );
@@ -101,6 +102,9 @@ function createStyles(c) {
       alignItems: "center",
       marginRight: 12,
     },
+    iconWrapRtl: { marginRight: 0, marginLeft: 12 },
+    rowReverse: { flexDirection: 'row-reverse' },
+    textRight: { textAlign: 'right' },
     textWrap: {
       flex: 1,
     },

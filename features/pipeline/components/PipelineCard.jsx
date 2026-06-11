@@ -15,9 +15,12 @@ function formatDate(dateString) {
 
 export default function PipelineCard({ pipeline, onPress }) {
   const { theme } = useTheme();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const isRtl = language === 'ar';
   const c = theme.colors;
   const styles = createStyles(c);
+
+  const arrow = isRtl ? '←' : '→';
 
   const SENIORITY_COLORS = {
     intern: { bg: "#e0f2fe", text: "#075985" },
@@ -64,14 +67,14 @@ export default function PipelineCard({ pipeline, onPress }) {
       {stageCount > 0 ? (
         <View style={styles.stagePreview}>
           {previewStages.map((stage, idx) => (
-            <View key={stage.id} style={styles.stageRow}>
+            <View key={stage.id} style={[styles.stageRow, isRtl && styles.rowReverse]}>
               <View style={styles.stageChip}>
                 <Text style={styles.stageChipText} numberOfLines={1}>
                   {stage.name}
                 </Text>
               </View>
               {(idx < previewStages.length - 1 || overflow > 0) && (
-                <Text style={styles.stageArrow}>→</Text>
+                <Text style={styles.stageArrow}>{arrow}</Text>
               )}
             </View>
           ))}
@@ -151,6 +154,7 @@ function createStyles(c) {
       alignItems: "center",
       gap: 4,
     },
+    rowReverse: { flexDirection: 'row-reverse' },
     stageChip: {
       backgroundColor: c['surface-muted'],
       borderWidth: 1,

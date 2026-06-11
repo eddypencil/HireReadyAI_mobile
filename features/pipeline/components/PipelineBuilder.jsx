@@ -25,12 +25,13 @@ export default function PipelineBuilder({
   moveStage,
 }) {
   const { theme } = useTheme();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const isRtl = language === 'ar';
   const c = theme.colors;
-  const styles = createStyles(c);
   const insets = useSafeAreaInsets();
   const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = useWindowDimensions();
   const BOTTOM_SHEET_HEIGHT = Math.min(SCREEN_HEIGHT * 0.75, 560);
+  const styles = createStyles(c, BOTTOM_SHEET_HEIGHT, isRtl);
   const [selectedStageId, setSelectedStageId] = useState(null);
   const [libraryOpen, setLibraryOpen] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
@@ -140,7 +141,7 @@ export default function PipelineBuilder({
             style={styles.drawerBackdrop}
             onPress={() => setLibraryOpen(false)}
           />
-          <View style={styles.drawerLeft}>
+          <View style={isRtl ? styles.drawerRight : styles.drawerLeft}>
             <View style={styles.drawerHeader}>
               <Text style={styles.drawerHeaderLabel}>{t("pipeline.stage_library")}</Text>
               <TouchableOpacity
@@ -191,7 +192,7 @@ export default function PipelineBuilder({
   );
 }
 
-function createStyles(c) {
+function createStyles(c, bottomSheetHeight, isRtl) {
   return StyleSheet.create({
     // Mobile
     mobileLayout: {
@@ -201,7 +202,7 @@ function createStyles(c) {
     libraryBtn: {
       position: "absolute",
       top: 12,
-      left: 12,
+      [isRtl ? 'right' : 'left']: 12,
       zIndex: 10,
       flexDirection: "row",
       alignItems: "center",
@@ -232,7 +233,7 @@ function createStyles(c) {
       backgroundColor: `${c.foreground}4D`,
     },
     bottomSheetContainer: {
-      height: BOTTOM_SHEET_HEIGHT,
+      height: bottomSheetHeight,
       backgroundColor: c.card,
       borderTopLeftRadius: 20,
       borderTopRightRadius: 20,
@@ -355,7 +356,10 @@ function createStyles(c) {
       fontWeight: "600",
       color: c.foreground,
       flex: 1,
-      marginRight: 8,
+      marginRight: isRtl ? 0 : 8,
+      marginLeft: isRtl ? 8 : 0,
     },
+    rowReverse: { flexDirection: 'row-reverse' },
+    textRight: { textAlign: 'right' },
   });
 }

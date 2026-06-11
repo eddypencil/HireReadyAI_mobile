@@ -36,7 +36,8 @@ function timeAgo(dateString, t) {
 
 export default function ShortlistCandidateCard({ entry, index, isSelected, onClick }) {
   const { theme } = useTheme();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const isRtl = language === 'ar';
   const c = theme.colors;
   const styles = createStyles(c);
 
@@ -68,14 +69,14 @@ export default function ShortlistCandidateCard({ entry, index, isSelected, onCli
         is_rejected && styles.rejectedCard,
       ]}
     >
-      <View style={styles.topRow}>
+      <View style={[styles.topRow, isRtl && styles.rowReverse]}>
         <Text style={styles.rank}>#{rank}</Text>
         <View style={[styles.avatar, { backgroundColor: getAvatarColor(candidate?.full_name) }]}>
           <Text style={styles.avatarText}>{getInitials(candidate?.full_name)}</Text>
         </View>
         <View style={styles.nameSection}>
-          <View style={styles.nameRow}>
-            <Text style={[styles.name, isSelected && styles.selectedName]} numberOfLines={1}>
+          <View style={[styles.nameRow, isRtl && styles.rowReverse]}>
+            <Text style={[styles.name, isSelected && styles.selectedName, isRtl && styles.textRight]} numberOfLines={1}>
               {candidate?.full_name || t("shortlist.unknown")}
             </Text>
             {is_rejected && (
@@ -92,7 +93,7 @@ export default function ShortlistCandidateCard({ entry, index, isSelected, onCli
               );
             })}
           </View>
-          <View style={styles.appliedRow}>
+          <View style={[styles.appliedRow, isRtl && styles.rowReverse]}>
             <Ionicons name="calendar-outline" size={11} color={c['muted-foreground']} />
             <Text style={styles.appliedText}>{t("shortlist.applied", { time: timeAgo(applied_at, t) })}</Text>
           </View>
@@ -100,40 +101,41 @@ export default function ShortlistCandidateCard({ entry, index, isSelected, onCli
       </View>
 
       {ai_rationale ? (
-        <View style={styles.aiRow}>
+        <View style={[styles.aiRow, isRtl ? { paddingLeft: 0, paddingRight: 30 } : {}]}>
           <Ionicons name="sparkles" size={14} color={c['muted-foreground']} style={styles.aiIcon} />
-          <Text style={styles.aiText} numberOfLines={2}>{ai_rationale}</Text>
+          <Text style={[styles.aiText, isRtl && styles.textRight]} numberOfLines={2}>{ai_rationale}</Text>
         </View>
       ) : null}
 
-      <View style={styles.footer}>
+      <View style={[styles.footer, isRtl && styles.rowReverse]}>
         <View style={styles.voterRow}>
           {voterAvatars.map((v, i) => (
             <View
               key={v.id || i}
               style={[
                 styles.voterAvatar,
-                { backgroundColor: getAvatarColor(v.profiles?.full_name), marginLeft: i === 0 ? 0 : -6 },
+                { backgroundColor: getAvatarColor(v.profiles?.full_name) },
+                isRtl ? { marginRight: i === 0 ? 0 : -6 } : { marginLeft: i === 0 ? 0 : -6 },
               ]}
             >
               <Text style={styles.voterAvatarText}>{getInitials(v.profiles?.full_name)}</Text>
             </View>
           ))}
           {remainingVoters > 0 && (
-            <View style={[styles.voterAvatar, styles.voterOverflow, { marginLeft: -6 }]}>
+            <View style={[styles.voterAvatar, styles.voterOverflow, isRtl ? { marginRight: -6 } : { marginLeft: -6 }]}> 
               <Text style={styles.voterOverflowText}>+{remainingVoters}</Text>
             </View>
           )}
         </View>
 
         <View style={styles.scoreRow}>
-          <Text style={styles.aiMatchLabel}>
-            {t("shortlist.ai_match")}{' '}
-            <Text style={[styles.scoreBadge, { backgroundColor: scoreBg, color: scoreText }]}>
+          <Text style={[styles.aiMatchLabel, isRtl && styles.textRight]}>
+            {t("shortlist.ai_match")} {' '}
+            <Text style={[styles.scoreBadge, { backgroundColor: scoreBg, color: scoreText }]}> 
               {composite_score || '—'}
             </Text>
           </Text>
-          <View style={styles.voteCountRow}>
+          <View style={[styles.voteCountRow, isRtl && styles.rowReverse]}>
             <Ionicons name="thumbs-up" size={12} color={c.success} />
             <Text style={[styles.voteCount, { color: c.success }]}>{upVotes}</Text>
             <Text style={styles.voteDivider}>—</Text>
@@ -318,4 +320,6 @@ function createStyles(c) { return StyleSheet.create({
     color: c.border,
     marginHorizontal: 2,
   },
+  rowReverse: { flexDirection: 'row-reverse' },
+  textRight: { textAlign: 'right' },
 }); }

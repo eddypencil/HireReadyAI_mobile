@@ -14,7 +14,8 @@ export default function StageCard({
   isLast,
 }) {
   const { theme } = useTheme();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const isRtl = language === 'ar';
   const c = theme.colors;
   const styles = createStyles(c);
 
@@ -25,6 +26,7 @@ export default function StageCard({
       style={[
         styles.card,
         isSelected && styles.cardSelected,
+        isRtl && styles.rowReverse,
       ]}
     >
       <View style={styles.leftCol}>
@@ -58,14 +60,14 @@ export default function StageCard({
         )}
       </View>
 
-      <View style={styles.info}>
+        <View style={styles.info}>
         <Text
-          style={[styles.name, isSelected && styles.nameSelected]}
+          style={[styles.name, isSelected && styles.nameSelected, isRtl && styles.textRight]}
           numberOfLines={1}
         >
           {stage.name}
         </Text>
-        <Text style={styles.type} numberOfLines={1}>
+        <Text style={[styles.type, isRtl && styles.textRight]} numberOfLines={1}>
           {stage.stage_type?.replace(/_/g, " ")}
         </Text>
       </View>
@@ -104,6 +106,8 @@ function createStyles(c) {
       paddingHorizontal: 12,
       gap: 10,
     },
+    rowReverse: { flexDirection: 'row-reverse' },
+    textRight: { textAlign: 'right' },
     cardSelected: {
       borderColor: c['muted-foreground'],
       backgroundColor: `${c['surface-muted']}99`,

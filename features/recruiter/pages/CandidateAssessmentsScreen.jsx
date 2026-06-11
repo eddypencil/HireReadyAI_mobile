@@ -51,6 +51,7 @@ function createQStyles(c) {
     codeText: { fontFamily: 'monospace', fontSize: 12, color: '#e2e8f0', lineHeight: 18 },
     emptyText: { fontSize: 12, color: c['muted-foreground'], fontStyle: 'italic' },
     optionRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, paddingHorizontal: 10, borderRadius: 8, marginBottom: 4, borderWidth: 1, borderColor: c.border },
+    rowReverse: { flexDirection: 'row-reverse' },
     optionSelected: { backgroundColor: c.primary + '08', borderColor: c.primary + '30' },
     optionLetter: { width: 20, height: 20, borderRadius: 10, justifyContent: 'center', alignItems: 'center', backgroundColor: c.border },
     optionLetterText: { fontSize: 10, fontWeight: '700', color: c['muted-foreground'] },
@@ -76,6 +77,7 @@ function createAssStyles(c) {
       alignItems: 'center',
       gap: 12,
     },
+    rowReverse: { flexDirection: 'row-reverse' },
     backButton: { padding: 4 },
     bannerText: { flex: 1 },
     bannerTitle: { fontSize: 18, fontWeight: '700', color: c['destructive-foreground'] },
@@ -154,7 +156,8 @@ export default function CandidateAssessmentsScreen() {
   const navigation = useNavigation();
   const route = useRoute();
   const { applicationId } = route.params || {};
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const isRtl = language === 'ar';
 
   const QUESTION_TYPE_CONFIG = {
     video: { icon: 'videocam', color: '#ef4444', label: t("recruiter.video_response") },
@@ -183,7 +186,7 @@ export default function CandidateAssessmentsScreen() {
 
     return (
       <View style={qStyles.card}>
-        <TouchableOpacity style={qStyles.header} onPress={() => setExpanded(!expanded)} activeOpacity={0.7}>
+        <TouchableOpacity style={[qStyles.header, isRtl && qStyles.rowReverse]} onPress={() => setExpanded(!expanded)} activeOpacity={0.7}>
           <View style={[qStyles.typeIcon, { backgroundColor: qConfig.color + '15' }]}>
             <Ionicons name={qConfig.icon} size={16} color={qConfig.color} />
           </View>
@@ -262,7 +265,7 @@ export default function CandidateAssessmentsScreen() {
                   const letter = String.fromCharCode(65 + idx);
                   const isSelected = answerData?.answer_text === opt;
                   return (
-                    <View key={idx} style={[qStyles.optionRow, isSelected && qStyles.optionSelected]}>
+                    <View key={idx} style={[qStyles.optionRow, isSelected && qStyles.optionSelected, isRtl && qStyles.rowReverse]}>
                       <View style={[qStyles.optionLetter, isSelected && { backgroundColor: c.primary }]}>
                         <Text style={[qStyles.optionLetterText, isSelected && { color: c['destructive-foreground'] }]}>{letter}</Text>
                       </View>
@@ -371,9 +374,9 @@ export default function CandidateAssessmentsScreen() {
   return (
     <View style={[assStyles.container, { backgroundColor: c.background }]}>
       {/* Header Banner */}
-      <View style={[assStyles.banner, { paddingTop: insets.top + 16 }]}>
+      <View style={[assStyles.banner, isRtl && assStyles.rowReverse, { paddingTop: insets.top + 16 }]}> 
         <TouchableOpacity style={assStyles.backButton} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={20} color={c['destructive-foreground']} />
+          <Ionicons name={isRtl ? 'arrow-forward' : 'arrow-back'} size={20} color={c['destructive-foreground']} />
         </TouchableOpacity>
         <View style={assStyles.bannerText}>
           <Text style={assStyles.bannerTitle}>{t("recruiter.assessments")}</Text>

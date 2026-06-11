@@ -27,35 +27,37 @@ function parseAIFeedback(stage) {
   }
 }
 
-function DimensionBar({ label, score, c }) {
+function DimensionBar({ label, score, c, isRtl }) {
   const barColor = score >= 80 ? c.success : score >= 60 ? c.primary : score >= 40 ? c.warning : c.destructive;
   return (
-    <View style={dimStyles.row}>
-      <Text style={[dimStyles.label, { color: c['muted-foreground'] }]} numberOfLines={1}>{label}</Text>
-      <View style={[dimStyles.track, { backgroundColor: c.border }]}>
+    <View style={[dimStyles.row, isRtl && dimStyles.rowReverse]}>
+      <Text style={[dimStyles.label, { color: c['muted-foreground'] }, isRtl && dimStyles.textRight]} numberOfLines={1}>{label}</Text>
+      <View style={[dimStyles.track, { backgroundColor: c.border }]}> 
         <View style={[dimStyles.fill, { width: `${Math.min(score, 100)}%`, backgroundColor: barColor }]} />
       </View>
-      <Text style={[dimStyles.score, { color: c.foreground }]}>{Math.round(score)}</Text>
+      <Text style={[dimStyles.score, { color: c.foreground }, isRtl && { textAlign: 'left' }]}>{Math.round(score)}</Text>
     </View>
   );
 }
 
 const dimStyles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
+  rowReverse: { flexDirection: 'row-reverse' },
   label: { fontSize: 12, fontWeight: '600', width: 100 },
+  textRight: { textAlign: 'right' },
   track: { flex: 1, height: 8, borderRadius: 4, overflow: 'hidden' },
   fill: { height: '100%', borderRadius: 4 },
   score: { fontSize: 13, fontWeight: '700', width: 28, textAlign: 'right' },
 });
 
-function BulletList({ items, color, icon }) {
+function BulletList({ items, color, icon, isRtl }) {
   if (!items || items.length === 0) return null;
   return (
-    <View style={[bulStyles.container, { backgroundColor: color + '10', borderColor: color + '30' }]}>
+    <View style={[bulStyles.container, { backgroundColor: color + '10', borderColor: color + '30' }]}> 
       {items.map((item, i) => (
-        <View key={i} style={bulStyles.item}>
-          <Ionicons name={icon} size={14} color={color} style={bulStyles.icon} />
-          <Text style={[bulStyles.text, { color }]}>{item}</Text>
+        <View key={i} style={[bulStyles.item, isRtl && bulStyles.rowReverse]}>
+          <Ionicons name={icon} size={14} color={color} style={[bulStyles.icon, isRtl && { marginLeft: 6, marginRight: 0 }]} />
+          <Text style={[bulStyles.text, { color }, isRtl && { textAlign: 'right' }]}>{item}</Text>
         </View>
       ))}
     </View>
@@ -65,16 +67,17 @@ function BulletList({ items, color, icon }) {
 const bulStyles = StyleSheet.create({
   container: { borderRadius: 12, borderWidth: 1, padding: 12, marginBottom: 8 },
   item: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 4 },
+  rowReverse: { flexDirection: 'row-reverse' },
   icon: { marginRight: 6, marginTop: 1 },
   text: { fontSize: 13, flex: 1, lineHeight: 18 },
 });
 
-function StageScoreCard({ stages, onViewAssessments, c, interviewCount }) {
+function StageScoreCard({ stages, onViewAssessments, c, interviewCount, isRtl }) {
   const { t } = useTranslation();
   if (!stages || stages.length === 0) return null;
   const sorted = [...stages].sort((a, b) => (a.recruitment_stages?.order_index || 0) - (b.recruitment_stages?.order_index || 0));
   return (
-    <View style={[sectionStyles.card, { backgroundColor: c.card, borderColor: c.border }]}>
+    <View style={[sectionStyles.card, { backgroundColor: c.card, borderColor: c.border }]}> 
       <View style={sectionStyles.cardHeader}>
         <Ionicons name="trophy-outline" size={16} color={c.primary} />
         <Text style={[sectionStyles.cardTitle, { color: c.foreground }]}>{t("recruiter.stage_scores")}</Text>
@@ -86,31 +89,31 @@ function StageScoreCard({ stages, onViewAssessments, c, interviewCount }) {
           : c['muted-foreground'];
         const stageName = stage.recruitment_stages?.name || stage.recruitment_stages?.stage_type || t("recruiter.unknown");
         return (
-          <View key={stage.id} style={sectionStyles.stageRow}>
+          <View key={stage.id} style={[sectionStyles.stageRow, isRtl && sectionStyles.rowReverse]}>
             <View style={[sectionStyles.dot, { backgroundColor: statusColor }]} />
-            <Text style={[sectionStyles.stageName, { color: c.foreground }]} numberOfLines={1}>{stageName}</Text>
+            <Text style={[sectionStyles.stageName, { color: c.foreground }, isRtl && sectionStyles.textRight]} numberOfLines={1}>{stageName}</Text>
             {stage.score != null && (
               <View style={[sectionStyles.scorePill, {
                 backgroundColor: stage.score >= 80 ? `${c.success}20` : stage.score >= 60 ? `${c.primary}20` : `${c.destructive}20`,
-              }]}>
+              }]}> 
                 <Text style={[sectionStyles.scorePillText, {
                   color: stage.score >= 80 ? c.success : stage.score >= 60 ? c.primary : c.destructive,
                 }]}>{Math.round(stage.score)}</Text>
               </View>
             )}
-            <Text style={[sectionStyles.statusText, { color: statusColor }]}>
+            <Text style={[sectionStyles.statusText, { color: statusColor }, isRtl && { textAlign: 'left' }]}> 
               {stage.status === 'in_progress' ? t("recruiter.in_progress") : stage.status ? stage.status.charAt(0).toUpperCase() + stage.status.slice(1) : t("recruiter.pending")}
             </Text>
           </View>
         );
       })}
       {interviewCount > 0 && (
-        <TouchableOpacity style={[sectionStyles.assessLink, { borderTopColor: c.border }]} onPress={onViewAssessments}>
+        <TouchableOpacity style={[sectionStyles.assessLink, isRtl && sectionStyles.rowReverse, { borderTopColor: c.border }]} onPress={onViewAssessments}>
           <Ionicons name="document-text-outline" size={16} color={c.accent} />
-          <Text style={[sectionStyles.assessLinkText, { color: c.accent }]}>
+          <Text style={[sectionStyles.assessLinkText, { color: c.accent }]}> 
             {t("recruiter.assessments_results", { count: interviewCount })}
           </Text>
-          <Ionicons name="chevron-forward" size={16} color={c.accent} />
+          <Ionicons name={isRtl ? 'chevron-back' : 'chevron-forward'} size={16} color={c.accent} />
         </TouchableOpacity>
       )}
     </View>
@@ -122,6 +125,8 @@ const sectionStyles = StyleSheet.create({
   cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 12 },
   cardTitle: { fontSize: 15, fontWeight: '700' },
   stageRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
+  rowReverse: { flexDirection: 'row-reverse' },
+  textRight: { textAlign: 'right' },
   dot: { width: 8, height: 8, borderRadius: 4 },
   stageName: { fontSize: 13, fontWeight: '500', flex: 1 },
   scorePill: { borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2 },
@@ -191,6 +196,8 @@ function createStyles(c) {
     noCvCard: { borderRadius: 14, borderWidth: 1, marginHorizontal: 16, padding: 32, alignItems: 'center', marginBottom: 16 },
     noCvText: { fontSize: 15, fontWeight: '600', marginTop: 8 },
     noCvSubtext: { fontSize: 12, marginTop: 4 },
+    rowReverse: { flexDirection: 'row-reverse' },
+    textRight: { textAlign: 'right' },
   });
 }
 
@@ -201,7 +208,8 @@ export default function CandidateProfileScreen() {
   const navigation = useNavigation();
   const route = useRoute();
   const { applicationId } = route.params || {};
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const isRtl = language === 'ar';
 
   const [profile, setProfile] = useState(null);
   const [percentile, setPercentile] = useState(null);
@@ -234,7 +242,7 @@ export default function CandidateProfileScreen() {
 
   if (loading) {
     return (
-      <View style={[styles.container, styles.centered, { backgroundColor: c.background }]}>
+      <View style={[styles.container, styles.centered, { backgroundColor: c.background }]}> 
         <ActivityIndicator size="large" color={c.primary} />
       </View>
     );
@@ -242,7 +250,7 @@ export default function CandidateProfileScreen() {
 
   if (error || !profile) {
     return (
-      <View style={[styles.container, styles.centered, { backgroundColor: c.background }]}>
+      <View style={[styles.container, styles.centered, { backgroundColor: c.background }]}> 
         <Ionicons name="alert-circle-outline" size={48} color={c.destructive} />
         <Text style={[styles.errorText, { color: c.destructive }]}>{error || t("recruiter.candidate_not_found")}</Text>
         <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -274,34 +282,34 @@ export default function CandidateProfileScreen() {
   return (
     <ScrollView style={[styles.container, { backgroundColor: c.background }]} contentContainerStyle={{ paddingBottom: 40 }}>
       {/* Back button */}
-      <TouchableOpacity style={[styles.backBtn, { paddingTop: insets.top + 8 }]} onPress={() => navigation.goBack()}>
-        <Ionicons name="arrow-back" size={22} color={c.primary} />
+      <TouchableOpacity style={[styles.backBtn, isRtl && styles.rowReverse, { paddingTop: insets.top + 8 }]} onPress={() => navigation.goBack()}>
+        <Ionicons name={isRtl ? 'arrow-forward' : 'arrow-back'} size={22} color={c.primary} />
         <Text style={[styles.backBtnText, { color: c.primary }]}>{t("recruiter.back_to_pipeline")}</Text>
       </TouchableOpacity>
 
       {/* Candidate Header */}
-      <View style={[styles.headerCard, { backgroundColor: c.card, borderColor: c.border }]}>
-        <View style={styles.headerRow}>
-          <View style={[styles.avatarLarge, { backgroundColor: `${c.primary}20`, borderColor: `${c.primary}40` }]}>
+      <View style={[styles.headerCard, { backgroundColor: c.card, borderColor: c.border }]}> 
+        <View style={[styles.headerRow, isRtl && styles.rowReverse]}> 
+          <View style={[styles.avatarLarge, { backgroundColor: `${c.primary}20`, borderColor: `${c.primary}40` }]}> 
             <Text style={[styles.avatarLargeText, { color: c.primary }]}>{getInitials(candidate.full_name)}</Text>
           </View>
           <View style={styles.headerInfo}>
-            <View style={styles.headerNameRow}>
-              <Text style={[styles.headerName, { color: c.foreground }]}>{candidate.full_name || t("recruiter.unknown_candidate")}</Text>
+            <View style={[styles.headerNameRow, isRtl && styles.rowReverse]}>
+              <Text style={[styles.headerName, { color: c.foreground }, isRtl && styles.textRight]}>{candidate.full_name || t("recruiter.unknown_candidate")}</Text>
               {app.is_rejected && (
-                <View style={[styles.rejectedBadge, { backgroundColor: `${c.destructive}18`, borderColor: `${c.destructive}30` }]}>
+                <View style={[styles.rejectedBadge, { backgroundColor: `${c.destructive}18`, borderColor: `${c.destructive}30` }]}> 
                   <Text style={[styles.rejectedBadgeText, { color: c.destructive }]}>{t("recruiter.rejected_badge")}</Text>
                 </View>
               )}
             </View>
             {candidate.headline && (
-              <Text style={[styles.headerHeadline, { color: c['muted-foreground'] }]}>{candidate.headline}</Text>
+              <Text style={[styles.headerHeadline, { color: c['muted-foreground'] }, isRtl && styles.textRight]}>{candidate.headline}</Text>
             )}
-            <View style={styles.headerMeta}>
+            <View style={[styles.headerMeta, isRtl && styles.rowReverse]}>
               {app.job_postings?.title && (
-                <View style={styles.metaItem}>
-                  <Ionicons name="briefcase-outline" size={13} color={c['muted-foreground']} />
-                  <Text style={[styles.metaText, { color: c['muted-foreground'] }]}>{app.job_postings.title}</Text>
+                <View style={[styles.metaItem, isRtl && styles.rowReverse]}>
+                  <Ionicons name="briefcase-outline" size={13} color={c['muted-foreground']} style={isRtl ? { marginLeft: 4, marginRight: 0 } : { marginRight: 4 }} />
+                  <Text style={[styles.metaText, { color: c['muted-foreground'] }, isRtl && styles.textRight]}>{app.job_postings.title}</Text>
                 </View>
               )}
             </View>
@@ -309,12 +317,12 @@ export default function CandidateProfileScreen() {
 
           {/* Composite Score */}
           <View style={styles.compositeWrap}>
-            <View style={[styles.compositeCircle, { backgroundColor: `${c.primary}15`, borderColor: `${c.primary}30` }]}>
+            <View style={[styles.compositeCircle, { backgroundColor: `${c.primary}15`, borderColor: `${c.primary}30` }]}> 
               <Text style={[styles.compositeScore, { color: c.primary }]}>{computedComposite ?? '--'}</Text>
             </View>
             <Text style={[styles.compositeLabel, { color: c['muted-foreground'] }]}>{t("recruiter.composite_label")}</Text>
             {percentileTag && (
-              <View style={[styles.percentileBadge, { backgroundColor: `${c.warning}18`, borderColor: `${c.warning}30` }]}>
+              <View style={[styles.percentileBadge, { backgroundColor: `${c.warning}18`, borderColor: `${c.warning}30` }]}> 
                 <Text style={[styles.percentileText, { color: c.warning }]}>{percentileTag.label}</Text>
               </View>
             )}
@@ -324,18 +332,18 @@ export default function CandidateProfileScreen() {
 
       {/* AI CV Review */}
       {cvFeedback ? (
-        <View style={[styles.cvBanner, { backgroundColor: `${c.accent}10`, borderColor: `${c.accent}30` }]}>
-          <View style={styles.cvBannerHeader}>
-            <View style={styles.cvBannerTitleRow}>
-              <Ionicons name="sparkles" size={20} color={c.accent} />
-              <Text style={[styles.cvBannerTitle, { color: c.foreground }]}>{t("recruiter.ai_cv_review")}</Text>
+        <View style={[styles.cvBanner, { backgroundColor: `${c.accent}10`, borderColor: `${c.accent}30` }]}> 
+          <View style={[styles.cvBannerHeader, isRtl && styles.rowReverse]}>
+            <View style={[styles.cvBannerTitleRow, isRtl && styles.rowReverse]}>
+              <Ionicons name="sparkles" size={20} color={c.accent} style={isRtl ? { marginLeft: 6 } : { marginRight: 6 }} />
+              <Text style={[styles.cvBannerTitle, { color: c.foreground }, isRtl && styles.textRight]}>{t("recruiter.ai_cv_review")}</Text>
             </View>
             <View style={[styles.recoBadge, {
               backgroundColor: cvFeedback.recommendation === 'proceed' ? `${c.success}20` : cvFeedback.recommendation === 'review' ? `${c.warning}20` : `${c.destructive}20`,
-            }]}>
+            }]}> 
               <Text style={[styles.recoBadgeText, {
                 color: cvFeedback.recommendation === 'proceed' ? c.success : cvFeedback.recommendation === 'review' ? c.warning : c.destructive,
-              }]}>{cvFeedback.recommendation?.toUpperCase() || t("recruiter.na")}</Text>
+              }, isRtl && styles.textRight]}>{cvFeedback.recommendation?.toUpperCase() || t("recruiter.na")}</Text>
             </View>
           </View>
           <Text style={[styles.cvFeedbackText, { color: c['muted-foreground'] }]}>{cvFeedback.feedback}</Text>
@@ -348,24 +356,24 @@ export default function CandidateProfileScreen() {
                 <Text style={[styles.dimHeaderText, { color: c.foreground }]}>{t("recruiter.dimension_scores")}</Text>
               </View>
               {Object.entries(cvFeedback.dimension_scores).map(([key, val]) => (
-                <DimensionBar key={key} label={key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} score={val} c={c} />
+                <DimensionBar key={key} label={key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} score={val} c={c} isRtl={isRtl} />
               ))}
             </View>
           )}
 
           {/* Strengths / Weaknesses / Gaps */}
           {cvFeedback.strengths?.length > 0 && (
-            <BulletList items={cvFeedback.strengths} color={c.success} icon="checkmark-circle" />
+            <BulletList items={cvFeedback.strengths} color={c.success} icon="checkmark-circle" isRtl={isRtl} />
           )}
           {cvFeedback.weaknesses?.length > 0 && (
-            <BulletList items={cvFeedback.weaknesses} color={c.destructive} icon="close-circle" />
+            <BulletList items={cvFeedback.weaknesses} color={c.destructive} icon="close-circle" isRtl={isRtl} />
           )}
           {cvFeedback.gaps?.length > 0 && (
-            <BulletList items={cvFeedback.gaps} color={c.warning} icon="alert-circle" />
+            <BulletList items={cvFeedback.gaps} color={c.warning} icon="alert-circle" isRtl={isRtl} />
           )}
         </View>
       ) : (
-        <View style={[styles.noCvCard, { backgroundColor: c.card, borderColor: c.border }]}>
+        <View style={[styles.noCvCard, { backgroundColor: c.card, borderColor: c.border }]}> 
           <Ionicons name="document-text-outline" size={36} color={c.border} />
           <Text style={[styles.noCvText, { color: c['muted-foreground'] }]}>{t("recruiter.no_cv_review")}</Text>
           <Text style={[styles.noCvSubtext, { color: c['muted-foreground'] }]}>{t("recruiter.cv_not_reviewed")}</Text>
@@ -378,6 +386,7 @@ export default function CandidateProfileScreen() {
         interviewCount={interviewStages.length}
         c={c}
         onViewAssessments={() => navigation.navigate('CandidateAssessments', { applicationId })}
+        isRtl={isRtl}
       />
     </ScrollView>
   );

@@ -106,6 +106,8 @@ function createStyles(c) {
       gap: 14,
       alignItems: 'flex-start',
     },
+    rowReverse: { flexDirection: 'row-reverse' },
+    textRight: { textAlign: 'right' },
     column: { width: 240, maxHeight: '100%' },
     columnHeader: {
       flexDirection: 'row',
@@ -248,7 +250,8 @@ export default function PipelineCandidatesPage() {
   const c = theme.colors;
   const navigation = useNavigation();
   const { company, jobs } = useCompany();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const isRtl = language === 'ar';
 
   const [candidates, setCandidates] = useState([]);
   const [stages, setStages] = useState([]);
@@ -353,14 +356,16 @@ export default function PipelineCandidatesPage() {
       : score >= 60 ? `${c.warning}1a`
       : c['surface-muted'];
 
+    const advanceIcon = isRtl ? 'chevron-back' : 'chevron-forward';
+
     return (
       <TouchableOpacity
-        style={styles.candidateCard}
+        style={[styles.candidateCard, isRtl && { flexDirection: 'row-reverse' }]}
         activeOpacity={0.8}
         onPress={() => onTap(app)}
       >
-        <View style={styles.candidateTop}>
-          <View style={[styles.avatar, { backgroundColor: stageColor }]}>
+        <View style={[styles.candidateTop, isRtl && { flexDirection: 'row-reverse' }]}>
+          <View style={[styles.avatar, { backgroundColor: stageColor, marginRight: isRtl ? 0 : 10, marginLeft: isRtl ? 10 : 0 }]}> 
             <Text style={styles.avatarText}>{initials}</Text>
           </View>
           <View style={styles.candidateInfo}>
@@ -368,15 +373,15 @@ export default function PipelineCandidatesPage() {
             <Text style={styles.candidateRole} numberOfLines={1}>{app.job_postings?.title || ''}</Text>
           </View>
         </View>
-        <View style={styles.rightActions}>
+        <View style={[styles.rightActions, isRtl && { flexDirection: 'row-reverse' }]}>
           {score != null && (
-            <View style={[styles.scoreBadge, { backgroundColor: scoreBg }]}>
+            <View style={[styles.scoreBadge, { backgroundColor: scoreBg }]}> 
               <Text style={[styles.scoreText, { color: scoreColor }]}>{Math.round(score)}</Text>
             </View>
           )}
           {onAdvance && (
             <TouchableOpacity onPress={onAdvance} style={styles.advanceArrow} disabled={moving}>
-              <Ionicons name="chevron-forward" size={18} color={c.primary} />
+              <Ionicons name={advanceIcon} size={18} color={c.primary} />
             </TouchableOpacity>
           )}
         </View>
@@ -399,7 +404,7 @@ export default function PipelineCandidatesPage() {
       <View style={[styles.headerBar, { paddingTop: insets.top + 12 }]}>
         <TouchableOpacity style={styles.jobSelector} onPress={() => setShowJobPicker(true)}>
           <Ionicons name="briefcase-outline" size={18} color={c['destructive-foreground']} />
-          <Text style={styles.jobSelectorText} numberOfLines={1}>
+          <Text style={[styles.jobSelectorText, isRtl && styles.textRight]} numberOfLines={1}>
             {selectedJob?.title || t("recruiter.select_job")}
           </Text>
           <Ionicons name="chevron-down" size={16} color={c['destructive-foreground']} />
@@ -420,7 +425,7 @@ export default function PipelineCandidatesPage() {
 
       {/* Kanban Board */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.boardScroll}>
-        <View style={styles.board}>
+        <View style={[styles.board, isRtl && styles.rowReverse]}>
           {stages.map((stage, stageIndex) => {
             const nextStage = stages[stageIndex + 1];
             const stageCandidates = candidatesByStage[stage.id] || [];
@@ -428,8 +433,13 @@ export default function PipelineCandidatesPage() {
             return (
               <View key={stage.id} style={styles.column}>
                 <View style={styles.columnHeader}>
-                  <View style={[styles.stageDot, { backgroundColor: stageColor }]} />
-                  <Text style={[styles.columnTitle, { color: c.foreground }]} numberOfLines={1}>
+                  <View
+                    style={[
+                      styles.stageDot,
+                      { backgroundColor: stageColor, marginRight: isRtl ? 0 : 8, marginLeft: isRtl ? 8 : 0 },
+                    ]}
+                  />
+                  <Text style={[styles.columnTitle, { color: c.foreground }, isRtl && styles.textRight]} numberOfLines={1}>
                     {stage.name}
                   </Text>
                   <View style={styles.countBadge}>
