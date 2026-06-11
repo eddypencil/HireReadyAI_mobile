@@ -595,5 +595,24 @@
     "transcript_title": "النص",
     "next_question": "السؤال التالي",
     "complete": "تمت الإجابة على جميع الأسئلة. شكراً لك!"
+  },
+  "contact_us": {
+    "badge": "تواصل معنا",
+    "title": "تواصل مع الدعم",
+    "subtitle": "أرسل لنا رسالة وسنرد عليك قريبًا",
+    "name": "الاسم",
+    "email": "البريد الإلكتروني",
+    "company": "الشركة",
+    "message": "الرسالة",
+    "name_placeholder": "اسمك",
+    "email_placeholder": "you@company.com",
+    "company_placeholder": "اسم الشركة",
+    "message_placeholder": "اكتب رسالتك...",
+    "send": "إرسال",
+    "sending": "جاري الإرسال...",
+    "success": "تم إرسال الرسالة بنجاح!",
+    "missing_fields": "يرجى ملء جميع الحقول المطلوبة.",
+    "contact_info": "معلومات التواصل",
+    "get_in_touch": "Get in touch"
   }
 }

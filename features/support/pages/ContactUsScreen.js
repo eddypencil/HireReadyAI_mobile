@@ -11,13 +11,13 @@ import {
     KeyboardAvoidingView,
     Platform,
     ActivityIndicator,
-    useWindowDimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useUser } from '../../auth/context/user.context';
 import { spacing } from '../../../src/theme';
+import { useTranslation } from '../../../shared/context/I18nContext';
 
 const SUPPORT_EMAIL = 'support@hireready.ai';
 const SUPPORT_PHONE = '+201234567899';
@@ -26,10 +26,8 @@ export default function ContactUsScreen() {
     const insets = useSafeAreaInsets();
     const { theme } = useTheme();
     const { profile } = useUser();
+    const { t } = useTranslation();
     const c = theme.colors;
-
-    const { width } = useWindowDimensions();
-    const isSmall = width < 380;
 
     const [formData, setFormData] = useState({
         name: profile?.name || '',
@@ -46,9 +44,20 @@ export default function ContactUsScreen() {
         setFormData(prev => ({ ...prev, [key]: value }));
     };
 
+    const handleCall = () => {
+        Linking.openURL(`tel:${SUPPORT_PHONE}`);
+    };
+
+    const handleEmail = () => {
+        Linking.openURL(`mailto:${SUPPORT_EMAIL}`);
+    };
+
     const handleSubmit = async () => {
         if (!formData.name || !formData.email || !formData.message) {
-            Alert.alert('Missing info', 'Please fill all required fields.');
+            Alert.alert(
+                t('contact_us.title'),
+                t('contact_us.missing_fields')
+            );
             return;
         }
 
@@ -68,12 +77,12 @@ export default function ContactUsScreen() {
                 `&body=${encodeURIComponent(body)}`;
 
             const canOpen = await Linking.canOpenURL(url);
-
             if (!canOpen) throw new Error('No email app found');
 
             await Linking.openURL(url);
 
             setSubmitted(true);
+
             setFormData({
                 name: profile?.name || '',
                 email: profile?.email || '',
@@ -83,20 +92,10 @@ export default function ContactUsScreen() {
 
             setTimeout(() => setSubmitted(false), 4000);
         } catch (err) {
-            setError(err.message || 'Something went wrong');
+            setError(err.message || t('errors.something_wrong'));
         } finally {
             setIsSubmitting(false);
         }
-    };
-
-
-    const handleCall = () => {
-        Linking.openURL(`tel:${SUPPORT_PHONE}`);
-    };
-
-
-    const handleEmail = () => {
-        Linking.openURL(`mailto:${SUPPORT_EMAIL}`);
     };
 
     return (
@@ -113,52 +112,60 @@ export default function ContactUsScreen() {
                 showsVerticalScrollIndicator={false}
             >
 
-
+                {/* HEADER */}
                 <View style={styles.header}>
                     <Text style={[styles.badge, { color: c.primary }]}>
-                        Contact us
+                        {t('contact_us.badge')}
                     </Text>
 
                     <Text style={[styles.title, { color: c.foreground }]}>
-                        Get in touch
+                        {t('contact_us.title')}
                     </Text>
 
                     <Text style={[styles.subtitle, { color: c['muted-foreground'] }]}>
-                        Send us a message and we’ll get back to you soon.
+                        {t('contact_us.subtitle')}
                     </Text>
                 </View>
 
-
+                {/* FORM */}
                 <View style={[styles.card, { backgroundColor: c.card, borderColor: c.border }]}>
-                    <Text style={[styles.label, { color: c.foreground }]}>Your name</Text>
+                    <Text style={[styles.label, { color: c.foreground }]}>
+                        {t('contact_us.name')}
+                    </Text>
                     <TextInput
                         value={formData.name}
                         onChangeText={(v) => handleChange('name', v)}
                         style={[styles.input, { color: c.foreground, borderColor: c.border }]}
-                        placeholder="Jane Cooper"
+                        placeholder={t('contact_us.name_placeholder')}
                         placeholderTextColor={c['muted-foreground']}
                     />
 
-                    <Text style={[styles.label, { color: c.foreground }]}>Email</Text>
+                    <Text style={[styles.label, { color: c.foreground }]}>
+                        {t('contact_us.email')}
+                    </Text>
                     <TextInput
                         value={formData.email}
                         onChangeText={(v) => handleChange('email', v)}
                         style={[styles.input, { color: c.foreground, borderColor: c.border }]}
-                        placeholder="jane@company.com"
-                        placeholderTextColor={c['muted-foreground']}
+                        placeholder={t('contact_us.email_placeholder')}
                         keyboardType="email-address"
+                        placeholderTextColor={c['muted-foreground']}
                     />
 
-                    <Text style={[styles.label, { color: c.foreground }]}>Company</Text>
+                    <Text style={[styles.label, { color: c.foreground }]}>
+                        {t('contact_us.company')}
+                    </Text>
                     <TextInput
                         value={formData.company}
                         onChangeText={(v) => handleChange('company', v)}
                         style={[styles.input, { color: c.foreground, borderColor: c.border }]}
-                        placeholder="Acme Inc."
+                        placeholder={t('contact_us.company_placeholder')}
                         placeholderTextColor={c['muted-foreground']}
                     />
 
-                    <Text style={[styles.label, { color: c.foreground }]}>Message</Text>
+                    <Text style={[styles.label, { color: c.foreground }]}>
+                        {t('contact_us.message')}
+                    </Text>
                     <TextInput
                         value={formData.message}
                         onChangeText={(v) => handleChange('message', v)}
@@ -168,7 +175,7 @@ export default function ContactUsScreen() {
                             styles.textarea,
                             { color: c.foreground, borderColor: c.border },
                         ]}
-                        placeholder="Tell us about your request..."
+                        placeholder={t('contact_us.message_placeholder')}
                         placeholderTextColor={c['muted-foreground']}
                     />
 
@@ -177,7 +184,10 @@ export default function ContactUsScreen() {
                         disabled={isSubmitting}
                         style={[
                             styles.button,
-                            { backgroundColor: c.foreground, opacity: isSubmitting ? 0.6 : 1 },
+                            {
+                                backgroundColor: c.foreground,
+                                opacity: isSubmitting ? 0.6 : 1,
+                            },
                         ]}
                     >
                         {isSubmitting ? (
@@ -187,28 +197,38 @@ export default function ContactUsScreen() {
                         )}
 
                         <Text style={styles.buttonText}>
-                            {isSubmitting ? 'Sending...' : 'Send message'}
+                            {isSubmitting
+                                ? t('contact_us.sending')
+                                : t('contact_us.send')}
                         </Text>
                     </TouchableOpacity>
 
                     {error && <Text style={styles.error}>{error}</Text>}
-                    {submitted && <Text style={styles.success}>Message sent successfully!</Text>}
+                    {submitted && (
+                        <Text style={styles.success}>
+                            {t('contact_us.success')}
+                        </Text>
+                    )}
                 </View>
+
 
                 <View style={[styles.card, { backgroundColor: c.card, borderColor: c.border }]}>
                     <Text style={[styles.sectionTitle, { color: c.foreground }]}>
-                        Contact information
+                        {t('contact_us.contact_info')}
                     </Text>
-
 
                     <TouchableOpacity style={styles.infoRow} onPress={handleEmail}>
                         <Ionicons name="mail" size={18} color={c.primary} />
-                        <Text style={{ color: c.foreground }}>{SUPPORT_EMAIL}</Text>
+                        <Text style={{ color: c.foreground }}>
+                            {SUPPORT_EMAIL}
+                        </Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.infoRow} onPress={handleCall}>
                         <Ionicons name="call" size={18} color={c.primary} />
-                        <Text style={{ color: c.foreground }}>{SUPPORT_PHONE}</Text>
+                        <Text style={{ color: c.foreground }}>
+                            {SUPPORT_PHONE}
+                        </Text>
                     </TouchableOpacity>
 
                     <View style={styles.infoRow}>
@@ -223,7 +243,6 @@ export default function ContactUsScreen() {
         </KeyboardAvoidingView>
     );
 }
-
 
 const styles = StyleSheet.create({
     container: {
