@@ -598,5 +598,23 @@
     "transcript_title": "Transcript",
     "next_question": "Next Question",
     "complete": "All questions answered. Thank you!"
+  },
+  "contact_us": {
+    "badge": "Contact us",
+    "title": "Get in touch",
+    "subtitle": "Send us a message and we’ll get back to you soon.",
+    "name": "Your name",
+    "email": "Email",
+    "company": "Company",
+    "message": "Message",
+    "name_placeholder": "Your name",
+    "email_placeholder": "you@company.com",
+    "company_placeholder": "Company name",
+    "message_placeholder": "Tell us about your request...",
+    "send": "Send message",
+    "sending": "Sending...",
+    "success": "Message sent successfully!",
+    "missing_fields": "Please fill all required fields.",
+    "contact_info": "Contact information"
   }
 }

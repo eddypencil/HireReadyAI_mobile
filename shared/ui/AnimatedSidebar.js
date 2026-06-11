@@ -33,6 +33,8 @@ export default function AnimatedSidebar() {
     { name: 'MyApplications', label: 'My Applications', icon: 'document-text', screen: 'ApplicantHome' },
     { name: 'Feedback', label: 'My Feedback', icon: 'bar-chart', screen: 'ApplicantFeedback' },
     { name: 'Profile', label: 'My Profile', icon: 'person-circle-outline', screen: 'ApplicantProfile' },
+    { name: 'ContactUs', label: 'Contact Us', icon: 'mail-outline', screen: 'ContactUs' },
+
   ];
 
   const recruiterLinks = [
@@ -42,6 +44,8 @@ export default function AnimatedSidebar() {
     { name: 'Shortlists', label: 'Shortlists', icon: 'heart', screen: 'Shortlists' },
     { name: 'JDGenerator', label: 'JD Generator', icon: 'sparkles', screen: 'JDGenerator' },
     { name: 'Pipeline', label: 'Pipeline', icon: 'git-branch', screen: 'Pipeline' },
+    { name: 'ContactUs', label: 'Contact Us', icon: 'mail-outline', screen: 'ContactUs' },
+
   ];
 
   const links = isApplicant ? applicantLinks : recruiterLinks;
