@@ -52,7 +52,7 @@ function LoadingSkeleton({ c, styles }) {
 function KpiCard({ icon, value, label, color, c, accessibilityLabel, styles, isRtl }) {
   return (
     <View
-      style={[styles.kpiCard, isRtl && styles.rowReverse, { backgroundColor: c.card, borderColor: c.border }]}
+      style={[styles.kpiCard, { backgroundColor: c.card, borderColor: c.border }]}
       accessibilityRole="summary"
       accessibilityLabel={accessibilityLabel}
     >
@@ -68,10 +68,10 @@ function KpiCard({ icon, value, label, color, c, accessibilityLabel, styles, isR
 function PipelineBar({ label, count, maxCount, color, c, styles, isRtl }) {
   const pct = maxCount > 0 ? count / maxCount : 0;
   return (
-    <View style={[styles.pipelineItem, isRtl && styles.rowReverse]}>
-      <View style={[styles.pipelineLabelRow, isRtl && styles.rowReverse]}>
-        <Text style={[styles.pipelineLabel, { color: c.foreground }, isRtl && styles.textRight]}>{label}</Text>
-        <Text style={[styles.pipelineCount, { color: c.primary }, isRtl && { textAlign: 'left' }]}>{count}</Text>
+    <View style={styles.pipelineItem}>
+      <View style={styles.pipelineLabelRow}>
+        <Text style={[styles.pipelineLabel, { color: c.foreground }]}>{label}</Text>
+        <Text style={[styles.pipelineCount, { color: c.primary }]}>{count}</Text>
       </View>
       <View style={[styles.pipelineTrack, { backgroundColor: c.border }]}>
         <View
@@ -94,8 +94,8 @@ function TrendBar({ day, count, maxCount, c, styles, isRtl }) {
           ]}
         />
       </View>
-      <Text style={[styles.trendDay, { color: c['muted-foreground'] }, isRtl && styles.textRight]}>{day}</Text>
-      <Text style={[styles.trendCount, { color: c.foreground }, isRtl && { textAlign: 'left' }]}>{count}</Text>
+      <Text style={[styles.trendDay, { color: c['muted-foreground'] }]}>{day}</Text>
+      <Text style={[styles.trendCount, { color: c.foreground }]}>{count}</Text>
     </View>
   );
 }
@@ -103,7 +103,7 @@ function TrendBar({ day, count, maxCount, c, styles, isRtl }) {
 function TopJobRow({ rank, name, count, maxCount, c, styles, isRtl }) {
   const pct = maxCount > 0 ? count / maxCount : 0;
   return (
-    <View style={[styles.topJobRow, isRtl && styles.rowReverse]}>
+    <View style={styles.topJobRow}>
       <View style={[styles.topJobRank, { backgroundColor: `${c.primary}18` }]}> 
         <Text style={[styles.topJobRankText, { color: c.primary }]}>{rank}</Text>
       </View>
@@ -117,7 +117,7 @@ function TopJobRow({ rank, name, count, maxCount, c, styles, isRtl }) {
           />
         </View>
       </View>
-      <Text style={[styles.topJobCount, { color: c['muted-foreground'] }, isRtl && { textAlign: 'left' }]}>{count}</Text>
+      <Text style={[styles.topJobCount, { color: c['muted-foreground'] }]}>{count}</Text>
     </View>
   );
 }
@@ -217,7 +217,7 @@ export default function RecruiterScreen() {
       >
         {/* Header */}
         <View
-              style={[styles.headerCard, isRtl && styles.rowReverse, { backgroundColor: c.card, borderColor: c.border }]}
+              style={[styles.headerCard, { backgroundColor: c.card, borderColor: c.border }]}
               accessibilityRole="header"
             >
           <View style={[styles.headerAccent, { backgroundColor: c.primary }]} />
@@ -228,8 +228,8 @@ export default function RecruiterScreen() {
             >
               {company?.name || t("recruiter.dashboard_fallback")}
             </Text>
-                <View style={[styles.headerRow, isRtl && styles.rowReverse]}>
-                  <View style={[styles.headerIconCircle, isRtl ? styles.headerIconCircleRtl : { backgroundColor: `${c.primary}18` }]}> 
+                <View style={styles.headerRow}>
+                  <View style={[styles.headerIconCircle, { backgroundColor: `${c.primary}18` }]}> 
                     <Ionicons name="business" size={22} color={c.primary} />
                   </View>
                   <View>
@@ -344,7 +344,7 @@ export default function RecruiterScreen() {
 
         {/* Quick Actions */}
         <Text style={[styles.sectionTitle, { color: c.foreground }]}>{t("recruiter.quick_actions")}</Text>
-        <View style={[styles.quickActionsRow, isRtl && styles.rowReverse]}>
+        <View style={styles.quickActionsRow}>
           {QUICK_ACTIONS.map((action, i) => (
             <TouchableOpacity
               key={i}
