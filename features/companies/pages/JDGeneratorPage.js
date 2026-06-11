@@ -5,6 +5,8 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
   Modal,
   FlatList,
   StyleSheet,
@@ -148,6 +150,10 @@ export default function JDGeneratorPage() {
   const labelClass = styles.label;
 
   return (
+    <KeyboardAvoidingView
+    style={{ flex: 1 }}
+    behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
     <ScrollView style={styles.pageContainer} contentContainerStyle={styles.pageContent}>
       <Text style={styles.pageTitle}>Job Description Generator</Text>
 
@@ -296,6 +302,7 @@ export default function JDGeneratorPage() {
         </View>
       </View>
     </ScrollView>
+  </KeyboardAvoidingView>
   );
 }
 

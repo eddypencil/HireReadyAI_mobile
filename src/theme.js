@@ -103,6 +103,18 @@ export const colors = {
     900: '#011e36',
     950: '#001529',
   },
+  gradient: ['#012a4a', '#01497c', '#2a6f97'],
+  gradientStart: { x: 0, y: 0 },
+  gradientEnd:   { x: 0.3, y: 1 },
+
+  canvas:        '#f4f1ea', 
+  ink:           '#0f2538', 
+  ink2:          '#22405a', 
+  muted:         '#6b7d8f', 
+  line:          '#e3e9ef', 
+  accentDeep:    '#01497c', 
+  accentLight:   '#2a6f97', 
+  accentSoftBg:  '#eaf2f8', 
 };
 
 export const commonStyles = StyleSheet.create({

@@ -13,11 +13,26 @@ import { SidebarProvider, useSidebar } from '../../shared/context/SidebarContext
 import AnimatedSidebar from '../../shared/ui/AnimatedSidebar';
 import { USER_ROLE } from '../../shared/constants/enums';
 import { colors } from '../theme';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect, useState } from 'react';
 
 import LoginPage from '../../features/auth/pages/LoginPage';
 import RegisterPage from '../../features/auth/pages/RegisterPage';
 import ForgotPasswordPage from '../../features/auth/pages/ForgotPasswordPage';
 import ResetPasswordPage from '../../features/auth/pages/ResetPasswordPage';
+import OnboardingScreen from '../../features/auth/pages/OnboardingScreen';
+import EditBioScreen from '../../features/applicant/screens/edit/EditBioScreen';
+import EditContactScreen from '../../features/applicant/screens/edit/EditContactScreen';
+import EditLinksScreen from '../../features/applicant/screens/edit/EditLinksScreen';
+import EditVolunteeringScreen from '../../features/applicant/screens/edit/EditVolunteeringScreen';
+import EditLanguagesScreen from '../../features/applicant/screens/edit/EditLanguagesScreen';
+import EditCertificatesScreen from '../../features/applicant/screens/edit/EditCertificatesScreen';
+import EditAwardsScreen from '../../features/applicant/screens/edit/EditAwardsScreen';
+import ApplicantProfilePage from '../../features/applicant/pages/ApplicantProfilePage';
+import EditExperienceScreen from '../../features/applicant/screens/edit/EditExperienceScreen';
+import EditEducationScreen from '../../features/applicant/screens/edit/EditEducationScreen';
+import EditSkillsScreen from '../../features/applicant/screens/edit/EditSkillsScreen';
+import EditProjectScreen from '../../features/applicant/screens/edit/EditProjectScreen';
 import JobsPage from '../../features/jobs/pages/JobsPage';
 import JobDetailsPage from '../../features/jobs/pages/JobDetailsPage';
 import ShortlistsPage from '../../features/shortlist/pages/ShortlistsPage';
@@ -25,8 +40,10 @@ import { CompanyProvider } from '../../features/companies/pages/CompanyLayout';
 import CompanyProfile from '../../features/companies/pages/CompanyProfile';
 import JDGeneratorPage from '../../features/companies/pages/JDGeneratorPage';
 import JDGeneratorResultPage from '../../features/companies/pages/JDGeneratorResultPage';
+import ApplicationQuestionsPage from '../../features/companies/pages/ApplicationQuestionsPage';
 import JobPostings from '../../features/companies/pages/JobPostings';
 import ApplicantPage from '../../features/applicant/pages/ApplicantPage';
+import ApplicantFeedbackPage from '../../features/applicant/pages/ApplicantFeedbackPage';
 import RecruiterScreen from '../../features/recruiter/pages/RecruiterScreen';
 import PipelineCandidatesPage from '../../features/recruiter/pages/PipelineCandidatesPage';
 import PipelinesPage from '../../features/pipeline/pages/PipelinesPage';
@@ -146,8 +163,98 @@ function MainScreens() {
           header: () => <Header title={getScreenTitle(route.name)} />,
         })}
       >
+        
         <RootStack.Screen name="JobsTab" component={JobsPage} />
         <RootStack.Screen name="ApplicantHome" component={ApplicantPage} />
+
+        
+        <RootStack.Screen
+          name="ApplicantFeedback"
+          component={ApplicantFeedbackPage}
+          options={{
+            header: undefined,
+            headerShown: true,
+            headerTitle: 'My Feedback',
+            headerStyle: { backgroundColor: colors.primary },
+            headerTintColor: colors.white,
+          }}
+        />
+        <RootStack.Screen
+          name="ApplicantProfile"
+          component={ApplicantProfilePage}
+          options={{
+            header: undefined,
+            headerShown: true,
+            headerTitle: 'My Profile',
+            headerStyle: { backgroundColor: colors.primary },
+            headerTintColor: colors.white,
+          }}
+        />
+        <RootStack.Screen name="EditBio" component={EditBioScreen}
+          options={{ header: undefined, headerShown: true, headerTitle: 'Bio & Headline',
+                    headerStyle: { backgroundColor: colors.primary }, headerTintColor: colors.white }} />
+        <RootStack.Screen name="EditContact" component={EditContactScreen}
+          options={{ header: undefined, headerShown: true, headerTitle: 'Contact Info',
+                    headerStyle: { backgroundColor: colors.primary }, headerTintColor: colors.white }} />
+        <RootStack.Screen name="EditLinks" component={EditLinksScreen}
+          options={{ header: undefined, headerShown: true, headerTitle: 'Links',
+                    headerStyle: { backgroundColor: colors.primary }, headerTintColor: colors.white }} />
+        <RootStack.Screen name="EditVolunteering" component={EditVolunteeringScreen}
+          options={{ header: undefined, headerShown: true, headerTitle: 'Volunteering',
+                    headerStyle: { backgroundColor: colors.primary }, headerTintColor: colors.white }} />
+        <RootStack.Screen name="EditLanguages" component={EditLanguagesScreen}
+          options={{ header: undefined, headerShown: true, headerTitle: 'Languages',
+                    headerStyle: { backgroundColor: colors.primary }, headerTintColor: colors.white }} />
+        <RootStack.Screen name="EditCertificates" component={EditCertificatesScreen}
+          options={{ header: undefined, headerShown: true, headerTitle: 'Certificates',
+                    headerStyle: { backgroundColor: colors.primary }, headerTintColor: colors.white }} />
+        <RootStack.Screen name="EditAwards" component={EditAwardsScreen}
+          options={{ header: undefined, headerShown: true, headerTitle: 'Awards & Honors',
+                    headerStyle: { backgroundColor: colors.primary }, headerTintColor: colors.white }} />
+        <RootStack.Screen
+          name="EditExperience"
+          component={EditExperienceScreen}
+          options={{
+            header: undefined,
+            headerShown: true,
+            headerTitle: 'Work Experience',
+            headerStyle: { backgroundColor: colors.primary },
+            headerTintColor: colors.white,
+          }}
+        />
+        <RootStack.Screen
+          name="EditEducation"
+          component={EditEducationScreen}
+          options={{
+            header: undefined,
+            headerShown: true,
+            headerTitle: 'Education',
+            headerStyle: { backgroundColor: colors.primary },
+            headerTintColor: colors.white,
+          }}
+        />
+        <RootStack.Screen
+          name="EditSkills"
+          component={EditSkillsScreen}
+          options={{
+            header: undefined,
+            headerShown: true,
+            headerTitle: 'Skills',
+            headerStyle: { backgroundColor: colors.primary },
+            headerTintColor: colors.white,
+          }}
+        />
+        <RootStack.Screen
+          name="EditProject"
+          component={EditProjectScreen}
+          options={{
+            header: undefined,
+            headerShown: true,
+            headerTitle: 'Project',
+            headerStyle: { backgroundColor: colors.primary },
+            headerTintColor: colors.white,
+          }}
+        />
       </RootStack.Navigator>
     );
   }
@@ -160,9 +267,23 @@ function MainScreens() {
         })}
       >
         <RootStack.Screen name="RecruiterHome" component={RecruiterScreen} />
+        <RootStack.Screen name="ApplicantProfile" component={ApplicantProfilePage}
+          options={{ headerShown: true, headerTitle: 'Applicant Profile',
+                    headerStyle: { backgroundColor: colors.primary },
+                    headerTintColor: colors.white }} />
         <RootStack.Screen name="CompanyProfile" component={CompanyProfile} />
         <RootStack.Screen name="JDGenerator" component={JDGeneratorPage} />
         <RootStack.Screen name="JDGeneratorResult" component={JDGeneratorResultPage} />
+        <RootStack.Screen
+          name="ApplicationQuestions"
+          component={ApplicationQuestionsPage}
+          options={{
+            headerShown: true,
+            headerTitle: 'Screening Questions',
+            headerStyle: { backgroundColor: colors.primary },
+            headerTintColor: colors.white,
+          }}
+        />
         <RootStack.Screen name="JobPostings" component={JobPostings} />
         <RootStack.Screen name="Shortlists" component={ShortlistsPage} />
         <RootStack.Screen name="Pipeline" component={PipelineCandidatesPage} />
@@ -182,10 +303,10 @@ function MainScreens() {
 // screens with a default header (no side menu). The AnimatedSidebar overlay
 // is rendered outside the navigator so it floats above all screens.
 // ============================================================================
-function RootNavigator() {
+function RootNavigator({ onboardingSeen }) {
   const { session, loading } = useUser();
 
-  if (loading) {
+  if (loading || onboardingSeen === null) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
@@ -196,7 +317,10 @@ function RootNavigator() {
   if (!session) {
     return (
       <RootStack.Navigator screenOptions={{ headerShown: false }}>
-        <RootStack.Screen name="Auth" component={AuthNavigator} />
+        {!onboardingSeen && (
+          <RootStack.Screen name="Onboarding" component={OnboardingScreen} />
+        )}
+        <RootStack.Screen name="Auth" component={AuthNavigator} options={{ animation: 'fade_from_bottom'}} />
       </RootStack.Navigator>
     );
   }
@@ -248,15 +372,28 @@ function RootNavigator() {
 // SidebarProvider (sidebar open/close state). NavigationContainer from
 // React Navigation manages the navigation state and linking.
 //
+// onboardingSeen is managed here so it never resets on session changes
+// (e.g. logout). It is read once on app launch and passed down to
+// RootNavigator as a prop.
+//
 // Provider nesting order (outer -> inner):
 //   UserProvider > SidebarProvider > NavigationContainer
 // ============================================================================
 export default function AppNavigator() {
+  const [onboardingSeen, setOnboardingSeen] = useState(null);
+
+  useEffect(() => {
+    AsyncStorage.removeItem('onboarding_seen');
+    AsyncStorage.getItem('onboarding_seen').then((val) => {
+      setOnboardingSeen(val === 'true');
+    });
+  }, []);
+
   return (
     <UserProvider>
       <SidebarProvider>
         <NavigationContainer>
-          <RootNavigator />
+          <RootNavigator onboardingSeen={onboardingSeen} />
         </NavigationContainer>
       </SidebarProvider>
     </UserProvider>

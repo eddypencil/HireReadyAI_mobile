@@ -6,6 +6,7 @@ import {
   ScrollView,
   ActivityIndicator,
   StyleSheet,
+  Modal,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { colors } from "../../../src/theme";
@@ -15,7 +16,7 @@ import { useCompany } from "./CompanyLayout";
 import { useUser } from "../../auth/context/user.context";
 import { seedAnchorStages } from "../../recruiter/services/candidatesPipline.service";
 
-export default function JDGeneratorResultPage({ route }) {
+export default function JDGeneratorResultPage({ route, navigation }) {
   const params = route.params;
   const { company, reload: reloadCompany } = useCompany();
   const { profile } = useUser();
@@ -27,6 +28,9 @@ export default function JDGeneratorResultPage({ route }) {
   const [publishing, setPublishing] = useState(false);
   const [publishError, setPublishError] = useState(null);
   const [published, setPublished] = useState(false);
+
+  // ── Screening questions prompt modal
+  const [showQuestionsPrompt, setShowQuestionsPrompt] = useState(false);
 
   useEffect(() => {
     generateJD();
@@ -58,7 +62,32 @@ export default function JDGeneratorResultPage({ route }) {
     }
   }
 
-  async function handlePublish() {
+  // ── Called when user taps "Publish JD" — show the questions prompt first
+  function handlePublishPress() {
+    setPublishError(null);
+    setShowQuestionsPrompt(true);
+  }
+
+  // ── Publish directly without questions (Skip path)
+  async function publishWithoutQuestions() {
+    setShowQuestionsPrompt(false);
+    await executePublish(null);
+  }
+
+  // ── Go to questions page, pass publishJob callback via navigation params
+  function goToQuestionsPage() {
+    setShowQuestionsPrompt(false);
+    navigation.navigate("ApplicationQuestions", {
+      // Pass everything QuestionsPage needs to publish after collecting questions
+      jobParams: params,
+      aiResult,
+      companyId: company?.id,
+      profileId: profile?.id || null,
+    });
+  }
+
+  // ── Core publish logic — questions array is null if skipped
+  async function executePublish(questions) {
     if (!aiResult || !company?.id) return;
     setPublishing(true);
     setPublishError(null);
@@ -81,6 +110,24 @@ export default function JDGeneratorResultPage({ route }) {
 
       if (newJob?.id) {
         await seedAnchorStages(newJob.id);
+
+        // Save questions if provided
+        if (questions && questions.length > 0) {
+          const questionRows = questions
+            .filter((q) => q.question.trim())
+            .map((q, i) => ({
+              job_id: newJob.id,
+              question: q.question.trim(),
+              type: q.type,
+              order_index: i,
+            }));
+          if (questionRows.length > 0) {
+            const { error: qError } = await supabase
+              .from("questions")
+              .insert(questionRows);
+            if (qError) throw new Error(`Failed to save questions: ${qError.message}`);
+          }
+        }
       }
 
       setPublished(true);
@@ -92,6 +139,7 @@ export default function JDGeneratorResultPage({ route }) {
     }
   }
 
+  // ── Success screen
   if (published) {
     return (
       <View style={styles.successContainer}>
@@ -106,6 +154,7 @@ export default function JDGeneratorResultPage({ route }) {
     );
   }
 
+  // ── Loading screen
   if (generating) {
     return (
       <View style={styles.centered}>
@@ -116,6 +165,7 @@ export default function JDGeneratorResultPage({ route }) {
     );
   }
 
+  // ── Error screen
   if (generateError) {
     return (
       <View style={styles.centered}>
@@ -130,121 +180,173 @@ export default function JDGeneratorResultPage({ route }) {
   }
 
   return (
-    <ScrollView style={styles.pageContainer} contentContainerStyle={styles.pageContent}>
-      <View style={styles.previewColumn}>
-        <View style={styles.previewContent}>
-          <View style={styles.aiBadge}>
-            <Ionicons name="sparkles" size={14} color={colors.darkAmethyst[500]} />
-            <Text style={styles.aiBadgeText}> AI Generated</Text>
-          </View>
+    <>
+      <ScrollView style={styles.pageContainer} contentContainerStyle={styles.pageContent}>
+        <View style={styles.previewColumn}>
+          <View style={styles.previewContent}>
 
-          <Text style={styles.previewTitle}>{params.title}</Text>
-
-          <View style={styles.previewMeta}>
-            {company?.name && (
-              <View style={styles.metaTag}>
-                <Text style={styles.metaText}>{company.name}</Text>
-              </View>
-            )}
-            {params.workLocation && (
-              <View style={styles.metaTag}>
-                <Text style={styles.metaText}>
-                  {params.workLocation.replace(/_/g, " ")}
-                </Text>
-              </View>
-            )}
-            {params.jobType && (
-              <View style={styles.metaTag}>
-                <Text style={styles.metaText}>
-                  {params.jobType.replace(/_/g, " ")}
-                </Text>
-              </View>
-            )}
-            {params.seniority && (
-              <View style={styles.metaTag}>
-                <Text style={styles.metaText}>
-                  {params.seniority}
-                </Text>
-              </View>
-            )}
-          </View>
-
-          <View style={styles.salaryDisplay}>
-            <Ionicons name="cash-outline" size={14} color={colors.darkAmethyst[500]} />
-            <Text style={styles.salaryDisplayText}>
-              {params.salaryMin && params.salaryMax
-                ? `${Number(params.salaryMin).toLocaleString()} – ${Number(params.salaryMax).toLocaleString()} EGP`
-                : "Salary: Confidential"}
-            </Text>
-          </View>
-
-          <View style={styles.divider} />
-
-          <View style={styles.previewSection}>
-            <Text style={styles.previewSectionTitle}>About the role</Text>
-            <Text style={styles.previewSectionBody}>
-              {aiResult?.description}
-            </Text>
-          </View>
-
-          {aiResult?.responsibilities?.length > 0 && (
-            <View style={styles.previewSection}>
-              <Text style={styles.previewSectionTitle}>What you'll do</Text>
-              {aiResult.responsibilities.map((item, i) => (
-                <View key={i} style={styles.listRow}>
-                  <View style={styles.bullet} />
-                  <Text style={styles.listItem}>{item}</Text>
-                </View>
-              ))}
+            {/* AI badge */}
+            <View style={styles.aiBadge}>
+              <Ionicons name="sparkles" size={14} color={colors.darkAmethyst[500]} />
+              <Text style={styles.aiBadgeText}> AI Generated</Text>
             </View>
-          )}
 
-          {aiResult?.requirements?.length > 0 && (
-            <View style={styles.previewSection}>
-              <Text style={styles.previewSectionTitle}>What we're looking for</Text>
-              {aiResult.requirements.map((item, i) => (
-                <View key={i} style={styles.listRow}>
-                  <View style={styles.bullet} />
-                  <Text style={styles.listItem}>{item}</Text>
+            {/* Title + meta */}
+            <Text style={styles.previewTitle}>{params.title}</Text>
+            <View style={styles.previewMeta}>
+              {company?.name && (
+                <View style={styles.metaTag}>
+                  <Text style={styles.metaText}>{company.name}</Text>
                 </View>
-              ))}
+              )}
+              {params.workLocation && (
+                <View style={styles.metaTag}>
+                  <Text style={styles.metaText}>{params.workLocation.replace(/_/g, " ")}</Text>
+                </View>
+              )}
+              {params.jobType && (
+                <View style={styles.metaTag}>
+                  <Text style={styles.metaText}>{params.jobType.replace(/_/g, " ")}</Text>
+                </View>
+              )}
+              {params.seniority && (
+                <View style={styles.metaTag}>
+                  <Text style={styles.metaText}>{params.seniority}</Text>
+                </View>
+              )}
             </View>
-          )}
 
-          {aiResult?.skills?.length > 0 && (
+            {/* Salary */}
+            <View style={styles.salaryDisplay}>
+              <Ionicons name="cash-outline" size={14} color={colors.darkAmethyst[500]} />
+              <Text style={styles.salaryDisplayText}>
+                {params.salaryMin && params.salaryMax
+                  ? `${Number(params.salaryMin).toLocaleString()} – ${Number(params.salaryMax).toLocaleString()} EGP`
+                  : "Salary: Confidential"}
+              </Text>
+            </View>
+
+            <View style={styles.divider} />
+
+            {/* Description */}
             <View style={styles.previewSection}>
-              <Text style={styles.previewSectionTitle}>Skills & Tools</Text>
-              <View style={styles.skillsGrid}>
-                {aiResult.skills.map((skill, i) => (
-                  <View key={i} style={styles.skillRow}>
-                    <View style={styles.skillBullet} />
-                    <Text style={styles.skillText}>{skill}</Text>
+              <Text style={styles.previewSectionTitle}>About the role</Text>
+              <Text style={styles.previewSectionBody}>{aiResult?.description}</Text>
+            </View>
+
+            {/* Responsibilities */}
+            {aiResult?.responsibilities?.length > 0 && (
+              <View style={styles.previewSection}>
+                <Text style={styles.previewSectionTitle}>What you'll do</Text>
+                {aiResult.responsibilities.map((item, i) => (
+                  <View key={i} style={styles.listRow}>
+                    <View style={styles.bullet} />
+                    <Text style={styles.listItem}>{item}</Text>
                   </View>
                 ))}
               </View>
-            </View>
-          )}
-
-          {publishError && (
-            <View style={styles.errorBanner}>
-              <Text style={styles.errorBannerText}>{publishError}</Text>
-            </View>
-          )}
-
-          <TouchableOpacity
-            style={[styles.publishBtn, publishing && styles.publishBtnDisabled]}
-            onPress={handlePublish}
-            disabled={publishing}
-          >
-            {publishing ? (
-              <ActivityIndicator size="small" color={colors.white} />
-            ) : (
-              <Text style={styles.publishBtnText}>Publish JD</Text>
             )}
-          </TouchableOpacity>
+
+            {/* Requirements */}
+            {aiResult?.requirements?.length > 0 && (
+              <View style={styles.previewSection}>
+                <Text style={styles.previewSectionTitle}>What we're looking for</Text>
+                {aiResult.requirements.map((item, i) => (
+                  <View key={i} style={styles.listRow}>
+                    <View style={styles.bullet} />
+                    <Text style={styles.listItem}>{item}</Text>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            {/* Skills */}
+            {aiResult?.skills?.length > 0 && (
+              <View style={styles.previewSection}>
+                <Text style={styles.previewSectionTitle}>Skills & Tools</Text>
+                <View style={styles.skillsGrid}>
+                  {aiResult.skills.map((skill, i) => (
+                    <View key={i} style={styles.skillRow}>
+                      <View style={styles.skillBullet} />
+                      <Text style={styles.skillText}>{skill}</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            )}
+
+            {/* Publish error */}
+            {publishError && (
+              <View style={styles.errorBanner}>
+                <Text style={styles.errorBannerText}>{publishError}</Text>
+              </View>
+            )}
+
+            {/* Publish button */}
+            <TouchableOpacity
+              style={[styles.publishBtn, publishing && styles.publishBtnDisabled]}
+              onPress={handlePublishPress}
+              disabled={publishing}
+            >
+              {publishing ? (
+                <ActivityIndicator size="small" color={colors.white} />
+              ) : (
+                <>
+                  <Ionicons name="arrow-up-circle-outline" size={18} color={colors.white} />
+                  <Text style={styles.publishBtnText}>Publish JD</Text>
+                </>
+              )}
+            </TouchableOpacity>
+
+          </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+
+      {/* ════════════════════════════════════════
+          Screening Questions Prompt Modal
+          ════════════════════════════════════════ */}
+      <Modal
+        visible={showQuestionsPrompt}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowQuestionsPrompt(false)}
+      >
+        <View style={styles.promptOverlay}>
+          <View style={styles.promptCard}>
+
+            {/* Icon */}
+            <View style={styles.promptIconWrapper}>
+              <Ionicons name="help-circle-outline" size={32} color={colors.darkAmethyst[600]} />
+            </View>
+
+            {/* Title + description */}
+            <Text style={styles.promptTitle}>Add Screening Questions?</Text>
+            <Text style={styles.promptBody}>
+              You can add custom questions that applicants will answer when applying for this role like experience level, availability, or specific skills.
+            </Text>
+
+            {/* Buttons */}
+            <TouchableOpacity
+              style={styles.promptPrimaryBtn}
+              onPress={goToQuestionsPage}
+              activeOpacity={0.85}
+            >
+              <Ionicons name="add-circle-outline" size={18} color={colors.white} />
+              <Text style={styles.promptPrimaryBtnText}>Yes, Add Questions</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.promptSecondaryBtn}
+              onPress={publishWithoutQuestions}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.promptSecondaryBtnText}>Skip & Publish Now</Text>
+            </TouchableOpacity>
+
+          </View>
+        </View>
+      </Modal>
+    </>
   );
 }
 
@@ -419,6 +521,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
+    flexDirection: "row",
+    gap: 8,
   },
   publishBtnDisabled: {
     backgroundColor: colors.darkAmethyst[400],
@@ -458,5 +562,80 @@ const styles = StyleSheet.create({
     color: colors.darkAmethyst[700],
     textAlign: "center",
     lineHeight: 22,
+  },
+
+  // ── Screening questions prompt modal
+  promptOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(1, 26, 74, 0.55)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 28,
+  },
+  promptCard: {
+    backgroundColor: colors.white,
+    borderRadius: 20,
+    padding: 28,
+    width: "100%",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 24,
+    elevation: 12,
+  },
+  promptIconWrapper: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: colors.darkAmethyst[50],
+    borderWidth: 1,
+    borderColor: colors.darkAmethyst[100],
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 16,
+  },
+  promptTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: colors.darkAmethyst[950],
+    textAlign: "center",
+    marginBottom: 10,
+  },
+  promptBody: {
+    fontSize: 13,
+    color: colors.darkAmethyst[500],
+    textAlign: "center",
+    lineHeight: 20,
+    marginBottom: 24,
+  },
+  promptPrimaryBtn: {
+    backgroundColor: colors.darkAmethyst[600],
+    borderRadius: 12,
+    paddingVertical: 14,
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    gap: 8,
+    marginBottom: 10,
+  },
+  promptPrimaryBtnText: {
+    color: colors.white,
+    fontSize: 15,
+    fontWeight: "600",
+  },
+  promptSecondaryBtn: {
+    borderWidth: 1,
+    borderColor: colors.darkAmethyst[200],
+    borderRadius: 12,
+    paddingVertical: 13,
+    width: "100%",
+    alignItems: "center",
+  },
+  promptSecondaryBtnText: {
+    color: colors.darkAmethyst[500],
+    fontSize: 14,
+    fontWeight: "500",
   },
 });

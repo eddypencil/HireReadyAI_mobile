@@ -9,13 +9,19 @@ import {
   FlatList,
   StyleSheet,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors } from "../../../src/theme";
+import { useSidebar } from "../../../shared/context/SidebarContext";
 import { fetchAllCompanies, createCompany } from "../services/companies.service";
 import { addMembership } from "../services/memberships.service";
 import { useUser } from "../../auth/context/user.context";
+import { signOut } from "../../auth/services/auth.service";
 
 export default function NoCompanyView({ onCompanyJoined }) {
   const { profile } = useUser();
+  const { toggle } = useSidebar();
+  const insets = useSafeAreaInsets();
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -84,6 +90,21 @@ export default function NoCompanyView({ onCompanyJoined }) {
     }
   };
 
+  const handleSignOut = () => {
+    
+    signOut();
+  };
+
+  const renderHeader = () => (
+    <View style={[localStyles.header, { paddingTop: insets.top + 8 }]}>
+      <TouchableOpacity onPress={toggle} style={localStyles.menuBtn}>
+        <Ionicons name="menu" size={22} color={colors.white} />
+      </TouchableOpacity>
+      <Text style={localStyles.headerTitle}>Company Setup</Text>
+      <View style={{ width: 40 }} />
+    </View>
+  );
+
   if (loading) {
     return (
       <View style={styles.centered}>
@@ -126,7 +147,9 @@ export default function NoCompanyView({ onCompanyJoined }) {
   );
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <View style={{ flex: 1, backgroundColor: colors.darkAmethyst[50] }}>
+      {renderHeader()}
+      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {error && (
         <View style={styles.errorBanner}>
           <Text style={styles.errorText}>{error}</Text>
@@ -259,9 +282,34 @@ export default function NoCompanyView({ onCompanyJoined }) {
           )}
         </>
       )}
-    </ScrollView>
+      </ScrollView>
+      <TouchableOpacity onPress={handleSignOut} style={styles.logoutButton} activeOpacity={0.7}>
+        <Ionicons name="log-out" size={18} color="#ef4444" />
+        <Text style={styles.logoutText}>Logout</Text>
+      </TouchableOpacity>
+    </View>
   );
 }
+
+const localStyles = StyleSheet.create({
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.primary,
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+  },
+  menuBtn: {
+    padding: 4,
+    marginRight: 12,
+  },
+  headerTitle: {
+    flex: 1,
+    fontSize: 17,
+    fontWeight: '600',
+    color: colors.white,
+  },
+});
 
 const styles = StyleSheet.create({
   container: {

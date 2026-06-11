@@ -81,6 +81,14 @@ export default function LoginPage() {
             required
           />
 
+          
+          {/* <TouchableOpacity
+            onPress={() => navigation.navigate('ForgotPassword')}
+            style={styles.forgotContainer}
+          >
+            <Text style={styles.forgotText}>Forgot password?</Text>
+          </TouchableOpacity> */}
+
           {error && (
             <View style={styles.errorContainer}>
               <Text style={styles.errorText}>{error}</Text>
@@ -212,5 +220,13 @@ const styles = StyleSheet.create({
   linkHighlight: {
     color: colors.darkAmethyst[200],
     fontWeight: '600',
+  },
+  forgotContainer: {
+    alignSelf: 'flex-end',
+    marginTop: -8,
+  },
+  forgotText: {
+    fontSize: 13,
+    color: colors.darkAmethyst[300],
   },
 });

@@ -1,6 +1,9 @@
+// features/applicant/components/AvatarModal.js
 import { useState } from "react";
 import { View, Text, TouchableOpacity, Modal, Alert } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from 'expo-file-system';
+import { decode } from 'base64-arraybuffer';
 import { supabase } from "../../../shared/services/supabase";
 import { colors } from "../../../src/theme";
 
@@ -16,30 +19,43 @@ export default function AvatarModal({ open, onClose, userId, currentUrl, onUpdat
       }
 
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [1, 1],
+        mediaTypes: ['images'],
+        allowsEditing: false,
         quality: 0.8,
       });
 
-      if (result.canceled || !result.assets?.[0]) return;
+      if (!result || result.canceled) return;
+      const file = result.assets?.[0] ?? result;
+      if (!file?.uri) return;
 
       setUploading(true);
-      const file = result.assets[0];
 
-      const response = await fetch(file.uri);
-      const blob = await response.blob();
-
-      const ext = file.uri.split(".").pop() || "jpg";
+      const ext = file.uri.split(".").pop()?.split("?")[0] || "jpg";
       const filePath = `avatars/${userId}.${ext}`;
+
+      // ── Use base64 instead of fetch() to avoid Android network request failed
+      const base64 = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = () => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(xhr.response);
+      };
+      xhr.onerror = reject;
+      xhr.responseType = 'blob';
+      xhr.open('GET', file.uri, true);
+      xhr.send(null);
+    });
 
       const { error: uploadError } = await supabase.storage
         .from("avatars")
-        .upload(filePath, blob, { upsert: true, contentType: `image/${ext}` });
+        .upload(filePath, decode(base64), { upsert: true, contentType: `image/${ext}` });
 
       if (uploadError) throw uploadError;
 
       const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(filePath);
+      urlData.publicUrl = `${urlData.publicUrl}?t=${Date.now()}`;
 
       const { error: updateError } = await supabase
         .from("profiles")
@@ -51,7 +67,7 @@ export default function AvatarModal({ open, onClose, userId, currentUrl, onUpdat
       onUpdated?.(urlData.publicUrl);
       onClose();
     } catch (err) {
-      Alert.alert("Error", "Failed to update avatar. Please try again.");
+      Alert.alert("Error", err?.message || JSON.stringify(err));
     } finally {
       setUploading(false);
     }
@@ -87,15 +103,19 @@ export default function AvatarModal({ open, onClose, userId, currentUrl, onUpdat
           padding: 16,
         }}
       >
-        <TouchableOpacity activeOpacity={1} onPress={() => {}} style={{
-          backgroundColor: colors.white,
-          borderRadius: 20,
-          borderWidth: 1,
-          borderColor: colors.border,
-          padding: 24,
-          width: "100%",
-          maxWidth: 340,
-        }}>
+        <TouchableOpacity
+          activeOpacity={1}
+          onPress={() => {}}
+          style={{
+            backgroundColor: colors.white,
+            borderRadius: 20,
+            borderWidth: 1,
+            borderColor: colors.border,
+            padding: 24,
+            width: "100%",
+            maxWidth: 340,
+          }}
+        >
           <Text style={{
             fontSize: 18,
             fontWeight: "700",
@@ -122,22 +142,24 @@ export default function AvatarModal({ open, onClose, userId, currentUrl, onUpdat
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              onPress={handleRemove}
-              disabled={uploading}
-              style={{
-                borderWidth: 1,
-                borderColor: colors.red[300],
-                borderRadius: 10,
-                paddingVertical: 12,
-                alignItems: "center",
-                opacity: uploading ? 0.5 : 1,
-              }}
-            >
-              <Text style={{ color: colors.red[600], fontSize: 14, fontWeight: "600" }}>
-                Remove Photo
-              </Text>
-            </TouchableOpacity>
+            {currentUrl && (
+              <TouchableOpacity
+                onPress={handleRemove}
+                disabled={uploading}
+                style={{
+                  borderWidth: 1,
+                  borderColor: colors.red?.[300] || '#fca5a5',
+                  borderRadius: 10,
+                  paddingVertical: 12,
+                  alignItems: "center",
+                  opacity: uploading ? 0.5 : 1,
+                }}
+              >
+                <Text style={{ color: colors.red?.[600] || '#dc2626', fontSize: 14, fontWeight: "600" }}>
+                  Remove Photo
+                </Text>
+              </TouchableOpacity>
+            )}
 
             <TouchableOpacity
               onPress={onClose}
