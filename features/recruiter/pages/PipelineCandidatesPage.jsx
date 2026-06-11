@@ -413,35 +413,45 @@ export default function PipelineCandidatesPage() {
     const isBeforeShortlist =
       shortlistStage && nextStage.id === shortlistStage.id;
 
-    if (isBeforeShortlist) {
+    const currentStageCheck = stages.find((s) => s.id === stageId);
+
+    // AutoAdvanceModal is only for non-cv_review stages before shortlist
+    if (isBeforeShortlist && currentStageCheck?.stage_type !== "cv_review") {
       setShowAutoAdvanceModal(true);
       return;
     }
 
-    if (nextStage.is_locked) return;
+    // Skip locked check for cv_review — it's always locked by design but must be actionable
+    if (nextStage.is_locked && currentStageCheck?.stage_type !== "cv_review")
+      return;
 
     const stageCandidates = candidatesByStage[stageId] || [];
 
     const currentStage = stages.find((s) => s.id === stageId);
+
     const isCvReview = currentStage?.stage_type === "cv_review";
 
-    const eligible = isCvReview
-      ? stageCandidates
-      : stageCandidates.filter((c) => {
-          const stageData = c.application_stages?.find(
-            (as) =>
-              as.recruitment_stages?.id === stageId || as.stage_id === stageId,
-          );
+    const eligible = stageCandidates.filter((c) => {
+      const minScore = currentStage?.min_score ?? 0;
 
-          const score =
-            stageData?.score ??
-            stageData?.application_stage_evaluations?.[0]?.ai_score ??
-            null;
+      if (isCvReview) {
+        // cv_review uses cv_score primarily, composite_score as fallback
+        const score = c.cv_score ?? c.composite_score ?? null;
+        return score != null && Number(score) >= minScore;
+      }
 
-          const minScore = currentStage?.min_score ?? 0;
+      const stageData = c.application_stages?.find(
+        (as) =>
+          as.recruitment_stages?.id === stageId || as.stage_id === stageId,
+      );
 
-          return score != null && Number(score) >= minScore;
-        });
+      const score =
+        stageData?.score ??
+        stageData?.application_stage_evaluations?.[0]?.ai_score ??
+        null;
+
+      return score != null && Number(score) >= minScore;
+    });
 
     if (eligible.length === 0) {
       Alert.alert(
@@ -461,12 +471,17 @@ export default function PipelineCandidatesPage() {
         { text: t("recruiter.cancel"), style: "cancel" },
         {
           text: t("recruiter.confirm"),
+
           onPress: async () => {
             setMoving(true);
             try {
-              await Promise.all(
+              const results = await Promise.all(
                 eligible.map((c) => moveToStage(c.id, nextStage.id)),
               );
+              const errors = results.filter((r) => r?.error);
+              if (errors.length > 0) {
+                Alert.alert(t("recruiter.error"), errors[0].error.message);
+              }
               fetchData();
             } catch (err) {
               Alert.alert(t("recruiter.error"), err.message);
