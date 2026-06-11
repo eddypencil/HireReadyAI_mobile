@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from "react";
 import {
   ScrollView,
   View,
@@ -8,47 +8,54 @@ import {
   ActivityIndicator,
   Modal,
   Alert,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
-import { useCompany } from '../../../features/companies/pages/CompanyLayout';
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
+import { useCompany } from "../../../features/companies/pages/CompanyLayout";
 import {
   getPipelineCandidates,
   getJobStages,
   moveToStage,
-} from '../services/candidatesPipline.service';
-import { useTheme } from '../../../shared/context/ThemeContext';
-import { useTranslation } from '../../../shared/context/I18nContext';
-import AutoAdvanceModal from '../components/AutoAdvanceModal';
+} from "../services/candidatesPipline.service";
+import { useTheme } from "../../../shared/context/ThemeContext";
+import { useTranslation } from "../../../shared/context/I18nContext";
+import AutoAdvanceModal from "../components/AutoAdvanceModal";
 
 const STAGE_TYPE_COLORS = {
-  cv_review: '#6b7280',
-  shortlist: '#f59e0b',
-  screening: '#f59e0b',
-  assessment_test: '#8b5cf6',
-  coding_test: '#8b5cf6',
-  video_interview: '#3b82f6',
-  technical_interview: '#3b82f6',
-  hr_interview: '#3b82f6',
-  manager_interview: '#ec4899',
-  ai_screening: '#8b5cf6',
-  offer: '#10b981',
-  default: '#6b7280',
+  cv_review: "#6b7280",
+  shortlist: "#f59e0b",
+  screening: "#f59e0b",
+  assessment_test: "#8b5cf6",
+  coding_test: "#8b5cf6",
+  video_interview: "#3b82f6",
+  technical_interview: "#3b82f6",
+  hr_interview: "#3b82f6",
+  manager_interview: "#ec4899",
+  ai_screening: "#8b5cf6",
+  offer: "#10b981",
+  default: "#6b7280",
 };
 
-function getInitials(name = '') {
-  return (name || '').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || '?';
+function getInitials(name = "") {
+  return (
+    (name || "")
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase() || "?"
+  );
 }
 
 function createStyles(c) {
   return StyleSheet.create({
     container: { flex: 1 },
-    centered: { justifyContent: 'center', alignItems: 'center' },
+    centered: { justifyContent: "center", alignItems: "center" },
     loadingText: { marginTop: 12, fontSize: 14 },
     headerBar: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       backgroundColor: c.primary,
       paddingHorizontal: 16,
       paddingBottom: 12,
@@ -56,9 +63,9 @@ function createStyles(c) {
     },
     jobSelector: {
       flex: 1,
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: 'rgba(255,255,255,0.15)',
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: "rgba(255,255,255,0.15)",
       borderRadius: 10,
       paddingHorizontal: 12,
       paddingVertical: 10,
@@ -67,20 +74,20 @@ function createStyles(c) {
     jobSelectorText: {
       flex: 1,
       fontSize: 15,
-      fontWeight: '600',
-      color: c['destructive-foreground'],
+      fontWeight: "600",
+      color: c["destructive-foreground"],
     },
     autoAdvanceBtn: {
       width: 40,
       height: 40,
       borderRadius: 10,
-      backgroundColor: 'rgba(255,255,255,0.15)',
-      justifyContent: 'center',
-      alignItems: 'center',
+      backgroundColor: "rgba(255,255,255,0.15)",
+      justifyContent: "center",
+      alignItems: "center",
     },
     infoBar: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       paddingHorizontal: 16,
       paddingVertical: 10,
       gap: 6,
@@ -90,49 +97,49 @@ function createStyles(c) {
     },
     infoText: {
       fontSize: 13,
-      fontWeight: '600',
+      fontWeight: "600",
       color: c.primary,
       flex: 1,
     },
     infoHint: {
       fontSize: 11,
-      color: c['muted-foreground'],
+      color: c["muted-foreground"],
     },
     boardScroll: { flex: 1 },
     board: {
-      flexDirection: 'row',
+      flexDirection: "row",
       paddingHorizontal: 16,
       paddingVertical: 20,
       gap: 14,
-      alignItems: 'flex-start',
+      alignItems: "flex-start",
     },
-    column: { width: 240, maxHeight: '100%' },
+    column: { width: 240, maxHeight: "100%" },
     columnHeader: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       marginBottom: 12,
       paddingHorizontal: 4,
     },
     stageDot: { width: 10, height: 10, borderRadius: 5, marginRight: 8 },
-    columnTitle: { fontSize: 14, fontWeight: '700', flex: 1 },
+    columnTitle: { fontSize: 14, fontWeight: "700", flex: 1 },
     countBadge: {
-      backgroundColor: c['surface-muted'],
+      backgroundColor: c["surface-muted"],
       borderRadius: 10,
       paddingHorizontal: 8,
       paddingVertical: 2,
       borderWidth: 1,
       borderColor: c.border,
     },
-    countText: { fontSize: 12, fontWeight: '700', color: c.primary },
+    countText: { fontSize: 12, fontWeight: "700", color: c.primary },
     columnBody: { maxHeight: 500 },
     emptyColumn: {
       borderWidth: 2,
-      borderStyle: 'dashed',
+      borderStyle: "dashed",
       borderColor: c.border,
       borderRadius: 12,
       padding: 32,
-      alignItems: 'center',
-      justifyContent: 'center',
+      alignItems: "center",
+      justifyContent: "center",
     },
     emptyColumnText: { fontSize: 12, marginTop: 6 },
     candidateCard: {
@@ -142,95 +149,104 @@ function createStyles(c) {
       marginBottom: 10,
       borderWidth: 1,
       borderColor: c.border,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
     },
-    candidateTop: { flexDirection: 'row', alignItems: 'center', flex: 1 },
+    candidateTop: { flexDirection: "row", alignItems: "center", flex: 1 },
     avatar: {
       width: 38,
       height: 38,
       borderRadius: 19,
-      justifyContent: 'center',
-      alignItems: 'center',
+      justifyContent: "center",
+      alignItems: "center",
       marginRight: 10,
     },
-    avatarText: { color: c['destructive-foreground'], fontSize: 12, fontWeight: '700' },
+    avatarText: {
+      color: c["destructive-foreground"],
+      fontSize: 12,
+      fontWeight: "700",
+    },
     candidateInfo: { flex: 1 },
-    candidateName: { fontSize: 13, fontWeight: '700', color: c.foreground },
-    candidateRole: { fontSize: 11, color: c['muted-foreground'], marginTop: 1 },
+    candidateName: { fontSize: 13, fontWeight: "700", color: c.foreground },
+    candidateRole: { fontSize: 11, color: c["muted-foreground"], marginTop: 1 },
     scoreBadge: {
       borderRadius: 8,
       paddingHorizontal: 8,
       paddingVertical: 4,
     },
-    scoreText: { fontSize: 12, fontWeight: '800' },
+    scoreText: { fontSize: 12, fontWeight: "800" },
     rightActions: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       gap: 6,
     },
     advanceArrow: {
       width: 36,
       height: 36,
       borderRadius: 14,
-      backgroundColor: c.primary + '1a',
-      justifyContent: 'center',
-      alignItems: 'center',
+      backgroundColor: c.primary + "1a",
+      justifyContent: "center",
+      alignItems: "center",
     },
     modalOverlay: {
       flex: 1,
-      backgroundColor: 'rgba(0,0,0,0.4)',
-      justifyContent: 'flex-end',
+      backgroundColor: "rgba(0,0,0,0.4)",
+      justifyContent: "flex-end",
     },
     modalContent: {
       backgroundColor: c.card,
       borderTopLeftRadius: 20,
       borderTopRightRadius: 20,
-      maxHeight: '70%',
+      maxHeight: "70%",
       paddingBottom: 40,
     },
     modalHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
       paddingHorizontal: 20,
       paddingVertical: 16,
       borderBottomWidth: 1,
       borderBottomColor: c.border,
     },
-    modalTitle: { fontSize: 17, fontWeight: '700', color: c.foreground },
+    modalTitle: { fontSize: 17, fontWeight: "700", color: c.foreground },
     jobOption: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       paddingHorizontal: 20,
       paddingVertical: 14,
       gap: 12,
       borderBottomWidth: 1,
       borderBottomColor: c.border,
     },
-    jobOptionActive: { backgroundColor: c.primary + '08' },
+    jobOptionActive: { backgroundColor: c.primary + "08" },
     jobOptionInfo: { flex: 1 },
-    jobOptionTitle: { fontSize: 15, fontWeight: '600', color: c.foreground },
-    jobOptionDept: { fontSize: 12, color: c['muted-foreground'], marginTop: 2 },
-    emptyJobsText: { textAlign: 'center', padding: 30, color: c['muted-foreground'], fontSize: 14 },
+    jobOptionTitle: { fontSize: 15, fontWeight: "600", color: c.foreground },
+    jobOptionDept: { fontSize: 12, color: c["muted-foreground"], marginTop: 2 },
+    emptyJobsText: {
+      textAlign: "center",
+      padding: 30,
+      color: c["muted-foreground"],
+      fontSize: 14,
+    },
     moveModal: {
       backgroundColor: c.card,
       borderTopLeftRadius: 20,
       borderTopRightRadius: 20,
-      maxHeight: '60%',
+      maxHeight: "60%",
       paddingBottom: 40,
     },
     moveSubtitle: {
       fontSize: 13,
-      color: c['muted-foreground'],
+      color: c["muted-foreground"],
       paddingHorizontal: 20,
       paddingTop: 12,
       paddingBottom: 8,
     },
     moveOption: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       paddingHorizontal: 20,
       paddingVertical: 14,
       gap: 10,
@@ -238,7 +254,24 @@ function createStyles(c) {
       borderBottomColor: c.border,
     },
     moveDot: { width: 12, height: 12, borderRadius: 6 },
-    moveOptionText: { flex: 1, fontSize: 15, fontWeight: '500', color: c.foreground },
+    moveOptionText: {
+      flex: 1,
+      fontSize: 15,
+      fontWeight: "500",
+      color: c.foreground,
+    },
+    advanceAllBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 4,
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 8,
+      backgroundColor: c.primary + "1a",
+      borderWidth: 1,
+      borderColor: c.primary + "33",
+    },
+    advanceAllBtnText: { fontSize: 11, fontWeight: "700", color: c.primary },
   });
 }
 
@@ -272,24 +305,37 @@ export default function PipelineCandidatesPage() {
   async function fetchData() {
     setLoading(true);
     try {
-      const { data: stagesData, error: stagesErr } = await getJobStages(selectedJobId);
+      const { data: stagesData, error: stagesErr } =
+        await getJobStages(selectedJobId);
       if (stagesErr) throw stagesErr;
       setStages(stagesData || []);
 
-      const { data: candidatesData, error: candErr } = await getPipelineCandidates(company?.id);
+      const { data: candidatesData, error: candErr } =
+        await getPipelineCandidates(company?.id);
       if (candErr) throw candErr;
-      setCandidates((candidatesData || []).filter(c => c.job_postings?.id === selectedJobId));
+      setCandidates(
+        (candidatesData || []).filter(
+          (c) => c.job_postings?.id === selectedJobId,
+        ),
+      );
     } catch (err) {
-      console.error('Pipeline fetch error:', err);
+      console.error("Pipeline fetch error:", err);
     } finally {
       setLoading(false);
     }
   }
+  const sortedStages = useMemo(
+    () => [...stages].sort((a, b) => a.order_index - b.order_index),
+    [stages],
+  );
 
   const candidatesByStage = useMemo(() => {
     const map = {};
-    stages.forEach(s => { map[s.id] = []; });
-    candidates.forEach(c => {
+    stages.forEach((s) => {
+      map[s.id] = [];
+    });
+
+    candidates.forEach((c) => {
       const stageId = c.current_stage_id;
       if (stageId && map[stageId]) {
         map[stageId].push(c);
@@ -299,44 +345,150 @@ export default function PipelineCandidatesPage() {
   }, [stages, candidates]);
 
   const handleCandidateTap = (candidate) => {
-    navigation.navigate('CandidateProfile', { applicationId: candidate.id });
+    navigation.navigate("CandidateProfile", { applicationId: candidate.id });
   };
 
   const handleAdvanceOneStage = async (candidate, nextStageId) => {
     if (moving) return;
     setMoving(true);
+
+    // Optimistically update local state so the candidate doesn't vanish
+    setCandidates((prev) =>
+      prev.map((c) =>
+        c.id === candidate.id ? { ...c, current_stage_id: nextStageId } : c,
+      ),
+    );
+
     try {
       const { error } = await moveToStage(candidate.id, nextStageId);
       if (error) {
+        // Rollback on failure
+        setCandidates((prev) =>
+          prev.map((c) =>
+            c.id === candidate.id
+              ? { ...c, current_stage_id: candidate.current_stage_id }
+              : c,
+          ),
+        );
         Alert.alert(t("recruiter.cannot_move"), error.message);
       } else {
         fetchData();
       }
     } catch (err) {
+      // Rollback on exception
+      setCandidates((prev) =>
+        prev.map((c) =>
+          c.id === candidate.id
+            ? { ...c, current_stage_id: candidate.current_stage_id }
+            : c,
+        ),
+      );
       Alert.alert(t("recruiter.error"), err.message);
     } finally {
       setMoving(false);
     }
   };
-
   const handleAutoAdvanceComplete = (advancedCount) => {
     if (advancedCount > 0) {
-      Alert.alert(t("recruiter.auto_advance"), t("recruiter.auto_advanced", { count: advancedCount }));
+      Alert.alert(
+        t("recruiter.auto_advance"),
+        t("recruiter.auto_advanced", { count: advancedCount }),
+      );
       fetchData();
     }
   };
 
+  const handleAdvanceAll = async (stageId) => {
+    const sortedStages = [...stages].sort(
+      (a, b) => a.order_index - b.order_index,
+    );
+
+    const currentIndex = sortedStages.findIndex((s) => s.id === stageId);
+    const nextStage = sortedStages[currentIndex + 1];
+
+    if (!nextStage) return;
+
+    const shortlistStage = stages.find((s) => s.stage_type === "shortlist");
+
+    const isBeforeShortlist =
+      shortlistStage && nextStage.id === shortlistStage.id;
+
+    if (isBeforeShortlist) {
+      setShowAutoAdvanceModal(true);
+      return;
+    }
+
+    if (nextStage.is_locked) return;
+
+    const stageCandidates = candidatesByStage[stageId] || [];
+
+    const currentStage = stages.find((s) => s.id === stageId);
+    const isCvReview = currentStage?.stage_type === "cv_review";
+
+    const eligible = isCvReview
+      ? stageCandidates
+      : stageCandidates.filter((c) => {
+          const stageData = c.application_stages?.find(
+            (as) =>
+              as.recruitment_stages?.id === stageId || as.stage_id === stageId,
+          );
+
+          const score =
+            stageData?.score ??
+            stageData?.application_stage_evaluations?.[0]?.ai_score ??
+            null;
+
+          const minScore = currentStage?.min_score ?? 0;
+
+          return score != null && Number(score) >= minScore;
+        });
+
+    if (eligible.length === 0) {
+      Alert.alert(
+        t("recruiter.advance_all"),
+        t("recruiter.no_eligible_candidates"),
+      );
+      return;
+    }
+
+    Alert.alert(
+      t("recruiter.advance_all"),
+      t("recruiter.advance_all_confirm", {
+        count: eligible.length,
+        stage: nextStage.name,
+      }),
+      [
+        { text: t("recruiter.cancel"), style: "cancel" },
+        {
+          text: t("recruiter.confirm"),
+          onPress: async () => {
+            setMoving(true);
+            try {
+              await Promise.all(
+                eligible.map((c) => moveToStage(c.id, nextStage.id)),
+              );
+              fetchData();
+            } catch (err) {
+              Alert.alert(t("recruiter.error"), err.message);
+            } finally {
+              setMoving(false);
+            }
+          },
+        },
+      ],
+    );
+  };
   const precedingStageCandidates = useMemo(() => {
-    const shortlistStage = stages.find(s => s.stage_type === 'shortlist');
+    const shortlistStage = stages.find((s) => s.stage_type === "shortlist");
     if (!shortlistStage) return [];
     const preceding = stages
-      .filter(s => s.order_index < shortlistStage.order_index)
+      .filter((s) => s.order_index < shortlistStage.order_index)
       .sort((a, b) => b.order_index - a.order_index)[0];
     if (!preceding) return [];
     return candidatesByStage[preceding.id] || [];
   }, [stages, candidatesByStage]);
 
-  const selectedJob = jobs.find(j => j.id === selectedJobId);
+  const selectedJob = jobs.find((j) => j.id === selectedJobId);
 
   const styles = createStyles(c);
 
@@ -346,12 +498,14 @@ export default function PipelineCandidatesPage() {
     const score = app.composite_score;
     const initials = getInitials(name);
 
-    const scoreColor = score >= 80 ? c.success
-      : score >= 60 ? c.warning
-      : c['muted-foreground'];
-    const scoreBg = score >= 80 ? `${c.success}1a`
-      : score >= 60 ? `${c.warning}1a`
-      : c['surface-muted'];
+    const scoreColor =
+      score >= 80 ? c.success : score >= 60 ? c.warning : c["muted-foreground"];
+    const scoreBg =
+      score >= 80
+        ? `${c.success}1a`
+        : score >= 60
+          ? `${c.warning}1a`
+          : c["surface-muted"];
 
     return (
       <TouchableOpacity
@@ -364,18 +518,28 @@ export default function PipelineCandidatesPage() {
             <Text style={styles.avatarText}>{initials}</Text>
           </View>
           <View style={styles.candidateInfo}>
-            <Text style={styles.candidateName} numberOfLines={1}>{name}</Text>
-            <Text style={styles.candidateRole} numberOfLines={1}>{app.job_postings?.title || ''}</Text>
+            <Text style={styles.candidateName} numberOfLines={1}>
+              {name}
+            </Text>
+            <Text style={styles.candidateRole} numberOfLines={1}>
+              {app.job_postings?.title || ""}
+            </Text>
           </View>
         </View>
         <View style={styles.rightActions}>
           {score != null && (
             <View style={[styles.scoreBadge, { backgroundColor: scoreBg }]}>
-              <Text style={[styles.scoreText, { color: scoreColor }]}>{Math.round(score)}</Text>
+              <Text style={[styles.scoreText, { color: scoreColor }]}>
+                {Math.round(score)}
+              </Text>
             </View>
           )}
           {onAdvance && (
-            <TouchableOpacity onPress={onAdvance} style={styles.advanceArrow} disabled={moving}>
+            <TouchableOpacity
+              onPress={onAdvance}
+              style={styles.advanceArrow}
+              disabled={moving}
+            >
               <Ionicons name="chevron-forward" size={18} color={c.primary} />
             </TouchableOpacity>
           )}
@@ -386,9 +550,17 @@ export default function PipelineCandidatesPage() {
 
   if (loading && candidates.length === 0) {
     return (
-      <View style={[styles.container, styles.centered, { backgroundColor: c.background }]}>
+      <View
+        style={[
+          styles.container,
+          styles.centered,
+          { backgroundColor: c.background },
+        ]}
+      >
         <ActivityIndicator size="large" color={c.primary} />
-        <Text style={[styles.loadingText, { color: c['muted-foreground'] }]}>{t("recruiter.loading")}</Text>
+        <Text style={[styles.loadingText, { color: c["muted-foreground"] }]}>
+          {t("recruiter.loading")}
+        </Text>
       </View>
     );
   }
@@ -397,15 +569,33 @@ export default function PipelineCandidatesPage() {
     <View style={[styles.container, { backgroundColor: c.background }]}>
       {/* Job Selector Header */}
       <View style={[styles.headerBar, { paddingTop: insets.top + 12 }]}>
-        <TouchableOpacity style={styles.jobSelector} onPress={() => setShowJobPicker(true)}>
-          <Ionicons name="briefcase-outline" size={18} color={c['destructive-foreground']} />
+        <TouchableOpacity
+          style={styles.jobSelector}
+          onPress={() => setShowJobPicker(true)}
+        >
+          <Ionicons
+            name="briefcase-outline"
+            size={18}
+            color={c["destructive-foreground"]}
+          />
           <Text style={styles.jobSelectorText} numberOfLines={1}>
             {selectedJob?.title || t("recruiter.select_job")}
           </Text>
-          <Ionicons name="chevron-down" size={16} color={c['destructive-foreground']} />
+          <Ionicons
+            name="chevron-down"
+            size={16}
+            color={c["destructive-foreground"]}
+          />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.autoAdvanceBtn} onPress={() => setShowAutoAdvanceModal(true)}>
-          <Ionicons name="flash-outline" size={16} color={c['destructive-foreground']} />
+        <TouchableOpacity
+          style={styles.autoAdvanceBtn}
+          onPress={() => setShowAutoAdvanceModal(true)}
+        >
+          <Ionicons
+            name="flash-outline"
+            size={16}
+            color={c["destructive-foreground"]}
+          />
         </TouchableOpacity>
       </View>
 
@@ -419,29 +609,70 @@ export default function PipelineCandidatesPage() {
       </View>
 
       {/* Kanban Board */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.boardScroll}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.boardScroll}
+      >
         <View style={styles.board}>
-          {stages.map((stage, stageIndex) => {
-            const nextStage = stages[stageIndex + 1];
+          {sortedStages.map((stage, stageIndex) => {
+            const nextStage = sortedStages[stageIndex + 1];
             const stageCandidates = candidatesByStage[stage.id] || [];
-            const stageColor = STAGE_TYPE_COLORS[stage.stage_type] || STAGE_TYPE_COLORS.default;
+            console.log("STAGE:", stage.name, {
+              stage_type: stage.stage_type,
+              is_locked: stage.is_locked,
+              nextStage: nextStage?.name,
+              candidatesCount: stageCandidates.length,
+            });
+            const stageColor =
+              STAGE_TYPE_COLORS[stage.stage_type] || STAGE_TYPE_COLORS.default;
             return (
               <View key={stage.id} style={styles.column}>
                 <View style={styles.columnHeader}>
-                  <View style={[styles.stageDot, { backgroundColor: stageColor }]} />
-                  <Text style={[styles.columnTitle, { color: c.foreground }]} numberOfLines={1}>
+                  <View
+                    style={[styles.stageDot, { backgroundColor: stageColor }]}
+                  />
+                  <Text
+                    style={[styles.columnTitle, { color: c.foreground }]}
+                    numberOfLines={1}
+                  >
                     {stage.name}
                   </Text>
                   <View style={styles.countBadge}>
-                    <Text style={styles.countText}>{stageCandidates.length}</Text>
+                    <Text style={styles.countText}>
+                      {stageCandidates.length}
+                    </Text>
                   </View>
+                  {nextStage &&
+                    (!stage.is_locked || stage.stage_type === "cv_review") &&
+                    stageCandidates.length > 0 && (
+                      <TouchableOpacity
+                        style={[styles.advanceAllBtn, { marginLeft: 6 }]}
+                        onPress={() => handleAdvanceAll(stage.id)}
+                        disabled={moving}
+                      >
+                        <Ionicons name="flash" size={11} color={c.primary} />
+                        <Text style={styles.advanceAllBtnText}>All</Text>
+                      </TouchableOpacity>
+                    )}
                 </View>
 
-                <ScrollView style={styles.columnBody} showsVerticalScrollIndicator={false}>
+                <ScrollView
+                  style={styles.columnBody}
+                  showsVerticalScrollIndicator={false}
+                >
                   {stageCandidates.length === 0 ? (
                     <View style={styles.emptyColumn}>
-                      <Ionicons name="move-outline" size={24} color={c.border} />
-                      <Text style={[styles.emptyColumnText, { color: c.border }]}>{t("recruiter.drop_here")}</Text>
+                      <Ionicons
+                        name="move-outline"
+                        size={24}
+                        color={c.border}
+                      />
+                      <Text
+                        style={[styles.emptyColumnText, { color: c.border }]}
+                      >
+                        {t("recruiter.drop_here")}
+                      </Text>
                     </View>
                   ) : (
                     stageCandidates.map((candidate) => (
@@ -450,7 +681,14 @@ export default function PipelineCandidatesPage() {
                         candidate={candidate}
                         stageColor={stageColor}
                         onTap={handleCandidateTap}
-                        onAdvance={nextStage && !nextStage.is_locked ? () => handleAdvanceOneStage(candidate, nextStage.id) : null}
+                        onAdvance={
+                          nextStage &&
+                          (!nextStage.is_locked ||
+                            stage.stage_type === "cv_review")
+                            ? () =>
+                                handleAdvanceOneStage(candidate, nextStage.id)
+                            : null
+                        }
                       />
                     ))
                   )}
@@ -462,29 +700,55 @@ export default function PipelineCandidatesPage() {
       </ScrollView>
 
       {/* Job Picker Modal */}
-      <Modal visible={showJobPicker} transparent animationType="slide" onRequestClose={() => setShowJobPicker(false)}>
+      <Modal
+        visible={showJobPicker}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowJobPicker(false)}
+      >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>{t("recruiter.select_a_job_title")}</Text>
+              <Text style={styles.modalTitle}>
+                {t("recruiter.select_a_job_title")}
+              </Text>
               <TouchableOpacity onPress={() => setShowJobPicker(false)}>
                 <Ionicons name="close" size={24} color={c.foreground} />
               </TouchableOpacity>
             </View>
             <ScrollView>
-              {jobs.map(job => (
+              {jobs.map((job) => (
                 <TouchableOpacity
                   key={job.id}
-                  style={[styles.jobOption, job.id === selectedJobId && styles.jobOptionActive]}
-                  onPress={() => { setSelectedJobId(job.id); setShowJobPicker(false); }}
+                  style={[
+                    styles.jobOption,
+                    job.id === selectedJobId && styles.jobOptionActive,
+                  ]}
+                  onPress={() => {
+                    setSelectedJobId(job.id);
+                    setShowJobPicker(false);
+                  }}
                 >
                   <Ionicons
-                    name={job.id === selectedJobId ? 'radio-button-on' : 'radio-button-off'}
+                    name={
+                      job.id === selectedJobId
+                        ? "radio-button-on"
+                        : "radio-button-off"
+                    }
                     size={20}
-                    color={job.id === selectedJobId ? c.primary : c['muted-foreground']}
+                    color={
+                      job.id === selectedJobId
+                        ? c.primary
+                        : c["muted-foreground"]
+                    }
                   />
                   <View style={styles.jobOptionInfo}>
-                    <Text style={[styles.jobOptionTitle, job.id === selectedJobId && { color: c.primary }]}>
+                    <Text
+                      style={[
+                        styles.jobOptionTitle,
+                        job.id === selectedJobId && { color: c.primary },
+                      ]}
+                    >
                       {job.title}
                     </Text>
                     {job.department && (
@@ -494,7 +758,9 @@ export default function PipelineCandidatesPage() {
                 </TouchableOpacity>
               ))}
               {jobs.length === 0 && (
-                <Text style={styles.emptyJobsText}>{t("recruiter.no_jobs_available")}</Text>
+                <Text style={styles.emptyJobsText}>
+                  {t("recruiter.no_jobs_available")}
+                </Text>
               )}
             </ScrollView>
           </View>
