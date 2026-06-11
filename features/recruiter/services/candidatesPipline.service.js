@@ -112,13 +112,27 @@ export async function moveToStage(applicationId, targetStageId) {
       ? currentStageEvals
       : [currentStageEvals]
     : [];
-  if (!currentEvalsList.some((e) => e.ai_score != null))
+  // if (!currentEvalsList.some((e) => e.ai_score != null))
+  //   return {
+  //     error: new Error(
+  //       "Current stage has no evaluations — cannot advance candidate",
+  //     ),
+  //   };
+  // Fetch current stage type to check if it's cv_review (which has no AI evals by design)
+  const { data: currentStageInfo } = await supabase
+    .from("recruitment_stages")
+    .select("stage_type")
+    .eq("id", app.current_stage_id)
+    .maybeSingle();
+
+  const isCvReview = currentStageInfo?.stage_type === "cv_review";
+
+  if (!isCvReview && !currentEvalsList.some((e) => e.ai_score != null))
     return {
       error: new Error(
-        "Current stage has no evaluations — cannot advance candidate",
+        "Current stage has no evaluations : cannot advance candidate",
       ),
     };
-
   // Step 3: Check target stage isn't locked
   const { data: targetStage, error: stageError } = await supabase
     .from("recruitment_stages")
@@ -127,9 +141,10 @@ export async function moveToStage(applicationId, targetStageId) {
     .maybeSingle();
 
   if (stageError) return { error: stageError };
-  if (!targetStage)
-    return { error: new Error("Target stage not found") };
-  if (targetStage.is_locked)
+  if (!targetStage) return { error: new Error("Target stage not found") };
+
+  // Allow moving into a locked stage only when coming from cv_review
+  if (targetStage.is_locked && !isCvReview)
     return { error: new Error("Target stage is locked") };
 
   // Step 3: Check target stage doesn't already have a score
@@ -148,21 +163,16 @@ export async function moveToStage(applicationId, targetStageId) {
   if (targetError) return { error: targetError };
 
   if (targetStageData) {
-    const targetStageEvals =
-      targetStageData.application_stage_evaluations;
+    const targetStageEvals = targetStageData.application_stage_evaluations;
     const targetEvalsList = targetStageEvals
       ? Array.isArray(targetStageEvals)
         ? targetStageEvals
         : [targetStageEvals]
       : [];
-    const targetHasScore = targetEvalsList.some(
-      (e) => e.ai_score != null,
-    );
+    const targetHasScore = targetEvalsList.some((e) => e.ai_score != null);
     if (targetHasScore)
       return {
-        error: new Error(
-          "Target stage already has a score for this candidate",
-        ),
+        error: new Error("Target stage already has a score for this candidate"),
       };
   } else {
     // Step 3b: Application has no row for this stage yet (e.g. stage was added after they applied)
