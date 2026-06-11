@@ -76,6 +76,8 @@ function Header({ title, routeName }) {
   const keyMap = {
     JobsTab: 'nav.explore_jobs',
     ApplicantHome: 'nav.my_applications',
+    ApplicantFeedback: 'nav.my_feedback',
+    ApplicantProfile: 'nav.my_profile',
     RecruiterHome: 'nav.dashboard',
     CompanyProfile: 'nav.company_profile',
     JDGenerator: 'nav.jd_generator',
@@ -122,6 +124,8 @@ function getScreenTitle(routeName) {
   const titles = {
     JobsTab: 'Explore Jobs',
     ApplicantHome: 'My Applications',
+    ApplicantFeedback: 'My Feedback',
+    ApplicantProfile: 'My Profile',
     RecruiterHome: 'Dashboard',
     CompanyProfile: 'Company Profile',
     JDGenerator: 'JD Generator',
@@ -159,24 +163,10 @@ function MainScreens() {
         <InnerStack.Screen
           name="ApplicantFeedback"
           component={ApplicantFeedbackPage}
-          options={{
-            header: undefined,
-            headerShown: true,
-            headerTitle: t('nav.my_feedback'),
-            headerStyle: { backgroundColor: c.primary },
-            headerTintColor: c.white,
-          }}
         />
         <InnerStack.Screen
           name="ApplicantProfile"
           component={ApplicantProfilePage}
-          options={{
-            header: undefined,
-            headerShown: true,
-            headerTitle: t('nav.my_profile'),
-            headerStyle: { backgroundColor: c.primary },
-            headerTintColor: c.white,
-          }}
         />
         <InnerStack.Screen name="EditBio" component={EditBioScreen}
           options={{ header: undefined, headerShown: true, headerTitle: t('profile.edit_titles.bio'),

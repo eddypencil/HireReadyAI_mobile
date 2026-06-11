@@ -55,7 +55,8 @@ export function I18nProvider({ children }) {
     I18nManager.forceRTL(lang === 'ar');
   }, []);
 
-  if (!loaded) return children;
+  // Ensure the provider is mounted immediately so hooks in children
+  // can safely call `useTranslation` while language loads.
 
   return (
     <I18nContext.Provider value={{ language, t, setLanguage }}>

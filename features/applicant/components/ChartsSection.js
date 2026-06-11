@@ -2,21 +2,22 @@
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import Svg, { Circle, G, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { useTheme } from '../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../shared/context/I18nContext';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CHART_WIDTH = SCREEN_WIDTH - 64;
 
-// ── Color by label
+// ── Color by status
 const LABEL_COLORS = {
-  'Hired':       '#22c55e',
-  'Offer':       '#22c55e',
-  'In Progress': '#468faf',
-  'Rejected':    '#ef4444',
+  hired: '#22c55e',
+  offer: '#22c55e',
+  in_progress: '#468faf',
+  rejected: '#ef4444',
 };
 const FALLBACK_COLORS = ['#2a6f97', '#89c2d9', '#61a5c2'];
 
-function getSliceColor(label, fallbackIndex) {
-  return LABEL_COLORS[label] || FALLBACK_COLORS[fallbackIndex % FALLBACK_COLORS.length];
+function getSliceColor(status, fallbackIndex) {
+  return LABEL_COLORS[status] || FALLBACK_COLORS[fallbackIndex % FALLBACK_COLORS.length];
 }
 
 // ── Build donut slices
@@ -32,15 +33,16 @@ function buildDonutSlices(data, cx, cy, r) {
     const y2 = cy + r * Math.sin(angle + slice);
     const large = slice > Math.PI ? 1 : 0;
     const path = `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} Z`;
-    const color = getSliceColor(item.label, i);
+    const color = getSliceColor(item.status, i);
     angle += slice;
-    return { path, color, label: item.label, value: item.value };
+    return { path, color, status: item.status, label: item.label, value: item.value };
   });
 }
 
 // ── Donut Chart — shows per-application status (not per-stage)
 function DonutChart({ applications }) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const c = theme.colors;
   const styles = createStyles(c);
   const SIZE = Math.min(CHART_WIDTH * 0.55, 180);
@@ -52,37 +54,41 @@ function DonutChart({ applications }) {
   // ── Count by application-level outcome
   const statusMap = {};
   (applications || []).forEach(app => {
-    let label;
+    let status;
     if (app.is_rejected || app.current_stage === 'rejected') {
-      label = 'Rejected';
+      status = 'rejected';
     } else if (app.current_stage === 'hired') {
-      label = 'Hired';
+      status = 'hired';
     } else if (app.current_stage === 'offer') {
-      label = 'Offer';
+      status = 'offer';
     } else {
-      label = 'In Progress';
+      status = 'in_progress';
     }
-    statusMap[label] = (statusMap[label] || 0) + 1;
+    statusMap[status] = (statusMap[status] || 0) + 1;
   });
 
   const data = Object.entries(statusMap)
     .filter(([, v]) => v > 0)
-    .map(([label, value]) => ({ label, value }));
+    .map(([status, value]) => ({
+      status,
+      label: t(`applicant.charts.${status}`),
+      value,
+    }));
 
   const total = data.reduce((s, d) => s + d.value, 0);
   const slices = data.length === 1
     ? []
     : buildDonutSlices(data, cx, cy, outerR);
-  const singleColor = data.length === 1 ? getSliceColor(data[0]?.label, 0) : null;
+  const singleColor = data.length === 1 ? getSliceColor(data[0]?.status, 0) : null;
 
   return (
     <View style={styles.chartCard}>
-      <Text style={styles.chartTitle}>Application Status</Text>
-      <Text style={styles.chartSubtitle}>Overview of all your applications</Text>
+      <Text style={styles.chartTitle}>{t('applicant.charts.application_status')}</Text>
+      <Text style={styles.chartSubtitle}>{t('applicant.charts.application_status_sub')}</Text>
 
       {total === 0 ? (
         <View style={styles.chartEmpty}>
-          <Text style={styles.chartEmptyText}>No applications yet</Text>
+          <Text style={styles.chartEmptyText}>{t('applicant.charts.no_applications')}</Text>
         </View>
       ) : (
         <View style={styles.donutRow}>
@@ -110,7 +116,7 @@ function DonutChart({ applications }) {
                 fontSize={10}
                 fill={c['muted-foreground']}
               >
-                applications
+                {t('applicant.charts.applications_label')}
               </SvgText>
             </G>
           </Svg>
@@ -118,7 +124,7 @@ function DonutChart({ applications }) {
           <View style={styles.legendCol}>
             {data.map((item, i) => (
               <View key={i} style={styles.legendItem}>
-                <View style={[styles.legendDot, { backgroundColor: getSliceColor(item.label, i) }]} />
+                <View style={[styles.legendDot, { backgroundColor: getSliceColor(item.status, i) }]} />
                 <Text style={styles.legendText}>
                   {item.label}
                   <Text style={styles.legendCount}> ({item.value})</Text>
@@ -135,6 +141,7 @@ function DonutChart({ applications }) {
 // ── Bar Chart — full width
 function BarChart({ applications }) {
   const { theme } = useTheme();
+  const { t, language } = useTranslation();
   const c = theme.colors;
   const styles = createStyles(c);
   const SIZE_W = CHART_WIDTH;
@@ -151,7 +158,7 @@ function BarChart({ applications }) {
     if (!app.applied_at) return;
     const d = new Date(app.applied_at);
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-    const label = d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    const label = d.toLocaleDateString(language === 'ar' ? 'ar-EG' : 'en-US', { month: 'short', year: 'numeric' });
     if (!monthMap[key]) monthMap[key] = { label, count: 0 };
     monthMap[key].count++;
   });
@@ -169,12 +176,12 @@ function BarChart({ applications }) {
 
   return (
     <View style={styles.chartCard}>
-      <Text style={styles.chartTitle}>Applications Over Time</Text>
-      <Text style={styles.chartSubtitle}>Monthly submissions</Text>
+      <Text style={styles.chartTitle}>{t('applicant.charts.applications_over_time')}</Text>
+      <Text style={styles.chartSubtitle}>{t('applicant.charts.monthly_submissions')}</Text>
 
       {sorted.length === 0 ? (
         <View style={styles.chartEmpty}>
-          <Text style={styles.chartEmptyText}>No data yet</Text>
+          <Text style={styles.chartEmptyText}>{t('applicant.charts.no_data')}</Text>
         </View>
       ) : (
         <Svg width={SIZE_W} height={SIZE_H} style={{ marginTop: 12 }}>

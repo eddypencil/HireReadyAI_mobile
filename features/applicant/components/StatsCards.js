@@ -10,17 +10,17 @@ export default function StatsCards({ applications }) {
 
   const stats = [
     {
-      labelKey: "applicant_dashboard.total_applications",
+      labelKey: "applicant.total_applications",
       value: applications?.length || 0,
     },
     {
-      labelKey: "applicant_dashboard.interviews",
+      labelKey: "applicant.interviews",
       value: applications?.filter(
         (a) => a.current_stage === APPLICATION_STAGE.interview
       ).length || 0,
     },
     {
-      labelKey: "applicant_dashboard.offers",
+      labelKey: "applicant.offers",
       value: applications?.filter(
         (a) => a.current_stage === APPLICATION_STAGE.hired
       ).length || 0,

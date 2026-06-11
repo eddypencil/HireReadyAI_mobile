@@ -36,7 +36,7 @@ export default function CompanyProfile() {
   } = useCompany();
   const { theme } = useTheme();
   const c = theme.colors;
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const styles = createStyles(c);
   const [memberName, setMemberName] = useState("");
   const [memberEmail, setMemberEmail] = useState("");
@@ -84,7 +84,7 @@ export default function CompanyProfile() {
         prev.map((m) => (m.id === membership.id ? updated : m)),
       );
     } catch (err) {
-      Alert.alert("Error", err.message);
+      Alert.alert(t("companies.error_title"), err.message);
     }
   };
 
@@ -93,7 +93,7 @@ export default function CompanyProfile() {
       await removeMembership(membershipId);
       onMembersChange((prev) => prev.filter((m) => m.id !== membershipId));
     } catch (err) {
-      Alert.alert("Error", err.message);
+      Alert.alert(t("companies.error_title"), err.message);
     }
   };
 
@@ -102,7 +102,7 @@ export default function CompanyProfile() {
       await removeMembership(membershipId);
       onMembersChange((prev) => prev.filter((m) => m.id !== membershipId));
     } catch (err) {
-      Alert.alert("Error", err.message);
+      Alert.alert(t("companies.error_title"), err.message);
     }
   };
 
@@ -116,7 +116,7 @@ export default function CompanyProfile() {
         prev.map((m) => (m.id === membershipId ? updated : m)),
       );
     } catch (err) {
-      Alert.alert("Error", err.message);
+      Alert.alert(t("companies.error_title"), err.message);
     }
   };
 
@@ -164,7 +164,7 @@ export default function CompanyProfile() {
       onCompanyUpdate(updated);
       setEditing(false);
     } catch (err) {
-      Alert.alert("Error", err.message);
+      Alert.alert(t("companies.error_title"), err.message);
     }
   };
 
@@ -173,10 +173,10 @@ export default function CompanyProfile() {
   };
 
   const formatPermission = (perm) => {
-    if (perm === MEMBERSHIP_PERMISSION.hrManager) return "HR Manager";
-    if (perm === MEMBERSHIP_PERMISSION.recruiter) return "Recruiter";
-    if (perm === MEMBERSHIP_PERMISSION.pending) return "Pending";
-    return perm || "Unknown";
+    if (perm === MEMBERSHIP_PERMISSION.hrManager) return t("companies.permission_hr_manager");
+    if (perm === MEMBERSHIP_PERMISSION.recruiter) return t("companies.permission_recruiter");
+    if (perm === MEMBERSHIP_PERMISSION.pending) return t("companies.permission_pending");
+    return perm || t("companies.unknown_permission");
   };
 
   const permissionColor = (perm) => {
@@ -192,7 +192,7 @@ export default function CompanyProfile() {
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
-        Alert.alert("Permission needed", "Allow access to your photo library to change the logo.");
+        Alert.alert(t("companies.permission_needed"), t("companies.logo_permission_message"));
         return;
       }
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -207,7 +207,7 @@ export default function CompanyProfile() {
       const updated = await updateCompany(company.id, { logo_url: url });
       onCompanyUpdate(updated);
     } catch (err) {
-      Alert.alert("Error", err.message);
+      Alert.alert(t("companies.error_title"), err.message);
     } finally {
       setUploading(false);
     }
@@ -217,7 +217,7 @@ export default function CompanyProfile() {
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
-        Alert.alert("Permission needed", "Allow access to your photo library to change the cover.");
+        Alert.alert(t("companies.permission_needed"), t("companies.cover_permission_message"));
         return;
       }
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -232,7 +232,7 @@ export default function CompanyProfile() {
       const updated = await updateCompany(company.id, { cover_url: url });
       onCompanyUpdate(updated);
     } catch (err) {
-      Alert.alert("Error", err.message);
+      Alert.alert(t("companies.error_title"), err.message);
     } finally {
       setUploading(false);
     }
@@ -287,7 +287,7 @@ export default function CompanyProfile() {
             {hasCover && <Image source={{ uri: company.cover_url }} style={styles.coverImg} />}
             <View style={styles.coverEditOverlay}>
               <Ionicons name="camera-outline" size={28} color={c.white} />
-              <Text style={styles.uploadOverlayText}>Upload Cover</Text>
+              <Text style={styles.uploadOverlayText}>{t("companies.upload_cover")}</Text>
             </View>
           </TouchableOpacity>
         ) : hasCover ? (
@@ -329,7 +329,7 @@ export default function CompanyProfile() {
             )}
             <View style={styles.logoOverlay}>
               <Ionicons name="camera-outline" size={18} color={c.white} />
-              <Text style={styles.logoOverlayText}>Upload Logo</Text>
+              <Text style={styles.logoOverlayText}>{t("companies.upload_logo")}</Text>
             </View>
           </TouchableOpacity>
         ) : (
@@ -351,40 +351,40 @@ export default function CompanyProfile() {
 
         <View style={styles.fieldsGrid}>
           <Field
-            label="Industry"
+            label={t("companies.industry")}
             value={editing ? editForm.industry : company?.industry || ""}
             editing={editing}
             onChange={(v) => setEditForm({ ...editForm, industry: v })}
           />
           <Field
-            label="Company Size"
+            label={t("companies.company_size")}
             value={
               editing
                 ? editForm.size
                 : company?.size
-                  ? `${company.size.toLocaleString()} employees`
+                  ? t("companies.employees_value", { count: company.size.toLocaleString(language === "ar" ? "ar-EG" : "en-US") })
                   : ""
             }
             editing={editing}
             onChange={(v) => setEditForm({ ...editForm, size: v })}
           />
           <Field
-            label="Location"
+            label={t("companies.location")}
             value={editing ? editForm.location : company?.location || ""}
             editing={editing}
             onChange={(v) => setEditForm({ ...editForm, location: v })}
           />
           <Field
-            label="Founded"
+            label={t("companies.founded")}
             value={editing ? editForm.founding_date : company?.founding_date || ""}
             editing={editing}
             onChange={(v) => setEditForm({ ...editForm, founding_date: v })}
           />
           <Field
-            label="Created"
+            label={t("companies.created_at")}
             value={
               company?.created_at
-                ? new Date(company.created_at).toLocaleDateString()
+                ? new Date(company.created_at).toLocaleDateString(language === "ar" ? "ar-EG" : "en-US")
                 : ""
             }
             editing={false}
@@ -393,21 +393,21 @@ export default function CompanyProfile() {
         </View>
 
         <Field
-          label="About"
+          label={t("companies.about")}
           value={editing ? editForm.description : company?.description || ""}
           editing={editing}
           onChange={(v) => setEditForm({ ...editForm, description: v })}
           multiline
         />
         <Field
-          label="Culture"
+          label={t("companies.culture")}
           value={editing ? editForm.culture : company?.culture || ""}
           editing={editing}
           onChange={(v) => setEditForm({ ...editForm, culture: v })}
           multiline
         />
         <Field
-          label="Benefits"
+          label={t("companies.benefits")}
           value={editing ? editForm.benefits : company?.benefits || ""}
           editing={editing}
           onChange={(v) => setEditForm({ ...editForm, benefits: v })}
@@ -416,10 +416,10 @@ export default function CompanyProfile() {
 
         {/* Links */}
         <View style={styles.linksSection}>
-          <Text style={styles.fieldLabel}>Links</Text>
+          <Text style={styles.fieldLabel}>{t("companies.links")}</Text>
           <View style={styles.linksRow}>
             <View style={styles.linkField}>
-              <Text style={styles.fieldLabel}>Website</Text>
+              <Text style={styles.fieldLabel}>{t("companies.website")}</Text>
               {editing ? (
                 <TextInput
                   style={styles.fieldInput}
@@ -434,7 +434,7 @@ export default function CompanyProfile() {
               )}
             </View>
             <View style={styles.linkField}>
-              <Text style={styles.fieldLabel}>LinkedIn</Text>
+              <Text style={styles.fieldLabel}>{t("companies.linkedin")}</Text>
               {editing ? (
                 <TextInput
                   style={styles.fieldInput}
@@ -449,7 +449,7 @@ export default function CompanyProfile() {
               )}
             </View>
             <View style={styles.linkField}>
-              <Text style={styles.fieldLabel}>Twitter</Text>
+              <Text style={styles.fieldLabel}>{t("companies.twitter")}</Text>
               {editing ? (
                 <TextInput
                   style={styles.fieldInput}
@@ -469,10 +469,10 @@ export default function CompanyProfile() {
         {editing && (
           <View style={styles.editActions}>
             <TouchableOpacity style={styles.cancelBtn} onPress={handleEditCancel}>
-              <Text style={styles.cancelBtnText}>Cancel</Text>
+              <Text style={styles.cancelBtnText}>{t("companies.cancel")}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.saveBtn} onPress={handleEditSave}>
-              <Text style={styles.saveBtnText}>Save Changes</Text>
+              <Text style={styles.saveBtnText}>{t("companies.save_changes")}</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -487,7 +487,7 @@ export default function CompanyProfile() {
 
         {isHrManager && pendingMembers.length > 0 && (
           <View style={styles.pendingSection}>
-            <Text style={styles.sectionLabel}>Pending Approval</Text>
+            <Text style={styles.sectionLabel}>{t("companies.pending_approval")}</Text>
             {pendingMembers.map((member) => (
               <View key={member.id} style={styles.pendingRow}>
                 <View style={styles.memberInfo}>
@@ -500,10 +500,10 @@ export default function CompanyProfile() {
                   </View>
                   <View style={styles.memberDetails}>
                     <Text style={styles.memberName} numberOfLines={1}>
-                      {member.profiles?.full_name || "Unknown"}
+                      {member.profiles?.full_name || t("companies.unknown_member")}
                     </Text>
                     <Text style={styles.memberRole} numberOfLines={1}>
-                      {member.profiles?.headline || member.profiles?.role || "Team Member"}
+                      {member.profiles?.headline || member.profiles?.role || t("companies.team_member")}
                     </Text>
                   </View>
                 </View>
@@ -522,7 +522,7 @@ export default function CompanyProfile() {
 
         <View>
           <Text style={styles.sectionLabel}>
-            Team Members ({activeMembers.length})
+            {t("companies.team_members")} ({activeMembers.length})
           </Text>
           {activeMembers.map((member) => (
             <View key={member.id} style={styles.memberRow}>
@@ -539,7 +539,7 @@ export default function CompanyProfile() {
                     {member.profiles?.full_name || t("companies.unknown_member")}
                   </Text>
                   <Text style={styles.memberRole} numberOfLines={1}>
-                    {member.profiles?.headline || member.profiles?.role || "Team Member"}
+                    {member.profiles?.headline || member.profiles?.role || t("companies.team_member")}
                   </Text>
                 </View>
               </View>
