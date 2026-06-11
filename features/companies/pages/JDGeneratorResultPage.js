@@ -35,7 +35,6 @@ export default function JDGeneratorResultPage({ route, navigation }) {
   const [generateError, setGenerateError] = useState(null);
   const [publishing, setPublishing] = useState(false);
   const [publishError, setPublishError] = useState(null);
-  const [published, setPublished] = useState(false);
 
   const [showQuestionsPrompt, setShowQuestionsPrompt] = useState(false);
 
@@ -131,27 +130,13 @@ export default function JDGeneratorResultPage({ route, navigation }) {
         }
       }
 
-      setPublished(true);
       reloadCompany();
+      navigation.replace("JDPublishSuccess", { title: params.title });
     } catch (err) {
       setPublishError(err.message);
     } finally {
       setPublishing(false);
     }
-  }
-
-  if (published) {
-    return (
-      <View style={styles.successContainer}>
-        <View style={styles.successIcon}>
-          <Ionicons name="checkmark-circle" size={36} color={c.primary} />
-        </View>
-        <Text style={styles.successTitle}>{t("companies.job_published")}</Text>
-        <Text style={styles.successSubtitle}>
-          {t("companies.publish_success", { title: params.title })}
-        </Text>
-      </View>
-    );
   }
 
   if (generating) {

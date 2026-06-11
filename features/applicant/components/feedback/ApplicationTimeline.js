@@ -31,7 +31,7 @@ export default function ApplicationTimeline({ stages }) {
         const statusColor = isPassed ? c.emerald[600]
           : isFailed ? c.red[600]
           : isInProgress ? c.primary
-          : c.muted;
+          : c['muted-foreground'];
         const scoreColor = stage.score >= 80 ? { bg: c.emerald[100], text: c.emerald[600] }
           : stage.score >= 60 ? { bg: c['surface-muted'], text: c.primary }
           : stage.score >= 40 ? { bg: c.amber[100], text: c.amber[800] }
@@ -42,11 +42,11 @@ export default function ApplicationTimeline({ stages }) {
             <View style={styles.dotCol}>
               <View style={[styles.haloOuter, { backgroundColor: dotHalo }]}>
                 <View style={[styles.dot, { backgroundColor: dotBg }]}>
-                  {isPassed && <Ionicons name="checkmark" size={13} color="#fff" />}
-                  {isFailed && <Ionicons name="close" size={13} color="#fff" />}
-                  {isInProgress && <Ionicons name="ellipsis-horizontal" size={13} color="#fff" />}
+                  {isPassed && <Ionicons name="checkmark" size={13} color={c.white} />}
+                  {isFailed && <Ionicons name="close" size={13} color={c.white} />}
+                  {isInProgress && <Ionicons name="ellipsis-horizontal" size={13} color={c.white} />}
                   {!isPassed && !isFailed && !isInProgress && (
-                    <Ionicons name="time-outline" size={11} color="#6b7d8f" />
+                    <Ionicons name="time-outline" size={11} color={c['muted-foreground']} />
                   )}
                 </View>
               </View>
@@ -85,7 +85,7 @@ export default function ApplicationTimeline({ stages }) {
 function createStyles(c) {
   return StyleSheet.create({
   card: {
-    backgroundColor: c.white, borderRadius: 18,
+    backgroundColor: c.card, borderRadius: 18,
     borderWidth: 1, borderColor: c.border, padding: 18,
     shadowColor: c.primary, shadowOpacity: 0.04,
     shadowRadius: 4, shadowOffset: { width: 0, height: 1 },
@@ -107,7 +107,7 @@ function createStyles(c) {
   between: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   textCol: { flex: 1, gap: 2, paddingRight: 8 },
   stageName: { fontSize: 13, fontWeight: '600', color: c.foreground },
-  stageType: { fontSize: 11, color: c.muted, textTransform: 'capitalize' },
+  stageType: { fontSize: 11, color: c['muted-foreground'], textTransform: 'capitalize' },
   rightMeta: { alignItems: 'flex-end', gap: 4, flexShrink: 0 },
   scoreBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
   scoreText: { fontSize: 11, fontWeight: '700' },

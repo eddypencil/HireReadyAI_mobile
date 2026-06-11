@@ -21,13 +21,13 @@ export default function AssessmentsSection({ stagesWithQuestions, activeStage, o
   const statusColor = activeStage?.status === 'passed' ? c.emerald[600]
     : activeStage?.status === 'failed' ? c.red[600]
     : activeStage?.status === 'in_progress' ? c.primary
-    : c.muted;
+    : c['muted-foreground'];
 
   return (
     <View style={styles.container}>
       {/* Gradient Hero */}
       <LinearGradient
-        colors={['#01497c', '#468faf']}
+        colors={theme.isDark ? [c.card, c.background] : [c.primary, c['muted-foreground']]}
         start={{ x: 0, y: 0 }}
         end={{ x: 0.3, y: 1 }}
         style={styles.hero}
@@ -63,7 +63,7 @@ export default function AssessmentsSection({ stagesWithQuestions, activeStage, o
           <View style={styles.stageHeader}>
             <View style={styles.stageLeft}>
               <View style={styles.stageIcon}>
-                <Ionicons name="bulb-outline" size={18} color="#ffffff" />
+                <Ionicons name="bulb-outline" size={18} color={c.white} />
               </View>
               <View style={styles.stageInfo}>
                 <Text style={styles.stageName}>{activeStage.recruitment_stages?.name}</Text>
@@ -151,13 +151,13 @@ function createStyles(c) {
   totalText: { fontSize: 11, fontWeight: '700', color: c.white },
 
   card: {
-    backgroundColor: c.white, borderRadius: 18,
+    backgroundColor: c.card, borderRadius: 18,
     borderWidth: 1, borderColor: c.border, overflow: 'hidden',
     shadowColor: c.primary, shadowOpacity: 0.04, shadowRadius: 4, shadowOffset: { width: 0, height: 1 },
   },
   empty: { alignItems: 'center', padding: 40, gap: 10 },
   emptyTitle: { fontSize: 15, fontWeight: '700', color: c.foreground },
-  emptySub: { fontSize: 13, color: c.muted, textAlign: 'center', lineHeight: 19 },
+  emptySub: { fontSize: 13, color: c['muted-foreground'], textAlign: 'center', lineHeight: 19 },
 
   stageHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16 },
   stageLeft: { flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 },
@@ -168,7 +168,7 @@ function createStyles(c) {
   },
   stageInfo: { flex: 1 },
   stageName: { fontSize: 14, fontWeight: '700', color: c.foreground },
-  stageType: { fontSize: 11, color: c.muted, textTransform: 'capitalize', marginTop: 2 },
+  stageType: { fontSize: 11, color: c['muted-foreground'], textTransform: 'capitalize', marginTop: 2 },
   stageRight: { alignItems: 'flex-end', gap: 4, flexShrink: 0 },
   stagScore: { paddingHorizontal: 9, paddingVertical: 4, borderRadius: 8 },
   stagScoreText: { fontSize: 12, fontWeight: '700' },
@@ -180,7 +180,7 @@ function createStyles(c) {
     paddingVertical: 14, paddingHorizontal: 16,
   },
   evalCell: { flex: 1 },
-  evalLabel: { fontSize: 9, fontWeight: '700', color: c.muted, textTransform: 'uppercase', letterSpacing: 0.6 },
+  evalLabel: { fontSize: 9, fontWeight: '700', color: c['muted-foreground'], textTransform: 'uppercase', letterSpacing: 0.6 },
   evalVal: { fontSize: 13, fontWeight: '700', color: c.foreground, marginTop: 4 },
   questions: { gap: 10 },
 });

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from "react";
 import {
   View,
   Text,
@@ -9,19 +9,19 @@ import {
   Modal,
   StyleSheet,
   Platform,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../../shared/context/ThemeContext';
-import { useTranslation } from '../../../shared/context/I18nContext';
-import { useJobs } from '../../jobs/hooks/useJobs';
-import { useShortlistData } from '../hooks/useShortlistData';
-import { useUser } from '../../../features/auth/context/user.context';
-import { useCompany } from '../../../features/companies/pages/CompanyLayout';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import ShortlistInsightsBar from '../components/ShortlistInsightsBar';
-import ShortlistCandidateCard from '../components/ShortlistCandidateCard';
-import ShortlistDetailPanel from '../components/ShortlistDetailPanel';
-import OfferEmailModal from '../components/OfferEmailModal';
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "../../../shared/context/ThemeContext";
+import { useTranslation } from "../../../shared/context/I18nContext";
+import { useJobs } from "../../jobs/hooks/useJobs";
+import { useShortlistData } from "../hooks/useShortlistData";
+import { useUser } from "../../../features/auth/context/user.context";
+import { useCompany } from "../../../features/companies/pages/CompanyLayout";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import ShortlistInsightsBar from "../components/ShortlistInsightsBar";
+import ShortlistCandidateCard from "../components/ShortlistCandidateCard";
+import ShortlistDetailPanel from "../components/ShortlistDetailPanel";
+import OfferEmailModal from "../components/OfferEmailModal";
 
 export default function ShortlistsPage() {
   const { theme } = useTheme();
@@ -33,11 +33,14 @@ export default function ShortlistsPage() {
   const { user } = useUser();
   const { company } = useCompany();
 
-  const sortOptions = useMemo(() => [
-    { key: 'consensus', label: t("shortlist.sort_consensus") },
-    { key: 'ai_score', label: t("shortlist.sort_ai_score") },
-    { key: 'name', label: t("shortlist.sort_name") },
-  ], [t]);
+  const sortOptions = useMemo(
+    () => [
+      { key: "consensus", label: t("shortlist.sort_consensus") },
+      { key: "ai_score", label: t("shortlist.sort_ai_score") },
+      { key: "name", label: t("shortlist.sort_name") },
+    ],
+    [t],
+  );
 
   const {
     selectedJobId,
@@ -60,21 +63,23 @@ export default function ShortlistsPage() {
     postNote,
   } = useShortlistData(jobs);
 
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [showJobPicker, setShowJobPicker] = useState(false);
   const [showOfferModal, setShowOfferModal] = useState(false);
-  const [offerAction, setOfferAction] = useState('offer');
+  const [offerAction, setOfferAction] = useState("offer");
   const [offerCandidate, setOfferCandidate] = useState(null);
 
   const handleAdvance = async (applicationId) => {
-    const entry = sortedEntries.find((e) => e.applications.id === applicationId);
+    const entry = sortedEntries.find(
+      (e) => e.applications.id === applicationId,
+    );
     if (!entry) return;
 
-    const candidateEmail = entry.applications.profiles?.email || '';
+    const candidateEmail = entry.applications.profiles?.email || "";
 
     setOfferCandidate({ ...entry, _candidateEmail: candidateEmail });
-    setOfferAction('offer');
+    setOfferAction("offer");
     setIsPanelOpen(false);
     setShowOfferModal(true);
   };
@@ -86,7 +91,7 @@ export default function ShortlistsPage() {
 
   const filteredEntries = useMemo(() => {
     return sortedEntries.filter((entry) => {
-      const name = entry.applications.profiles?.full_name?.toLowerCase() || '';
+      const name = entry.applications.profiles?.full_name?.toLowerCase() || "";
       return name.includes(search.toLowerCase());
     });
   }, [sortedEntries, search]);
@@ -115,19 +120,39 @@ export default function ShortlistsPage() {
   const keyExtractor = (item) => item.id;
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + 16 }]}>
+    <View style={[styles.container]}>
       <View style={styles.header}>
         <View style={styles.headerTop}>
           <View>
-            <Text style={styles.pageTitle}>{t("shortlist.title")}</Text>
+            <View style={{ display:"flex",flexDirection:"row",gap:25 }}>
+              <Text style={styles.pageTitle}>{t("shortlist.title")}</Text>
+              <TouchableOpacity
+                style={styles.jobSelector}
+                onPress={() => setShowJobPicker(true)}
+              >
+                <Text style={styles.jobSelectorText} numberOfLines={1}>
+                  {selectedJob?.title || t("shortlist.select_job")}
+                </Text>
+                <Ionicons
+                  name="chevron-down"
+                  size={14}
+                  color={c["muted-foreground"]}
+                />
+              </TouchableOpacity>
+            </View>
             <Text style={styles.pageSubtitle}>{t("shortlist.subtitle")}</Text>
           </View>
           <View style={styles.searchContainer}>
-            <Ionicons name="search" size={14} color={c['muted-foreground']} style={styles.searchIcon} />
+            <Ionicons
+              name="search"
+              size={14}
+              color={c["muted-foreground"]}
+              style={styles.searchIcon}
+            />
             <TextInput
               style={styles.searchInput}
               placeholder={t("shortlist.search_placeholder")}
-              placeholderTextColor={c['muted-foreground']}
+              placeholderTextColor={c["muted-foreground"]}
               value={search}
               onChangeText={setSearch}
             />
@@ -135,21 +160,6 @@ export default function ShortlistsPage() {
         </View>
 
         <View style={styles.controls}>
-          <TouchableOpacity
-            style={styles.jobSelector}
-            onPress={() => setShowJobPicker(true)}
-          >
-            <Text style={styles.jobSelectorText} numberOfLines={1}>
-              {selectedJob?.title || t("shortlist.select_job")}
-            </Text>
-            <Ionicons name="chevron-down" size={14} color={c['muted-foreground']} />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.filtersBtn}>
-            <Ionicons name="options-outline" size={14} color={c['muted-foreground']} />
-            <Text style={styles.filtersBtnText}>{t("shortlist.filters")}</Text>
-          </TouchableOpacity>
-
           <View style={styles.sortRow}>
             <Text style={styles.sortLabel}>{t("shortlist.sort")}</Text>
             {sortOptions.map(({ key, label }) => (
@@ -161,10 +171,12 @@ export default function ShortlistsPage() {
                   sortMode === key && styles.sortChipActive,
                 ]}
               >
-                <Text style={[
-                  styles.sortChipText,
-                  sortMode === key && styles.sortChipTextActive,
-                ]}>
+                <Text
+                  style={[
+                    styles.sortChipText,
+                    sortMode === key && styles.sortChipTextActive,
+                  ]}
+                >
                   {label}
                 </Text>
               </TouchableOpacity>
@@ -182,7 +194,7 @@ export default function ShortlistsPage() {
         <View style={styles.listContainer}>
           {loading ? (
             <View style={styles.loaderContainer}>
-              <ActivityIndicator size="large" color={c['muted-foreground']} />
+              <ActivityIndicator size="large" color={c["muted-foreground"]} />
             </View>
           ) : (
             <FlatList
@@ -190,7 +202,11 @@ export default function ShortlistsPage() {
               renderItem={renderCandidateCard}
               keyExtractor={keyExtractor}
               ListEmptyComponent={ListEmptyComponent}
-              contentContainerStyle={filteredEntries.length === 0 ? styles.emptyListContainer : undefined}
+              contentContainerStyle={
+                filteredEntries.length === 0
+                  ? styles.emptyListContainer
+                  : undefined
+              }
               showsVerticalScrollIndicator={false}
             />
           )}
@@ -212,7 +228,12 @@ export default function ShortlistsPage() {
         )}
       </View>
 
-      <Modal visible={showJobPicker} transparent animationType="slide" onRequestClose={() => setShowJobPicker(false)}>
+      <Modal
+        visible={showJobPicker}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowJobPicker(false)}
+      >
         <TouchableOpacity
           style={styles.modalBackdrop}
           activeOpacity={1}
@@ -220,9 +241,15 @@ export default function ShortlistsPage() {
         >
           <View style={styles.jobPickerContainer}>
             <View style={styles.jobPickerHeader}>
-              <Text style={styles.jobPickerTitle}>{t("shortlist.select_job")}</Text>
+              <Text style={styles.jobPickerTitle}>
+                {t("shortlist.select_job")}
+              </Text>
               <TouchableOpacity onPress={() => setShowJobPicker(false)}>
-                <Ionicons name="close" size={20} color={c['muted-foreground']} />
+                <Ionicons
+                  name="close"
+                  size={20}
+                  color={c["muted-foreground"]}
+                />
               </TouchableOpacity>
             </View>
             <FlatList
@@ -239,10 +266,12 @@ export default function ShortlistsPage() {
                     setShowJobPicker(false);
                   }}
                 >
-                  <Text style={[
-                    styles.jobOptionText,
-                    selectedJobId === item.id && styles.jobOptionTextSelected,
-                  ]}>
+                  <Text
+                    style={[
+                      styles.jobOptionText,
+                      selectedJobId === item.id && styles.jobOptionTextSelected,
+                    ]}
+                  >
                     {item.title}
                   </Text>
                   {selectedJobId === item.id && (
@@ -251,7 +280,9 @@ export default function ShortlistsPage() {
                 </TouchableOpacity>
               )}
               ListEmptyComponent={() => (
-                <Text style={styles.jobPickerEmpty}>{t("shortlist.no_jobs")}</Text>
+                <Text style={styles.jobPickerEmpty}>
+                  {t("shortlist.no_jobs")}
+                </Text>
               )}
             />
           </View>
@@ -261,15 +292,24 @@ export default function ShortlistsPage() {
       {offerCandidate && (
         <OfferEmailModal
           visible={showOfferModal}
-          onClose={() => { setShowOfferModal(false); setOfferCandidate(null); }}
-          candidateName={offerCandidate.applications.profiles?.full_name || ''}
-          candidateEmail={offerCandidate._candidateEmail || offerCandidate.applications.profiles?.email || ''}
-          recruiterName={user?.user_metadata?.full_name || user?.email?.split('@')[0] || ''}
-          recruiterEmail={user?.email || ''}
+          onClose={() => {
+            setShowOfferModal(false);
+            setOfferCandidate(null);
+          }}
+          candidateName={offerCandidate.applications.profiles?.full_name || ""}
+          candidateEmail={
+            offerCandidate._candidateEmail ||
+            offerCandidate.applications.profiles?.email ||
+            ""
+          }
+          recruiterName={
+            user?.user_metadata?.full_name || user?.email?.split("@")[0] || ""
+          }
+          recruiterEmail={user?.email || ""}
           applicationId={offerCandidate.applications.id}
           jobId={selectedJobId}
-          jobTitle={selectedJob?.title || ''}
-          companyName={company?.name || ''}
+          jobTitle={selectedJob?.title || ""}
+          companyName={company?.name || ""}
           action={offerAction}
           onSuccess={handleOfferSuccess}
         />
@@ -278,200 +318,202 @@ export default function ShortlistsPage() {
   );
 }
 
-function createStyles(c) { return StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: c['surface-muted'],
-  },
-  header: {
-    backgroundColor: c.card,
-    borderBottomWidth: 1,
-    borderBottomColor: c.border,
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 14,
-  },
-  headerTop: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    gap: 12,
-  },
-  pageTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: c.foreground,
-  },
-  pageSubtitle: {
-    fontSize: 11,
-    color: c['muted-foreground'],
-    marginTop: 2,
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: c['surface-muted'],
-    borderWidth: 1,
-    borderColor: c.border,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    width: '100%',
-  },
-  searchIcon: {
-    marginRight: 6,
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 13,
-    color: c.foreground,
-    paddingVertical: 8,
-  },
-  controls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginTop: 12,
-    flexWrap: 'wrap',
-  },
-  jobSelector: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    borderWidth: 1,
-    borderColor: c.border,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 7,
-    backgroundColor: c.card,
-    maxWidth: 200,
-  },
-  jobSelectorText: {
-    fontSize: 13,
-    color: c.foreground,
-    flexShrink: 1,
-  },
-  filtersBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-    borderWidth: 1,
-    borderColor: c.border,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 7,
-    backgroundColor: c.card,
-  },
-  filtersBtnText: {
-    fontSize: 12,
-    color: c['muted-foreground'],
-  },
-  sortRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    marginLeft: 'auto',
-  },
-  sortLabel: {
-    fontSize: 11,
-    color: c['muted-foreground'],
-    marginRight: 4,
-  },
-  sortChip: {
-    paddingHorizontal: 10,
-    paddingVertical: 12,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: c.border,
-    backgroundColor: c.card,
-  },
-  sortChipActive: {
-    backgroundColor: c.primary,
-    borderColor: c.primary,
-  },
-  sortChipText: {
-    fontSize: 11,
-    fontWeight: '500',
-    color: c['muted-foreground'],
-  },
-  sortChipTextActive: {
-    color: c['destructive-foreground'],
-  },
-  mainContent: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  listContainer: {
-    flex: 1,
-  },
-  loaderContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyListContainer: {
-    flexGrow: 1,
-  },
-  emptyState: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    paddingVertical: 60,
-  },
-  emptyStateText: {
-    fontSize: 13,
-    color: c['muted-foreground'],
-  },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: `${c.foreground}66`,
-    justifyContent: 'flex-end',
-  },
-  jobPickerContainer: {
-    backgroundColor: c.card,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    maxHeight: '60%',
-    paddingBottom: Platform.OS === 'ios' ? 34 : 16,
-  },
-  jobPickerHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: c.border,
-  },
-  jobPickerTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: c.foreground,
-  },
-  jobOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: c['surface-muted'],
-  },
-  jobOptionSelected: {
-    backgroundColor: c['surface-muted'],
-  },
-  jobOptionText: {
-    fontSize: 14,
-    color: c.foreground,
-  },
-  jobOptionTextSelected: {
-    fontWeight: '600',
-    color: c.foreground,
-  },
-  jobPickerEmpty: {
-    padding: 20,
-    textAlign: 'center',
-    color: c['muted-foreground'],
-    fontSize: 13,
-  },
-}); }
+function createStyles(c) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: c["surface-muted"],
+    },
+    header: {
+      backgroundColor: c.card,
+      borderBottomWidth: 1,
+      borderBottomColor: c.border,
+      paddingHorizontal: 20,
+      paddingTop: 16,
+      paddingBottom: 14,
+    },
+    headerTop: {
+      flexDirection: "column",
+      alignItems: "flex-start",
+      justifyContent: "space-between",
+      gap: 12,
+    },
+    pageTitle: {
+      fontSize: 22,
+      fontWeight: "700",
+      color: c.foreground,
+    },
+    pageSubtitle: {
+      fontSize: 11,
+      color: c["muted-foreground"],
+      marginTop: 2,
+    },
+    searchContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: c["surface-muted"],
+      borderWidth: 1,
+      borderColor: c.border,
+      borderRadius: 8,
+      paddingHorizontal: 10,
+      width: "100%",
+    },
+    searchIcon: {
+      marginRight: 6,
+    },
+    searchInput: {
+      flex: 1,
+      fontSize: 13,
+      color: c.foreground,
+      paddingVertical: 8,
+    },
+    controls: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+      marginTop: 12,
+      flexWrap: "wrap",
+    },
+    jobSelector: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 4,
+      borderWidth: 1,
+      borderColor: c.border,
+      borderRadius: 8,
+      paddingHorizontal: 10,
+      paddingVertical: 7,
+      backgroundColor: c.card,
+      maxWidth: 200,
+    },
+    jobSelectorText: {
+      fontSize: 13,
+      color: c.foreground,
+      flexShrink: 1,
+    },
+    filtersBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 5,
+      borderWidth: 1,
+      borderColor: c.border,
+      borderRadius: 8,
+      paddingHorizontal: 10,
+      paddingVertical: 7,
+      backgroundColor: c.card,
+    },
+    filtersBtnText: {
+      fontSize: 12,
+      color: c["muted-foreground"],
+    },
+    sortRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 4,
+      marginLeft: "auto",
+    },
+    sortLabel: {
+      fontSize: 11,
+      color: c["muted-foreground"],
+      marginRight: 4,
+    },
+    sortChip: {
+      paddingHorizontal: 10,
+      paddingVertical: 12,
+      borderRadius: 999,
+      borderWidth: 1,
+      borderColor: c.border,
+      backgroundColor: c.card,
+    },
+    sortChipActive: {
+      backgroundColor: c.primary,
+      borderColor: c.primary,
+    },
+    sortChipText: {
+      fontSize: 11,
+      fontWeight: "500",
+      color: c["muted-foreground"],
+    },
+    sortChipTextActive: {
+      color: c["destructive-foreground"],
+    },
+    mainContent: {
+      flex: 1,
+      flexDirection: "row",
+    },
+    listContainer: {
+      flex: 1,
+    },
+    loaderContainer: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    emptyListContainer: {
+      flexGrow: 1,
+    },
+    emptyState: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 8,
+      paddingVertical: 60,
+    },
+    emptyStateText: {
+      fontSize: 13,
+      color: c["muted-foreground"],
+    },
+    modalBackdrop: {
+      flex: 1,
+      backgroundColor: `${c.foreground}66`,
+      justifyContent: "flex-end",
+    },
+    jobPickerContainer: {
+      backgroundColor: c.card,
+      borderTopLeftRadius: 16,
+      borderTopRightRadius: 16,
+      maxHeight: "60%",
+      paddingBottom: Platform.OS === "ios" ? 34 : 16,
+    },
+    jobPickerHeader: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 20,
+      paddingVertical: 14,
+      borderBottomWidth: 1,
+      borderBottomColor: c.border,
+    },
+    jobPickerTitle: {
+      fontSize: 16,
+      fontWeight: "600",
+      color: c.foreground,
+    },
+    jobOption: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 20,
+      paddingVertical: 14,
+      borderBottomWidth: 1,
+      borderBottomColor: c["surface-muted"],
+    },
+    jobOptionSelected: {
+      backgroundColor: c["surface-muted"],
+    },
+    jobOptionText: {
+      fontSize: 14,
+      color: c.foreground,
+    },
+    jobOptionTextSelected: {
+      fontWeight: "600",
+      color: c.foreground,
+    },
+    jobPickerEmpty: {
+      padding: 20,
+      textAlign: "center",
+      color: c["muted-foreground"],
+      fontSize: 13,
+    },
+  });
+}

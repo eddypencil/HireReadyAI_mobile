@@ -57,7 +57,7 @@ function createStyles(c) {
   tab: {
     paddingHorizontal: 14, paddingVertical: 10,
     borderRadius: 12, borderWidth: 1,
-    borderColor: c.border, backgroundColor: c.white, maxWidth: 220,
+    borderColor: c.border, backgroundColor: c.card, maxWidth: 220,
   },
   tabSelected: {
     backgroundColor: c.primary,
@@ -72,7 +72,7 @@ function createStyles(c) {
   title: { fontSize: 13, fontWeight: '600', color: c.foreground, flexShrink: 1 },
   titleSelected: { color: c.white },
   badge: { paddingHorizontal: 7, paddingVertical: 2, borderRadius: 5, flexShrink: 0 },
-  badgeWhite: { backgroundColor: 'rgba(255,255,255,0.22)' },
+  badgeWhite: { backgroundColor: `${c.white}38` },
   badgeRed: { backgroundColor: c.red[100] },
   badgeGreen: { backgroundColor: c.emerald[100] },
   badgeText: { fontSize: 10, fontWeight: '700', letterSpacing: 0.3 },

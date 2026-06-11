@@ -24,7 +24,7 @@ function createStyles(c) {
   return StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   label: {
-    fontSize: 13, color: c.muted,
+    fontSize: 13, color: c['muted-foreground'],
     width: 130, textTransform: 'capitalize', lineHeight: 18,
   },
   track: {

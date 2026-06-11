@@ -228,7 +228,7 @@ function createStyles(c) {
   fieldGroup: { gap: 6 },
   label: { fontSize: 12, fontWeight: '600', color: c.foreground, textTransform: 'uppercase', letterSpacing: 0.4 },
   optional: { fontWeight: '400', color: c['muted-foreground'], textTransform: 'none' },
-  input: { backgroundColor: c.white, borderWidth: 1, borderColor: c.border, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, fontSize: 14, color: c.foreground },
+  input: { backgroundColor: c.card, borderWidth: 1, borderColor: c.border, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, fontSize: 14, color: c.foreground },
   divider: { height: 1, backgroundColor: c.border },
   imageSectionHeader: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
   imageSectionTitle: { fontSize: 15, fontWeight: '700', color: c.foreground },

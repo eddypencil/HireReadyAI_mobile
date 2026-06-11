@@ -30,7 +30,7 @@ export default function CandidateHeader({ app, percentile, percentileTag }) {
 
   return (
     <LinearGradient
-      colors={['#01497c', '#468faf']}
+      colors={theme.isDark ? [c.card, c.background] : [c.primary, c['muted-foreground']]}
       start={{ x: 0, y: 0 }}
       end={{ x: 0.3, y: 1 }}
       style={styles.hero}
@@ -70,7 +70,7 @@ export default function CandidateHeader({ app, percentile, percentileTag }) {
           <View style={styles.metaList}>
             {(candidate.email || app?.answers?.info?.email) && (
               <View style={styles.metaItem}>
-                <Ionicons name="mail-outline" size={12} color="rgba(255,255,255,0.7)" />
+                <Ionicons name="mail-outline" size={12} color={`${c.white}B3`} />
                 <Text style={styles.metaText} numberOfLines={1}>
                   {candidate.email || app.answers.info.email}
                 </Text>
@@ -78,7 +78,7 @@ export default function CandidateHeader({ app, percentile, percentileTag }) {
             )}
             {job?.title && (
               <View style={styles.metaItem}>
-                <Ionicons name="document-text-outline" size={12} color="rgba(255,255,255,0.7)" />
+                <Ionicons name="document-text-outline" size={12} color={`${c.white}B3`} />
                 <Text style={styles.metaText} numberOfLines={1}>
                   Applied for: <Text style={styles.metaBold}>{job.title}</Text>
                 </Text>
@@ -119,18 +119,18 @@ function createStyles(c) {
   bubble1: {
     position: 'absolute', top: -50, right: -50,
     width: 180, height: 180, borderRadius: 90,
-    backgroundColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: `${c.white}14`,
   },
   bubble2: {
     position: 'absolute', bottom: -60, left: -30,
     width: 140, height: 140, borderRadius: 70,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: `${c.white}0D`,
   },
   row: { flexDirection: 'row', alignItems: 'flex-start', gap: 14, position: 'relative' },
   avatar: {
     width: 56, height: 56, borderRadius: 18,
-    backgroundColor: 'rgba(255,255,255,0.18)',
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.25)',
+    backgroundColor: `${c.white}2E`,
+    borderWidth: 1, borderColor: `${c.white}40`,
     alignItems: 'center', justifyContent: 'center',
   },
   avatarText: { fontSize: 19, fontWeight: '700', color: c.white, letterSpacing: 0.5 },
@@ -138,21 +138,21 @@ function createStyles(c) {
   nameRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
   name: { fontSize: 18, fontWeight: '700', color: c.white, flexShrink: 1, letterSpacing: -0.2 },
   rejectedBadge: {
-    backgroundColor: 'rgba(239,68,68,0.18)',
-    borderWidth: 1, borderColor: 'rgba(239,68,68,0.35)',
+    backgroundColor: `${c.destructive}2E`,
+    borderWidth: 1, borderColor: `${c.destructive}59`,
     paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6,
   },
   rejectedText: { fontSize: 10, fontWeight: '700', color: c.red[100], letterSpacing: 0.5 },
   hiredBadge: {
-    backgroundColor: 'rgba(34,197,94,0.2)',
-    borderWidth: 1, borderColor: 'rgba(34,197,94,0.4)',
+    backgroundColor: `${c.success}33`,
+    borderWidth: 1, borderColor: `${c.success}66`,
     paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6,
   },
   hiredText: { fontSize: 10, fontWeight: '700', color: c.emerald[200], letterSpacing: 0.5 },
-  headline: { fontSize: 12, color: 'rgba(255,255,255,0.75)', marginTop: 4, lineHeight: 17 },
+  headline: { fontSize: 12, color: `${c.white}BF`, marginTop: 4, lineHeight: 17 },
   metaList: { marginTop: 8, gap: 4 },
   metaItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
-  metaText: { fontSize: 12, color: 'rgba(255,255,255,0.75)', flex: 1 },
+  metaText: { fontSize: 12, color: `${c.white}BF`, flex: 1 },
   metaBold: { fontWeight: '600', color: c.white },
 
   scoreCard: {
@@ -162,15 +162,15 @@ function createStyles(c) {
     gap: 16,
     padding: 14,
     borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: `${c.white}1A`,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.18)',
+    borderColor: `${c.white}2E`,
     position: 'relative',
   },
   scoreText: { flex: 1 },
   scoreLabel: {
     fontSize: 10, fontWeight: '700',
-    color: 'rgba(255,255,255,0.7)',
+    color: `${c.white}B3`,
     textTransform: 'uppercase', letterSpacing: 1.4,
   },
   scoreSub: { fontSize: 13, color: c.white, marginTop: 4, lineHeight: 18 },

@@ -68,8 +68,8 @@ export default function AboutTab({ profile, viewOnly, onEdit }) {
         <View style={styles.list}>
           {profile?.phone && (
             <View style={styles.listItem}>
-              <View style={[styles.listIcon, { backgroundColor: '#dbeafe' }]}>
-                <Ionicons name="call-outline" size={14} color="#2563eb" />
+              <View style={[styles.listIcon, { backgroundColor: `${c.accent}18` }]}>
+                <Ionicons name="call-outline" size={14} color={c.accent} />
               </View>
               <View>
                 <Text style={styles.listLabel}>Phone</Text>
@@ -79,8 +79,8 @@ export default function AboutTab({ profile, viewOnly, onEdit }) {
           )}
           {profile?.location && (
             <View style={styles.listItem}>
-              <View style={[styles.listIcon, { backgroundColor: '#fce7f3' }]}>
-                <Ionicons name="location-outline" size={14} color="#db2777" />
+              <View style={[styles.listIcon, { backgroundColor: `${c.primary}18` }]}>
+                <Ionicons name="location-outline" size={14} color={c.primary} />
               </View>
               <View>
                 <Text style={styles.listLabel}>Location</Text>
@@ -103,8 +103,8 @@ export default function AboutTab({ profile, viewOnly, onEdit }) {
         <View style={styles.list}>
           {profile?.linkedin_url && (
             <TouchableOpacity style={styles.listItem} onPress={() => handleLink(profile.linkedin_url)} activeOpacity={0.75}>
-              <View style={[styles.listIcon, { backgroundColor: '#dbeafe' }]}>
-                <Ionicons name="logo-linkedin" size={14} color="#0a66c2" />
+              <View style={[styles.listIcon, { backgroundColor: `${c.accent}18` }]}>
+                <Ionicons name="logo-linkedin" size={14} color={c.accent} />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.listLabel}>LinkedIn</Text>
@@ -123,7 +123,7 @@ export default function AboutTab({ profile, viewOnly, onEdit }) {
 function createStyles(c) {
   return StyleSheet.create({
   container: { gap: 14 },
-  card: { backgroundColor: c.white, borderRadius: 16, borderWidth: 1, borderColor: c.border, padding: 18, gap: 12 },
+  card: { backgroundColor: c.card, borderRadius: 16, borderWidth: 1, borderColor: c.border, padding: 18, gap: 12 },
   cardHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   cardHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   cardTitle: { fontSize: 15, fontWeight: '700', color: c.foreground },

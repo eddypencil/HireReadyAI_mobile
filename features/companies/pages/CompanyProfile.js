@@ -185,7 +185,7 @@ export default function CompanyProfile() {
     if (perm === MEMBERSHIP_PERMISSION.recruiter)
       return c['muted-foreground'];
     if (perm === MEMBERSHIP_PERMISSION.pending) return c.amber[500];
-    return c.gray[500];
+    return c['muted-foreground'];
   };
 
   const handlePickLogo = async () => {
@@ -584,7 +584,7 @@ function createStyles(c) {
   return StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: c.gray[50],
+      backgroundColor: c.background,
     },
     content: {
       paddingBottom: 40,
@@ -619,7 +619,7 @@ function createStyles(c) {
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: "rgba(0,0,0,0.45)",
+      backgroundColor: `${c.black}73`,
       alignItems: "center",
       justifyContent: "center",
       zIndex: 2,
@@ -640,12 +640,12 @@ function createStyles(c) {
       width: 80,
       height: 80,
       borderRadius: 16,
-      backgroundColor: c.white,
+      backgroundColor: c.card,
       borderWidth: 3,
-      borderColor: c['muted-foreground'],
+      borderColor: c.border,
       alignItems: "center",
       justifyContent: "center",
-      shadowColor: "#000",
+      shadowColor: c.black,
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.2,
       shadowRadius: 4,
@@ -666,7 +666,7 @@ function createStyles(c) {
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: "rgba(0,0,0,0.45)",
+      backgroundColor: `${c.black}73`,
       borderRadius: 16,
       alignItems: "center",
       justifyContent: "center",
@@ -684,16 +684,16 @@ function createStyles(c) {
       width: 36,
       height: 36,
       borderRadius: 18,
-      backgroundColor: "rgba(0,0,0,0.35)",
+      backgroundColor: `${c.black}59`,
       alignItems: "center",
       justifyContent: "center",
       zIndex: 3,
     },
     card: {
-      backgroundColor: c.white,
+      backgroundColor: c.card,
       borderRadius: 12,
       borderWidth: 1,
-      borderColor: c.gray[100],
+      borderColor: c.border,
       padding: 20,
       marginHorizontal: 20,
       marginTop: 52,
@@ -707,7 +707,7 @@ function createStyles(c) {
     },
     cardSubtitle: {
       fontSize: 11,
-      color: c.gray[400],
+      color: c['muted-foreground'],
       marginBottom: 16,
     },
     fieldsGrid: {
@@ -719,36 +719,36 @@ function createStyles(c) {
     fieldLabel: {
       fontSize: 10,
       fontWeight: "600",
-      color: c.gray[500],
+      color: c['muted-foreground'],
       textTransform: "uppercase",
       letterSpacing: 0.5,
       marginBottom: 4,
     },
     fieldInput: {
       borderWidth: 1,
-      borderColor: c.gray[200],
+      borderColor: c.border,
       borderRadius: 6,
       paddingHorizontal: 10,
       paddingVertical: 7,
       fontSize: 13,
       color: c.foreground,
-      backgroundColor: c.white,
+      backgroundColor: c.card,
     },
     fieldInputEditing: {
       borderColor: c.accent,
-      backgroundColor: c.white,
+      backgroundColor: c.card,
     },
     fieldTextArea: {
       minHeight: 80,
       textAlignVertical: "top",
     },
     fieldValue: {
-      backgroundColor: c.gray[50],
+      backgroundColor: c.surface,
       borderRadius: 6,
       paddingHorizontal: 10,
       paddingVertical: 8,
       borderWidth: 1,
-      borderColor: c.gray[200],
+      borderColor: c.border,
     },
     fieldValueText: {
       fontSize: 13,
@@ -765,14 +765,14 @@ function createStyles(c) {
       flex: 1,
     },
     linkText: {
-      backgroundColor: c.gray[50],
+      backgroundColor: c.surface,
       borderRadius: 6,
       paddingHorizontal: 10,
       paddingVertical: 8,
       fontSize: 12,
       color: c['muted-foreground'],
       borderWidth: 1,
-      borderColor: c.gray[200],
+      borderColor: c.border,
       overflow: "hidden",
     },
     editActions: {
@@ -782,19 +782,19 @@ function createStyles(c) {
       marginTop: 16,
       paddingTop: 16,
       borderTopWidth: 1,
-      borderTopColor: c.gray[100],
+      borderTopColor: c.border,
     },
     cancelBtn: {
       paddingHorizontal: 16,
       paddingVertical: 8,
       borderRadius: 6,
       borderWidth: 1,
-      borderColor: c.gray[200],
+      borderColor: c.border,
     },
     cancelBtnText: {
       fontSize: 12,
       fontWeight: "500",
-      color: c.gray[700],
+      color: c['muted-foreground'],
     },
     saveBtn: {
       paddingHorizontal: 16,
@@ -811,19 +811,19 @@ function createStyles(c) {
       flexDirection: "row",
       flexWrap: "wrap",
       gap: 10,
-      backgroundColor: c.gray[50],
+      backgroundColor: c.surface,
       padding: 12,
       borderRadius: 8,
       borderWidth: 1,
-      borderColor: c.gray[100],
+      borderColor: c.border,
       marginBottom: 20,
     },
     inviteInput: {
       flex: 1,
       minWidth: 140,
-      backgroundColor: c.white,
+      backgroundColor: c.card,
       borderWidth: 1,
-      borderColor: c.gray[200],
+      borderColor: c.border,
       borderRadius: 6,
       paddingHorizontal: 12,
       paddingVertical: 9,
@@ -848,7 +848,7 @@ function createStyles(c) {
     sectionLabel: {
       fontSize: 11,
       fontWeight: "700",
-      color: c.gray[500],
+      color: c['muted-foreground'],
       textTransform: "uppercase",
       letterSpacing: 0.5,
       marginBottom: 8,
@@ -903,7 +903,7 @@ function createStyles(c) {
       justifyContent: "space-between",
       paddingBottom: 12,
       borderBottomWidth: 1,
-      borderBottomColor: c.gray[50],
+      borderBottomColor: c.border,
       marginBottom: 8,
     },
     memberInfo: {
@@ -936,7 +936,7 @@ function createStyles(c) {
     },
     memberRole: {
       fontSize: 11,
-      color: c.gray[400],
+      color: c['muted-foreground'],
     },
     memberActions: {
       flexDirection: "row",
@@ -958,7 +958,7 @@ function createStyles(c) {
     },
     removeIcon: {
       fontSize: 12,
-      color: c.gray[400],
+      color: c['muted-foreground'],
       paddingLeft: 4,
     },
   });

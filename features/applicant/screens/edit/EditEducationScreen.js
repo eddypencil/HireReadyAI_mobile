@@ -138,7 +138,7 @@ function createStyles(c) {
   label: { fontSize: 12, fontWeight: '600', color: c.foreground, textTransform: 'uppercase', letterSpacing: 0.4 },
   optional: { fontWeight: '400', color: c['muted-foreground'], textTransform: 'none' },
   input: {
-    backgroundColor: c.white, borderWidth: 1, borderColor: c.border,
+    backgroundColor: c.card, borderWidth: 1, borderColor: c.border,
     borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12,
     fontSize: 14, color: c.foreground,
   },
@@ -146,7 +146,7 @@ function createStyles(c) {
   levelRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   levelPill: {
     borderWidth: 1.5, borderColor: c.border, borderRadius: 20,
-    paddingHorizontal: 14, paddingVertical: 7, backgroundColor: c.white,
+    paddingHorizontal: 14, paddingVertical: 7, backgroundColor: c.card,
   },
   levelPillActive: { backgroundColor: `${c.primary}15`, borderColor: c.primary },
   levelPillText: { fontSize: 13, fontWeight: '500', color: c['muted-foreground'] },

@@ -52,8 +52,8 @@ export default function EditLinksScreen() {
 
         <View style={styles.fieldGroup}>
           <View style={styles.labelRow}>
-            <View style={[styles.labelIcon, { backgroundColor: '#dbeafe' }]}>
-              <Ionicons name="logo-linkedin" size={14} color="#0a66c2" />
+            <View style={[styles.labelIcon, { backgroundColor: `${c.accent}18` }]}>
+              <Ionicons name="logo-linkedin" size={14} color={c.accent} />
             </View>
             <View>
               <Text style={styles.label}>LinkedIn URL</Text>
@@ -99,7 +99,7 @@ function createStyles(c) {
   label: { fontSize: 13, fontWeight: '700', color: c.foreground },
   hint: { fontSize: 12, color: c['muted-foreground'] },
   input: {
-    backgroundColor: c.white, borderWidth: 1, borderColor: c.border,
+    backgroundColor: c.card, borderWidth: 1, borderColor: c.border,
     borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12,
     fontSize: 14, color: c.foreground,
   },

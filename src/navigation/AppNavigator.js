@@ -38,6 +38,7 @@ import CompanyProfile from '../../features/companies/pages/CompanyProfile';
 import JDGeneratorPage from '../../features/companies/pages/JDGeneratorPage';
 import JDGeneratorResultPage from '../../features/companies/pages/JDGeneratorResultPage';
 import ApplicationQuestionsPage from '../../features/companies/pages/ApplicationQuestionsPage';
+import JDPublishSuccessPage from '../../features/companies/pages/JDPublishSuccessPage';
 import JobPostings from '../../features/companies/pages/JobPostings';
 import ApplicantPage from '../../features/applicant/pages/ApplicantPage';
 import ApplicantFeedbackPage from '../../features/applicant/pages/ApplicantFeedbackPage';
@@ -254,6 +255,10 @@ function MainScreens() {
             headerTintColor: c.white,
           }}
         />
+        <InnerStack.Screen name="JDPublishSuccess" component={JDPublishSuccessPage}
+          options={{ headerShown: true, headerTitle: 'Success',
+                    headerStyle: { backgroundColor: c.primary },
+                    headerTintColor: c.white }} />
         <InnerStack.Screen name="JobPostings" component={JobPostings} />
         <InnerStack.Screen name="Shortlists" component={ShortlistsPage} />
         <InnerStack.Screen name="Pipeline" component={PipelineCandidatesPage} />

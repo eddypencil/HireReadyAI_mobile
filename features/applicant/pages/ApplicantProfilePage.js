@@ -233,12 +233,12 @@ export default function ApplicantProfilePage() {
 
 function createStyles(c) {
   return StyleSheet.create({
-    root: { flex: 1, backgroundColor: c.surface },
+    root: { flex: 1, backgroundColor: c.background },
     scroll: { flex: 1 },
     content: { padding: 16, gap: 14, paddingBottom: 40 },
-    centered: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: c.surface },
+    centered: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: c.background },
     errorText: { fontSize: 14, color: c['muted-foreground'] },
-    tabBarScroll: { backgroundColor: c.white, borderRadius: 14, borderWidth: 1, borderColor: c.border },
+    tabBarScroll: { backgroundColor: c.card, borderRadius: 14, borderWidth: 1, borderColor: c.border },
     tabBarContent: { flexDirection: 'row', padding: 4, gap: 2 },
     tab: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 10 },
     tabActive: { backgroundColor: `${c.primary}12` },

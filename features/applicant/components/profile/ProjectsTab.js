@@ -165,7 +165,7 @@ function createStyles(c) {
 
   // ── Same card style as Work Experience / Education sections
   section: {
-    backgroundColor: c.white, borderRadius: 16,
+    backgroundColor: c.card, borderRadius: 16,
     borderWidth: 1, borderColor: c.border, overflow: 'hidden',
   },
   sectionHeader: {
@@ -201,7 +201,7 @@ function createStyles(c) {
   // Project card — sits inside the section, separated by top border
   projectCard: {
     borderTopWidth: 1, borderTopColor: c.border,
-    backgroundColor: c.white, overflow: 'hidden',
+    backgroundColor: c.card, overflow: 'hidden',
   },
   projectHeader: {
     flexDirection: 'row', alignItems: 'flex-start',
@@ -247,7 +247,7 @@ function createStyles(c) {
   mediaTileImg: { width: '100%', height: '100%' },
   addTile: {
     alignItems: 'center', justifyContent: 'center', gap: 4,
-    borderStyle: 'dashed', backgroundColor: c.white,
+    borderStyle: 'dashed', backgroundColor: c.card,
   },
   addTileText: { fontSize: 11, color: c['muted-foreground'] },
   addMediaBtn: {

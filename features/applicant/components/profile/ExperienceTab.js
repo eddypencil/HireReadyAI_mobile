@@ -126,8 +126,8 @@ export default function ExperienceTab({ profile, viewOnly, onEdit, onDelete }) {
             <ItemCard
               key={index}
               iconName="school-outline"
-              iconBg="#ede9fe"
-              iconColor="#7c3aed"
+              iconBg={`${c.accent}18`}
+              iconColor={c.accent}
               title={[item.level, item.major].filter(Boolean).join(' in ') || item.university}
               subtitle={item.university}
               extra={[item.faculty, item.grade ? `Grade: ${item.grade}` : null].filter(Boolean).join(' · ')}
@@ -154,8 +154,8 @@ export default function ExperienceTab({ profile, viewOnly, onEdit, onDelete }) {
             <ItemCard
               key={index}
               iconName="heart-outline"
-              iconBg="#dcfce7"
-              iconColor="#16a34a"
+              iconBg={`${c.primary}18`}
+              iconColor={c.primary}
               title={item.role}
               subtitle={item.organization}
               date={[item.start, item.end || 'Present'].filter(Boolean).join(' — ')}
@@ -175,7 +175,7 @@ function createStyles(c) {
   return StyleSheet.create({
   container: { gap: 20 },
   section: {
-    backgroundColor: c.white, borderRadius: 16,
+    backgroundColor: c.card, borderRadius: 16,
     borderWidth: 1, borderColor: c.border, overflow: 'hidden',
   },
   sectionHeader: {

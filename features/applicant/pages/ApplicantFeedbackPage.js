@@ -183,7 +183,7 @@ export default function ApplicantFeedbackPage() {
       <View style={styles.centered}>
         <View style={styles.emptyCard}>
           <View style={styles.emptyIcon}>
-            <Ionicons name="document-text-outline" size={32} color="#cbd5e1" />
+            <Ionicons name="document-text-outline" size={32} color={c['muted-foreground']} />
           </View>
           <Text style={styles.emptyTitle}>No feedback available yet</Text>
           <Text style={styles.emptySubtitle}>
@@ -242,7 +242,7 @@ export default function ApplicantFeedbackPage() {
             <ScrollView style={styles.tabScroll} contentContainerStyle={styles.tabContent}>
               {!cvFeedback ? (
                 <View style={styles.emptyTab}>
-                  <Ionicons name="document-text-outline" size={44} color={c.gray[300]} />
+                  <Ionicons name="document-text-outline" size={44} color={c['muted-foreground']} />
                   <Text style={styles.emptyTabTitle}>No CV Review Data</Text>
                   <Text style={styles.emptyTabSubtitle}>CV has not been reviewed for this application yet.</Text>
                 </View>
@@ -258,7 +258,7 @@ export default function ApplicantFeedbackPage() {
             <ScrollView style={styles.tabScroll} contentContainerStyle={styles.tabContent}>
               {stagesWithQuestions.length === 0 ? (
                 <View style={styles.emptyTab}>
-                  <Ionicons name="bulb-outline" size={44} color="#cbd5e1" />
+                  <Ionicons name="bulb-outline" size={44} color={c['muted-foreground']} />
                   <Text style={styles.emptyTabTitle}>No Assessments Yet</Text>
                   <Text style={styles.emptyTabSubtitle}>No interviews or assessments have been completed for this application.</Text>
                 </View>
@@ -285,7 +285,7 @@ function createStyles(c) {
     outer: { paddingHorizontal: 16, paddingTop: 14, paddingBottom: 4 },
     bar: {
       flexDirection: 'row',
-      backgroundColor: c.white,
+      backgroundColor: c.card,
       borderRadius: 14,
       padding: 4,
       borderWidth: 1, borderColor: c.border,
@@ -300,7 +300,7 @@ function createStyles(c) {
       shadowRadius: 8,
       elevation: 4,
     },
-    label: { fontSize: 13, fontWeight: '600', color: c.muted },
+    label: { fontSize: 13, fontWeight: '600', color: c['muted-foreground'] },
     labelActive: { fontSize: 13, fontWeight: '700', color: c.white },
   });
 
@@ -308,7 +308,7 @@ function createStyles(c) {
     root: { flex: 1, backgroundColor: c.background },
 
     selectorBar: {
-      backgroundColor: c.white,
+      backgroundColor: c.card,
       paddingHorizontal: 16,
       paddingVertical: 12,
       borderBottomWidth: 1,
@@ -316,16 +316,16 @@ function createStyles(c) {
     },
 
     tabScroll: { flex: 1 },
-    tabContent: { padding: 16, gap: 14 },
+    tabContent: { padding: 16, gap: 14, backgroundColor: c.background },
 
     centered: {
       flex: 1, alignItems: 'center', justifyContent: 'center',
       backgroundColor: c.background, padding: 24,
     },
-    loadingText: { fontSize: 14, color: c.muted, marginTop: 10 },
+    loadingText: { fontSize: 14, color: c['muted-foreground'], marginTop: 10 },
 
     emptyCard: {
-      backgroundColor: c.white, borderRadius: 20,
+      backgroundColor: c.card, borderRadius: 20,
       borderWidth: 1, borderColor: c.border,
       padding: 32, alignItems: 'center', gap: 12, maxWidth: 320,
       shadowColor: c.primary, shadowOpacity: 0.06, shadowRadius: 12, shadowOffset: { width: 0, height: 4 },
@@ -336,7 +336,7 @@ function createStyles(c) {
       alignItems: 'center', justifyContent: 'center',
     },
     emptyTitle: { fontSize: 16, fontWeight: '700', color: c.foreground, textAlign: 'center' },
-    emptySubtitle: { fontSize: 13, color: c.muted, textAlign: 'center', lineHeight: 20 },
+    emptySubtitle: { fontSize: 13, color: c['muted-foreground'], textAlign: 'center', lineHeight: 20 },
     emptyBtn: {
       paddingHorizontal: 26,
       paddingVertical: 12,
@@ -353,7 +353,7 @@ function createStyles(c) {
 
     emptyTab: { alignItems: 'center', paddingVertical: 60, gap: 10 },
     emptyTabTitle: { fontSize: 15, fontWeight: '700', color: c.foreground },
-    emptyTabSubtitle: { fontSize: 13, color: c.muted, textAlign: 'center', lineHeight: 20, maxWidth: 260 },
+    emptyTabSubtitle: { fontSize: 13, color: c['muted-foreground'], textAlign: 'center', lineHeight: 20, maxWidth: 260 },
   });
 
   return { tb, styles };

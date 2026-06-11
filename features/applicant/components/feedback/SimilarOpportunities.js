@@ -47,19 +47,19 @@ export default function SimilarOpportunities({ jobId, seniorityLevel, jobType })
               <View style={styles.meta}>
                 {company?.name && (
                   <View style={styles.metaItem}>
-                    <Ionicons name="business-outline" size={10} color={c.muted} />
+                    <Ionicons name="business-outline" size={10} color={c['muted-foreground']} />
                     <Text style={styles.metaText}>{company.name}</Text>
                   </View>
                 )}
                 {company?.location && (
                   <View style={styles.metaItem}>
-                    <Ionicons name="location-outline" size={10} color={c.secondary} />
-                    <Text style={[styles.metaText, { color: c.secondary }]}>{company.location}</Text>
+                    <Ionicons name="location-outline" size={10} color={c['muted-foreground']} />
+                    <Text style={[styles.metaText, { color: c['muted-foreground'] }]}>{company.location}</Text>
                   </View>
                 )}
               </View>
             </View>
-            <Ionicons name="chevron-forward" size={16} color={c.gray[300]} />
+            <Ionicons name="chevron-forward" size={16} color={c['muted-foreground']} />
           </TouchableOpacity>
         );
       })}
@@ -69,7 +69,7 @@ export default function SimilarOpportunities({ jobId, seniorityLevel, jobType })
 function createStyles(c) {
   return StyleSheet.create({
   card: {
-    backgroundColor: c.white, borderRadius: 18,
+    backgroundColor: c.card, borderRadius: 18,
     borderWidth: 1, borderColor: c.border, padding: 18,
     shadowColor: c.primary, shadowOpacity: 0.04, shadowRadius: 4, shadowOffset: { width: 0, height: 1 },
   },
@@ -95,6 +95,6 @@ function createStyles(c) {
   jobTitle: { fontSize: 13, fontWeight: '700', color: c.foreground, marginBottom: 3 },
   meta: { flexDirection: 'row', gap: 10, flexWrap: 'wrap' },
   metaItem: { flexDirection: 'row', alignItems: 'center', gap: 3 },
-  metaText: { fontSize: 11, color: c.muted },
+  metaText: { fontSize: 11, color: c['muted-foreground'] },
 });
 }

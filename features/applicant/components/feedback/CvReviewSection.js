@@ -24,7 +24,7 @@ export default function CvReviewSection({ app }) {
   if (!cv) {
     return (
       <View style={[styles.card, styles.emptyCard]}>
-        <Ionicons name="document-text-outline" size={40} color={c.gray[300]} />
+        <Ionicons name="document-text-outline" size={40} color={c['muted-foreground']} />
         <Text style={styles.emptyTitle}>No CV Review Data</Text>
         <Text style={styles.emptySubtitle}>CV has not been reviewed yet.</Text>
       </View>
@@ -42,7 +42,7 @@ export default function CvReviewSection({ app }) {
     <View style={styles.container}>
       {/* Gradient Hero */}
       <LinearGradient
-        colors={['#01497c', '#468faf']}
+        colors={theme.isDark ? [c.card, c.background] : [c.primary, c['muted-foreground']]}
         start={{ x: 0, y: 0 }}
         end={{ x: 0.3, y: 1 }}
         style={styles.hero}
@@ -52,7 +52,7 @@ export default function CvReviewSection({ app }) {
         <View style={styles.heroInner}>
           <View style={styles.heroHeader}>
             <View style={styles.heroLeft}>
-              <Ionicons name="sparkles" size={18} color="#ffffff" />
+              <Ionicons name="sparkles" size={18} color={c.white} />
               <Text style={styles.heroTitle}>AI CV Review</Text>
             </View>
             <View style={[styles.recBadge, { backgroundColor: recBg }]}>
@@ -89,48 +89,63 @@ export default function CvReviewSection({ app }) {
       {/* Strengths */}
       {cv.strengths?.length > 0 && (
         <View style={[styles.card, styles.strengthCard]}>
-          <View style={styles.sectionHeader}>
-            <Ionicons name="checkmark-circle" size={16} color={c.emerald[600]} />
-            <Text style={[styles.sectionLabel, { color: c.emerald[600] }]}>STRENGTHS</Text>
-          </View>
-          {cv.strengths.map((s, i) => (
-            <View key={i} style={styles.listRow}>
-              <View style={[styles.bullet, { backgroundColor: c.emerald[300] }]} />
-              <Text style={[styles.listText, { color: c.emerald[700] }]}>{s}</Text>
+          <View style={[styles.accentBar, { backgroundColor: c.success }]} />
+          <View style={styles.sectionInner}>
+            <View style={styles.sectionHeader}>
+              <View style={[styles.sectionIcon, { backgroundColor: `${c.success}15` }]}>
+                <Ionicons name="checkmark-circle" size={16} color={c.success} />
+              </View>
+              <Text style={[styles.sectionLabel, { color: c.success }]}>STRENGTHS</Text>
             </View>
-          ))}
+            {cv.strengths.map((s, i) => (
+              <View key={i} style={styles.listRow}>
+                <View style={[styles.bullet, { backgroundColor: c.success }]} />
+                <Text style={styles.listText}>{s}</Text>
+              </View>
+            ))}
+          </View>
         </View>
       )}
 
       {/* Weaknesses */}
       {cv.weaknesses?.length > 0 && (
         <View style={[styles.card, styles.weakCard]}>
-          <View style={styles.sectionHeader}>
-            <Ionicons name="close-circle" size={16} color={c.red[600]} />
-            <Text style={[styles.sectionLabel, { color: c.red[600] }]}>WEAKNESSES</Text>
-          </View>
-          {cv.weaknesses.map((w, i) => (
-            <View key={i} style={styles.listRow}>
-              <View style={[styles.bullet, { backgroundColor: c.red[300] }]} />
-              <Text style={[styles.listText, { color: c.red[700] }]}>{w}</Text>
+          <View style={[styles.accentBar, { backgroundColor: c.destructive }]} />
+          <View style={styles.sectionInner}>
+            <View style={styles.sectionHeader}>
+              <View style={[styles.sectionIcon, { backgroundColor: `${c.destructive}15` }]}>
+                <Ionicons name="close-circle" size={16} color={c.destructive} />
+              </View>
+              <Text style={[styles.sectionLabel, { color: c.destructive }]}>WEAKNESSES</Text>
             </View>
-          ))}
+            {cv.weaknesses.map((w, i) => (
+              <View key={i} style={styles.listRow}>
+                <View style={[styles.bullet, { backgroundColor: c.destructive }]} />
+                <Text style={styles.listText}>{w}</Text>
+              </View>
+            ))}
+          </View>
         </View>
       )}
 
       {/* Gaps */}
       {cv.gaps?.length > 0 && (
         <View style={[styles.card, styles.gapCard]}>
-          <View style={styles.sectionHeader}>
-            <Ionicons name="warning" size={16} color={c.amber[600]} />
-            <Text style={[styles.sectionLabel, { color: c.amber[700] }]}>GAPS</Text>
-          </View>
-          {cv.gaps.map((g, i) => (
-            <View key={i} style={styles.listRow}>
-              <View style={[styles.bullet, { backgroundColor: c.amber[300] }]} />
-              <Text style={[styles.listText, { color: c.amber[800] }]}>{g}</Text>
+          <View style={[styles.accentBar, { backgroundColor: c.warning }]} />
+          <View style={styles.sectionInner}>
+            <View style={styles.sectionHeader}>
+              <View style={[styles.sectionIcon, { backgroundColor: `${c.warning}15` }]}>
+                <Ionicons name="warning" size={16} color={c.warning} />
+              </View>
+              <Text style={[styles.sectionLabel, { color: c.warning }]}>GAPS</Text>
             </View>
-          ))}
+            {cv.gaps.map((g, i) => (
+              <View key={i} style={styles.listRow}>
+                <View style={[styles.bullet, { backgroundColor: c.warning }]} />
+                <Text style={styles.listText}>{g}</Text>
+              </View>
+            ))}
+          </View>
         </View>
       )}
     </View>
@@ -141,13 +156,13 @@ function createStyles(c) {
   return StyleSheet.create({
   container: { gap: 14 },
   card: {
-    backgroundColor: c.white, borderRadius: 18,
+    backgroundColor: c.card, borderRadius: 18,
     borderWidth: 1, borderColor: c.border, padding: 18,
     shadowColor: c.primary, shadowOpacity: 0.04, shadowRadius: 4, shadowOffset: { width: 0, height: 1 },
   },
   emptyCard: { alignItems: 'center', paddingVertical: 44, gap: 10 },
   emptyTitle: { fontSize: 15, fontWeight: '700', color: c.foreground },
-  emptySubtitle: { fontSize: 13, color: c.muted },
+  emptySubtitle: { fontSize: 13, color: c['muted-foreground'] },
 
   hero: {
     borderRadius: 20, padding: 20, overflow: 'hidden',
@@ -155,11 +170,11 @@ function createStyles(c) {
   },
   bubble1: {
     position: 'absolute', top: -40, right: -40, width: 150, height: 150, borderRadius: 75,
-    backgroundColor: 'rgba(255,255,255,0.12)',
+    backgroundColor: `${c.white}1F`,
   },
   bubble2: {
     position: 'absolute', bottom: -30, left: -20, width: 120, height: 120, borderRadius: 60,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: `${c.white}0F`,
   },
   heroInner: { position: 'relative' },
   heroHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 },
@@ -167,7 +182,7 @@ function createStyles(c) {
   heroTitle: { fontSize: 16, fontWeight: '700', color: c.white, letterSpacing: -0.2 },
   recBadge: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: 999 },
   recText: { fontSize: 10, fontWeight: '800', letterSpacing: 0.8 },
-  heroFeedback: { fontSize: 14, color: 'rgba(255,255,255,0.92)', lineHeight: 22 },
+  heroFeedback: { fontSize: 14, color: `${c.white}EB`, lineHeight: 22 },
 
   sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 14 },
   iconWrap: {
@@ -176,14 +191,18 @@ function createStyles(c) {
     alignItems: 'center', justifyContent: 'center',
   },
   sectionTitle: { fontSize: 14, fontWeight: '700', color: c.foreground },
-  sectionLabel: { fontSize: 10, fontWeight: '700', letterSpacing: 0.8, textTransform: 'uppercase' },
   bars: { gap: 14 },
 
-  strengthCard: { backgroundColor: c.emerald[50], borderColor: c.emerald[200] },
-  weakCard: { backgroundColor: c.red[50], borderColor: c.red[200] },
-  gapCard: { backgroundColor: c.white, borderColor: c.amber[200] },
+  strengthCard: { flexDirection: 'row', padding: 0, overflow: 'hidden', borderColor: `${c.success}30` },
+  weakCard: { flexDirection: 'row', padding: 0, overflow: 'hidden', borderColor: `${c.destructive}30` },
+  gapCard: { flexDirection: 'row', padding: 0, overflow: 'hidden', borderColor: `${c.warning}30` },
+  accentBar: { width: 4, borderTopLeftRadius: 18, borderBottomLeftRadius: 18 },
+  sectionInner: { flex: 1, padding: 18 },
+  sectionIcon: { width: 28, height: 28, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 14 },
+  sectionLabel: { fontSize: 10, fontWeight: '700', letterSpacing: 0.8, textTransform: 'uppercase' },
   listRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 8 },
   bullet: { width: 6, height: 6, borderRadius: 3, marginTop: 7, flexShrink: 0 },
-  listText: { flex: 1, fontSize: 14, lineHeight: 21 },
+  listText: { flex: 1, fontSize: 14, lineHeight: 21, color: c.foreground },
 });
 }

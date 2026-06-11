@@ -128,14 +128,14 @@ function createStyles(c) {
   fieldGroup: { gap: 10 },
   label: { fontSize: 12, fontWeight: '600', color: c.foreground, textTransform: 'uppercase', letterSpacing: 0.4 },
   input: {
-    backgroundColor: c.white, borderWidth: 1, borderColor: c.border,
+    backgroundColor: c.card, borderWidth: 1, borderColor: c.border,
     borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12,
     fontSize: 14, color: c.foreground,
   },
   levelsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   levelCard: {
     width: '47%', borderWidth: 2, borderRadius: 14,
-    padding: 14, gap: 4, backgroundColor: c.white,
+    padding: 14, gap: 4, backgroundColor: c.card,
     position: 'relative',
   },
   levelCheck: {

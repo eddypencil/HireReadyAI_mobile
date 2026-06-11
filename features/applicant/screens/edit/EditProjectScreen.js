@@ -237,7 +237,7 @@ function createStyles(c) {
   label: { fontSize: 12, fontWeight: '600', color: c.foreground, textTransform: 'uppercase', letterSpacing: 0.4 },
   optional: { fontWeight: '400', color: c['muted-foreground'], textTransform: 'none' },
   input: {
-    backgroundColor: c.white, borderWidth: 1, borderColor: c.border,
+    backgroundColor: c.card, borderWidth: 1, borderColor: c.border,
     borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12,
     fontSize: 14, color: c.foreground,
   },

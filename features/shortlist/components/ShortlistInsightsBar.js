@@ -45,12 +45,6 @@ export default function ShortlistInsightsBar({ insightsSummary, selectedJobTitle
           )}
         </Text>
       </View>
-      <View style={styles.badge}>
-        <Ionicons name="sparkles" size={14} color={c.primary} />
-        <Text style={styles.badgeText}>
-          {t("shortlist.insights_advance", { count: topAdvanceCount })}
-        </Text>
-      </View>
     </View>
   );
 }

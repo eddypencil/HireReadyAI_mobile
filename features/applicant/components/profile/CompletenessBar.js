@@ -3,18 +3,18 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 
-function getLabel(score, accent) {
-  if (score >= 91) return { text: 'Your profile is complete and recruiter-ready! 🎉', color: '#16a34a' };
-  if (score >= 71) return { text: 'Almost there! A few more fields will make you shine.', color: accent };
-  if (score >= 41) return { text: 'Good start! Add more details to stand out.', color: '#d97706' };
-  return { text: 'Your profile needs work — recruiters may skip incomplete profiles.', color: '#dc2626' };
+function getLabel(score, c) {
+  if (score >= 91) return { text: 'Your profile is complete and recruiter-ready! 🎉', color: '#059669' };
+  if (score >= 71) return { text: 'Almost there! A few more fields will make you shine.', color: '#10b981' };
+  if (score >= 41) return { text: 'Good start! Add more details to stand out.', color: '#f97316' };
+  return { text: 'Your profile needs work — recruiters may skip incomplete profiles.', color: '#eab308' };
 }
 
-function getBarColor(score, accent) {
-  if (score >= 91) return '#22c55e';
-  if (score >= 71) return accent;
-  if (score >= 41) return '#f59e0b';
-  return '#ef4444';
+function getBarColor(score, c) {
+  if (score >= 91) return '#059669';
+  if (score >= 71) return '#10b981';
+  if (score >= 41) return '#f97316';
+  return '#eab308';
 }
 
 export function calcCompleteness(profile) {
@@ -48,8 +48,8 @@ export default function CompletenessBar({ score, missing, onFieldPress }) {
   const { theme } = useTheme();
   const c = theme.colors;
   const styles = createStyles(c);
-  const { text, color } = getLabel(score, c.accent);
-  const barColor = getBarColor(score, c.accent);
+  const { text, color } = getLabel(score, c);
+  const barColor = getBarColor(score, c);
 
   return (
     <View style={styles.card}>
@@ -105,7 +105,7 @@ export default function CompletenessBar({ score, missing, onFieldPress }) {
 function createStyles(c) {
   return StyleSheet.create({
   card: {
-    backgroundColor: c.white, borderRadius: 16,
+    backgroundColor: c.card, borderRadius: 16,
     borderWidth: 1, borderColor: c.border,
     padding: 18, gap: 12,
   },

@@ -7,20 +7,19 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CHART_WIDTH = SCREEN_WIDTH - 64;
 
 // ── Color by label
-const LABEL_COLORS = {
-  'Hired':       '#22c55e',
-  'Offer':       '#22c55e',
-  'In Progress': '#468faf',
-  'Rejected':    '#ef4444',
-};
-const FALLBACK_COLORS = ['#2a6f97', '#89c2d9', '#61a5c2'];
-
-function getSliceColor(label, fallbackIndex) {
-  return LABEL_COLORS[label] || FALLBACK_COLORS[fallbackIndex % FALLBACK_COLORS.length];
+function getSliceColor(label, fallbackIndex, c) {
+  const labelColors = {
+    'Hired':       c.success,
+    'Offer':       c.success,
+    'In Progress': c.accent,
+    'Rejected':    c.destructive,
+  };
+  const fallbackColors = c.chart || [c.primary, c.accent, c['muted-foreground']];
+  return labelColors[label] || fallbackColors[fallbackIndex % fallbackColors.length];
 }
 
 // ── Build donut slices
-function buildDonutSlices(data, cx, cy, r) {
+function buildDonutSlices(data, cx, cy, r, c) {
   const total = data.reduce((s, d) => s + d.value, 0);
   if (total === 0) return [];
   let angle = -Math.PI / 2;
@@ -32,7 +31,7 @@ function buildDonutSlices(data, cx, cy, r) {
     const y2 = cy + r * Math.sin(angle + slice);
     const large = slice > Math.PI ? 1 : 0;
     const path = `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} Z`;
-    const color = getSliceColor(item.label, i);
+    const color = getSliceColor(item.label, i, c);
     angle += slice;
     return { path, color, label: item.label, value: item.value };
   });
@@ -72,8 +71,8 @@ function DonutChart({ applications }) {
   const total = data.reduce((s, d) => s + d.value, 0);
   const slices = data.length === 1
     ? []
-    : buildDonutSlices(data, cx, cy, outerR);
-  const singleColor = data.length === 1 ? getSliceColor(data[0]?.label, 0) : null;
+    : buildDonutSlices(data, cx, cy, outerR, c);
+  const singleColor = data.length === 1 ? getSliceColor(data[0]?.label, 0, c) : null;
 
   return (
     <View style={styles.chartCard}>
@@ -95,7 +94,7 @@ function DonutChart({ applications }) {
                   <Path key={i} d={s.path} fill={s.color} />
                 ))
               )}
-              <Circle cx={cx} cy={cy} r={innerR} fill={c.white} />
+              <Circle cx={cx} cy={cy} r={innerR} fill={c.card} />
               <SvgText
                 x={cx} y={cy - 8}
                 textAnchor="middle"
@@ -118,7 +117,7 @@ function DonutChart({ applications }) {
           <View style={styles.legendCol}>
             {data.map((item, i) => (
               <View key={i} style={styles.legendItem}>
-                <View style={[styles.legendDot, { backgroundColor: getSliceColor(item.label, i) }]} />
+                <View style={[styles.legendDot, { backgroundColor: getSliceColor(item.label, i, c) }]} />
                 <Text style={styles.legendText}>
                   {item.label}
                   <Text style={styles.legendCount}> ({item.value})</Text>
@@ -256,7 +255,7 @@ function createStyles(c) {
       gap: 14,
     },
     chartCard: {
-      backgroundColor: c.white,
+      backgroundColor: c.card,
       borderRadius: 16,
       borderWidth: 1,
       borderColor: c.border,

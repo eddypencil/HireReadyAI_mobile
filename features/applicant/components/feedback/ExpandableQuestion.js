@@ -133,25 +133,37 @@ export default function ExpandableQuestion({ question, index }) {
                   <Text style={styles.aiFeedbackText}>{answerData.feedback}</Text>
                 )}
                 {answerData.strengths?.length > 0 && (
-                  <View style={styles.feedbackSection}>
-                    <Text style={[styles.feedbackSubLabel, { color: c.emerald[600] }]}>STRENGTHS</Text>
-                    {answerData.strengths.map((s, i) => (
-                      <View key={i} style={styles.feedbackItem}>
-                        <Ionicons name="checkmark" size={12} color={c.emerald[600]} />
-                        <Text style={[styles.feedbackItemText, { color: c.emerald[700] }]}>{s}</Text>
+                  <View style={styles.feedbackSectionOuter}>
+                    <View style={[styles.accentBar, { backgroundColor: theme.isDark ? c.emerald[400] : c.emerald[500] }]} />
+                    <View style={styles.feedbackSectionInner}>
+                      <View style={[styles.feedbackTag, { backgroundColor: `${theme.isDark ? c.emerald[400] : c.emerald[500]}18` }]}>
+                        <Ionicons name="sparkles" size={11} color={theme.isDark ? c.emerald[300] : c.emerald[500]} />
+                        <Text style={[styles.feedbackTagText, { color: theme.isDark ? c.emerald[300] : c.emerald[600] }]}>Strengths</Text>
                       </View>
-                    ))}
+                      {answerData.strengths.map((s, i) => (
+                        <View key={i} style={styles.feedbackItem}>
+                          <Text style={[styles.bullet, { color: theme.isDark ? c.emerald[400] : c.emerald[500] }]}>{'\u2022'}</Text>
+                          <Text style={styles.feedbackItemText}>{s}</Text>
+                        </View>
+                      ))}
+                    </View>
                   </View>
                 )}
                 {answerData.weaknesses?.length > 0 && (
-                  <View style={styles.feedbackSection}>
-                    <Text style={[styles.feedbackSubLabel, { color: c.red[600] }]}>WEAKNESSES</Text>
-                    {answerData.weaknesses.map((w, i) => (
-                      <View key={i} style={styles.feedbackItem}>
-                        <Ionicons name="close" size={12} color={c.red[600]} />
-                        <Text style={[styles.feedbackItemText, { color: c.red[700] }]}>{w}</Text>
+                  <View style={styles.feedbackSectionOuter}>
+                    <View style={[styles.accentBar, { backgroundColor: theme.isDark ? c.amber[400] : c.amber[500] }]} />
+                    <View style={styles.feedbackSectionInner}>
+                      <View style={[styles.feedbackTag, { backgroundColor: `${theme.isDark ? c.amber[400] : c.amber[500]}18` }]}>
+                        <Ionicons name="bulb-outline" size={11} color={theme.isDark ? c.amber[300] : c.amber[500]} />
+                        <Text style={[styles.feedbackTagText, { color: theme.isDark ? c.amber[300] : c.amber[600] }]}>Growth Areas</Text>
                       </View>
-                    ))}
+                      {answerData.weaknesses.map((w, i) => (
+                        <View key={i} style={styles.feedbackItem}>
+                          <Text style={[styles.bullet, { color: theme.isDark ? c.amber[400] : c.amber[500] }]}>{'\u2022'}</Text>
+                          <Text style={styles.feedbackItemText}>{w}</Text>
+                        </View>
+                      ))}
+                    </View>
                   </View>
                 )}
               </View>
@@ -172,7 +184,7 @@ export default function ExpandableQuestion({ question, index }) {
 function createStyles(c) {
   return StyleSheet.create({
     card: {
-      backgroundColor: c.white, borderRadius: 14,
+      backgroundColor: c.card, borderRadius: 14,
       borderWidth: 1, borderColor: c.border, overflow: 'hidden',
     },
     header: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 16 },
@@ -204,7 +216,7 @@ function createStyles(c) {
     optionRow: {
       flexDirection: 'row', alignItems: 'center', gap: 10,
       padding: 10, borderRadius: 8,
-      borderWidth: 1, borderColor: c.border, backgroundColor: c.white,
+      borderWidth: 1, borderColor: c.border, backgroundColor: c.card,
     },
     optionSelected: { backgroundColor: c['surface-muted'], borderColor: `${c.accent}50` },
     optionLetter: {
@@ -221,9 +233,20 @@ function createStyles(c) {
     aiFeedbackHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 },
     aiFeedbackLabel: { fontSize: 10, fontWeight: '700', color: c.accent, letterSpacing: 0.8 },
     aiFeedbackText: { fontSize: 13, color: c.foreground, lineHeight: 19, marginBottom: 8 },
-    feedbackSection: { marginTop: 8 },
-    feedbackSubLabel: { fontSize: 9, fontWeight: '700', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 4 },
-    feedbackItem: { flexDirection: 'row', alignItems: 'flex-start', gap: 6, marginBottom: 3 },
-    feedbackItemText: { fontSize: 12, flex: 1, lineHeight: 17 },
+    aiFeedbackText: { fontSize: 13, color: c.foreground, lineHeight: 19, marginBottom: 8 },
+    feedbackSectionOuter: {
+      flexDirection: 'row', marginTop: 10, borderRadius: 8, overflow: 'hidden',
+      backgroundColor: c.surface,
+    },
+    accentBar: { width: 3 },
+    feedbackSectionInner: { flex: 1, paddingVertical: 8, paddingHorizontal: 10, gap: 4 },
+    feedbackTag: {
+      flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', gap: 4,
+      paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6,
+    },
+    feedbackTagText: { fontSize: 10, fontWeight: '700', letterSpacing: 0.5 },
+    bullet: { fontSize: 16, lineHeight: 18, marginTop: -1 },
+    feedbackItem: { flexDirection: 'row', alignItems: 'flex-start', gap: 6, marginBottom: 2 },
+    feedbackItemText: { fontSize: 12, flex: 1, lineHeight: 17, color: c.foreground },
   });
 }

@@ -52,7 +52,7 @@ export default function SkillsToDevelop({ cvFeedback, stages }) {
 function createStyles(c) {
   return StyleSheet.create({
   card: {
-    backgroundColor: c.white, borderRadius: 18,
+    backgroundColor: c.card, borderRadius: 18,
     borderWidth: 1, borderColor: c.border, padding: 18,
     shadowColor: c.primary, shadowOpacity: 0.04, shadowRadius: 4, shadowOffset: { width: 0, height: 1 },
   },
@@ -63,12 +63,12 @@ function createStyles(c) {
     alignItems: 'center', justifyContent: 'center',
   },
   heading: { fontSize: 14, fontWeight: '700', color: c.foreground },
-  subtitle: { fontSize: 13, color: c.muted, marginBottom: 14, lineHeight: 19 },
+  subtitle: { fontSize: 13, color: c['muted-foreground'], marginBottom: 14, lineHeight: 19 },
   pills: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   pill: {
     paddingHorizontal: 12, paddingVertical: 7, borderRadius: 8,
     backgroundColor: c['surface-muted'],
-    borderWidth: 1, borderColor: c.secondary + '33',
+    borderWidth: 1, borderColor: c.border,
   },
   pillText: { fontSize: 12, fontWeight: '600', color: c.primary },
 });

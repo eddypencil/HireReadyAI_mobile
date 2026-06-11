@@ -25,7 +25,7 @@ export default function ScoreRing({ score, size = 92, strokeWidth = 8, percentil
           <Circle
             cx={size / 2} cy={size / 2} r={radius}
             fill="none"
-            stroke={onDark ? 'rgba(255,255,255,0.2)' : c.border}
+            stroke={onDark ? `${c.white}33` : c.border}
             strokeWidth={strokeWidth}
           />
           <Circle
@@ -40,7 +40,7 @@ export default function ScoreRing({ score, size = 92, strokeWidth = 8, percentil
           <Text style={[styles.scoreText, { color: onDark ? c.white : c.foreground }]}>
             {score != null ? Math.round(score) : '--'}
           </Text>
-          <Text style={[styles.outOf, { color: onDark ? 'rgba(255,255,255,0.7)' : c.muted }]}>
+          <Text style={[styles.outOf, { color: onDark ? `${c.white}B3` : c['muted-foreground'] }]}>
             / 100
           </Text>
         </View>
@@ -68,8 +68,8 @@ function createStyles(c) {
     borderRadius: 20, paddingHorizontal: 9, paddingVertical: 3,
   },
   percentileBadgeDark: {
-    borderColor: 'rgba(255,255,255,0.35)',
-    backgroundColor: 'rgba(255,255,255,0.15)',
+    borderColor: `${c.white}59`,
+    backgroundColor: `${c.white}26`,
   },
   percentileText: { fontSize: 10, fontWeight: '700', color: c.primary },
 });

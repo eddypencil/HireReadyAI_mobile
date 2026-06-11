@@ -144,8 +144,8 @@ export default function SkillsTab({ profile, viewOnly, onEdit, onDelete }) {
             <View key={index} style={styles.certCard}>
               {/* Info row */}
               <View style={styles.certRow}>
-                <View style={[styles.certIcon, { backgroundColor: '#fef9c3' }]}>
-                  <Ionicons name="ribbon-outline" size={16} color="#d97706" />
+                <View style={[styles.certIcon, { backgroundColor: `${c.accent}18` }]}>
+                  <Ionicons name="ribbon-outline" size={16} color={c.accent} />
                 </View>
                 <View style={styles.certInfo}>
                   <Text style={styles.certName}>{item.name}</Text>
@@ -187,8 +187,8 @@ export default function SkillsTab({ profile, viewOnly, onEdit, onDelete }) {
           ? <EmptySection text="Add awards or honors" onAdd={() => onEdit('awards', null, null)} viewOnly={viewOnly} />
           : awards.map((item, index) => (
             <View key={index} style={styles.certRow}>
-              <View style={[styles.certIcon, { backgroundColor: '#fce7f3' }]}>
-                <Ionicons name="trophy-outline" size={16} color="#db2777" />
+              <View style={[styles.certIcon, { backgroundColor: `${c.primary}18` }]}>
+                <Ionicons name="trophy-outline" size={16} color={c.primary} />
               </View>
               <View style={styles.certInfo}>
                 <Text style={styles.certName}>{item.title}</Text>
@@ -219,7 +219,7 @@ function createStyles(c) {
   return StyleSheet.create({
   container: { gap: 16 },
   section: {
-    backgroundColor: c.white, borderRadius: 16,
+    backgroundColor: c.card, borderRadius: 16,
     borderWidth: 1, borderColor: c.border, overflow: 'hidden',
   },
   sectionHeader: {

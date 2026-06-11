@@ -30,7 +30,7 @@ export default function StageSelector({ stages, activeStage, onSelect }) {
                 style={[styles.tab, active && styles.tabActive]}
                 activeOpacity={0.7}
               >
-                <Ionicons name={icon} size={14} color={active ? c.primary : c.muted} />
+                <Ionicons name={icon} size={14} color={active ? c.primary : c['muted-foreground']} />
                 <Text style={[styles.label, active && styles.labelActive]}>
                   {stage.recruitment_stages?.name || 'Unknown'}
                 </Text>
@@ -52,7 +52,7 @@ function createStyles(c) {
     borderBottomWidth: 2, borderBottomColor: 'transparent',
   },
   tabActive: { borderBottomColor: c.primary },
-  label: { fontSize: 13, fontWeight: '600', color: c.muted },
+  label: { fontSize: 13, fontWeight: '600', color: c['muted-foreground'] },
   labelActive: { color: c.primary },
 });
 }

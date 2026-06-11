@@ -29,27 +29,30 @@ export default function JobsPage() {
   const { jobs, loading, error } = useJobs();
 
   const [search, setSearch] = useState('');
-  const [level, setLevel] = useState('');
-  const [jobType, setJobType] = useState('');
-  const [workLocation, setWorkLocation] = useState('');
+  const [levels, setLevels] = useState([]);
+  const [jobTypes, setJobTypes] = useState([]);
+  const [workLocations, setWorkLocations] = useState([]);
   const [datePosted, setDatePosted] = useState('');
   const [salaryMin, setSalaryMin] = useState('');
   const [salaryMax, setSalaryMax] = useState('');
   const [filtersOpen, setFiltersOpen] = useState(false);
 
-  const activeFilterCount = [level, jobType, workLocation, datePosted, salaryMin, salaryMax]
-    .filter(Boolean).length;
+  const activeFilterCount = [levels, jobTypes, workLocations, datePosted, salaryMin, salaryMax]
+    .filter(f => Array.isArray(f) ? f.length > 0 : Boolean(f)).length;
+
+  const toggleArray = (arr, value) =>
+    arr.includes(value) ? arr.filter(v => v !== value) : [...arr, value];
 
   function clearFilters() {
-    setLevel(''); setJobType(''); setWorkLocation('');
+    setLevels([]); setJobTypes([]); setWorkLocations([]);
     setDatePosted(''); setSalaryMin(''); setSalaryMax('');
   }
 
   const filteredJobs = jobs.filter(job => {
     const matchSearch = job.title.toLowerCase().includes(search.toLowerCase());
-    const matchLevel = level ? job.seniority_level === level : true;
-    const matchType = jobType ? job.job_type === jobType : true;
-    const matchLocation = workLocation ? job.work_location === workLocation : true;
+    const matchLevel = levels.length === 0 || levels.includes(job.seniority_level);
+    const matchType = jobTypes.length === 0 || jobTypes.includes(job.job_type);
+    const matchLocation = workLocations.length === 0 || workLocations.includes(job.work_location);
     const matchDate = (() => {
       if (!datePosted) return true;
       const posted = new Date(job.created_at);
@@ -264,10 +267,10 @@ export default function JobsPage() {
               {[{ labelKey: 'jobs_page.full_time', value: 'full_time' }, { labelKey: 'jobs_page.part_time', value: 'part_time' }].map(({ labelKey, value }) => (
                 <TouchableOpacity
                   key={value}
-                  style={[s.chip, jobType === value && s.chipActive]}
-                  onPress={() => setJobType(jobType === value ? '' : value)}
+                  style={[s.chip, jobTypes.includes(value) && s.chipActive]}
+                  onPress={() => setJobTypes(prev => toggleArray(prev, value))}
                 >
-                  <Text style={[s.chipText, jobType === value && s.chipTextActive]}>
+                  <Text style={[s.chipText, jobTypes.includes(value) && s.chipTextActive]}>
                     {t(labelKey)}
                   </Text>
                 </TouchableOpacity>
@@ -279,10 +282,10 @@ export default function JobsPage() {
               {[{ labelKey: 'jobs_page.on_site', value: 'on_site' }, { labelKey: 'jobs_page.remote', value: 'remote' }, { labelKey: 'jobs_page.hybrid', value: 'hybrid' }].map(({ labelKey, value }) => (
                 <TouchableOpacity
                   key={value}
-                  style={[s.chip, workLocation === value && s.chipActive]}
-                  onPress={() => setWorkLocation(workLocation === value ? '' : value)}
+                  style={[s.chip, workLocations.includes(value) && s.chipActive]}
+                  onPress={() => setWorkLocations(prev => toggleArray(prev, value))}
                 >
-                  <Text style={[s.chipText, workLocation === value && s.chipTextActive]}>
+                  <Text style={[s.chipText, workLocations.includes(value) && s.chipTextActive]}>
                     {t(labelKey)}
                   </Text>
                 </TouchableOpacity>
@@ -294,10 +297,10 @@ export default function JobsPage() {
               {Object.values(SENIORITY_LEVEL).map(lvl => (
                 <TouchableOpacity
                   key={lvl}
-                  style={[s.chip, level === lvl && s.chipActive]}
-                  onPress={() => setLevel(level === lvl ? '' : lvl)}
+                  style={[s.chip, levels.includes(lvl) && s.chipActive]}
+                  onPress={() => setLevels(prev => toggleArray(prev, lvl))}
                 >
-                  <Text style={[s.chipText, level === lvl && s.chipTextActive, { textTransform: 'capitalize' }]}>
+                  <Text style={[s.chipText, levels.includes(lvl) && s.chipTextActive, { textTransform: 'capitalize' }]}>
                     {lvl}
                   </Text>
                 </TouchableOpacity>

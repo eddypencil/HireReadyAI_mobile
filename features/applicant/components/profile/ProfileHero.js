@@ -1,6 +1,7 @@
 // features/applicant/components/profile/ProfileHero.js
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 
 export default function ProfileHero({ profile, viewOnly, onEditAvatar, onViewApplications }) {
@@ -15,7 +16,16 @@ export default function ProfileHero({ profile, viewOnly, onEditAvatar, onViewApp
     : null;
 
   return (
-    <View style={styles.card}>
+    <LinearGradient
+      colors={theme.isDark ? [c.card, c.background] : [c.primary, c['muted-foreground']]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0.3, y: 1 }}
+      style={styles.card}
+    >
+      {/* Decorative background bubbles */}
+      <View style={styles.bubble1} />
+      <View style={styles.bubble2} />
+
       {/* Top row: avatar + My Applications button */}
       <View style={styles.topRow}>
         <TouchableOpacity
@@ -82,13 +92,13 @@ export default function ProfileHero({ profile, viewOnly, onEditAvatar, onViewApp
           </View>
         </View>
       )} */}
-    </View>
+    </LinearGradient>
   );
 }
 
 function createStyles(c) {
   return StyleSheet.create({
-  card: { backgroundColor: c.primary, borderRadius: 20, padding: 20, gap: 14 },
+  card: { borderRadius: 20, padding: 20, gap: 14, overflow: 'hidden' },
   topRow: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
   avatarWrapper: { position: 'relative' },
   avatar: {
@@ -97,7 +107,7 @@ function createStyles(c) {
   },
   avatarFallback: {
     width: 80, height: 80, borderRadius: 40,
-    backgroundColor: 'rgba(70,143,175,0.3)',
+    backgroundColor: `${c.primary}40`,
     borderWidth: 3, borderColor: 'rgba(255,255,255,0.3)',
     alignItems: 'center', justifyContent: 'center',
   },
@@ -123,6 +133,16 @@ function createStyles(c) {
   metaRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 14 },
   metaItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   metaText: { fontSize: 12, color: 'rgba(255,255,255,0.7)' },
+  bubble1: {
+    position: 'absolute', top: -50, right: -50,
+    width: 180, height: 180, borderRadius: 90,
+    backgroundColor: `${c.white}14`,
+  },
+  bubble2: {
+    position: 'absolute', bottom: -60, left: -30,
+    width: 140, height: 140, borderRadius: 70,
+    backgroundColor: `${c.white}0D`,
+  },
   linksRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   linkBadge: {
     flexDirection: 'row', alignItems: 'center', gap: 5,

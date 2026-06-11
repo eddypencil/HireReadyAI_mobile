@@ -82,7 +82,7 @@ export default function KeyTakeaways({ cvFeedback, stages }) {
 function createStyles(c) {
   return StyleSheet.create({
   card: {
-    backgroundColor: c.white, borderRadius: 18,
+    backgroundColor: c.card, borderRadius: 18,
     borderWidth: 1, borderColor: c.border, padding: 18,
     shadowColor: c.primary, shadowOpacity: 0.04, shadowRadius: 4, shadowOffset: { width: 0, height: 1 },
   },
@@ -101,6 +101,6 @@ function createStyles(c) {
   sLabel: { fontWeight: '700', color: c.emerald[600] },
   wLabel: { fontWeight: '700', color: c.red[600] },
   gLabel: { fontWeight: '700', color: c.amber[600] },
-  muted: { color: c.muted },
+  muted: { color: c['muted-foreground'] },
 });
 }

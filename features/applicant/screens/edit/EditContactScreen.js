@@ -55,8 +55,8 @@ export default function EditContactScreen() {
 
         <View style={styles.fieldGroup}>
           <View style={styles.labelRow}>
-            <View style={[styles.labelIcon, { backgroundColor: '#dbeafe' }]}>
-              <Ionicons name="call-outline" size={14} color="#2563eb" />
+            <View style={[styles.labelIcon, { backgroundColor: `${c.accent}18` }]}>
+              <Ionicons name="call-outline" size={14} color={c.accent} />
             </View>
             <Text style={styles.label}>Phone Number</Text>
           </View>
@@ -72,8 +72,8 @@ export default function EditContactScreen() {
 
         <View style={styles.fieldGroup}>
           <View style={styles.labelRow}>
-            <View style={[styles.labelIcon, { backgroundColor: '#fce7f3' }]}>
-              <Ionicons name="location-outline" size={14} color="#db2777" />
+            <View style={[styles.labelIcon, { backgroundColor: `${c.primary}18` }]}>
+              <Ionicons name="location-outline" size={14} color={c.primary} />
             </View>
             <Text style={styles.label}>Location</Text>
           </View>
@@ -113,7 +113,7 @@ function createStyles(c) {
   labelIcon: { width: 30, height: 30, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
   label: { fontSize: 13, fontWeight: '700', color: c.foreground },
   input: {
-    backgroundColor: c.white, borderWidth: 1, borderColor: c.border,
+    backgroundColor: c.card, borderWidth: 1, borderColor: c.border,
     borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12,
     fontSize: 14, color: c.foreground,
   },
