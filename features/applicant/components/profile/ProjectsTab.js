@@ -6,6 +6,7 @@ import { useTheme } from '../../../../shared/context/ThemeContext';
 function ProjectMedia({ images, onAdd, viewOnly }) {
   const { theme } = useTheme();
   const c = theme.colors;
+  const styles = createStyles(c);
   if (!images?.length) {
     if (viewOnly) return null;
     return (
@@ -37,6 +38,7 @@ function ProjectMedia({ images, onAdd, viewOnly }) {
 function ProjectCard({ item, index, onEdit, onDelete, viewOnly, onAddMedia }) {
   const { theme } = useTheme();
   const c = theme.colors;
+  const styles = createStyles(c);
   return (
     <View style={styles.projectCard}>
       <View style={styles.projectHeader}>

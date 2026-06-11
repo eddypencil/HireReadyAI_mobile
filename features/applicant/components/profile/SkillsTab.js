@@ -20,6 +20,7 @@ const LANG_LEVEL_COLORS = {
 function SectionHeader({ title, icon, onAdd, viewOnly }) {
   const { theme } = useTheme();
   const c = theme.colors;
+  const styles = createStyles(c);
   return (
     <View style={styles.sectionHeader}>
       <View style={styles.sectionHeaderLeft}>
@@ -38,6 +39,7 @@ function SectionHeader({ title, icon, onAdd, viewOnly }) {
 function EmptySection({ text, onAdd, viewOnly }) {
   const { theme } = useTheme();
   const c = theme.colors;
+  const styles = createStyles(c);
   return (
     <TouchableOpacity style={styles.emptyRow} onPress={!viewOnly ? onAdd : null} disabled={viewOnly}>
       <Ionicons name="add-circle-outline" size={18} color={c.border} />

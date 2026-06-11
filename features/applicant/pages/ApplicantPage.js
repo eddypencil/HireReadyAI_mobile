@@ -99,17 +99,7 @@ export default function ApplicantPage() {
 
   return (
     <ScrollView style={[s.container, { paddingTop: insets.top }]} contentContainerStyle={s.content}>
-      <ApplicantHeader
-        fullName={profile?.full_name}
-        profile_pic={profile?.profile_pic}
-        email={profile?.email || user?.email}
-        phone={profile?.phone}
-        joinedDate={profile?.created_at}
-        userId={user?.id}
-        onAvatarChange={(url) =>
-          setProfile((prev) => ({ ...prev, profile_pic: url }))
-        }
-      />
+      
 
       <StatsCards applications={applications} />
       <ChartsSection applications={applications} />

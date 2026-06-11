@@ -12,7 +12,7 @@ import { Education } from '../../models';
 
 const LEVELS = ['High School', 'Diploma', "Bachelor's", "Master's", 'PhD', 'Other'];
 
-function Field({ label, value, onChangeText, placeholder, multiline, optional }) {
+function Field({ label, value, onChangeText, placeholder, multiline, optional, styles, c }) {
   return (
     <View style={styles.fieldGroup}>
       <Text style={styles.label}>
@@ -110,12 +110,12 @@ export default function EditEducationScreen() {
           </View>
         </View>
 
-        <Field label="University / School" value={form.university} onChangeText={set('university')} placeholder="e.g. Cairo University" />
-        <Field label="Faculty" value={form.faculty} onChangeText={set('faculty')} placeholder="e.g. Faculty of Engineering" optional />
-        <Field label="Major / Field of Study" value={form.major} onChangeText={set('major')} placeholder="e.g. Systems & Biomedical Engineering" optional />
-        <Field label="Start Year" value={form.startYear} onChangeText={set('startYear')} placeholder="e.g. 2020" />
-        <Field label="End Year" value={form.endYear} onChangeText={set('endYear')} placeholder="e.g. 2024  (leave blank if ongoing)" optional />
-        <Field label="Grade / GPA" value={form.grade} onChangeText={set('grade')} placeholder="e.g. 3.8 / 4.0 or Excellent" optional />
+        <Field label="University / School" value={form.university} onChangeText={set('university')} placeholder="e.g. Cairo University" styles={styles} c={c} />
+        <Field label="Faculty" value={form.faculty} onChangeText={set('faculty')} placeholder="e.g. Faculty of Engineering" optional styles={styles} c={c} />
+        <Field label="Major / Field of Study" value={form.major} onChangeText={set('major')} placeholder="e.g. Systems & Biomedical Engineering" optional styles={styles} c={c} />
+        <Field label="Start Year" value={form.startYear} onChangeText={set('startYear')} placeholder="e.g. 2020" styles={styles} c={c} />
+        <Field label="End Year" value={form.endYear} onChangeText={set('endYear')} placeholder="e.g. 2024  (leave blank if ongoing)" optional styles={styles} c={c} />
+        <Field label="Grade / GPA" value={form.grade} onChangeText={set('grade')} placeholder="e.g. 3.8 / 4.0 or Excellent" optional styles={styles} c={c} />
 
         <TouchableOpacity
           style={[styles.saveBtn, saving && { opacity: 0.6 }]}

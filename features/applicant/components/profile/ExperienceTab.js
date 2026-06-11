@@ -10,6 +10,7 @@ import { useTheme } from '../../../../shared/context/ThemeContext';
 function SectionHeader({ title, icon, onAdd, viewOnly }) {
   const { theme } = useTheme();
   const c = theme.colors;
+  const styles = createStyles(c);
   return (
     <View style={styles.sectionHeader}>
       <View style={styles.sectionHeaderLeft}>
@@ -28,6 +29,7 @@ function SectionHeader({ title, icon, onAdd, viewOnly }) {
 function EmptySection({ text, onAdd, viewOnly }) {
   const { theme } = useTheme();
   const c = theme.colors;
+  const styles = createStyles(c);
   return (
     <TouchableOpacity
       style={styles.emptyRow}
@@ -44,6 +46,7 @@ function EmptySection({ text, onAdd, viewOnly }) {
 function ItemCard({ iconName, iconBg, iconColor, title, subtitle, date, extra, description, onEdit, onDelete, viewOnly }) {
   const { theme } = useTheme();
   const c = theme.colors;
+  const styles = createStyles(c);
   return (
     <View style={styles.itemCard}>
       <View style={[styles.itemIcon, { backgroundColor: iconBg }]}>

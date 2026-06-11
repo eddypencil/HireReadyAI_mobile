@@ -23,7 +23,7 @@ async function saveAwards(userId, awards) {
   if (error) throw error;
 }
 
-function Field({ label, value, onChangeText, placeholder, multiline, optional }) {
+function Field({ label, value, onChangeText, placeholder, multiline, optional, styles, c }) {
   return (
     <View style={styles.fieldGroup}>
       <Text style={styles.label}>
@@ -90,10 +90,10 @@ export default function EditAwardsScreen() {
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Field label="Award Title" value={form.title} onChangeText={set('title')} placeholder="e.g. Best Graduation Project" />
-        <Field label="Issuer / Organization" value={form.issuer} onChangeText={set('issuer')} placeholder="e.g. ITI" optional />
-        <Field label="Year" value={form.year} onChangeText={set('year')} placeholder="e.g. 2024" optional />
-        <Field label="Description" value={form.description} onChangeText={set('description')} placeholder="Brief description of the award..." multiline optional />
+        <Field label="Award Title" value={form.title} onChangeText={set('title')} placeholder="e.g. Best Graduation Project" styles={styles} c={c} />
+        <Field label="Issuer / Organization" value={form.issuer} onChangeText={set('issuer')} placeholder="e.g. ITI" optional styles={styles} c={c} />
+        <Field label="Year" value={form.year} onChangeText={set('year')} placeholder="e.g. 2024" optional styles={styles} c={c} />
+        <Field label="Description" value={form.description} onChangeText={set('description')} placeholder="Brief description of the award..." multiline optional styles={styles} c={c} />
         <TouchableOpacity style={[styles.saveBtn, saving && { opacity: 0.6 }]} onPress={handleSave} disabled={saving} activeOpacity={0.85}>
           {saving ? <ActivityIndicator color={c.white} size="small" /> : <Text style={styles.saveBtnText}>{isEdit ? 'Save Changes' : 'Add Award'}</Text>}
         </TouchableOpacity>

@@ -10,7 +10,7 @@ import { useTheme } from '../../../../shared/context/ThemeContext';
 import { addExperience, updateExperience } from '../../services/experience.service';
 import { Experience } from '../../models';
 
-function Field({ label, value, onChangeText, placeholder, multiline, optional, keyboardType }) {
+function Field({ label, value, onChangeText, placeholder, multiline, optional, keyboardType, styles, c }) {
   return (
     <View style={styles.fieldGroup}>
       <Text style={styles.label}>
@@ -93,12 +93,12 @@ export default function EditExperienceScreen() {
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
 
-        <Field label="Job Title" value={form.title} onChangeText={set('title')} placeholder="e.g. Frontend Developer" />
-        <Field label="Company Name" value={form.companyName} onChangeText={set('companyName')} placeholder="e.g. Vodafone Egypt" />
-        <Field label="Industry" value={form.industry} onChangeText={set('industry')} placeholder="e.g. Telecommunications" optional />
-        <Field label="From" value={form.from} onChangeText={set('from')} placeholder="YYYY-MM  e.g. 2023-06" />
-        <Field label="To" value={form.to} onChangeText={set('to')} placeholder="YYYY-MM  or 'Present'" optional />
-        <Field label="Description" value={form.description} onChangeText={set('description')} placeholder="Describe your responsibilities and achievements..." multiline optional />
+        <Field label="Job Title" value={form.title} onChangeText={set('title')} placeholder="e.g. Frontend Developer" styles={styles} c={c} />
+        <Field label="Company Name" value={form.companyName} onChangeText={set('companyName')} placeholder="e.g. Vodafone Egypt" styles={styles} c={c} />
+        <Field label="Industry" value={form.industry} onChangeText={set('industry')} placeholder="e.g. Telecommunications" optional styles={styles} c={c} />
+        <Field label="From" value={form.from} onChangeText={set('from')} placeholder="YYYY-MM  e.g. 2023-06" styles={styles} c={c} />
+        <Field label="To" value={form.to} onChangeText={set('to')} placeholder="YYYY-MM  or 'Present'" optional styles={styles} c={c} />
+        <Field label="Description" value={form.description} onChangeText={set('description')} placeholder="Describe your responsibilities and achievements..." multiline optional styles={styles} c={c} />
 
         <TouchableOpacity
           style={[styles.saveBtn, saving && { opacity: 0.6 }]}

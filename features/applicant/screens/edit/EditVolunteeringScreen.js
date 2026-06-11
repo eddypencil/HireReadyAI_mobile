@@ -10,7 +10,7 @@ import { useTheme } from '../../../../shared/context/ThemeContext';
 import { addVolunteering, updateVolunteering } from '../../services/volunteering.service';
 import { Volunteering } from '../../models';
 
-function Field({ label, value, onChangeText, placeholder, multiline, optional }) {
+function Field({ label, value, onChangeText, placeholder, multiline, optional, styles, c }) {
   return (
     <View style={styles.fieldGroup}>
       <Text style={styles.label}>
@@ -78,11 +78,11 @@ export default function EditVolunteeringScreen() {
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Field label="Role" value={form.role} onChangeText={set('role')} placeholder="e.g. Mentor" />
-        <Field label="Organization" value={form.organization} onChangeText={set('organization')} placeholder="e.g. Egyptian Food Bank" />
-        <Field label="Start Date" value={form.start} onChangeText={set('start')} placeholder="YYYY-MM  e.g. 2022-03" optional />
-        <Field label="End Date" value={form.end} onChangeText={set('end')} placeholder="YYYY-MM  or leave blank if ongoing" optional />
-        <Field label="Description" value={form.description} onChangeText={set('description')} placeholder="What did you do?" multiline optional />
+        <Field label="Role" value={form.role} onChangeText={set('role')} placeholder="e.g. Mentor" styles={styles} c={c} />
+        <Field label="Organization" value={form.organization} onChangeText={set('organization')} placeholder="e.g. Egyptian Food Bank" styles={styles} c={c} />
+        <Field label="Start Date" value={form.start} onChangeText={set('start')} placeholder="YYYY-MM  e.g. 2022-03" optional styles={styles} c={c} />
+        <Field label="End Date" value={form.end} onChangeText={set('end')} placeholder="YYYY-MM  or leave blank if ongoing" optional styles={styles} c={c} />
+        <Field label="Description" value={form.description} onChangeText={set('description')} placeholder="What did you do?" multiline optional styles={styles} c={c} />
         <TouchableOpacity style={[styles.saveBtn, saving && { opacity: 0.6 }]} onPress={handleSave} disabled={saving} activeOpacity={0.85}>
           {saving ? <ActivityIndicator color={c.white} size="small" /> : <Text style={styles.saveBtnText}>{isEdit ? 'Save Changes' : 'Add Volunteering'}</Text>}
         </TouchableOpacity>
