@@ -447,6 +447,7 @@
     "no_candidates_met_threshold": "No candidates met the minimum threshold",
     "back_to_pipeline": "Back to Pipeline",
     "back_to_profile": "Back to Profile",
+    "view_profile": "View Profile",
     "candidate": "Candidate",
     "candidate_not_found": "Candidate not found",
     "unknown_candidate": "Unknown Candidate",

@@ -191,6 +191,11 @@ function createStyles(c) {
     noCvCard: { borderRadius: 14, borderWidth: 1, marginHorizontal: 16, padding: 32, alignItems: 'center', marginBottom: 16 },
     noCvText: { fontSize: 15, fontWeight: '600', marginTop: 8 },
     noCvSubtext: { fontSize: 12, marginTop: 4 },
+    viewProfileBtn: {
+      flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
+      borderRadius: 10, paddingVertical: 10, marginTop: 12,
+    },
+    viewProfileBtnText: { fontSize: 14, fontWeight: '700', color: '#fff' },
   });
 }
 
@@ -320,6 +325,13 @@ export default function CandidateProfileScreen() {
             )}
           </View>
         </View>
+        <TouchableOpacity
+          style={[styles.viewProfileBtn, { backgroundColor: c.primary, borderColor: c.primary }]}
+          onPress={() => navigation.navigate('ApplicantProfile', { profileId: candidate.id, viewOnly: true })}
+        >
+          <Ionicons name="person-outline" size={16} color="#fff" />
+          <Text style={styles.viewProfileBtnText}>{t("recruiter.view_profile")}</Text>
+        </TouchableOpacity>
       </View>
 
       {/* AI CV Review */}

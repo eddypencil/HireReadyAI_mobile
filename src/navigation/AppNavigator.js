@@ -124,6 +124,17 @@ function MainScreens() {
   const { profile } = useUser();
   const { theme } = useTheme();
   const c = theme.colors;
+
+  if (!profile) {
+    console.error("[MainScreens] profile is null — showing spinner");
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: c.background }}>
+        <ActivityIndicator size="large" color={c.primary} />
+      </View>
+    );
+  }
+
+  console.error("[MainScreens] profile role:", profile.role);
   const isApplicant = profile?.role === USER_ROLE.applicant;
 
   if (isApplicant) {

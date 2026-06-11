@@ -10,15 +10,16 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import FormField from '../../../shared/ui/FormField';
-import { signIn } from '../services/auth.service';
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../shared/context/I18nContext';
+import { useUser } from '../context/user.context';
 
 export default function LoginPage() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const c = theme.colors;
   const navigation = useNavigation();
+  const { signInUser } = useUser();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -36,7 +37,7 @@ export default function LoginPage() {
     }
     setLoading(true);
     try {
-      await signIn(email.trim(), password);
+      await signInUser(email.trim(), password);
     } catch (err) {
       setError(err.message || t('sign_in.invalid_credentials'));
     } finally {

@@ -10,10 +10,10 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import FormField from '../../../shared/ui/FormField';
-import { signUp } from '../services/auth.service';
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../shared/context/I18nContext';
 import { USER_ROLE } from '../../../shared/constants/enums';
+import { useUser } from '../context/user.context';
 
 const ROLES = [
   { labelKey: 'sign_up.applicant', value: USER_ROLE.applicant },
@@ -25,6 +25,7 @@ export default function RegisterPage() {
   const { t } = useTranslation();
   const c = theme.colors;
   const navigation = useNavigation();
+  const { signUpUser } = useUser();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -57,7 +58,11 @@ export default function RegisterPage() {
 
     setLoading(true);
     try {
-      await signUp(email.trim(), password, fullName.trim(), role);
+      await signUpUser(email.trim(), password, {
+        fullName: fullName.trim(),
+        role: role,
+        email: email.trim(),
+      });
     } catch (err) {
       setError(err.message || t('sign_up.generic_error'));
     } finally {

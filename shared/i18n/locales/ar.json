@@ -442,6 +442,7 @@
     "no_candidates_met_threshold": "لم يحقق أي مرشح الحد الأدنى",
     "back_to_pipeline": "العودة إلى خط الأنابيب",
     "back_to_profile": "العودة إلى الملف الشخصي",
+    "view_profile": "عرض الملف الشخصي",
     "candidate": "مرشح",
     "candidate_not_found": "المرشح غير موجود",
     "unknown_candidate": "مرشح غير معروف",

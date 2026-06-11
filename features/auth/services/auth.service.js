@@ -6,29 +6,41 @@ export const signIn = async (email, password) => {
     password,
   });
   if (error) throw error;
-  return data;
+  return data.user;
 };
 
-export const signUp = async (email, password, fullName, role) => {
-  const { data: authData, error: authError } = await supabase.auth.signUp({
+export const signUp = async (email, password, userProfile) => {
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
-  });
-  if (authError) throw authError;
-
-  if (authData.user) {
-    const { error: profileError } = await supabase.from("profiles").insert([
-      {
-        id: authData.user.id,
-        full_name: fullName,
-        role: role || "applicant",
-        email,
+    options: {
+      data: {
+        full_name: userProfile.fullName,
+        role: userProfile.role,
       },
-    ]);
-    if (profileError) throw profileError;
+    },
+  });
+  if (error) {
+    console.error("[auth.service] signUp error:", error);
+    throw error;
   }
+  console.error("[auth.service] signUp data.user:", JSON.stringify(data.user));
+  return data.user;
+};
 
-  return authData;
+export const makeProfile = async (userId, userProfile) => {
+  console.error("[auth.service] makeProfile inserting for userId:", userId);
+  const { error } = await supabase.from("profiles").insert([{
+    id: userId,
+    full_name: userProfile.fullName,
+    role: userProfile.role,
+    email: userProfile.email,
+  }]);
+  if (error) {
+    console.error("[auth.service] makeProfile error:", error);
+    throw error;
+  }
+  console.error("[auth.service] makeProfile success");
 };
 
 export const signOut = async () => {
@@ -43,11 +55,16 @@ export const getSession = async () => {
 };
 
 export const getProfile = async (userId) => {
+  console.error("[auth.service] getProfile query for userId:", userId);
   const { data, error } = await supabase
     .from("profiles")
     .select("*")
     .eq("id", userId)
-    .single();
-  if (error) throw error;
+    .maybeSingle();
+  if (error) {
+    console.error("[auth.service] getProfile error:", error);
+    throw error;
+  }
+  console.error("[auth.service] getProfile result:", JSON.stringify(data));
   return data;
 };
