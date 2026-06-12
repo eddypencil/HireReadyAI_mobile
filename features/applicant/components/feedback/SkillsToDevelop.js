@@ -2,6 +2,7 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../../shared/context/I18nContext';
 
 function collectSkills(arrays) {
   const seen = new Set(); const result = [];
@@ -15,6 +16,7 @@ function collectSkills(arrays) {
 export default function SkillsToDevelop({ cvFeedback, stages }) {
   const { theme } = useTheme();
   const c = theme.colors;
+  const { t } = useTranslation();
   const styles = createStyles(c);
   const allW = [cvFeedback?.weaknesses || []];
   const allG = [cvFeedback?.gaps || []];
@@ -36,9 +38,9 @@ export default function SkillsToDevelop({ cvFeedback, stages }) {
         <View style={styles.iconWrap}>
           <Ionicons name="book-outline" size={14} color={c.primary} />
         </View>
-        <Text style={styles.heading}>Skills to Develop</Text>
+        <Text style={styles.heading}>{t('applicant.feedback.skills_to_develop')}</Text>
       </View>
-      <Text style={styles.subtitle}>Based on your feedback, consider strengthening these areas:</Text>
+      <Text style={styles.subtitle}>{t('applicant.feedback.skills_subtitle')}</Text>
       <View style={styles.pills}>
         {skills.slice(0, 8).map((skill, i) => (
           <View key={i} style={styles.pill}>

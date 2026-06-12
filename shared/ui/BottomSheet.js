@@ -11,9 +11,12 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../context/ThemeContext';
+import { useTranslation } from '../context/I18nContext';
 
 export default function BottomSheet({ visible, onClose, title, subtitle, children, closeButton, footer }) {
   const { theme } = useTheme();
+  const { language } = useTranslation();
+  const isRtl = language === 'ar';
   const insets = useSafeAreaInsets();
   const c = theme.colors;
   const styles = createStyles(c, insets);
@@ -31,10 +34,10 @@ export default function BottomSheet({ visible, onClose, title, subtitle, childre
           </View>
 
           {(title || subtitle || closeButton) && (
-            <View style={styles.header}>
+            <View style={[styles.header, isRtl && styles.rowReverse]}>
               <View style={styles.headerText}>
-                {title && <Text style={styles.title}>{title}</Text>}
-                {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+                {title && <Text style={[styles.title, isRtl && styles.textRight]}>{title}</Text>}
+                {subtitle && <Text style={[styles.subtitle, isRtl && styles.textRight]}>{subtitle}</Text>}
               </View>
               {closeButton}
             </View>
@@ -120,5 +123,7 @@ function createStyles(c, insets) {
       paddingBottom: Math.max(insets.bottom, 14),
       backgroundColor: c.card,
     },
+    rowReverse: { flexDirection: 'row-reverse' },
+    textRight: { textAlign: 'right' },
   });
 }

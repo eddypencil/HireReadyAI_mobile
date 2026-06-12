@@ -24,6 +24,8 @@ import { USER_ROLE } from "../../shared/constants/enums";
 import { spacing, borderRadius, fontSize, fontWeight } from "../theme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
+import { useTranslation } from '../../shared/context/I18nContext';
+
 
 import LoginPage from "../../features/auth/pages/LoginPage";
 import RegisterPage from "../../features/auth/pages/RegisterPage";
@@ -79,11 +81,30 @@ function AuthNavigator() {
   );
 }
 
-function Header({ title }) {
+function Header({ title, routeName }) {
   const insets = useSafeAreaInsets();
   const { toggle } = useSidebar();
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const c = theme.colors;
+
+  const keyMap = {
+    JobsTab: 'nav.explore_jobs',
+    ApplicantHome: 'nav.my_applications',
+    ApplicantFeedback: 'nav.my_feedback',
+    ApplicantProfile: 'nav.my_profile',
+    RecruiterHome: 'nav.dashboard',
+    CompanyProfile: 'nav.company_profile',
+    JDGenerator: 'nav.jd_generator',
+    JDGeneratorResult: 'nav.jd_generator',
+    JobPostings: 'nav.job_postings',
+    Shortlists: 'nav.shortlists',
+    Pipeline: 'nav.pipeline',
+    PipelinesPage: 'nav.pipeline',
+    PipelineBuilder: 'nav.pipeline',
+  };
+
+  const displayTitle = keyMap[routeName] ? t(keyMap[routeName]) : title;
 
   return (
     <View
@@ -95,9 +116,8 @@ function Header({ title }) {
       <TouchableOpacity onPress={toggle} style={headerStyles.menuBtn}>
         <Ionicons name="menu" size={22} color={c["sidebar-foreground"]} />
       </TouchableOpacity>
-      <Text style={[headerStyles.title, { color: c["sidebar-foreground"] }]}>
-        {title}
-      </Text>
+      <Text style={[headerStyles.title, { color: c['sidebar-foreground'] }]}>{displayTitle}</Text>
+
       <View style={{ width: 40 }} />
     </View>
   );
@@ -144,6 +164,7 @@ function getScreenTitle(routeName) {
 function MainScreens() {
   const { profile } = useUser();
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const c = theme.colors;
 
   if (!profile) {
@@ -167,7 +188,7 @@ function MainScreens() {
     return (
       <InnerStack.Navigator
         screenOptions={({ route }) => ({
-          header: () => <Header title={getScreenTitle(route.name)} />,
+          header: () => <Header title={getScreenTitle(route.name)} routeName={route.name} />,
         })}
       >
         <InnerStack.Screen name="JobsTab" component={JobsPage} />
@@ -176,109 +197,40 @@ function MainScreens() {
         <InnerStack.Screen
           name="ApplicantFeedback"
           component={ApplicantFeedbackPage}
-          options={{
-            header: undefined,
-            headerShown: true,
-            headerTitle: "My Feedback",
-            headerStyle: { backgroundColor: c.primary },
-            headerTintColor: c.white,
-          }}
+         
         />
         <InnerStack.Screen
           name="ApplicantProfile"
           component={ApplicantProfilePage}
-          options={{
-            header: undefined,
-            headerShown: true,
-            headerTitle: "My Profile",
-            headerStyle: { backgroundColor: c.primary },
-            headerTintColor: c.white,
-          }}
         />
-        <InnerStack.Screen
-          name="EditBio"
-          component={EditBioScreen}
-          options={{
-            header: undefined,
-            headerShown: true,
-            headerTitle: "Bio & Headline",
-            headerStyle: { backgroundColor: c.primary },
-            headerTintColor: c.white,
-          }}
-        />
-        <InnerStack.Screen
-          name="EditContact"
-          component={EditContactScreen}
-          options={{
-            header: undefined,
-            headerShown: true,
-            headerTitle: "Contact Info",
-            headerStyle: { backgroundColor: c.primary },
-            headerTintColor: c.white,
-          }}
-        />
-        <InnerStack.Screen
-          name="EditLinks"
-          component={EditLinksScreen}
-          options={{
-            header: undefined,
-            headerShown: true,
-            headerTitle: "Links",
-            headerStyle: { backgroundColor: c.primary },
-            headerTintColor: c.white,
-          }}
-        />
-        <InnerStack.Screen
-          name="EditVolunteering"
-          component={EditVolunteeringScreen}
-          options={{
-            header: undefined,
-            headerShown: true,
-            headerTitle: "Volunteering",
-            headerStyle: { backgroundColor: c.primary },
-            headerTintColor: c.white,
-          }}
-        />
-        <InnerStack.Screen
-          name="EditLanguages"
-          component={EditLanguagesScreen}
-          options={{
-            header: undefined,
-            headerShown: true,
-            headerTitle: "Languages",
-            headerStyle: { backgroundColor: c.primary },
-            headerTintColor: c.white,
-          }}
-        />
-        <InnerStack.Screen
-          name="EditCertificates"
-          component={EditCertificatesScreen}
-          options={{
-            header: undefined,
-            headerShown: true,
-            headerTitle: "Certificates",
-            headerStyle: { backgroundColor: c.primary },
-            headerTintColor: c.white,
-          }}
-        />
-        <InnerStack.Screen
-          name="EditAwards"
-          component={EditAwardsScreen}
-          options={{
-            header: undefined,
-            headerShown: true,
-            headerTitle: "Awards & Honors",
-            headerStyle: { backgroundColor: c.primary },
-            headerTintColor: c.white,
-          }}
-        />
+        <InnerStack.Screen name="EditBio" component={EditBioScreen}
+          options={{ header: undefined, headerShown: true, headerTitle: t('profile.edit_titles.bio'),
+                    headerStyle: { backgroundColor: c.primary }, headerTintColor: c.white }} />
+        <InnerStack.Screen name="EditContact" component={EditContactScreen}
+          options={{ header: undefined, headerShown: true, headerTitle: t('profile.edit_titles.contact'),
+                    headerStyle: { backgroundColor: c.primary }, headerTintColor: c.white }} />
+        <InnerStack.Screen name="EditLinks" component={EditLinksScreen}
+          options={{ header: undefined, headerShown: true, headerTitle: t('profile.edit_titles.links'),
+                    headerStyle: { backgroundColor: c.primary }, headerTintColor: c.white }} />
+        <InnerStack.Screen name="EditVolunteering" component={EditVolunteeringScreen}
+          options={{ header: undefined, headerShown: true, headerTitle: t('profile.edit_titles.volunteering'),
+                    headerStyle: { backgroundColor: c.primary }, headerTintColor: c.white }} />
+        <InnerStack.Screen name="EditLanguages" component={EditLanguagesScreen}
+          options={{ header: undefined, headerShown: true, headerTitle: t('profile.edit_titles.languages'),
+                    headerStyle: { backgroundColor: c.primary }, headerTintColor: c.white }} />
+        <InnerStack.Screen name="EditCertificates" component={EditCertificatesScreen}
+          options={{ header: undefined, headerShown: true, headerTitle: t('profile.edit_titles.certificates'),
+                    headerStyle: { backgroundColor: c.primary }, headerTintColor: c.white }} />
+        <InnerStack.Screen name="EditAwards" component={EditAwardsScreen}
+          options={{ header: undefined, headerShown: true, headerTitle: t('profile.edit_titles.awards'),
+                    headerStyle: { backgroundColor: c.primary }, headerTintColor: c.white }} />
         <InnerStack.Screen
           name="EditExperience"
           component={EditExperienceScreen}
           options={{
             header: undefined,
             headerShown: true,
-            headerTitle: "Work Experience",
+            headerTitle: t('profile.edit_titles.experience'),
             headerStyle: { backgroundColor: c.primary },
             headerTintColor: c.white,
           }}
@@ -289,7 +241,7 @@ function MainScreens() {
           options={{
             header: undefined,
             headerShown: true,
-            headerTitle: "Education",
+            headerTitle: t('profile.edit_titles.education'),
             headerStyle: { backgroundColor: c.primary },
             headerTintColor: c.white,
           }}
@@ -300,7 +252,7 @@ function MainScreens() {
           options={{
             header: undefined,
             headerShown: true,
-            headerTitle: "Skills",
+            headerTitle: t('profile.edit_titles.skills'),
             headerStyle: { backgroundColor: c.primary },
             headerTintColor: c.white,
           }}
@@ -311,7 +263,7 @@ function MainScreens() {
           options={{
             header: undefined,
             headerShown: true,
-            headerTitle: "Project",
+            headerTitle: t('profile.edit_titles.projects'),
             headerStyle: { backgroundColor: c.primary },
             headerTintColor: c.white,
           }}
@@ -325,20 +277,14 @@ function MainScreens() {
     <CompanyProvider>
       <InnerStack.Navigator
         screenOptions={({ route }) => ({
-          header: () => <Header title={getScreenTitle(route.name)} />,
+          header: () => <Header title={getScreenTitle(route.name)} routeName={route.name} />,
         })}
       >
         <InnerStack.Screen name="RecruiterHome" component={RecruiterScreen} />
-        <InnerStack.Screen
-          name="ApplicantProfile"
-          component={ApplicantProfilePage}
-          options={{
-            headerShown: true,
-            headerTitle: "Applicant Profile",
-            headerStyle: { backgroundColor: c.primary },
-            headerTintColor: c.white,
-          }}
-        />
+        <InnerStack.Screen name="ApplicantProfile" component={ApplicantProfilePage}
+          options={{ headerShown: true, headerTitle: t('profile.applicant_profile'),
+                    headerStyle: { backgroundColor: c.primary },
+                    headerTintColor: c.white }} />
         <InnerStack.Screen name="CompanyProfile" component={CompanyProfile} />
         <InnerStack.Screen name="JDGenerator" component={JDGeneratorPage} />
         <InnerStack.Screen
@@ -350,7 +296,7 @@ function MainScreens() {
           component={ApplicationQuestionsPage}
           options={{
             headerShown: true,
-            headerTitle: "Screening Questions",
+            headerTitle: t('profile.screening_questions'),
             headerStyle: { backgroundColor: c.primary },
             headerTintColor: c.white,
           }}
@@ -360,7 +306,7 @@ function MainScreens() {
           component={JDPublishSuccessPage}
           options={{
             headerShown: true,
-            headerTitle: "Success",
+            headerTitle: t('publish_success'),
             headerStyle: { backgroundColor: c.primary },
             headerTintColor: c.white,
           }}
@@ -400,6 +346,7 @@ function MainScreens() {
 function RootNavigator({ onboardingSeen }) {
   const { session, loading } = useUser();
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const c = theme.colors;
 
   if (loading || onboardingSeen === null) {
@@ -438,7 +385,9 @@ function RootNavigator({ onboardingSeen }) {
           component={JobDetailsPage}
           options={{
             headerShown: true,
-            headerTitle: "Job Details",
+
+            headerTitle: t('nav.job_details'),
+
             headerStyle: navHeaderStyle,
             headerTintColor: c["sidebar-foreground"],
           }}
@@ -448,7 +397,9 @@ function RootNavigator({ onboardingSeen }) {
           component={ApplyJobPage}
           options={{
             headerShown: true,
-            headerTitle: "Apply for Job",
+
+            headerTitle: t('nav.apply_job'),
+
             headerStyle: navHeaderStyle,
             headerTintColor: c["sidebar-foreground"],
           }}
@@ -458,7 +409,9 @@ function RootNavigator({ onboardingSeen }) {
           component={InterviewPage}
           options={{
             headerShown: true,
-            headerTitle: "Interview",
+
+            headerTitle: t('nav.interview'),
+
             headerStyle: navHeaderStyle,
             headerTintColor: c["sidebar-foreground"],
           }}

@@ -18,7 +18,7 @@ import { useTranslation } from "../../../shared/context/I18nContext";
 
 const DEBOUNCE_MS = 400;
 
-function PickerDropdown({ options, selected, onSelect, placeholder, disabled, c }) {
+function PickerDropdown({ options, selected, onSelect, placeholder, disabled, c, styles, isRtl }) {
   const [visible, setVisible] = useState(false);
   const displayValue = selected
     ? options.find((o) => o.value === selected)?.label || placeholder
@@ -27,7 +27,7 @@ function PickerDropdown({ options, selected, onSelect, placeholder, disabled, c 
   return (
     <View>
       <TouchableOpacity
-        style={[styles.selectField, disabled && styles.fieldDisabled]}
+        style={[styles.selectField, disabled && styles.fieldDisabled, isRtl && styles.rowReverse]}
         onPress={() => !disabled && setVisible(true)}
         disabled={disabled}
       >
@@ -36,6 +36,7 @@ function PickerDropdown({ options, selected, onSelect, placeholder, disabled, c 
             styles.selectFieldText,
             !selected && { color: c['muted-foreground'] },
             disabled && { color: c['muted-foreground'] },
+            isRtl && styles.textRight,
           ]}
           numberOfLines={1}
         >
@@ -51,8 +52,8 @@ function PickerDropdown({ options, selected, onSelect, placeholder, disabled, c 
         onRequestClose={() => setVisible(false)}
       >
         <Pressable style={styles.modalOverlay} onPress={() => setVisible(false)}>
-          <Pressable style={styles.modalContent} onPress={() => {}}>
-            <Text style={styles.modalTitle}>{placeholder}</Text>
+            <Pressable style={styles.modalContent} onPress={() => {}}>
+            <Text style={[styles.modalTitle, isRtl && styles.textRight]}>{placeholder}</Text>
             <FlatList
               data={options}
               keyExtractor={(item) => item.value}
@@ -91,9 +92,10 @@ function PickerDropdown({ options, selected, onSelect, placeholder, disabled, c 
 
 export default function StageDetailsPanel({ stage, stages, onUpdate }) {
   const { theme } = useTheme();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const isRtl = language === 'ar';
   const c = theme.colors;
-  const styles = createStyles(c);
+  const styles = createStyles(c, isRtl);
 
   const [form, setForm] = useState({
     name: "",
@@ -170,10 +172,10 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <View style={styles.header}>
+        <View style={styles.header}>
         <Text style={styles.headerLabel}>{t("pipeline.stage_settings")}</Text>
-        <View style={styles.headerTitleRow}>
-          <Text style={styles.headerTitle} numberOfLines={1}>
+        <View style={[styles.headerTitleRow, isRtl && styles.rowReverse]}>
+          <Text style={[styles.headerTitle, isRtl && styles.textRight]} numberOfLines={1}>
             {form.name || t("pipeline.untitled_stage")}
           </Text>
           {stage.is_locked && (
@@ -182,16 +184,16 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
             </View>
           )}
         </View>
-        <Text style={styles.headerType} numberOfLines={1}>
+        <Text style={[styles.headerType, isRtl && styles.textRight]} numberOfLines={1}>
           {form.stage_type?.replace(/_/g, " ")}
         </Text>
       </View>
 
       <View style={styles.fields}>
         <View style={styles.fieldGroup}>
-          <Text style={styles.fieldLabel}>{t("pipeline.stage_name")}</Text>
+          <Text style={[styles.fieldLabel, isRtl && styles.textRight]}>{t("pipeline.stage_name")}</Text>
           <TextInput
-            style={[styles.input, stage.is_locked && styles.fieldDisabled]}
+            style={[styles.input, stage.is_locked && styles.fieldDisabled, isRtl && styles.textRight]}
             value={form.name}
             onChangeText={(t) => handleChange("name", t)}
             editable={!stage.is_locked}
@@ -214,12 +216,14 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
             placeholder={t("pipeline.select_type_placeholder")}
             disabled={stage.is_locked}
             c={c}
+            styles={styles}
+            isRtl={isRtl}
           />
         </View>
 
         <View style={styles.fieldGroup}>
-          <View style={styles.weightHeader}>
-            <Text style={styles.fieldLabel}>{t("pipeline.weight")}</Text>
+          <View style={[styles.weightHeader, isRtl && styles.rowReverse]}>
+            <Text style={[styles.fieldLabel, isRtl && styles.textRight]}>{t("pipeline.weight")}</Text>
             <Text style={styles.weightValue}>{weightPct}%</Text>
           </View>
           <WeightSlider
@@ -232,7 +236,7 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
         <View style={styles.fieldGroup}>
           <Text style={styles.fieldLabel}>{t("pipeline.description")}</Text>
           <TextInput
-            style={[styles.textArea, stage.is_locked && styles.fieldDisabled]}
+            style={[styles.textArea, stage.is_locked && styles.fieldDisabled, isRtl && styles.textRight]}
             value={form.description}
             onChangeText={(t) => handleChange("description", t)}
             editable={!stage.is_locked}
@@ -247,7 +251,7 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
         <View style={styles.fieldGroup}>
           <Text style={styles.fieldLabel}>{t("pipeline.num_questions")}</Text>
           <TextInput
-            style={[styles.input, stage.is_locked && styles.fieldDisabled]}
+            style={[styles.input, stage.is_locked && styles.fieldDisabled, isRtl && styles.textRight]}
             value={String(form.num_questions || 0)}
             onChangeText={(t) => handleChange("num_questions", parseInt(t) || 0)}
             editable={!stage.is_locked}
@@ -259,10 +263,10 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
 
         <View style={styles.advancedSection}>
           <Text style={styles.advancedLabel}>{t("pipeline.advanced_coming_soon")}</Text>
-          {["pipeline.ai_evaluation", "pipeline.manual_review", "pipeline.auto_advance", "pipeline.auto_reject"].map(
+          {["pipeline.ai_evaluation", "pipeline.manual_review", "pipeline.auto_advance", "pipeline.auto_reject" ].map(
             (key) => (
-              <View key={key} style={styles.advancedRow}>
-                <Text style={styles.advancedRowText}>{t(key)}</Text>
+              <View key={key} style={[styles.advancedRow, isRtl && styles.rowReverse]}>
+                <Text style={[styles.advancedRowText, isRtl && styles.textRight]}>{t(key)}</Text>
                 <View style={styles.advancedToggle} />
               </View>
             )
@@ -277,11 +281,12 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
           style={[
             styles.saveButton,
             (!hasChanges || stage.is_locked) && styles.saveButtonDisabled,
+            isRtl && styles.rowReverse,
           ]}
           activeOpacity={0.7}
         >
           <Ionicons name="save-outline" size={16} color={(!hasChanges || stage.is_locked) ? c['muted-foreground'] : c.card} />
-          <Text style={[styles.saveButtonText, (!hasChanges || stage.is_locked) && styles.saveButtonTextDisabled]}>
+          <Text style={[styles.saveButtonText, (!hasChanges || stage.is_locked) && styles.saveButtonTextDisabled, isRtl && styles.textRight]}>
             {isSaving ? t("pipeline.saving") : t("pipeline.save_changes")}
           </Text>
         </TouchableOpacity>
@@ -290,7 +295,7 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
   );
 }
 
-function createStyles(c) {
+function createStyles(c, isRtl) {
   return StyleSheet.create({
     container: {
       flex: 1,
@@ -523,5 +528,7 @@ function createStyles(c) {
     saveButtonTextDisabled: {
       color: c['muted-foreground'],
     },
+    rowReverse: { flexDirection: 'row-reverse' },
+    textRight: { textAlign: 'right' },
   });
 }

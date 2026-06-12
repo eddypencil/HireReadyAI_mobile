@@ -54,6 +54,19 @@ export default function StatsCards({ applications }) {
       labelKey: "applicant.rejected",
       value: rejectedCount,
       color: c.destructive,
+      value: applications?.length || 0,
+    },
+    {
+      labelKey: "applicant.interviews",
+      value: applications?.filter(
+        (a) => a.current_stage === APPLICATION_STAGE.interview
+      ).length || 0,
+    },
+    {
+      labelKey: "applicant.offers",
+      value: applications?.filter(
+        (a) => a.current_stage === APPLICATION_STAGE.hired
+      ).length || 0,
     },
   ];
 

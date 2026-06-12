@@ -2,6 +2,7 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../../shared/context/I18nContext';
 
 function collectStrings(arrays) {
   const map = new Map();
@@ -15,6 +16,7 @@ function collectStrings(arrays) {
 export default function KeyTakeaways({ cvFeedback, stages }) {
   const { theme } = useTheme();
   const c = theme.colors;
+  const { t } = useTranslation();
   const styles = createStyles(c);
   const allStrengths = [cvFeedback?.strengths || []];
   const allWeaknesses = [cvFeedback?.weaknesses || []];
@@ -42,7 +44,7 @@ export default function KeyTakeaways({ cvFeedback, stages }) {
         <View style={styles.iconWrap}>
           <Ionicons name="bulb-outline" size={14} color={c.primary} />
         </View>
-        <Text style={styles.heading}>Key Takeaways</Text>
+        <Text style={styles.heading}>{t('applicant.feedback.key_takeaways')}</Text>
       </View>
       <View style={styles.body}>
         {cvFeedback?.feedback && <Text style={styles.feedback}>{cvFeedback.feedback}</Text>}
@@ -50,9 +52,9 @@ export default function KeyTakeaways({ cvFeedback, stages }) {
           <View style={styles.row}>
             <Ionicons name="checkmark-circle" size={16} color={c.emerald[500]} style={styles.icon} />
             <Text style={styles.itemText}>
-              <Text style={styles.sLabel}>Strength: </Text>
+              <Text style={styles.sLabel}>{t('applicant.feedback.strength_label')}</Text>
               <Text>{topS[0]}</Text>
-              {topS.length > 1 && <Text style={styles.muted}>{` (also: ${topS.slice(1,3).join(', ')})`}</Text>}
+              {topS.length > 1 && <Text style={styles.muted}>{` ${t('applicant.feedback.also_suffix', { items: topS.slice(1,3).join(', ') })}`}</Text>}
             </Text>
           </View>
         )}
@@ -60,9 +62,9 @@ export default function KeyTakeaways({ cvFeedback, stages }) {
           <View style={styles.row}>
             <Ionicons name="close-circle" size={16} color={c.red[500]} style={styles.icon} />
             <Text style={styles.itemText}>
-              <Text style={styles.wLabel}>Area to improve: </Text>
+              <Text style={styles.wLabel}>{t('applicant.feedback.area_to_improve')}</Text>
               <Text>{topW[0]}</Text>
-              {topW.length > 1 && <Text style={styles.muted}>{` (also: ${topW.slice(1,3).join(', ')})`}</Text>}
+              {topW.length > 1 && <Text style={styles.muted}>{` ${t('applicant.feedback.also_suffix', { items: topW.slice(1,3).join(', ') })}`}</Text>}
             </Text>
           </View>
         )}
@@ -70,7 +72,7 @@ export default function KeyTakeaways({ cvFeedback, stages }) {
           <View style={styles.row}>
             <Ionicons name="warning" size={16} color={c.amber[500]} style={styles.icon} />
             <Text style={styles.itemText}>
-              <Text style={styles.gLabel}>Gap: </Text>
+              <Text style={styles.gLabel}>{t('applicant.feedback.gap_label')}</Text>
               <Text>{topG.slice(0, 2).join(', ')}</Text>
             </Text>
           </View>

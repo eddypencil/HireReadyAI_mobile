@@ -37,7 +37,7 @@ export default function JobCard({ job }) {
     logo: { width: 48, height: 48, borderRadius: 12, borderWidth: 1, borderColor: c.border, resizeMode: 'contain', padding: 2 },
     logoPlaceholder: { width: 48, height: 48, borderRadius: 12, backgroundColor: c['surface-muted'], alignItems: 'center', justifyContent: 'center' },
     logoText: { fontSize: 18, fontWeight: '700', color: c.primary },
-    info: { flex: 1, marginLeft: 12, minWidth: 0 },
+    info: { flex: 1, marginStart: 16, minWidth: 0 },
     title: { fontSize: 16, fontWeight: '700', color: c.foreground },
     companyRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4, flexWrap: 'wrap' },
     companyName: { fontSize: fontSize.sm, color: c.accent, fontWeight: fontWeight.medium },
