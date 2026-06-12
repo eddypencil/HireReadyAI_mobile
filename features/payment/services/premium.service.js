@@ -1,41 +1,51 @@
-import { supabase } from "@/shared/services/supabase";
+import { supabase } from "../../../shared/services/supabase";
 
-const EDGE_FUNCTIONS_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1`;
-
-export const PREMIUM_PRICE_ID = "price_1ThAl5J0xQ4cACne1asM9G5V";
+export const PREMIUM_PRICE_ID =
+  "price_1ThAl5J0xQ4cACne1asM9G5V";
 
 export async function createCheckoutSession(companyId) {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) throw new Error("Not authenticated");
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  const res = await fetch(`${EDGE_FUNCTIONS_URL}/create-checkout-session`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${session.access_token}`,
-    },
-    body: JSON.stringify({ price_id: PREMIUM_PRICE_ID, company_id: companyId }),
-  });
+  if (!user) throw new Error("Not authenticated");
 
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || "Failed to create checkout session");
+  const { data, error } = await supabase.functions.invoke(
+    "create-checkout-session-react-native",
+    {
+      body: {
+        price_id: PREMIUM_PRICE_ID,
+        company_id: companyId,
+      },
+    }
+  );
+
+  if (error) {
+    throw new Error(error.message || "Failed to create checkout session");
+  }
+
   return data;
 }
+//not needed cuz webhook
+// export async function confirmPayment(sessionId) {
+//   const {
+//     data: { user },
+//   } = await supabase.auth.getUser();
 
-export async function confirmPayment(sessionId) {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) throw new Error("Not authenticated");
+//   if (!user) throw new Error("Not authenticated");
 
-  const res = await fetch(`${EDGE_FUNCTIONS_URL}/confirm-payment`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${session.access_token}`,
-    },
-    body: JSON.stringify({ session_id: sessionId }),
-  });
+//   const { data, error } = await supabase.functions.invoke(
+//     "confirm-payment",
+//     {
+//       body: {
+//         session_id: sessionId,
+//       },
+//     }
+//   );
 
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || "Payment confirmation failed");
-  return data;
-}
+//   if (error) {
+//     throw new Error(error.message || "Payment confirmation failed");
+//   }
+
+//   return data;
+// }

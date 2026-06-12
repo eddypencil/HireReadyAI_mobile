@@ -1,5 +1,6 @@
 {
   "expo": {
+    "scheme": "hirereadyai",
     "name": "HireReadyAI",
     "slug": "HireReadyAI",
     "version": "1.0.0",
@@ -27,7 +28,8 @@
     },
     "plugins": [
       "expo-secure-store",
-      "expo-font"
+      "expo-font",
+      "expo-web-browser"
     ]
   }
 }

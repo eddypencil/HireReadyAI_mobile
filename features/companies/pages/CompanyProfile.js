@@ -23,6 +23,30 @@ import {
   updateMembershipPermission,
 } from "../services/memberships.service";
 import { MEMBERSHIP_PERMISSION } from "../../../shared/constants/enums";
+import * as WebBrowser from "expo-web-browser";
+import * as Linking from "expo-linking";
+import PlanBillingCard from "../../payment/componants/ApplyForPreimum";
+import { createCheckoutSession } from "../../payment/services/premium.service";
+
+//helper for checkout 
+const openCheckout = async (url) => {
+  try {
+    const redirectUrl = Linking.createURL("premium/success");
+    const result = await WebBrowser.openAuthSessionAsync(
+    url,
+    redirectUrl
+  );
+
+    // Optional: handle result when user closes browser
+    console.log("Browser result:", result);
+
+    if (result.type === "cancel") {
+      console.log("User closed checkout");
+    }
+  } catch (err) {
+    console.error("Failed to open checkout:", err);
+  }
+};
 
 export default function CompanyProfile() {
   const {
@@ -275,18 +299,21 @@ export default function CompanyProfile() {
     </View>
   );
 
-  const handleUpgrade = async () => {
-      if (!company?.id) return;
-      try {
-        setUpgrading(true);
-        const { url } = await createCheckoutSession(company.id);
-        window.location.href = url;
-      } catch (err) {
-        console.error("Error creating checkout session:", err);
-        setUpgrading(false);
-      }
-    };
-  
+const handleUpgrade = async () => {
+  if (!company?.id) return;
+
+  try {
+    setUpgrading(true);
+
+    const { url } = await createCheckoutSession(company.id);
+
+    await openCheckout(url);
+  } catch (err) {
+    console.error("Error creating checkout session:", err);
+  } finally {
+    setUpgrading(false);
+  }
+};
 
   const hasCover = !!company?.cover_url;
   return (
@@ -493,7 +520,7 @@ export default function CompanyProfile() {
         )}
       </View>
 
-      <PlanBillingCard/>
+      <PlanBillingCard company={company} upgrading={upgrading} handleUpgrade={handleUpgrade}/>
 
       {/* Team Members Card */}
       <View style={styles.card}>

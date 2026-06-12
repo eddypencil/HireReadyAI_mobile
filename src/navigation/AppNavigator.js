@@ -1,4 +1,5 @@
 import React from "react";
+import * as Linking from "expo-linking";
 import {
   View,
   Text,
@@ -66,6 +67,7 @@ import PipelineBuilderPage from "../../features/pipeline/pages/PipelineBuilderPa
 import InterviewPage from "../../features/interview/pages/InterviewPage";
 import ApplyJobPage from "../../features/applications/pages/ApplyJobPage";
 import ContactUsScreen from "../../features/support/pages/ContactUsScreen";
+import { confirmPayment } from "../../features/payment/services/premium.service";
 
 const AuthStack = createNativeStackNavigator();
 const RootStack = createNativeStackNavigator();
@@ -357,6 +359,30 @@ function RootNavigator({ onboardingSeen }) {
   const { t } = useTranslation();
   const c = theme.colors;
 
+useEffect(() => {
+  const handleDeepLink = async (url) => {
+    if (!url) return;
+
+    if (url.includes("premium/success")) {
+      console.log("Payment success 🎉");
+
+      // Refresh company data here
+      // await refetchCompany();
+    }
+
+    if (url.includes("premium/cancel")) {
+      console.log("Payment cancelled");
+    }
+  };
+
+  Linking.getInitialURL().then(handleDeepLink);
+
+  const subscription = Linking.addEventListener("url", (event) => {
+    handleDeepLink(event.url);
+  });
+
+  return () => subscription.remove();
+}, []);
   if (loading || onboardingSeen === null) {
     return (
       <View
@@ -366,6 +392,7 @@ function RootNavigator({ onboardingSeen }) {
       </View>
     );
   }
+  
 
   if (!session) {
     return (
