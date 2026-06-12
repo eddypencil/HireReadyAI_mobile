@@ -2,17 +2,19 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../../shared/context/I18nContext';
 
 export default function ApplicationTimeline({ stages }) {
   const { theme } = useTheme();
   const c = theme.colors;
+  const { t } = useTranslation();
   const styles = createStyles(c);
   if (!stages || stages.length === 0) return null;
   return (
     <View style={styles.card}>
       <View style={styles.headingRow}>
         <Ionicons name="time-outline" size={15} color={c.primary} />
-        <Text style={styles.heading}>Application Timeline</Text>
+        <Text style={styles.heading}>{t('applicant.feedback.application_timeline')}</Text>
       </View>
       {stages.map((stage, i) => {
         const isPassed = stage.status === 'passed' || stage.status === 'completed';
@@ -69,9 +71,9 @@ export default function ApplicationTimeline({ stages }) {
                     </View>
                   )}
                   <Text style={[styles.statusText, { color: statusColor }]}>
-                    {isInProgress ? 'In Progress' : stage.status
+                    {isInProgress ? t('applicant.feedback.in_progress') : stage.status
                       ? stage.status.charAt(0).toUpperCase() + stage.status.slice(1)
-                      : 'Pending'}
+                      : t('applicant.feedback.pending')}
                   </Text>
                 </View>
               </View>

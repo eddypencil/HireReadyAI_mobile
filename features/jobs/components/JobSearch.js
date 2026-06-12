@@ -31,7 +31,7 @@ export default function JobSearch({ search, setSearch }) {
       </View>
 
       <TouchableOpacity style={s.button} activeOpacity={0.8}>
-        <Text style={s.buttonText}>Find Jobs</Text>
+        <Text style={s.buttonText}>{t('find_jobs')}</Text>
       </TouchableOpacity>
     </View>
   );

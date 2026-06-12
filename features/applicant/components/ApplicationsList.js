@@ -26,27 +26,27 @@ const stageColorMap = {
 };
 
 const stageLabelMap = {
-  [APPLICATION_STAGE.applied]: "Applied",
-  [APPLICATION_STAGE.screening]: "Screening",
-  [APPLICATION_STAGE.shorListed]: "Shortlisted",
-  [APPLICATION_STAGE.interview]: "Interview",
-  [APPLICATION_STAGE.hired]: "Hired",
-  [APPLICATION_STAGE.rejected]: "Rejected",
-  [APPLICATION_STAGE.cv_screening]: "CV Screening",
-  [APPLICATION_STAGE.ai_screening]: "AI Screening",
-  [APPLICATION_STAGE.assessment_test]: "Assessment Test",
-  [APPLICATION_STAGE.coding_test]: "Coding Test",
-  [APPLICATION_STAGE.video_interview]: "Video Interview",
-  [APPLICATION_STAGE.technical_interview]: "Technical Interview",
-  [APPLICATION_STAGE.hr_interview]: "HR Interview",
-  [APPLICATION_STAGE.manager_interview]: "Manager Interview",
-  [APPLICATION_STAGE.background_check]: "Background Check",
-  [APPLICATION_STAGE.offer]: "Offer",
-  cv_review: "CV Review",
-  shortlist: "Shortlisting",
+  [APPLICATION_STAGE.applied]: "applicant.stages.applied",
+  [APPLICATION_STAGE.screening]: "applicant.stages.screening",
+  [APPLICATION_STAGE.shorListed]: "applicant.stages.shortlisted",
+  [APPLICATION_STAGE.interview]: "applicant.stages.interview",
+  [APPLICATION_STAGE.hired]: "applicant.stages.hired",
+  [APPLICATION_STAGE.rejected]: "applicant.stages.rejected",
+  [APPLICATION_STAGE.cv_screening]: "applicant.stages.cv_screening",
+  [APPLICATION_STAGE.ai_screening]: "applicant.stages.ai_screening",
+  [APPLICATION_STAGE.assessment_test]: "applicant.stages.assessment_test",
+  [APPLICATION_STAGE.coding_test]: "applicant.stages.coding_test",
+  [APPLICATION_STAGE.video_interview]: "applicant.stages.video_interview",
+  [APPLICATION_STAGE.technical_interview]: "applicant.stages.technical_interview",
+  [APPLICATION_STAGE.hr_interview]: "applicant.stages.hr_interview",
+  [APPLICATION_STAGE.manager_interview]: "applicant.stages.manager_interview",
+  [APPLICATION_STAGE.background_check]: "applicant.stages.background_check",
+  [APPLICATION_STAGE.offer]: "applicant.stages.offer",
+  cv_review: "applicant.stages.cv_review",
+  shortlist: "applicant.stages.shortlisting",
 };
 
-const defaultLabel = "Processing";
+const defaultLabelKey = "applicant.stages.processing";
 
 function stageStyle(c) {
   return {
@@ -57,9 +57,9 @@ function stageStyle(c) {
   };
 }
 
-function formatDate(dateStr) {
+function formatDate(dateStr, language) {
   if (!dateStr) return "";
-  return new Date(dateStr).toLocaleDateString("en-US", {
+  return new Date(dateStr).toLocaleDateString(language === "ar" ? "ar-EG" : "en-US", {
     month: "short",
     day: "numeric",
   });
@@ -106,7 +106,7 @@ function getActiveStage(app) {
 
 export default function ApplicationsList({ applications, onViewJob }) {
   const { theme } = useTheme();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const c = theme.colors;
   const defaultCfg = stageStyle(c['stage-final']);
 
@@ -203,12 +203,14 @@ export default function ApplicationsList({ applications, onViewJob }) {
 
             if (activeStage) {
               const type = activeStage.recruitment_stages?.stage_type;
-              displayLabel = activeStage.recruitment_stages?.name || stageLabelMap[type] || defaultLabel;
+              displayLabel = stageLabelMap[type]
+                ? t(stageLabelMap[type])
+                : activeStage.recruitment_stages?.name || t(defaultLabelKey);
               const tokenKey = stageColorMap[type] || 'stage-final';
               cfg = stageStyle(c[tokenKey]);
             } else {
               const stageVal = app.current_stage;
-              displayLabel = stageLabelMap[stageVal] || defaultLabel;
+              displayLabel = t(stageLabelMap[stageVal] || defaultLabelKey);
               const tokenKey = stageColorMap[stageVal] || 'stage-final';
               cfg = stageStyle(c[tokenKey]);
             }
@@ -257,14 +259,14 @@ export default function ApplicationsList({ applications, onViewJob }) {
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                     <Ionicons name="time-outline" size={10} color={c['muted-foreground']} />
                     <Text style={{ fontSize: 11, color: c['muted-foreground'] }}>
-                      {t("applicant.applied")} {formatDate(app.applied_at)}
+                      {t("applicant.applied")} {formatDate(app.applied_at, language)}
                     </Text>
                   </View>
                   {job?.closed_at && (
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                       <Ionicons name="calendar-outline" size={10} color={c['muted-foreground']} />
                       <Text style={{ fontSize: 11, color: c['muted-foreground'] }}>
-                        {t("applicant.closes")} {formatDate(job.closed_at)}
+                        {t("applicant.closes")} {formatDate(job.closed_at, language)}
                       </Text>
                     </View>
                   )}

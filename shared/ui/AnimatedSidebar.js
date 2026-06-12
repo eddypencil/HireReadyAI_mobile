@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,45 +7,105 @@ import {
   Animated,
   ScrollView,
   Alert,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
-import { useSidebar } from '../context/SidebarContext';
-import { useTheme } from '../context/ThemeContext';
-import { useUser } from '../../features/auth/context/user.context';
-import { USER_ROLE } from '../constants/enums';
-import { spacing, borderRadius, fontSize, fontWeight } from '../../src/theme';
-import LanguageSwitcher from '../i18n/LanguageSwitcher';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
+import { useSidebar } from "../context/SidebarContext";
+import { useTheme } from "../context/ThemeContext";
+import { useUser } from "../../features/auth/context/user.context";
+import { USER_ROLE } from "../constants/enums";
+import { spacing, borderRadius, fontSize, fontWeight } from "../../src/theme";
+import { useTranslation } from "../context/I18nContext";
+import LanguageSwitcher from "../i18n/LanguageSwitcher";
 
 const SIDEBAR_WIDTH = 280;
 
 export default function AnimatedSidebar() {
   const { isOpen, close } = useSidebar();
   const { theme, toggleTheme, isDark } = useTheme();
+  const { language, t } = useTranslation();
   const c = theme.colors;
   const navigation = useNavigation();
   const { profile, signOutUser } = useUser();
   const isApplicant = profile?.role === USER_ROLE.applicant;
 
   const applicantLinks = [
-    { name: 'Jobs', label: 'Explore Jobs', icon: 'briefcase', screen: 'JobsTab' },
-    { name: 'MyApplications', label: 'My Applications', icon: 'document-text', screen: 'ApplicantHome' },
-    { name: 'Feedback', label: 'My Feedback', icon: 'bar-chart', screen: 'ApplicantFeedback' },
-    { name: 'Profile', label: 'My Profile', icon: 'person-circle-outline', screen: 'ApplicantProfile' },
-    { name: 'ContactUs', label: 'Contact Us', icon: 'mail-outline', screen: 'ContactUs' },
-
+    {
+      name: "Jobs",
+      label: "nav.explore_jobs",
+      icon: "briefcase",
+      screen: "JobsTab",
+    },
+    {
+      name: "MyApplications",
+      label: "nav.my_applications",
+      icon: "document-text",
+      screen: "ApplicantHome",
+    },
+    {
+      name: "Feedback",
+      label: "nav.my_feedback",
+      icon: "bar-chart",
+      screen: "ApplicantFeedback",
+    },
+    {
+      name: "Profile",
+      label: "nav.my_profile",
+      icon: "person-circle-outline",
+      screen: "ApplicantProfile",
+    },
+    {
+      name: "ContactUs",
+      label: "Contact Us",
+      icon: "mail-outline",
+      screen: "ContactUs",
+    },
   ];
 
   const recruiterLinks = [
-    { name: 'Dashboard', label: 'Dashboard', icon: 'grid', screen: 'RecruiterHome' },
-    { name: 'CompanyProfile', label: 'Company Profile', icon: 'business', screen: 'CompanyProfile' },
-    { name: 'JobPostings', label: 'Job Postings', icon: 'briefcase', screen: 'JobPostings' },
-    { name: 'Shortlists', label: 'Shortlists', icon: 'heart', screen: 'Shortlists' },
-    { name: 'JDGenerator', label: 'JD Generator', icon: 'sparkles', screen: 'JDGenerator' },
-    { name: 'Pipeline', label: 'Pipeline', icon: 'git-branch', screen: 'Pipeline' },
-    { name: 'ContactUs', label: 'Contact Us', icon: 'mail-outline', screen: 'ContactUs' },
-
+    {
+      name: "Dashboard",
+      label: "nav.dashboard",
+      icon: "grid",
+      screen: "RecruiterHome",
+    },
+    {
+      name: "CompanyProfile",
+      label: "nav.company_profile",
+      icon: "business",
+      screen: "CompanyProfile",
+    },
+    {
+      name: "JobPostings",
+      label: "nav.job_postings",
+      icon: "briefcase",
+      screen: "JobPostings",
+    },
+    {
+      name: "Shortlists",
+      label: "nav.shortlists",
+      icon: "heart",
+      screen: "Shortlists",
+    },
+    {
+      name: "JDGenerator",
+      label: "nav.jd_generator",
+      icon: "sparkles",
+      screen: "JDGenerator",
+    },
+    {
+      name: "Pipeline",
+      label: "nav.pipeline",
+      icon: "git-branch",
+      screen: "Pipeline",
+    },
+    {
+      name: "ContactUs",
+      label: "Contact Us",
+      icon: "mail-outline",
+      screen: "ContactUs",
+    },
   ];
 
   const links = isApplicant ? applicantLinks : recruiterLinks;
@@ -68,11 +128,17 @@ export default function AnimatedSidebar() {
     ]).start();
   }, [isOpen, slideAnim, fadeAnim]);
 
+  useEffect(() => {
+    close();
+  }, [language]);
+
   const screenExists = (navState, name) => {
     if (!navState) return false;
     if (navState.routeNames?.includes(name)) return true;
     if (navState.routes) {
-      return navState.routes.some(r => r.state ? screenExists(r.state, name) : r.name === name);
+      return navState.routes.some((r) =>
+        r.state ? screenExists(r.state, name) : r.name === name,
+      );
     }
     return false;
   };
@@ -82,8 +148,11 @@ export default function AnimatedSidebar() {
     if (!navigation) return;
     const rootState = navigation.getRootState();
     if (screenExists(rootState, screenName)) {
-      if (screenName === 'ApplicantProfile') {
-        navigation.navigate('ApplicantProfile', { profileId: profile?.id, viewOnly: false });
+      if (screenName === "ApplicantProfile") {
+        navigation.navigate("ApplicantProfile", {
+          profileId: profile?.id,
+          viewOnly: false,
+        });
       } else {
         navigation.navigate(screenName);
       }
@@ -98,10 +167,13 @@ export default function AnimatedSidebar() {
   };
 
   return (
-    <View style={StyleSheet.absoluteFill} pointerEvents={isOpen ? 'auto' : 'none'}>
+    <View
+      style={StyleSheet.absoluteFill}
+      pointerEvents={isOpen ? "auto" : "none"}
+    >
       <Animated.View
         style={[styles.backdrop, { opacity: fadeAnim }]}
-        pointerEvents={isOpen ? 'auto' : 'none'}
+        pointerEvents={isOpen ? "auto" : "none"}
       >
         <TouchableOpacity
           activeOpacity={1}
@@ -113,31 +185,75 @@ export default function AnimatedSidebar() {
       <Animated.View
         style={[
           styles.sidebar,
-          { backgroundColor: c.sidebar, transform: [{ translateX: slideAnim }] },
+          {
+            backgroundColor: c.sidebar,
+            transform: [{ translateX: slideAnim }],
+          },
         ]}
       >
         <SafeAreaView style={styles.sidebarSafe}>
           <View style={styles.drawerHeader}>
             <View style={[styles.logoMark, { backgroundColor: c.accent }]}>
-              <Text style={[styles.logoText, { color: c['destructive-foreground'] }]}>H</Text>
+              <Text
+                style={[
+                  styles.logoText,
+                  { color: c["destructive-foreground"] },
+                ]}
+              >
+                H
+              </Text>
             </View>
-            <Text style={[styles.wordmark, { color: c['destructive-foreground'] }]}>HireReadyAI</Text>
+            <Text
+              style={[styles.wordmark, { color: c["destructive-foreground"] }]}
+            >
+              HireReadyAI
+            </Text>
           </View>
 
-          <View style={[styles.userChip, { borderTopColor: `${c['destructive-foreground']}14`, borderBottomColor: `${c['destructive-foreground']}14` }]}>
+          <View
+            style={[
+              styles.userChip,
+              {
+                borderTopColor: `${c["destructive-foreground"]}14`,
+                borderBottomColor: `${c["destructive-foreground"]}14`,
+              },
+            ]}
+          >
             <View style={[styles.avatar, { backgroundColor: `${c.accent}33` }]}>
               <Text style={[styles.avatarText, { color: c.accent }]}>
-                {(profile?.full_name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)) || '?'}
+                {profile?.full_name
+                  ?.split(" ")
+                  .map((n) => n[0])
+                  .join("")
+                  .toUpperCase()
+                  .slice(0, 2) || "?"}
               </Text>
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.userName, { color: c['destructive-foreground'] }]}>{profile?.full_name || 'User'}</Text>
-              <Text style={[styles.userRole, { color: `${c['destructive-foreground']}80` }]}>{profile?.role || ''}</Text>
+              <Text
+                style={[
+                  styles.userName,
+                  { color: c["destructive-foreground"] },
+                ]}
+              >
+                {profile?.full_name || "User"}
+              </Text>
+              <Text
+                style={[
+                  styles.userRole,
+                  { color: `${c["destructive-foreground"]}80` },
+                ]}
+              >
+                {profile?.role || ""}
+              </Text>
             </View>
             <LanguageSwitcher />
           </View>
 
-          <ScrollView style={styles.navScroll} showsVerticalScrollIndicator={false}>
+          <ScrollView
+            style={styles.navScroll}
+            showsVerticalScrollIndicator={false}
+          >
             {links.map((link) => (
               <TouchableOpacity
                 key={link.name}
@@ -148,11 +264,16 @@ export default function AnimatedSidebar() {
                 <Ionicons
                   name={link.icon}
                   size={18}
-                  color={`${c['destructive-foreground']}b3`}
+                  color={`${c["destructive-foreground"]}b3`}
                   style={styles.navIcon}
                 />
-                <Text style={[styles.navLabel, { color: `${c['destructive-foreground']}cc` }]}>
-                  {link.label}
+                <Text
+                  style={[
+                    styles.navLabel,
+                    { color: `${c["destructive-foreground"]}cc` },
+                  ]}
+                >
+                  {t(link.label)}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -160,22 +281,34 @@ export default function AnimatedSidebar() {
 
           <TouchableOpacity
             onPress={toggleTheme}
-            style={[styles.themeButton, { borderTopColor: `${c['destructive-foreground']}14` }]}
+            style={[
+              styles.themeButton,
+              { borderTopColor: `${c["destructive-foreground"]}14` },
+            ]}
             activeOpacity={0.7}
           >
             <Ionicons
-              name={isDark ? 'sunny' : 'moon'}
+              name={isDark ? "sunny" : "moon"}
               size={18}
-              color={c['muted-foreground']}
+              color={c["muted-foreground"]}
             />
-            <Text style={[styles.themeText, { color: c['muted-foreground'] }]}>
-              {isDark ? 'Light Mode' : 'Dark Mode'}
+            <Text style={[styles.themeText, { color: c["muted-foreground"] }]}>
+              {t(isDark ? "light_mode" : "dark_mode")}
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={handleSignOut} style={[styles.logoutButton, { borderTopColor: `${c['destructive-foreground']}14` }]} activeOpacity={0.7}>
+          <TouchableOpacity
+            onPress={handleSignOut}
+            style={[
+              styles.logoutButton,
+              { borderTopColor: `${c["destructive-foreground"]}14` },
+            ]}
+            activeOpacity={0.7}
+          >
             <Ionicons name="log-out" size={18} color={c.destructive} />
-            <Text style={[styles.logoutText, { color: c.destructive }]}>Logout</Text>
+            <Text style={[styles.logoutText, { color: c.destructive }]}>
+              {t("logout")}
+            </Text>
           </TouchableOpacity>
         </SafeAreaView>
       </Animated.View>
@@ -186,18 +319,18 @@ export default function AnimatedSidebar() {
 const styles = StyleSheet.create({
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: "rgba(0,0,0,0.4)",
     zIndex: 40,
   },
   sidebar: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     bottom: 0,
     width: SIDEBAR_WIDTH,
     zIndex: 50,
     elevation: 10,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 2, height: 0 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -205,11 +338,11 @@ const styles = StyleSheet.create({
   sidebarSafe: {
     flex: 1,
     padding: spacing[4],
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   drawerHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing[2.5],
     paddingHorizontal: spacing[1],
     paddingVertical: spacing[2],
@@ -219,8 +352,8 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: borderRadius.lg,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   logoText: {
     fontSize: fontSize.xl,
@@ -232,8 +365,8 @@ const styles = StyleSheet.create({
     letterSpacing: -0.3,
   },
   userChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing[2.5],
     paddingHorizontal: spacing[1],
     paddingVertical: spacing[3],
@@ -245,8 +378,8 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   avatarText: {
     fontSize: 13,
@@ -258,14 +391,14 @@ const styles = StyleSheet.create({
   },
   userRole: {
     fontSize: fontSize.xs,
-    textTransform: 'capitalize',
+    textTransform: "capitalize",
   },
   navScroll: {
     flex: 1,
   },
   navItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing[3],
     paddingHorizontal: spacing[3],
     paddingVertical: spacing[2.5],
@@ -274,7 +407,7 @@ const styles = StyleSheet.create({
   },
   navIcon: {
     width: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   navLabel: {
     flex: 1,
@@ -282,8 +415,8 @@ const styles = StyleSheet.create({
     fontWeight: fontWeight.medium,
   },
   themeButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing[3],
     paddingVertical: spacing[2],
     paddingHorizontal: spacing[3],
@@ -294,8 +427,8 @@ const styles = StyleSheet.create({
     fontWeight: fontWeight.medium,
   },
   logoutButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing[3],
     paddingVertical: spacing[3],
     paddingHorizontal: spacing[3],

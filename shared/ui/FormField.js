@@ -104,11 +104,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   inputWithToggle: {
-    paddingRight: 48,
+    paddingEnd: 48,
   },
   toggleButton: {
     position: 'absolute',
-    right: 12,
+    end: 12,
     top: '50%',
     transform: [{ translateY: -12 }],
     padding: 0,

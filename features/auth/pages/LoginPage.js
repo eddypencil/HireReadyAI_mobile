@@ -13,6 +13,7 @@ import FormField from '../../../shared/ui/FormField';
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../shared/context/I18nContext';
 import { useUser } from '../context/user.context';
+import LanguageSwitcher from '../../../shared/i18n/LanguageSwitcher';
 
 export default function LoginPage() {
   const { theme } = useTheme();
@@ -64,87 +65,91 @@ export default function LoginPage() {
     linkContainer: { alignItems: 'center', marginTop: 8, paddingVertical: 12 },
     linkText: { fontSize: 13, color: c['muted-foreground'] },
     linkHighlight: { color: c.accent, fontWeight: '600' },
+    languageSwitcher: { position: 'absolute', top: 42, end: 22, zIndex: 10 },
   };
 
   return (
-    <KeyboardAvoidingView
-      style={s.flex}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <ScrollView
-        contentContainerStyle={s.container}
-        keyboardShouldPersistTaps="handled"
+    <View style={{ flex: 1, position: 'relative' }}>
+      <KeyboardAvoidingView
+        style={s.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <View style={s.branding}>
-          <View style={s.logo}>
-            <Text style={s.logoText}>H</Text>
-          </View>
-          <Text style={s.appName}>
-            HireReady<Text style={s.aiHighlight}>AI</Text>
-          </Text>
-        </View>
-
-        <Text style={s.headline}>{t('sign_in.welcome_back')}</Text>
-        <Text style={s.subheading}>{t('sign_in.subtitle')}</Text>
-
-        <View style={s.form}>
-          <FormField
-            label={t('sign_in.email')}
-            type="email"
-            placeholder="you@gmail.com"
-            value={email}
-            onChangeText={setEmail}
-            required
-          />
-
-          <FormField
-            label={t('sign_in.password')}
-            type="password"
-            placeholder="••••••••••"
-            value={password}
-            onChangeText={setPassword}
-            required
-          />
-
-          
-          {/* <TouchableOpacity
-            onPress={() => navigation.navigate('ForgotPassword')}
-            style={styles.forgotContainer}
-          >
-            <Text style={styles.forgotText}>Forgot password?</Text>
-          </TouchableOpacity> */}
-
-          {error && (
-            <View style={s.errorContainer}>
-              <Text style={s.errorText}>{error}</Text>
+        <ScrollView
+          contentContainerStyle={s.container}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={s.branding}>
+            <View style={s.logo}>
+              <Text style={s.logoText}>H</Text>
             </View>
-          )}
-
-          <TouchableOpacity
-            style={[s.button, loading && s.buttonDisabled]}
-            onPress={handleSignIn}
-            disabled={loading}
-            activeOpacity={0.8}
-          >
-            {loading ? (
-              <ActivityIndicator color={c['destructive-foreground']} size="small" />
-            ) : (
-              <Text style={s.buttonText}>{t('sign_in.sign_in')}</Text>
-            )}
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => navigation.navigate('Register')}
-            style={s.linkContainer}
-          >
-            <Text style={s.linkText}>
-              {t('sign_in.no_account')}{' '}
-              <Text style={s.linkHighlight}>{t('sign_in.create_one')}</Text>
+            <Text style={s.appName}>
+              HireReady<Text style={s.aiHighlight}>AI</Text>
             </Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+          </View>
+
+          <Text style={s.headline}>{t('sign_in.welcome_back')}</Text>
+          <Text style={s.subheading}>{t('sign_in.subtitle')}</Text>
+
+          <View style={s.form}>
+            <FormField
+              label={t('sign_in.email')}
+              type="email"
+              placeholder="you@gmail.com"
+              value={email}
+              onChangeText={setEmail}
+              required
+            />
+
+            <FormField
+              label={t('sign_in.password')}
+              type="password"
+              placeholder="••••••••••"
+              value={password}
+              onChangeText={setPassword}
+              required
+            />
+
+            
+            {/* <TouchableOpacity
+              onPress={() => navigation.navigate('ForgotPassword')}
+              style={styles.forgotContainer}
+            >
+              <Text style={styles.forgotText}>Forgot password?</Text>
+            </TouchableOpacity> */}
+
+            {error && (
+              <View style={s.errorContainer}>
+                <Text style={s.errorText}>{error}</Text>
+              </View>
+            )}
+
+            <TouchableOpacity
+              style={[s.button, loading && s.buttonDisabled]}
+              onPress={handleSignIn}
+              disabled={loading}
+              activeOpacity={0.8}
+            >
+              {loading ? (
+                <ActivityIndicator color={c['destructive-foreground']} size="small" />
+              ) : (
+                <Text style={s.buttonText}>{t('sign_in.sign_in')}</Text>
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Register')}
+              style={s.linkContainer}
+            >
+              <Text style={s.linkText}>
+                {t('sign_in.no_account')}{' '}
+                <Text style={s.linkHighlight}>{t('sign_in.create_one')}</Text>
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+      <LanguageSwitcher style={s.languageSwitcher} />
+    </View>
   );
 }
 

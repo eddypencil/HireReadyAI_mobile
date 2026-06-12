@@ -1,10 +1,11 @@
-// features/applicant/components/profile/ProjectsTab.js
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../../shared/context/I18nContext';
 
 function ProjectMedia({ images, onAdd, viewOnly }) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const c = theme.colors;
   const styles = createStyles(c);
   if (!images?.length) {
@@ -12,7 +13,7 @@ function ProjectMedia({ images, onAdd, viewOnly }) {
     return (
       <TouchableOpacity style={styles.addMediaBtn} onPress={onAdd} activeOpacity={0.75}>
         <Ionicons name="images-outline" size={18} color={c['muted-foreground']} />
-        <Text style={styles.addMediaText}>Add screenshots</Text>
+        <Text style={styles.addMediaText}>{t('profile.projects_tab.add_screenshots')}</Text>
       </TouchableOpacity>
     );
   }
@@ -27,7 +28,7 @@ function ProjectMedia({ images, onAdd, viewOnly }) {
         {!viewOnly && (
           <TouchableOpacity style={[styles.mediaTile, styles.addTile]} onPress={onAdd} activeOpacity={0.75}>
             <Ionicons name="add" size={22} color={c['muted-foreground']} />
-            <Text style={styles.addTileText}>Add</Text>
+            <Text style={styles.addTileText}>{t('profile.projects_tab.add')}</Text>
           </TouchableOpacity>
         )}
       </ScrollView>
@@ -96,6 +97,7 @@ function ProjectCard({ item, index, onEdit, onDelete, viewOnly, onAddMedia }) {
 
 export default function ProjectsTab({ profile, viewOnly, onEdit, onDelete, onAddMedia }) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const c = theme.colors;
   const styles = createStyles(c);
   const projects = profile?.projects || [];
@@ -107,7 +109,7 @@ export default function ProjectsTab({ profile, viewOnly, onEdit, onDelete, onAdd
         <View style={styles.sectionHeader}>
           <View style={styles.sectionHeaderLeft}>
             <Ionicons name="rocket-outline" size={16} color={c.accent} />
-            <Text style={styles.sectionTitle}>Projects</Text>
+            <Text style={styles.sectionTitle}>{t('profile.projects_tab.projects')}</Text>
           </View>
           {!viewOnly && (
             <TouchableOpacity style={styles.addBtn} onPress={() => onEdit(null, null)} activeOpacity={0.75}>
@@ -127,17 +129,17 @@ export default function ProjectsTab({ profile, viewOnly, onEdit, onDelete, onAdd
               <Ionicons name="rocket-outline" size={36} color={c.border} />
             </View>
             <Text style={styles.emptyTitle}>
-              {viewOnly ? 'No projects added yet' : 'Showcase your work'}
+              {viewOnly ? t('profile.projects_tab.no_projects_yet') : t('profile.projects_tab.showcase_work')}
             </Text>
             <Text style={styles.emptySubtitle}>
               {viewOnly
-                ? "This applicant hasn't added any projects yet."
-                : 'Add projects with screenshots and videos to impress recruiters'}
+                ? t('profile.projects_tab.empty_view_only_subtitle')
+                : t('profile.projects_tab.empty_owner_subtitle')}
             </Text>
             {!viewOnly && (
               <View style={styles.emptyAddBtn}>
                 <Ionicons name="add-circle-outline" size={16} color={c.white} />
-                <Text style={styles.emptyAddBtnText}>Add Project</Text>
+                <Text style={styles.emptyAddBtnText}>{t('profile.projects_tab.add_project')}</Text>
               </View>
             )}
           </TouchableOpacity>

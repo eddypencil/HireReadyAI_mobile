@@ -33,6 +33,7 @@ function PickerDropdown({
   placeholder,
   theme,
   accessibilityLabel,
+  isRtl,
 }) {
   const [visible, setVisible] = useState(false);
   const displayValue = selected
@@ -45,6 +46,7 @@ function PickerDropdown({
         style={[
           styles.selectField,
           { backgroundColor: theme.surface, borderColor: theme.border },
+          isRtl && styles.rowReverse,
         ]}
         onPress={() => setVisible(true)}
         accessibilityRole="button"
@@ -56,6 +58,7 @@ function PickerDropdown({
             styles.selectFieldText,
             { color: theme.foreground },
             !selected && { color: theme.muted },
+            isRtl && styles.textRight,
           ]}
           numberOfLines={1}
         >
@@ -78,7 +81,7 @@ function PickerDropdown({
             style={[styles.modalContent, { backgroundColor: theme.surface }]}
             onPress={() => {}}
           >
-            <Text style={[styles.modalTitle, { color: theme.foreground }]}>
+            <Text style={[styles.modalTitle, { color: theme.foreground }, isRtl && styles.textRight]}>
               {placeholder}
             </Text>
             <FlatList
@@ -88,6 +91,7 @@ function PickerDropdown({
                 <TouchableOpacity
                   style={[
                     styles.modalOption,
+                    isRtl && styles.rowReverse,
                     selected === item.value && {
                       backgroundColor: theme.primaryLight,
                     },
@@ -103,6 +107,7 @@ function PickerDropdown({
                     style={[
                       styles.modalOptionText,
                       { color: theme.foreground },
+                      isRtl && styles.textRight,
                       selected === item.value && {
                         color: theme.primary,
                         fontWeight: "600",
@@ -131,7 +136,8 @@ function PickerDropdown({
 export default function JobPostings() {
   const insets = useSafeAreaInsets();
   const { theme: appTheme, isDark } = useTheme();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const isRtl = language === "ar";
   const c = appTheme.colors;
   const theme = {
     isDark,
@@ -294,7 +300,7 @@ export default function JobPostings() {
 
   const formatDate = (dateString) => {
     if (!dateString) return t("companies.recently");
-    return new Date(dateString).toLocaleDateString("en-US", {
+    return new Date(dateString).toLocaleDateString(isRtl ? "ar-EG" : "en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
@@ -333,6 +339,7 @@ export default function JobPostings() {
             backgroundColor: theme.card,
             borderColor: isSelected ? theme.primary : theme.border,
           },
+          isRtl && styles.rowReverse,
           isSelected && { backgroundColor: theme.primaryLight },
         ]}
         onPress={() => {
@@ -350,9 +357,13 @@ export default function JobPostings() {
         accessibilityHint={t("companies.opens_job_details")}
       >
         <View style={styles.jobListItemContent}>
-          <View style={styles.jobListTopRow}>
+          <View style={[styles.jobListTopRow, isRtl && styles.rowReverse]}>
             <Text
-              style={[styles.jobListTitle, { color: theme.foreground }]}
+              style={[
+                styles.jobListTitle,
+                { color: theme.foreground },
+                isRtl ? styles.jobListTitleRtl : styles.jobListTitleLtr,
+              ]}
               numberOfLines={1}
             >
               {job.title}
@@ -375,7 +386,7 @@ export default function JobPostings() {
               </Text>
             </View>
           </View>
-          <View style={styles.jobListMeta}>
+          <View style={[styles.jobListMeta, isRtl && styles.rowReverse]}>
             <Ionicons name="briefcase-outline" size={11} color={theme.muted} />
             <Text style={[styles.jobListMetaText, { color: theme.muted }]}>
               {job.seniority_level || t("companies.any")}
@@ -396,7 +407,7 @@ export default function JobPostings() {
             </Text>
           </View>
         </View>
-        <Ionicons name="chevron-forward" size={16} color={theme.muted} />
+        <Ionicons name={isRtl ? "chevron-back" : "chevron-forward"} size={16} color={theme.muted} />
       </TouchableOpacity>
     );
   };
@@ -415,20 +426,20 @@ export default function JobPostings() {
         >
           <ScrollView contentContainerStyle={styles.detailContent}>
             <TouchableOpacity
-              style={styles.backToList}
+              style={[styles.backToList, isRtl && styles.rowReverse]}
               onPress={() => setShowList(true)}
               accessibilityRole="button"
               accessibilityLabel={t("companies.back_to_jobs_accessible")}
             >
-              <Ionicons name="chevron-back" size={20} color={theme.primary} />
-              <Text style={[styles.backText, { color: theme.primary }]}>
+              <Ionicons name={isRtl ? "chevron-forward" : "chevron-back"} size={20} color={theme.primary} />
+              <Text style={[styles.backText, { color: theme.primary }, isRtl && styles.backTextRtl]}>
                 {t("companies.back_to_jobs")}
               </Text>
             </TouchableOpacity>
 
             {/* Header */}
-            <View style={styles.detailHeader}>
-              <View style={styles.detailHeaderLeft}>
+            <View style={[styles.detailHeader, isRtl && styles.rowReverse]}>
+              <View style={[styles.detailHeaderLeft, isRtl && styles.detailHeaderLeftRtl]}>
                 {isEditing ? (
                   <TextInput
                     style={[
@@ -438,6 +449,7 @@ export default function JobPostings() {
                         borderColor: theme.border,
                         color: theme.foreground,
                       },
+                      isRtl && styles.textRight,
                     ]}
                     value={editForm.title}
                     onChangeText={(t) => setEditForm({ ...editForm, title: t })}
@@ -445,19 +457,19 @@ export default function JobPostings() {
                   />
                 ) : (
                   <Text
-                    style={[styles.detailTitle, { color: theme.foreground }]}
+                    style={[styles.detailTitle, { color: theme.foreground }, isRtl && styles.textRight]}
                   >
                     {selectedJob.title}
                   </Text>
                 )}
-                <Text style={[styles.detailSubtitle, { color: theme.muted }]}>
+                <Text style={[styles.detailSubtitle, { color: theme.muted }, isRtl && styles.textRight]}>
                   {selectedJob.seniority_level || t("companies.any")} ·{" "}
                   {selectedJob.work_location || t("companies.any")} ·{" "}
                   {selectedJob.job_type?.replace(/_/g, "-") ||
                     t("companies.full_time")}
                 </Text>
               </View>
-              <View style={styles.detailHeaderActions}>
+              <View style={[styles.detailHeaderActions, isRtl && styles.rowReverse]}>
                 {isEditing ? (
                   <>
                     <TouchableOpacity
@@ -531,10 +543,11 @@ export default function JobPostings() {
               style={[
                 styles.infoGrid,
                 { backgroundColor: theme.card, borderColor: theme.border },
+                isRtl && styles.rowReverse,
               ]}
             >
               <View style={styles.infoItem}>
-                <View style={styles.infoLabelRow}>
+                <View style={[styles.infoLabelRow, isRtl && styles.rowReverse]}>
                   <Ionicons
                     name="layers-outline"
                     size={14}
@@ -554,15 +567,16 @@ export default function JobPostings() {
                     placeholder={t("companies.select_level")}
                     theme={theme}
                     accessibilityLabel={t("companies.seniority_selector")}
+                    isRtl={isRtl}
                   />
                 ) : (
-                  <Text style={[styles.infoValue, { color: theme.foreground }]}>
+                  <Text style={[styles.infoValue, { color: theme.foreground }, isRtl && styles.textRight]}>
                     {selectedJob.seniority_level || t("companies.na")}
                   </Text>
                 )}
               </View>
               <View style={styles.infoItem}>
-                <View style={styles.infoLabelRow}>
+                <View style={[styles.infoLabelRow, isRtl && styles.rowReverse]}>
                   <Ionicons
                     name="location-outline"
                     size={14}
@@ -582,15 +596,16 @@ export default function JobPostings() {
                     placeholder={t("companies.select_location")}
                     theme={theme}
                     accessibilityLabel={t("companies.location_selector")}
+                    isRtl={isRtl}
                   />
                 ) : (
-                  <Text style={[styles.infoValue, { color: theme.foreground }]}>
+                  <Text style={[styles.infoValue, { color: theme.foreground }, isRtl && styles.textRight]}>
                     {selectedJob.work_location || t("companies.na")}
                   </Text>
                 )}
               </View>
               <View style={styles.infoItem}>
-                <View style={styles.infoLabelRow}>
+                <View style={[styles.infoLabelRow, isRtl && styles.rowReverse]}>
                   <Ionicons
                     name="briefcase-outline"
                     size={14}
@@ -610,16 +625,17 @@ export default function JobPostings() {
                     placeholder={t("companies.select_type")}
                     theme={theme}
                     accessibilityLabel={t("companies.type_selector")}
+                    isRtl={isRtl}
                   />
                 ) : (
-                  <Text style={[styles.infoValue, { color: theme.foreground }]}>
+                  <Text style={[styles.infoValue, { color: theme.foreground }, isRtl && styles.textRight]}>
                     {selectedJob.job_type?.replace(/_/g, "-") ||
                       t("companies.na")}
                   </Text>
                 )}
               </View>
               <View style={styles.infoItem}>
-                <View style={styles.infoLabelRow}>
+                <View style={[styles.infoLabelRow, isRtl && styles.rowReverse]}>
                   <Ionicons
                     name="cash-outline"
                     size={14}
@@ -630,7 +646,7 @@ export default function JobPostings() {
                   </Text>
                 </View>
                 {isEditing ? (
-                  <View style={styles.salaryEditRow}>
+                  <View style={[styles.salaryEditRow, isRtl && styles.rowReverse]}>
                     <TextInput
                       style={[
                         styles.editInfoInput,
@@ -639,6 +655,7 @@ export default function JobPostings() {
                           borderColor: theme.border,
                           color: theme.foreground,
                         },
+                        isRtl && styles.textRight,
                       ]}
                       value={String(editForm.salary_min || "")}
                       onChangeText={(t) =>
@@ -660,6 +677,7 @@ export default function JobPostings() {
                           borderColor: theme.border,
                           color: theme.foreground,
                         },
+                        isRtl && styles.textRight,
                       ]}
                       value={String(editForm.salary_max || "")}
                       onChangeText={(t) =>
@@ -672,7 +690,7 @@ export default function JobPostings() {
                     />
                   </View>
                 ) : (
-                  <Text style={[styles.infoValue, { color: theme.foreground }]}>
+                  <Text style={[styles.infoValue, { color: theme.foreground }, isRtl && styles.textRight]}>
                     {selectedJob.salary_min
                       ? `$${selectedJob.salary_min.toLocaleString()}`
                       : t("companies.na")}{" "}
@@ -684,7 +702,7 @@ export default function JobPostings() {
                 )}
               </View>
               <View style={styles.infoItem}>
-                <View style={styles.infoLabelRow}>
+                <View style={[styles.infoLabelRow, isRtl && styles.rowReverse]}>
                   <Ionicons
                     name="calendar-outline"
                     size={14}
@@ -694,12 +712,12 @@ export default function JobPostings() {
                     {t("companies.published_label")}
                   </Text>
                 </View>
-                <Text style={[styles.infoValue, { color: theme.foreground }]}>
+                <Text style={[styles.infoValue, { color: theme.foreground }, isRtl && styles.textRight]}>
                   {formatDate(selectedJob.created_at)}
                 </Text>
               </View>
               <View style={styles.infoItem}>
-                <View style={styles.infoLabelRow}>
+                <View style={[styles.infoLabelRow, isRtl && styles.rowReverse]}>
                   <Ionicons
                     name="flash-outline"
                     size={14}
@@ -709,7 +727,7 @@ export default function JobPostings() {
                     {t("companies.ai_shortlist_label")}
                   </Text>
                 </View>
-                <Text style={[styles.infoValue, { color: theme.foreground }]}>
+                <Text style={[styles.infoValue, { color: theme.foreground }, isRtl && styles.textRight]}>
                   {t("companies.strong_fits", {
                     count: selectedJob.shortlist_entries?.[0]?.count || 0,
                   })}
@@ -725,7 +743,7 @@ export default function JobPostings() {
               ]}
             >
               <Text
-                style={[styles.contentCardTitle, { color: theme.foreground }]}
+                style={[styles.contentCardTitle, { color: theme.foreground }, isRtl && styles.textRight]}
               >
                 {t("companies.job_summary")}
               </Text>
@@ -738,6 +756,7 @@ export default function JobPostings() {
                       borderColor: theme.border,
                       color: theme.mutedForeground,
                     },
+                    isRtl && styles.textRight,
                   ]}
                   value={editForm.description || ""}
                   onChangeText={(t) =>
@@ -753,6 +772,7 @@ export default function JobPostings() {
                   style={[
                     styles.contentCardBody,
                     { color: theme.mutedForeground },
+                    isRtl && styles.textRight,
                   ]}
                 >
                   {selectedJob.description || t("companies.no_description")}
@@ -768,14 +788,14 @@ export default function JobPostings() {
               ]}
             >
               <Text
-                style={[styles.contentCardTitle, { color: theme.foreground }]}
+                style={[styles.contentCardTitle, { color: theme.foreground }, isRtl && styles.textRight]}
               >
                 {t("companies.responsibilities")}
               </Text>
               {isEditing ? (
                 <View style={styles.editList}>
                   {(editForm.responsibilities || []).map((resp, i) => (
-                    <View key={i} style={styles.editListItem}>
+                    <View key={i} style={[styles.editListItem, isRtl && styles.rowReverse]}>
                       <TouchableOpacity
                         onPress={() => removeArrayItem(i, "responsibilities")}
                         accessibilityRole="button"
@@ -798,6 +818,7 @@ export default function JobPostings() {
                             borderColor: theme.border,
                             color: theme.foreground,
                           },
+                          isRtl && styles.textRight,
                         ]}
                         value={resp}
                         onChangeText={(t) => {
@@ -819,6 +840,7 @@ export default function JobPostings() {
                         borderColor: theme.border,
                         color: theme.mutedForeground,
                       },
+                      isRtl && styles.textRight,
                     ]}
                     placeholder={t("companies.type_to_add")}
                     placeholderTextColor={theme.muted}
@@ -830,7 +852,7 @@ export default function JobPostings() {
                 </View>
               ) : (selectedJob.responsibilities || []).length > 0 ? (
                 selectedJob.responsibilities.map((resp, i) => (
-                  <View key={i} style={styles.listItem}>
+                  <View key={i} style={[styles.listItem, isRtl && styles.rowReverse]}>
                     <Ionicons
                       name="checkmark-circle"
                       size={16}
@@ -840,6 +862,7 @@ export default function JobPostings() {
                       style={[
                         styles.listItemText,
                         { color: theme.mutedForeground },
+                        isRtl && styles.textRight,
                       ]}
                     >
                       {resp}
@@ -847,7 +870,7 @@ export default function JobPostings() {
                   </View>
                 ))
               ) : (
-                <Text style={[styles.noContent, { color: theme.muted }]}>
+                <Text style={[styles.noContent, { color: theme.muted }, isRtl && styles.textRight]}>
                   {t("companies.none_specified")}
                 </Text>
               )}
@@ -861,14 +884,14 @@ export default function JobPostings() {
               ]}
             >
               <Text
-                style={[styles.contentCardTitle, { color: theme.foreground }]}
+                style={[styles.contentCardTitle, { color: theme.foreground }, isRtl && styles.textRight]}
               >
                 {t("companies.requirements")}
               </Text>
               {isEditing ? (
                 <View style={styles.editList}>
                   {(editForm.requirements || []).map((req, i) => (
-                    <View key={i} style={styles.editListItem}>
+                    <View key={i} style={[styles.editListItem, isRtl && styles.rowReverse]}>
                       <TouchableOpacity
                         onPress={() => removeArrayItem(i, "requirements")}
                         accessibilityRole="button"
@@ -890,6 +913,7 @@ export default function JobPostings() {
                             borderColor: theme.border,
                             color: theme.foreground,
                           },
+                          isRtl && styles.textRight,
                         ]}
                         value={req}
                         onChangeText={(t) => {
@@ -908,6 +932,7 @@ export default function JobPostings() {
                         borderColor: theme.border,
                         color: theme.mutedForeground,
                       },
+                      isRtl && styles.textRight,
                     ]}
                     placeholder={t("companies.type_to_add")}
                     placeholderTextColor={theme.muted}
@@ -919,7 +944,7 @@ export default function JobPostings() {
                 </View>
               ) : (selectedJob.requirements || []).length > 0 ? (
                 selectedJob.requirements.map((req, i) => (
-                  <View key={i} style={styles.listItem}>
+                  <View key={i} style={[styles.listItem, isRtl && styles.rowReverse]}>
                     <Ionicons
                       name="checkmark-circle"
                       size={16}
@@ -929,6 +954,7 @@ export default function JobPostings() {
                       style={[
                         styles.listItemText,
                         { color: theme.mutedForeground },
+                        isRtl && styles.textRight,
                       ]}
                     >
                       {req}
@@ -936,7 +962,7 @@ export default function JobPostings() {
                   </View>
                 ))
               ) : (
-                <Text style={[styles.noContent, { color: theme.muted }]}>
+                <Text style={[styles.noContent, { color: theme.muted }, isRtl && styles.textRight]}>
                   {t("companies.none_specified")}
                 </Text>
               )}
@@ -950,13 +976,13 @@ export default function JobPostings() {
               ]}
             >
               <Text
-                style={[styles.contentCardTitle, { color: theme.foreground }]}
+                style={[styles.contentCardTitle, { color: theme.foreground }, isRtl && styles.textRight]}
               >
                 {t("companies.skills")}
               </Text>
-              <View style={styles.skillsWrap}>
+              <View style={[styles.skillsWrap, isRtl && styles.rowReverse]}>
                 {isEditing ? (
-                  <View style={styles.editSkillsWrap}>
+                  <View style={[styles.editSkillsWrap, isRtl && styles.rowReverse]}>
                     {(editForm.skills || []).map((skill, i) => (
                       <View
                         key={i}
@@ -966,6 +992,7 @@ export default function JobPostings() {
                             backgroundColor: theme.chipBg,
                             borderColor: theme.chipBorder,
                           },
+                          isRtl && styles.rowReverse,
                         ]}
                       >
                         <Text
@@ -999,6 +1026,7 @@ export default function JobPostings() {
                           borderColor: theme.border,
                           color: theme.mutedForeground,
                         },
+                        isRtl && styles.textRight,
                       ]}
                       placeholder={t("companies.add_skill_placeholder")}
                       placeholderTextColor={theme.muted}
@@ -1018,6 +1046,7 @@ export default function JobPostings() {
                           backgroundColor: theme.chipBg,
                           borderColor: theme.chipBorder,
                         },
+                        isRtl && styles.rowReverse,
                       ]}
                     >
                       <Text
@@ -1031,7 +1060,7 @@ export default function JobPostings() {
                     </View>
                   ))
                 ) : (
-                  <Text style={[styles.noContent, { color: theme.muted }]}>
+                  <Text style={[styles.noContent, { color: theme.muted }, isRtl && styles.textRight]}>
                     {t("companies.none_specified")}
                   </Text>
                 )}
@@ -1046,14 +1075,14 @@ export default function JobPostings() {
               ]}
             >
               <Text
-                style={[styles.pipelineHeaderLabel, { color: theme.primary }]}
+                style={[styles.pipelineHeaderLabel, { color: theme.primary }, isRtl && styles.textRight]}
               >
                 {t("companies.hiring_pipeline")}
               </Text>
-              <Text style={[styles.pipelineTitle, { color: theme.foreground }]}>
+              <Text style={[styles.pipelineTitle, { color: theme.foreground }, isRtl && styles.textRight]}>
                 {t("companies.pipeline_title", { title: selectedJob.title })}
               </Text>
-              <Text style={[styles.pipelineSubtitle, { color: theme.muted }]}>
+              <Text style={[styles.pipelineSubtitle, { color: theme.muted }, isRtl && styles.textRight]}>
                 {loadingStages
                   ? t("companies.loading_stages")
                   : t("companies.stages_count", {
@@ -1062,7 +1091,7 @@ export default function JobPostings() {
               </Text>
 
               {loadingStages ? (
-                <View style={styles.pipelineLoading}>
+                <View style={[styles.pipelineLoading, isRtl && styles.rowReverse]}>
                   <ActivityIndicator size="small" color={theme.primary} />
                   <Text
                     style={[styles.pipelineLoadingText, { color: theme.muted }]}
@@ -1089,6 +1118,7 @@ export default function JobPostings() {
                 <ScrollView
                   horizontal
                   style={styles.pipelineScroll}
+                  contentContainerStyle={isRtl && styles.rowReverse}
                   showsHorizontalScrollIndicator={false}
                 >
                   {pipelineStages.map((stage, idx) => (
@@ -1100,6 +1130,7 @@ export default function JobPostings() {
                           backgroundColor: theme.surface,
                           borderColor: theme.border,
                         },
+                        isRtl ? styles.stageCardRtl : styles.stageCardLtr,
                       ]}
                     >
                       <View
@@ -1119,18 +1150,18 @@ export default function JobPostings() {
                       </View>
                       <Text style={styles.stageMeta}>
                         <Text
-                          style={[styles.stageLabel, { color: theme.muted }]}
+                          style={[styles.stageLabel, { color: theme.muted }, isRtl && styles.textRight]}
                         >
                           {t("companies.stage_number", { number: idx + 1 })}
                         </Text>
                       </Text>
                       <Text
-                        style={[styles.stageName, { color: theme.foreground }]}
+                        style={[styles.stageName, { color: theme.foreground }, isRtl && styles.textRight]}
                         numberOfLines={2}
                       >
                         {stage.name}
                       </Text>
-                      <View style={styles.stageBadges}>
+                      <View style={[styles.stageBadges, isRtl && styles.rowReverse]}>
                         <View
                           style={[
                             styles.weightBadge,
@@ -1177,6 +1208,7 @@ export default function JobPostings() {
                     backgroundColor: theme.primaryLight,
                     borderColor: theme.chipBorder,
                   },
+                  isRtl && styles.rowReverse,
                 ]}
                 onPress={() =>
                   navigation.navigate("PipelineBuilder", {
@@ -1213,19 +1245,20 @@ export default function JobPostings() {
     >
       {/* Search + Header */}
       <View style={[styles.listHeader, { borderBottomColor: theme.border }]}>
-        <Text style={[styles.listHeaderLabel, { color: theme.muted }]}>
+        <Text style={[styles.listHeaderLabel, { color: theme.muted }, isRtl && styles.textRight]}>
           {t("companies.open_roles")}
         </Text>
-        <View style={styles.searchRow}>
+        <View style={[styles.searchRow, isRtl && styles.rowReverse]}>
           <View
             style={[
               styles.searchInputWrap,
               { backgroundColor: theme.surface, borderColor: theme.border },
+              isRtl && styles.rowReverse,
             ]}
           >
             <Ionicons name="search-outline" size={16} color={theme.muted} />
             <TextInput
-              style={[styles.searchInput, { color: theme.foreground }]}
+              style={[styles.searchInput, { color: theme.foreground }, isRtl && styles.textRight]}
               placeholder={t("companies.search_jobs_placeholder")}
               placeholderTextColor={theme.muted}
               value={searchQuery}
@@ -1246,14 +1279,14 @@ export default function JobPostings() {
       </View>
 
       {/* Tabs */}
-      <View style={[styles.tabRow, { borderBottomColor: theme.border }]}>
+      <View style={[styles.tabRow, { borderBottomColor: theme.border }, isRtl && styles.rowReverse]}>
         {TABS.map((tab, i) => {
           const count = tabCounts[tab];
           const isActive = activeTab === tab;
           return (
             <TouchableOpacity
               key={tab}
-              style={styles.tab}
+              style={[styles.tab, isRtl && styles.rowReverse]}
               onPress={() => setActiveTab(tab)}
               accessibilityRole="tab"
               accessibilityLabel={t("companies.tab_accessible", {
@@ -1400,12 +1433,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 12,
     borderWidth: 1,
-    paddingRight: 12,
+    paddingHorizontal: 12,
   },
   jobListItemContent: {
     flex: 1,
     paddingVertical: 14,
-    paddingLeft: 14,
     gap: 8,
   },
   jobListTopRow: {
@@ -1417,7 +1449,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     flex: 1,
+  },
+  jobListTitleLtr: {
     marginRight: 8,
+  },
+  jobListTitleRtl: {
+    marginLeft: 8,
+    textAlign: "right",
   },
   jobStatusBadge: {
     paddingHorizontal: 8,
@@ -1474,6 +1512,10 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     marginLeft: 2,
   },
+  backTextRtl: {
+    marginLeft: 0,
+    marginRight: 2,
+  },
   detailHeader: {
     marginBottom: 14,
     flexDirection: "row",
@@ -1483,6 +1525,10 @@ const styles = StyleSheet.create({
   detailHeaderLeft: {
     flex: 1,
     marginRight: 12,
+  },
+  detailHeaderLeftRtl: {
+    marginRight: 0,
+    marginLeft: 12,
   },
   detailTitle: {
     fontSize: 22,
@@ -1763,7 +1809,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 12,
     padding: 14,
+  },
+  stageCardLtr: {
     marginRight: 12,
+  },
+  stageCardRtl: {
+    marginLeft: 12,
   },
   stageNumber: {
     width: 28,
@@ -1828,5 +1879,11 @@ const styles = StyleSheet.create({
   editPipelineBtnText: {
     fontSize: 13,
     fontWeight: "600",
+  },
+  rowReverse: {
+    flexDirection: "row-reverse",
+  },
+  textRight: {
+    textAlign: "right",
   },
 });

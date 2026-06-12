@@ -9,7 +9,8 @@ import PipelineBuilder from "../components/PipelineBuilder";
 
 export default function PipelineBuilderPage() {
   const { theme } = useTheme();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const isRtl = language === 'ar';
   const c = theme.colors;
   const styles = createStyles(c);
   const insets = useSafeAreaInsets();
@@ -45,10 +46,10 @@ export default function PipelineBuilderPage() {
           <Text style={styles.errorText}>{error}</Text>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
-            style={styles.backLink}
+            style={[styles.backLink, isRtl && styles.rowReverse]}
           >
-            <Ionicons name="arrow-back-outline" size={16} color={c.primary} />
-            <Text style={styles.backLinkText}>{t("pipeline.back_to_pipelines")}</Text>
+            <Ionicons name={isRtl ? 'arrow-forward-outline' : 'arrow-back-outline'} size={16} color={c.primary} />
+            <Text style={[styles.backLinkText, isRtl && styles.textRight]}>{t("pipeline.back_to_pipelines")}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -67,10 +68,10 @@ export default function PipelineBuilderPage() {
       <View style={styles.topBar}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          style={styles.topBarBack}
+          style={[styles.topBarBack, isRtl && styles.rowReverse]}
         >
-          <Ionicons name="arrow-back-outline" size={18} color={c['muted-foreground']} />
-          <Text style={styles.topBarBackText}>{t("pipeline.pipelines")}</Text>
+          <Ionicons name={isRtl ? 'arrow-forward-outline' : 'arrow-back-outline'} size={18} color={c['muted-foreground']} />
+          <Text style={[styles.topBarBackText, isRtl && styles.textRight]}>{t("pipeline.pipelines")}</Text>
         </TouchableOpacity>
         <View style={styles.topBarSeparator}>
           <Text style={styles.topBarSeparatorText}>/</Text>
@@ -151,6 +152,8 @@ function createStyles(c) {
       gap: 4,
       paddingRight: 8,
     },
+    rowReverse: { flexDirection: 'row-reverse' },
+    textRight: { textAlign: 'right' },
     topBarBackText: {
       fontSize: 13,
       color: c['muted-foreground'],

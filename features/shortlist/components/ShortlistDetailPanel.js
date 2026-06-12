@@ -58,7 +58,8 @@ export default function ShortlistDetailPanel({
   isOverlay,
 }) {
   const { theme } = useTheme();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const isRtl = language === 'ar';
   const c = theme.colors;
   const styles = createStyles(c);
   const { profile } = useUser();
@@ -70,9 +71,9 @@ export default function ShortlistDetailPanel({
   };
 
   const VOTE_CONFIG = useMemo(() => [
-    { value: 'up', label: t('shortlist.vote_up'), icon: 'thumbs-up', activeBg: c.success, inactiveBg: c.border, inactiveText: c['muted-foreground'] },
-    { value: 'neutral', label: t('shortlist.vote_neutral'), icon: 'remove', activeBg: c['muted-foreground'], inactiveBg: c.border, inactiveText: c['muted-foreground'] },
-    { value: 'down', label: t('shortlist.vote_down'), icon: 'thumbs-down', activeBg: c.destructive, inactiveBg: c.border, inactiveText: c['muted-foreground'] },
+    { value: 'up', label: t('shortlist.vote_up_pill'), icon: 'thumbs-up', activeBg: c.success, inactiveBg: c.border, inactiveText: c['muted-foreground'] },
+    { value: 'neutral', label: t('shortlist.vote_neutral_pill'), icon: 'remove', activeBg: c['muted-foreground'], inactiveBg: c.border, inactiveText: c['muted-foreground'] },
+    { value: 'down', label: t('shortlist.vote_down_pill'), icon: 'thumbs-down', activeBg: c.destructive, inactiveBg: c.border, inactiveText: c['muted-foreground'] },
   ], [t]);
   const [noteBody, setNoteBody] = useState('');
   const [visibleToTeam, setVisibleToTeam] = useState(true);
@@ -152,24 +153,24 @@ export default function ShortlistDetailPanel({
   };
 
   const headerContent = (
-    <View style={isOverlay ? styles.overlaySection : styles.header}>
-      <View style={styles.headerLeft}>
+    <View style={[isOverlay ? styles.overlaySection : styles.header, isRtl && styles.rowReverse]}>
+      <View style={[styles.headerLeft, isRtl && styles.rowReverse]}>
         <View style={[styles.headerAvatar, { backgroundColor: getAvatarColor(candidate?.full_name) }]}>
           <Text style={styles.headerAvatarText}>{getInitials(candidate?.full_name)}</Text>
         </View>
         <View style={styles.headerInfo}>
-          <View style={styles.headerNameRow}>
-            <Text style={styles.headerName} numberOfLines={1}>{candidate?.full_name}</Text>
+          <View style={[styles.headerNameRow, isRtl && styles.rowReverse]}>
+            <Text style={[styles.headerName, isRtl && styles.textRight]} numberOfLines={1}>{candidate?.full_name}</Text>
             {composite_score != null && (
               <View style={[styles.scorePill, { backgroundColor: scoreBadgeBg, borderColor: scoreBadgeBorder }]}>
                 <Text style={[styles.scorePillText, { color: scoreBadgeText }]}>{composite_score}</Text>
               </View>
             )}
           </View>
-          <Text style={styles.headerHeadline} numberOfLines={1}>
+          <Text style={[styles.headerHeadline, isRtl && styles.textRight]} numberOfLines={1}>
             {candidate?.headline || candidate?.role}
           </Text>
-          <View style={styles.tagRow}>
+          <View style={[styles.tagRow, isRtl && styles.rowReverse]}>
             {tags.slice(0, 3).map((tag) => {
               const ts = TAG_STYLES[tag] || { bg: c.border, text: c['muted-foreground'], border: c.border };
               return (
@@ -182,7 +183,7 @@ export default function ShortlistDetailPanel({
         </View>
       </View>
       {!isOverlay && (
-        <TouchableOpacity onPress={onClose} style={styles.closeBtn} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+        <TouchableOpacity onPress={onClose} style={[styles.closeBtn, isRtl && styles.closeBtnRtl]} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
           <Ionicons name="close" size={18} color={c['muted-foreground']} />
         </TouchableOpacity>
       )}
@@ -211,14 +212,14 @@ export default function ShortlistDetailPanel({
         ) : (
           <Text style={styles.noVoteText}>{t("shortlist.not_voted")}</Text>
         )}
-        <View style={styles.voteRow}>
+        <View style={[styles.voteRow, isRtl && styles.rowReverse]}>
           {VOTE_CONFIG.map(renderVoteButton)}
         </View>
       </View>
 
       <View style={styles.section}>
-        <View style={styles.teamVotesHeader}>
-          <Text style={styles.sectionTitle}>{t("shortlist.team_votes")}</Text>
+        <View style={[styles.teamVotesHeader, isRtl && styles.rowReverse]}>
+          <Text style={[styles.sectionTitle, isRtl && styles.textRight]}>{t("shortlist.team_votes")}</Text>
           <Text style={styles.voterCount}>{t("shortlist.votes_cast", { count: totalVoters })}</Text>
         </View>
         {totalVoters > 0 && (
@@ -229,14 +230,14 @@ export default function ShortlistDetailPanel({
         <View style={styles.voterList}>
           {votes.length === 0 && <Text style={styles.emptyText}>{t("shortlist.no_votes")}</Text>}
           {votes.map((v, i) => (
-            <View key={v.id || i} style={styles.voterItem}>
+            <View key={v.id || i} style={[styles.voterItem, isRtl && styles.rowReverse]}>
               <View style={styles.voterInfo}>
-                <View style={[styles.voterListItemAvatar, { backgroundColor: getAvatarColor(v.profiles?.full_name) }]}>
+                <View style={[styles.voterListItemAvatar, { backgroundColor: getAvatarColor(v.profiles?.full_name) }]}> 
                   <Text style={styles.voterListItemAvatarText}>{getInitials(v.profiles?.full_name)}</Text>
                 </View>
                 <View>
-                  <Text style={styles.voterName}>{v.profiles?.full_name}</Text>
-                  <Text style={styles.voterRole}>{v.profiles?.headline || v.profiles?.role}</Text>
+                  <Text style={[styles.voterName, isRtl && styles.textRight]}>{v.profiles?.full_name}</Text>
+                  <Text style={[styles.voterRole, isRtl && styles.textRight]}>{v.profiles?.headline || v.profiles?.role}</Text>
                 </View>
               </View>
               <View style={[
@@ -286,14 +287,14 @@ export default function ShortlistDetailPanel({
             {notes.length === 0 && <Text style={styles.emptyText}>{t("shortlist.no_notes")}</Text>}
             {notes.map((note) => (
               <View key={note.id} style={styles.noteCard}>
-                <View style={styles.noteHeader}>
-                  <Text style={styles.noteAuthor}>{note.profiles?.full_name || t("shortlist.team_member")}</Text>
+                <View style={[styles.noteHeader, isRtl && styles.rowReverse]}>
+                  <Text style={[styles.noteAuthor, isRtl && styles.textRight]}>{note.profiles?.full_name || t("shortlist.team_member")}</Text>
                   <View style={styles.noteTime}>
                     <Ionicons name="time-outline" size={11} color={c['muted-foreground']} />
-                    <Text style={styles.noteTimeText}>{timeAgo(note.created_at, t)}</Text>
+                    <Text style={[styles.noteTimeText, isRtl && styles.textRight]}>{timeAgo(note.created_at, t)}</Text>
                   </View>
                 </View>
-                <Text style={styles.noteBody}>{note.body}</Text>
+                <Text style={[styles.noteBody, isRtl && styles.textRight]}>{note.body}</Text>
               </View>
             ))}
             <View ref={notesEndRef} />
@@ -309,10 +310,10 @@ export default function ShortlistDetailPanel({
           placeholderTextColor={c['muted-foreground']}
           textAlignVertical="top"
         />
-        <View style={styles.noteActions}>
+        <View style={[styles.noteActions, isRtl && styles.rowReverse]}>
           <TouchableOpacity
             onPress={() => setVisibleToTeam(!visibleToTeam)}
-            style={styles.visibilityToggle}
+            style={[styles.visibilityToggle, isRtl && styles.rowReverse]}
           >
             <Ionicons
               name={visibleToTeam ? 'checkbox' : 'square-outline'}
@@ -352,7 +353,7 @@ export default function ShortlistDetailPanel({
           onChangeText={setRejectReason}
           textAlignVertical="top"
         />
-        <View style={styles.rejectActions}>
+        <View style={[styles.rejectActions, isRtl && styles.rowReverse]}>
           <TouchableOpacity onPress={() => setShowRejectInput(false)} style={styles.cancelRejectBtn}>
             <Text style={styles.cancelRejectText}>{t("shortlist.cancel")}</Text>
           </TouchableOpacity>
@@ -368,7 +369,7 @@ export default function ShortlistDetailPanel({
         </View>
       </View>
     ) : (
-      <View style={styles.actionRow}>
+      <View style={[styles.actionRow, isRtl && styles.rowReverse]}>
         <TouchableOpacity
           onPress={() => onAdvanceToOffer(app.id)}
           style={styles.advanceBtn}
@@ -400,7 +401,7 @@ export default function ShortlistDetailPanel({
         visible
         onClose={onClose}
         closeButton={
-          <TouchableOpacity onPress={onClose} style={styles.closeBtn} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+          <TouchableOpacity onPress={onClose} style={[styles.closeBtn, isRtl && styles.closeBtnRtl]} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
             <Ionicons name="close" size={18} color={c['muted-foreground']} />
           </TouchableOpacity>
         }
@@ -881,4 +882,10 @@ function createStyles(c) { return StyleSheet.create({
     color: c['muted-foreground'],
     lineHeight: 17,
   },
+  closeBtnRtl: {
+    marginLeft: 0,
+    marginRight: 8,
+  },
+  rowReverse: { flexDirection: 'row-reverse' },
+  textRight: { textAlign: 'right' },
 }); }

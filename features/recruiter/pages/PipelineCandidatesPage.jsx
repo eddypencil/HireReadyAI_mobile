@@ -113,7 +113,11 @@ function createStyles(c) {
       gap: 14,
       alignItems: "flex-start",
     },
-    column: { width: 240, maxHeight: "100%" },
+
+    rowReverse: { flexDirection: 'row-reverse' },
+    textRight: { textAlign: 'right' },
+    column: { width: 240, maxHeight: '100%' },
+
     columnHeader: {
       flexDirection: "row",
       alignItems: "center",
@@ -281,7 +285,8 @@ export default function PipelineCandidatesPage() {
   const c = theme.colors;
   const navigation = useNavigation();
   const { company, jobs } = useCompany();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const isRtl = language === 'ar';
 
   const [candidates, setCandidates] = useState([]);
   const [stages, setStages] = useState([]);
@@ -522,14 +527,16 @@ export default function PipelineCandidatesPage() {
           ? `${c.warning}1a`
           : c["surface-muted"];
 
+    const advanceIcon = isRtl ? 'chevron-back' : 'chevron-forward';
+
     return (
       <TouchableOpacity
-        style={styles.candidateCard}
+        style={[styles.candidateCard, isRtl && { flexDirection: 'row-reverse' }]}
         activeOpacity={0.8}
         onPress={() => onTap(app)}
       >
-        <View style={styles.candidateTop}>
-          <View style={[styles.avatar, { backgroundColor: stageColor }]}>
+        <View style={[styles.candidateTop, isRtl && { flexDirection: 'row-reverse' }]}>
+          <View style={[styles.avatar, { backgroundColor: stageColor, marginRight: isRtl ? 0 : 10, marginLeft: isRtl ? 10 : 0 }]}> 
             <Text style={styles.avatarText}>{initials}</Text>
           </View>
           <View style={styles.candidateInfo}>
@@ -541,21 +548,15 @@ export default function PipelineCandidatesPage() {
             </Text>
           </View>
         </View>
-        <View style={styles.rightActions}>
+        <View style={[styles.rightActions, isRtl && { flexDirection: 'row-reverse' }]}>
           {score != null && (
-            <View style={[styles.scoreBadge, { backgroundColor: scoreBg }]}>
-              <Text style={[styles.scoreText, { color: scoreColor }]}>
-                {Math.round(score)}
-              </Text>
+            <View style={[styles.scoreBadge, { backgroundColor: scoreBg }]}> 
+              <Text style={[styles.scoreText, { color: scoreColor }]}>{Math.round(score)}</Text>
             </View>
           )}
           {onAdvance && (
-            <TouchableOpacity
-              onPress={onAdvance}
-              style={styles.advanceArrow}
-              disabled={moving}
-            >
-              <Ionicons name="chevron-forward" size={18} color={c.primary} />
+            <TouchableOpacity onPress={onAdvance} style={styles.advanceArrow} disabled={moving}>
+              <Ionicons name={advanceIcon} size={18} color={c.primary} />
             </TouchableOpacity>
           )}
         </View>
@@ -584,16 +585,9 @@ export default function PipelineCandidatesPage() {
     <View style={[styles.container, { backgroundColor: c.background }]}>
       {/* Job Selector Header */}
       <View style={[styles.headerBar, { paddingTop: insets.top + 12 }]}>
-        <TouchableOpacity
-          style={styles.jobSelector}
-          onPress={() => setShowJobPicker(true)}
-        >
-          <Ionicons
-            name="briefcase-outline"
-            size={18}
-            color={c["destructive-foreground"]}
-          />
-          <Text style={styles.jobSelectorText} numberOfLines={1}>
+        <TouchableOpacity style={styles.jobSelector} onPress={() => setShowJobPicker(true)}>
+          <Ionicons name="briefcase-outline" size={18} color={c['destructive-foreground']} />
+          <Text style={[styles.jobSelectorText, isRtl && styles.textRight]} numberOfLines={1}>
             {selectedJob?.title || t("recruiter.select_job")}
           </Text>
           <Ionicons
@@ -624,13 +618,9 @@ export default function PipelineCandidatesPage() {
       </View>
 
       {/* Kanban Board */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.boardScroll}
-      >
-        <View style={styles.board}>
-          {sortedStages.map((stage, stageIndex) => {
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.boardScroll}>
+        <View style={[styles.board, isRtl && styles.rowReverse]}>
+          {stages.map((stage, stageIndex) => {
             const nextStage = sortedStages[stageIndex + 1];
             const stageCandidates = candidatesByStage[stage.id] || [];
             console.log("STAGE:", stage.name, {
@@ -645,12 +635,12 @@ export default function PipelineCandidatesPage() {
               <View key={stage.id} style={styles.column}>
                 <View style={styles.columnHeader}>
                   <View
-                    style={[styles.stageDot, { backgroundColor: stageColor }]}
+                    style={[
+                      styles.stageDot,
+                      { backgroundColor: stageColor, marginRight: isRtl ? 0 : 8, marginLeft: isRtl ? 8 : 0 },
+                    ]}
                   />
-                  <Text
-                    style={[styles.columnTitle, { color: c.foreground }]}
-                    numberOfLines={1}
-                  >
+                  <Text style={[styles.columnTitle, { color: c.foreground }, isRtl && styles.textRight]} numberOfLines={1}>
                     {stage.name}
                   </Text>
                   <View style={styles.countBadge}>
