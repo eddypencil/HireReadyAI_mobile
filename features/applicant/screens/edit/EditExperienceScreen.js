@@ -12,7 +12,7 @@ import { addExperience, updateExperience } from '../../services/experience.servi
 import { Experience } from '../../models';
 import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../../src/fonts';
 
-function Field({ label, value, onChangeText, placeholder, multiline, optional, keyboardType, styles, c }) {
+function Field({ label, value, onChangeText, placeholder, multiline, optional, keyboardType, styles, c , t}) {
   return (
     <View style={styles.fieldGroup}>
       <Text style={styles.label}>
@@ -96,12 +96,12 @@ export default function EditExperienceScreen() {
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
 
-        <Field label={t("profile.edit.job_title")} value={form.title} onChangeText={set('title')} placeholder={t("profile.edit.job_title_placeholder")} styles={styles} c={c} />
-        <Field label={t("profile.edit.company_name")} value={form.companyName} onChangeText={set('companyName')} placeholder={t("profile.edit.company_name_placeholder")} styles={styles} c={c} />
-        <Field label={t("profile.edit.industry")} value={form.industry} onChangeText={set('industry')} placeholder={t("profile.edit.industry_placeholder")} optional styles={styles} c={c} />
-        <Field label={t("profile.edit.from")} value={form.from} onChangeText={set('from')} placeholder={t("profile.edit.from_placeholder")} styles={styles} c={c} />
-        <Field label={t("profile.edit.to")} value={form.to} onChangeText={set('to')} placeholder={t("profile.edit.to_placeholder")} optional styles={styles} c={c} />
-        <Field label={t("profile.edit.description")} value={form.description} onChangeText={set('description')} placeholder={t("profile.edit.description_placeholder")} multiline optional styles={styles} c={c} />
+        <Field label={t("profile.edit.job_title")} value={form.title} onChangeText={set('title')} placeholder={t("profile.edit.job_title_placeholder")} styles={styles} c={c} t={t} />
+        <Field label={t("profile.edit.company_name")} value={form.companyName} onChangeText={set('companyName')} placeholder={t("profile.edit.company_name_placeholder")} styles={styles} c={c} t={t}/>
+        <Field label={t("profile.edit.industry")} value={form.industry} onChangeText={set('industry')} placeholder={t("profile.edit.industry_placeholder")} optional styles={styles} c={c} t={t}/>
+        <Field label={t("profile.edit.from")} value={form.from} onChangeText={set('from')} placeholder={t("profile.edit.from_placeholder")} styles={styles} c={c} t={t} />
+        <Field label={t("profile.edit.to")} value={form.to} onChangeText={set('to')} placeholder={t("profile.edit.to_placeholder")} optional styles={styles} c={c} t={t}/>
+        <Field label={t("profile.edit.description")} value={form.description} onChangeText={set('description')} placeholder={t("profile.edit.description_placeholder")} multiline optional styles={styles} c={c}  t={t} />
 
         <TouchableOpacity
           style={[styles.saveBtn, saving && { opacity: 0.6 }]}
