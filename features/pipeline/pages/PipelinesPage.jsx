@@ -7,6 +7,7 @@ import { usePipelines } from "../hooks/usePipelines";
 import { useCompany } from "../../companies/pages/CompanyLayout";
 import PipelineCard from "../components/PipelineCard";
 import { useTranslation } from "../../../shared/context/I18nContext";
+import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from "../../../src/fonts";
 
 export default function PipelinesPage() {
   const { theme } = useTheme();
@@ -91,7 +92,7 @@ function createStyles(c) {
     },
     headerLabel: {
       fontSize: 10,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c['muted-foreground'],
       letterSpacing: 1,
       textTransform: "uppercase",
@@ -99,7 +100,7 @@ function createStyles(c) {
     },
     headerTitle: {
       fontSize: 22,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.foreground,
     },
     list: {
@@ -112,11 +113,12 @@ function createStyles(c) {
     },
     emptyTitle: {
       fontSize: 16,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       color: c['muted-foreground'],
     },
     emptyHint: {
       fontSize: 13,
+      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
       textAlign: "center",
       paddingHorizontal: 40,
@@ -127,6 +129,7 @@ function createStyles(c) {
     },
     errorText: {
       fontSize: 14,
+      fontFamily: FONT_FAMILY,
       color: c.destructive,
       textAlign: "center",
     },

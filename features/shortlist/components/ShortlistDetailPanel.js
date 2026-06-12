@@ -14,6 +14,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../shared/context/I18nContext';
+import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../src/fonts';
 import { useUser } from '../../../features/auth/context/user.context';
 import BottomSheet from '../../../shared/ui/BottomSheet';
 
@@ -469,7 +470,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   headerAvatarText: {
     fontSize: 15,
-    fontWeight: '700',
+    fontFamily: FONT_FAMILY_BOLD,
     color: c['destructive-foreground'],
   },
   headerInfo: {
@@ -482,7 +483,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   headerName: {
     fontSize: 16,
-    fontWeight: '700',
+    fontFamily: FONT_FAMILY_BOLD,
     color: c.foreground,
     flexShrink: 1,
   },
@@ -494,10 +495,11 @@ function createStyles(c) { return StyleSheet.create({
   },
   scorePillText: {
     fontSize: 11,
-    fontWeight: '700',
+    fontFamily: FONT_FAMILY_BOLD,
   },
   headerHeadline: {
     fontSize: 12,
+    fontFamily: FONT_FAMILY,
     color: c['muted-foreground'],
     marginTop: 1,
   },
@@ -515,7 +517,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   headerTagText: {
     fontSize: 10,
-    fontWeight: '500',
+    fontFamily: FONT_FAMILY_MEDIUM,
   },
   closeBtn: {
     padding: 6,
@@ -535,7 +537,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 10,
-    fontWeight: '700',
+    fontFamily: FONT_FAMILY_BOLD,
     letterSpacing: 0.5,
     color: c['muted-foreground'],
     textTransform: 'uppercase',
@@ -550,14 +552,15 @@ function createStyles(c) { return StyleSheet.create({
   },
   currentVoteText: {
     fontSize: 13,
-    fontWeight: '500',
+    fontFamily: FONT_FAMILY_MEDIUM,
   },
   currentVoteBold: {
-    fontWeight: '700',
+    fontFamily: FONT_FAMILY_BOLD,
     textTransform: 'capitalize',
   },
   noVoteText: {
     fontSize: 12,
+    fontFamily: FONT_FAMILY,
     color: c['muted-foreground'],
     marginBottom: 10,
   },
@@ -576,7 +579,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   voteBtnLabel: {
     fontSize: 12,
-    fontWeight: '600',
+    fontFamily: FONT_FAMILY_SEMIBOLD,
   },
   teamVotesHeader: {
     flexDirection: 'row',
@@ -586,6 +589,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   voterCount: {
     fontSize: 11,
+    fontFamily: FONT_FAMILY,
     color: c['muted-foreground'],
   },
   progressBar: {
@@ -622,16 +626,17 @@ function createStyles(c) { return StyleSheet.create({
   },
   voterListItemAvatarText: {
     fontSize: 10,
-    fontWeight: '700',
+    fontFamily: FONT_FAMILY_BOLD,
     color: c['destructive-foreground'],
   },
   voterName: {
     fontSize: 12,
-    fontWeight: '600',
+    fontFamily: FONT_FAMILY_SEMIBOLD,
     color: c.foreground,
   },
   voterRole: {
     fontSize: 10,
+    fontFamily: FONT_FAMILY,
     color: c['muted-foreground'],
   },
   votePill: {
@@ -642,10 +647,11 @@ function createStyles(c) { return StyleSheet.create({
   },
   votePillText: {
     fontSize: 11,
-    fontWeight: '500',
+    fontFamily: FONT_FAMILY_MEDIUM,
   },
   emptyText: {
     fontSize: 12,
+    fontFamily: FONT_FAMILY,
     color: c['muted-foreground'],
   },
   aiCard: {
@@ -668,7 +674,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   aiTitle: {
     fontSize: 10,
-    fontWeight: '700',
+    fontFamily: FONT_FAMILY_BOLD,
     letterSpacing: 0.5,
     color: c.primary,
     textTransform: 'uppercase',
@@ -681,11 +687,12 @@ function createStyles(c) { return StyleSheet.create({
   },
   confidenceText: {
     fontSize: 10,
-    fontWeight: '700',
+    fontFamily: FONT_FAMILY_BOLD,
     color: c.foreground,
   },
   aiRationaleText: {
     fontSize: 13,
+    fontFamily: FONT_FAMILY,
     color: c.foreground,
     lineHeight: 19,
   },
@@ -711,7 +718,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   noteAuthor: {
     fontSize: 12,
-    fontWeight: '600',
+    fontFamily: FONT_FAMILY_SEMIBOLD,
     color: c.foreground,
   },
   noteTime: {
@@ -721,10 +728,12 @@ function createStyles(c) { return StyleSheet.create({
   },
   noteTimeText: {
     fontSize: 10,
+    fontFamily: FONT_FAMILY,
     color: c['muted-foreground'],
   },
   noteBody: {
     fontSize: 12,
+    fontFamily: FONT_FAMILY,
     color: c['muted-foreground'],
     lineHeight: 17,
   },
@@ -735,6 +744,7 @@ function createStyles(c) { return StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 8,
     fontSize: 12,
+    fontFamily: FONT_FAMILY,
     color: c.foreground,
     minHeight: 44,
   },
@@ -751,6 +761,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   visibilityText: {
     fontSize: 11,
+    fontFamily: FONT_FAMILY,
     color: c['muted-foreground'],
   },
   noteActionBtns: {
@@ -760,6 +771,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   cancelBtn: {
     fontSize: 12,
+    fontFamily: FONT_FAMILY,
     color: c['muted-foreground'],
   },
   postBtn: {
@@ -776,7 +788,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   postBtnText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontFamily: FONT_FAMILY_SEMIBOLD,
     color: c['destructive-foreground'],
   },
   actionRow: {
@@ -800,7 +812,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   advanceBtnText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontFamily: FONT_FAMILY_SEMIBOLD,
     color: c['destructive-foreground'],
   },
   rejectBtn: {
@@ -814,7 +826,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   rejectBtnText: {
     fontSize: 13,
-    fontWeight: '500',
+    fontFamily: FONT_FAMILY_MEDIUM,
     color: c.foreground,
   },
   rejectInputSection: {
@@ -822,7 +834,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   rejectLabel: {
     fontSize: 12,
-    fontWeight: '500',
+    fontFamily: FONT_FAMILY_MEDIUM,
     color: c['muted-foreground'],
   },
   rejectInput: {
@@ -832,6 +844,7 @@ function createStyles(c) { return StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 8,
     fontSize: 12,
+    fontFamily: FONT_FAMILY,
     color: c.foreground,
     minHeight: 60,
   },
@@ -849,7 +862,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   cancelRejectText: {
     fontSize: 13,
-    fontWeight: '500',
+    fontFamily: FONT_FAMILY_MEDIUM,
     color: c['muted-foreground'],
   },
   confirmRejectBtn: {
@@ -861,7 +874,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   confirmRejectText: {
     fontSize: 13,
-    fontWeight: '600',
+    fontFamily: FONT_FAMILY_SEMIBOLD,
     color: c['destructive-foreground'],
   },
   rejectedBanner: {
@@ -873,12 +886,13 @@ function createStyles(c) { return StyleSheet.create({
   },
   rejectedBannerTitle: {
     fontSize: 12,
-    fontWeight: '600',
+    fontFamily: FONT_FAMILY_SEMIBOLD,
     color: c.destructive,
     marginBottom: 2,
   },
   rejectedBannerReason: {
     fontSize: 12,
+    fontFamily: FONT_FAMILY,
     color: c['muted-foreground'],
     lineHeight: 17,
   },

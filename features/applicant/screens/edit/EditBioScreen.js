@@ -7,10 +7,13 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '../../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../../shared/context/I18nContext';
 import { fetchApplicantProfile, updateApplicantProfile } from '../../services/profile.service';
+import { FONT_FAMILY, FONT_FAMILY_BOLD } from '../../../../src/fonts';
 
 export default function EditBioScreen() {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const c = theme.colors;
   const styles = createStyles(c);
   const navigation = useNavigation();
@@ -27,7 +30,7 @@ export default function EditBioScreen() {
         setHeadline(data?.headline || '');
         setBio(data?.bio || '');
       })
-      .catch(() => Alert.alert('Error', 'Could not load profile.'))
+      .catch(() => Alert.alert(t("profile.error_title"), t("profile.error_load")))
       .finally(() => setLoading(false));
   }, [profileId]);
 
@@ -40,7 +43,7 @@ export default function EditBioScreen() {
       });
       navigation.goBack();
     } catch {
-      Alert.alert('Error', 'Could not save changes.');
+      Alert.alert(t("profile.error_title"), t("profile.error_save"));
     } finally {
       setSaving(false);
     }
@@ -53,26 +56,26 @@ export default function EditBioScreen() {
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
 
         <View style={styles.fieldGroup}>
-          <Text style={styles.label}>Headline</Text>
-          <Text style={styles.hint}>A short line that appears under your name</Text>
+          <Text style={styles.label}>{t("profile.fields.headline")}</Text>
+          <Text style={styles.hint}>{t("profile.edit.headline_hint")}</Text>
           <TextInput
             style={styles.input}
             value={headline}
             onChangeText={setHeadline}
-            placeholder="e.g. Frontend Developer at Vodafone"
+            placeholder={t("profile.edit.headline_placeholder")}
             placeholderTextColor={c['muted-foreground']}
             autoCapitalize="sentences"
           />
         </View>
 
         <View style={styles.fieldGroup}>
-          <Text style={styles.label}>Bio / Summary</Text>
-          <Text style={styles.hint}>Tell recruiters about yourself in a few sentences</Text>
+          <Text style={styles.label}>{t("profile.fields.bio")}</Text>
+          <Text style={styles.hint}>{t("profile.edit.bio_hint")}</Text>
           <TextInput
             style={[styles.input, styles.inputMulti]}
             value={bio}
             onChangeText={setBio}
-            placeholder="e.g. I'm a frontend developer with 2 years of experience building cross-platform apps..."
+            placeholder={t("profile.edit.bio_placeholder")}
             placeholderTextColor={c['muted-foreground']}
             multiline
             numberOfLines={5}
@@ -89,7 +92,7 @@ export default function EditBioScreen() {
         >
           {saving
             ? <ActivityIndicator color={c.white} size="small" />
-            : <Text style={styles.saveBtnText}>Save Changes</Text>}
+            : <Text style={styles.saveBtnText}>{t("profile.save_changes")}</Text>}
         </TouchableOpacity>
 
       </ScrollView>
@@ -103,12 +106,12 @@ function createStyles(c) {
   content: { padding: 20, gap: 20, paddingBottom: 40 },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   fieldGroup: { gap: 6 },
-  label: { fontSize: 13, fontWeight: '700', color: c.foreground },
-  hint: { fontSize: 12, color: c['muted-foreground'], lineHeight: 17 },
+  label: { fontFamily: FONT_FAMILY_BOLD, fontSize: 13, color: c.foreground },
+  hint: { fontFamily: FONT_FAMILY, fontSize: 12, color: c['muted-foreground'], lineHeight: 17 },
   input: {
     backgroundColor: c.card, borderWidth: 1, borderColor: c.border,
     borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12,
-    fontSize: 14, color: c.foreground,
+    fontFamily: FONT_FAMILY, fontSize: 14, color: c.foreground,
   },
   inputMulti: { minHeight: 130, paddingTop: 12 },
   saveBtn: {
@@ -117,6 +120,6 @@ function createStyles(c) {
     shadowColor: c.primary, shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
   },
-  saveBtnText: { color: c.white, fontSize: 15, fontWeight: '700' },
+  saveBtnText: { fontFamily: FONT_FAMILY_BOLD, color: c.white, fontSize: 15 },
   });
 }

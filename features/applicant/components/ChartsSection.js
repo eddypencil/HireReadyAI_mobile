@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import Svg, { Circle, G, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../shared/context/I18nContext';
+import { FONT_FAMILY, FONT_FAMILY_BOLD, FONT_FAMILY_MEDIUM } from '../../../src/fonts';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CHART_WIDTH = SCREEN_WIDTH - 64;
@@ -105,6 +106,7 @@ function DonutChart({ applications }) {
                 textAnchor="middle"
                 fontSize={22} fontWeight="700"
                 fill={c.foreground}
+                fontFamily={FONT_FAMILY}
               >
                 {total}
               </SvgText>
@@ -113,6 +115,7 @@ function DonutChart({ applications }) {
                 textAnchor="middle"
                 fontSize={10}
                 fill={c['muted-foreground']}
+                fontFamily={FONT_FAMILY}
               >
                 {t('applicant.charts.applications_label')}
               </SvgText>
@@ -198,6 +201,7 @@ function BarChart({ applications }) {
                   textAnchor="end"
                   fontSize={9}
                   fill={c['muted-foreground']}
+                  fontFamily={FONT_FAMILY}
                 >
                   {tick}
                 </SvgText>
@@ -225,6 +229,7 @@ function BarChart({ applications }) {
                   textAnchor="middle"
                   fontSize={9}
                   fill={c['muted-foreground']}
+                  fontFamily={FONT_FAMILY}
                 >
                   {shortLabel}
                 </SvgText>
@@ -269,14 +274,15 @@ function createStyles(c) {
     },
     chartTitle: {
       fontSize: 14,
-      fontWeight: '700',
       color: c.foreground,
+      fontFamily: FONT_FAMILY_BOLD,
     },
     chartSubtitle: {
       fontSize: 11,
       color: c['muted-foreground'],
       marginTop: 2,
       marginBottom: 4,
+      fontFamily: FONT_FAMILY,
     },
     chartEmpty: {
       height: 100,
@@ -286,6 +292,7 @@ function createStyles(c) {
     chartEmptyText: {
       fontSize: 12,
       color: c['muted-foreground'],
+      fontFamily: FONT_FAMILY,
     },
     donutRow: {
       flexDirection: 'row',
@@ -311,12 +318,13 @@ function createStyles(c) {
     legendText: {
       fontSize: 13,
       color: c.foreground,
-      fontWeight: '500',
+      fontFamily: FONT_FAMILY_MEDIUM,
     },
     legendCount: {
       fontSize: 12,
       color: c['muted-foreground'],
       fontWeight: '400',
+      fontFamily: FONT_FAMILY,
     },
   });
 }

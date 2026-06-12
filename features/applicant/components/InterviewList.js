@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { APPLICATION_STAGE } from "../../../shared/constants/enums";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
+import { FONT_FAMILY, FONT_FAMILY_BOLD, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_MEDIUM, FONT_FAMILY_EXTRABOLD } from '../../../src/fonts';
 
 const stageColorMap = {
   [APPLICATION_STAGE.interview]: 'stage-interview',
@@ -70,7 +71,7 @@ function formatDate(dateStr) {
 
 function StagePill({ label, cfg }) {
   return (
-    <View style={{
+      <View style={{
       flexDirection: "row",
       alignItems: "center",
       gap: 5,
@@ -89,9 +90,9 @@ function StagePill({ label, cfg }) {
       }} />
       <Text style={{
         fontSize: 11,
-        fontWeight: "600",
         color: cfg.text,
         letterSpacing: 0.1,
+        fontFamily: FONT_FAMILY_SEMIBOLD,
       }}>{label}</Text>
     </View>
   );
@@ -180,10 +181,10 @@ export default function InterviewList({ applications }) {
               <Ionicons name="pulse-outline" size={16} color={c.primary} />
             </View>
             <View>
-              <Text style={{ fontSize: 14, fontWeight: "700", color: c.foreground }}>
+              <Text style={{ fontSize: 14, color: c.foreground, fontFamily: FONT_FAMILY_BOLD }}>
                 {t("applicant.status_management")}
               </Text>
-              <Text style={{ fontSize: 11, color: c['muted-foreground'], marginTop: 1 }}>
+              <Text style={{ fontSize: 11, color: c['muted-foreground'], marginTop: 1, fontFamily: FONT_FAMILY }}>
                 {t("applicant.track_interviews")}
               </Text>
             </View>
@@ -195,7 +196,7 @@ export default function InterviewList({ applications }) {
           padding: 36,
           alignItems: "center",
         }}>
-          <Text style={{ fontSize: 13, color: c['muted-foreground'] }}>
+          <Text style={{ fontSize: 13, color: c['muted-foreground'], fontFamily: FONT_FAMILY }}>
             {t("applicant.no_interviews")}
           </Text>
         </View>
@@ -224,10 +225,10 @@ export default function InterviewList({ applications }) {
             <Ionicons name="pulse-outline" size={16} color={c.primary} />
           </View>
           <View>
-            <Text style={{ fontSize: 14, fontWeight: "700", color: c.foreground }}>
+            <Text style={{ fontSize: 14, color: c.foreground, fontFamily: FONT_FAMILY_BOLD }}>
               {t("applicant.status_management")}
             </Text>
-            <Text style={{ fontSize: 11, color: c['muted-foreground'], marginTop: 1 }}>
+            <Text style={{ fontSize: 11, color: c['muted-foreground'], marginTop: 1, fontFamily: FONT_FAMILY }}>
               {t("applicant.track_interviews")}
             </Text>
           </View>
@@ -265,8 +266,8 @@ export default function InterviewList({ applications }) {
               >
                 <Text style={{
                   fontSize: 11,
-                  fontWeight: "700",
                   color: isActive ? c.primary : c['muted-foreground'],
+                  fontFamily: FONT_FAMILY_BOLD,
                 }}>
                   {tab.label}
                 </Text>
@@ -277,9 +278,9 @@ export default function InterviewList({ applications }) {
                   paddingVertical: 1,
                 }}>
                   <Text style={{
-                    fontSize: 9,
-                    fontWeight: "800",
+                    fontSize: 11,
                     color: isActive ? c['destructive-foreground'] : c['muted-foreground'],
+                    fontFamily: FONT_FAMILY_EXTRABOLD,
                   }}>
                     {tab.count}
                   </Text>
@@ -301,7 +302,7 @@ export default function InterviewList({ applications }) {
             borderColor: c.border,
             borderStyle: "dashed",
           }}>
-            <Text style={{ fontSize: 12, color: c['muted-foreground'] }}>
+            <Text style={{ fontSize: 12, color: c['muted-foreground'], fontFamily: FONT_FAMILY }}>
               {t("applicant.no_records")}
             </Text>
           </View>
@@ -348,8 +349,8 @@ export default function InterviewList({ applications }) {
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 4 }}>
                       <Text style={{
                         fontSize: 13,
-                        fontWeight: "700",
                         color: c.foreground,
+                        fontFamily: FONT_FAMILY_BOLD,
                       }}>
                         {job?.title || t("applicant.unknown_position")}
                       </Text>
@@ -358,8 +359,8 @@ export default function InterviewList({ applications }) {
                     <Text style={{
                       fontSize: 12,
                       color: c['muted-foreground'],
-                      fontWeight: "500",
                       marginBottom: 5,
+                      fontFamily: FONT_FAMILY_MEDIUM,
                     }}>
                       {company?.name || t("applicant.unknown_company")}
                     </Text>
@@ -379,7 +380,7 @@ export default function InterviewList({ applications }) {
                         {t("applicant.id")}: {app.candidate_profile_id?.substring(0, 8)}
                       </Text>
                       <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: c['stage-applied'] }} />
-                      <Text style={{ fontSize: 11, color: c['muted-foreground'] }}>
+                      <Text style={{ fontSize: 11, color: c['muted-foreground'], fontFamily: FONT_FAMILY }}>
                         {t("applicant.applied")} {formatDate(app.applied_at)}
                       </Text>
                     </View>
@@ -403,8 +404,8 @@ export default function InterviewList({ applications }) {
                         <Ionicons name="document-outline" size={10} color={c.primary} />
                         <Text style={{
                           fontSize: 11,
-                          fontWeight: "700",
                           color: c.primary,
+                          fontFamily: FONT_FAMILY_BOLD,
                         }}>{t("applicant.view_cv")}</Text>
                       </TouchableOpacity>
                     )}

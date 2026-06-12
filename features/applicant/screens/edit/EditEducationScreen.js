@@ -7,17 +7,20 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '../../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../../shared/context/I18nContext';
 import { addEducation, updateEducation } from '../../services/education.service';
 import { Education } from '../../models';
+import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../../src/fonts';
 
-const LEVELS = ['High School', 'Diploma', "Bachelor's", "Master's", 'PhD', 'Other'];
+const DEGREE_KEYS = ['high_school', 'diploma', 'bachelors', 'masters', 'phd', 'other'];
 
 function Field({ label, value, onChangeText, placeholder, multiline, optional, styles, c }) {
+  const { t } = useTranslation();
   return (
     <View style={styles.fieldGroup}>
       <Text style={styles.label}>
         {label}
-        {optional && <Text style={styles.optional}> (optional)</Text>}
+        {optional && <Text style={styles.optional}> {t("companies.optional")}</Text>}
       </Text>
       <TextInput
         style={[styles.input, multiline && styles.inputMulti]}
@@ -36,6 +39,7 @@ function Field({ label, value, onChangeText, placeholder, multiline, optional, s
 
 export default function EditEducationScreen() {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const c = theme.colors;
   const styles = createStyles(c);
   const navigation = useNavigation();
@@ -57,8 +61,8 @@ export default function EditEducationScreen() {
   const set = k => v => setForm(p => ({ ...p, [k]: v }));
 
   const handleSave = async () => {
-    if (!form.university.trim()) { Alert.alert('Required', 'University / School name is required.'); return; }
-    if (!form.startYear.trim()) { Alert.alert('Required', 'Start year is required.'); return; }
+    if (!form.university.trim()) { Alert.alert(t("profile.error_title"), t("profile.edit.error_university")); return; }
+    if (!form.startYear.trim()) { Alert.alert(t("profile.error_title"), t("profile.edit.error_start_year")); return; }
 
     setSaving(true);
     try {
@@ -81,7 +85,7 @@ export default function EditEducationScreen() {
       onSave?.();
       navigation.goBack();
     } catch {
-      Alert.alert('Error', 'Could not save education. Please try again.');
+      Alert.alert(t("profile.error_title"), t("profile.edit.error_save"));
     } finally {
       setSaving(false);
     }
@@ -93,29 +97,29 @@ export default function EditEducationScreen() {
 
         {/* Degree level picker */}
         <View style={styles.fieldGroup}>
-          <Text style={styles.label}>Degree Level <Text style={styles.optional}>(optional)</Text></Text>
+          <Text style={styles.label}>{t("profile.edit.degree_level")} <Text style={styles.optional}>{t("companies.optional")}</Text></Text>
           <View style={styles.levelRow}>
-            {LEVELS.map(l => (
+            {DEGREE_KEYS.map(key => (
               <TouchableOpacity
-                key={l}
-                style={[styles.levelPill, form.level === l && styles.levelPillActive]}
-                onPress={() => set('level')(l)}
+                key={key}
+                style={[styles.levelPill, form.level === t("profile.edit.degrees." + key) && styles.levelPillActive]}
+                onPress={() => set('level')(t("profile.edit.degrees." + key))}
                 activeOpacity={0.75}
               >
-                <Text style={[styles.levelPillText, form.level === l && styles.levelPillTextActive]}>
-                  {l}
+                <Text style={[styles.levelPillText, form.level === t("profile.edit.degrees." + key) && styles.levelPillTextActive]}>
+                  {t("profile.edit.degrees." + key)}
                 </Text>
               </TouchableOpacity>
             ))}
           </View>
         </View>
 
-        <Field label="University / School" value={form.university} onChangeText={set('university')} placeholder="e.g. Cairo University" styles={styles} c={c} />
-        <Field label="Faculty" value={form.faculty} onChangeText={set('faculty')} placeholder="e.g. Faculty of Engineering" optional styles={styles} c={c} />
-        <Field label="Major / Field of Study" value={form.major} onChangeText={set('major')} placeholder="e.g. Systems & Biomedical Engineering" optional styles={styles} c={c} />
-        <Field label="Start Year" value={form.startYear} onChangeText={set('startYear')} placeholder="e.g. 2020" styles={styles} c={c} />
-        <Field label="End Year" value={form.endYear} onChangeText={set('endYear')} placeholder="e.g. 2024  (leave blank if ongoing)" optional styles={styles} c={c} />
-        <Field label="Grade / GPA" value={form.grade} onChangeText={set('grade')} placeholder="e.g. 3.8 / 4.0 or Excellent" optional styles={styles} c={c} />
+        <Field label={t("profile.edit.university")} value={form.university} onChangeText={set('university')} placeholder={t("profile.edit.university_placeholder")} styles={styles} c={c} />
+        <Field label={t("profile.edit.faculty")} value={form.faculty} onChangeText={set('faculty')} placeholder={t("profile.edit.faculty_placeholder")} optional styles={styles} c={c} />
+        <Field label={t("profile.edit.major")} value={form.major} onChangeText={set('major')} placeholder={t("profile.edit.major_placeholder")} optional styles={styles} c={c} />
+        <Field label={t("profile.edit.start_year")} value={form.startYear} onChangeText={set('startYear')} placeholder={t("profile.edit.start_year_placeholder")} styles={styles} c={c} />
+        <Field label={t("profile.edit.end_year")} value={form.endYear} onChangeText={set('endYear')} placeholder={t("profile.edit.end_year_placeholder")} optional styles={styles} c={c} />
+        <Field label={t("profile.edit.grade")} value={form.grade} onChangeText={set('grade')} placeholder={t("profile.edit.grade_placeholder")} optional styles={styles} c={c} />
 
         <TouchableOpacity
           style={[styles.saveBtn, saving && { opacity: 0.6 }]}
@@ -123,7 +127,7 @@ export default function EditEducationScreen() {
         >
           {saving
             ? <ActivityIndicator color={c.white} size="small" />
-            : <Text style={styles.saveBtnText}>{isEdit ? 'Save Changes' : 'Add Education'}</Text>}
+            : <Text style={styles.saveBtnText}>{isEdit ? t("profile.save_changes") : t("profile.add_education")}</Text>}
         </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -135,10 +139,10 @@ function createStyles(c) {
   scroll: { flex: 1, backgroundColor: c.surface },
   content: { padding: 20, gap: 16, paddingBottom: 40 },
   fieldGroup: { gap: 8 },
-  label: { fontSize: 12, fontWeight: '600', color: c.foreground, textTransform: 'uppercase', letterSpacing: 0.4 },
-  optional: { fontWeight: '400', color: c['muted-foreground'], textTransform: 'none' },
+  label: { fontFamily: FONT_FAMILY_SEMIBOLD, fontSize: 12, color: c.foreground, textTransform: 'uppercase', letterSpacing: 0.4 },
+  optional: { fontFamily: FONT_FAMILY, fontWeight: '400', color: c['muted-foreground'], textTransform: 'none' },
   input: {
-    backgroundColor: c.card, borderWidth: 1, borderColor: c.border,
+    fontFamily: FONT_FAMILY, backgroundColor: c.card, borderWidth: 1, borderColor: c.border,
     borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12,
     fontSize: 14, color: c.foreground,
   },
@@ -149,14 +153,14 @@ function createStyles(c) {
     paddingHorizontal: 14, paddingVertical: 7, backgroundColor: c.card,
   },
   levelPillActive: { backgroundColor: `${c.primary}15`, borderColor: c.primary },
-  levelPillText: { fontSize: 13, fontWeight: '500', color: c['muted-foreground'] },
-  levelPillTextActive: { color: c.primary, fontWeight: '700' },
+  levelPillText: { fontFamily: FONT_FAMILY_MEDIUM, fontSize: 13, color: c['muted-foreground'] },
+  levelPillTextActive: { fontFamily: FONT_FAMILY_BOLD, color: c.primary },
   saveBtn: {
     backgroundColor: c.primary, borderRadius: 12, paddingVertical: 14,
     alignItems: 'center', marginTop: 8,
     shadowColor: c.primary, shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
   },
-  saveBtnText: { color: c.white, fontSize: 15, fontWeight: '700' },
+  saveBtnText: { fontFamily: FONT_FAMILY_BOLD, color: c.white, fontSize: 15 },
   });
 }

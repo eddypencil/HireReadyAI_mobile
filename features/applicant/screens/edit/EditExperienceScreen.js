@@ -7,15 +7,17 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '../../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../../shared/context/I18nContext';
 import { addExperience, updateExperience } from '../../services/experience.service';
 import { Experience } from '../../models';
+import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../../src/fonts';
 
 function Field({ label, value, onChangeText, placeholder, multiline, optional, keyboardType, styles, c }) {
   return (
     <View style={styles.fieldGroup}>
       <Text style={styles.label}>
         {label}
-        {optional && <Text style={styles.optional}> (optional)</Text>}
+        {optional && <Text style={styles.optional}> {t("companies.optional")}</Text>}
       </Text>
       <TextInput
         style={[styles.input, multiline && styles.inputMulti]}
@@ -35,6 +37,7 @@ function Field({ label, value, onChangeText, placeholder, multiline, optional, k
 
 export default function EditExperienceScreen() {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const c = theme.colors;
   const styles = createStyles(c);
   const navigation = useNavigation();
@@ -59,9 +62,9 @@ export default function EditExperienceScreen() {
   const set = k => v => setForm(p => ({ ...p, [k]: v }));
 
   const handleSave = async () => {
-    if (!form.title.trim()) { Alert.alert('Required', 'Job title is required.'); return; }
-    if (!form.companyName.trim()) { Alert.alert('Required', 'Company name is required.'); return; }
-    if (!form.from.trim()) { Alert.alert('Required', 'Start date is required.'); return; }
+    if (!form.title.trim()) { Alert.alert(t("profile.error_title"), t("profile.edit.error_job_title")); return; }
+    if (!form.companyName.trim()) { Alert.alert(t("profile.error_title"), t("profile.edit.error_company_name")); return; }
+    if (!form.from.trim()) { Alert.alert(t("profile.error_title"), t("profile.edit.error_start_date")); return; }
 
     setSaving(true);
     try {
@@ -83,7 +86,7 @@ export default function EditExperienceScreen() {
       onSave?.();
       navigation.goBack();
     } catch {
-      Alert.alert('Error', 'Could not save experience. Please try again.');
+      Alert.alert(t("profile.error_title"), t("profile.edit.error_save"));
     } finally {
       setSaving(false);
     }
@@ -93,12 +96,12 @@ export default function EditExperienceScreen() {
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
 
-        <Field label="Job Title" value={form.title} onChangeText={set('title')} placeholder="e.g. Frontend Developer" styles={styles} c={c} />
-        <Field label="Company Name" value={form.companyName} onChangeText={set('companyName')} placeholder="e.g. Vodafone Egypt" styles={styles} c={c} />
-        <Field label="Industry" value={form.industry} onChangeText={set('industry')} placeholder="e.g. Telecommunications" optional styles={styles} c={c} />
-        <Field label="From" value={form.from} onChangeText={set('from')} placeholder="YYYY-MM  e.g. 2023-06" styles={styles} c={c} />
-        <Field label="To" value={form.to} onChangeText={set('to')} placeholder="YYYY-MM  or 'Present'" optional styles={styles} c={c} />
-        <Field label="Description" value={form.description} onChangeText={set('description')} placeholder="Describe your responsibilities and achievements..." multiline optional styles={styles} c={c} />
+        <Field label={t("profile.edit.job_title")} value={form.title} onChangeText={set('title')} placeholder={t("profile.edit.job_title_placeholder")} styles={styles} c={c} />
+        <Field label={t("profile.edit.company_name")} value={form.companyName} onChangeText={set('companyName')} placeholder={t("profile.edit.company_name_placeholder")} styles={styles} c={c} />
+        <Field label={t("profile.edit.industry")} value={form.industry} onChangeText={set('industry')} placeholder={t("profile.edit.industry_placeholder")} optional styles={styles} c={c} />
+        <Field label={t("profile.edit.from")} value={form.from} onChangeText={set('from')} placeholder={t("profile.edit.from_placeholder")} styles={styles} c={c} />
+        <Field label={t("profile.edit.to")} value={form.to} onChangeText={set('to')} placeholder={t("profile.edit.to_placeholder")} optional styles={styles} c={c} />
+        <Field label={t("profile.edit.description")} value={form.description} onChangeText={set('description')} placeholder={t("profile.edit.description_placeholder")} multiline optional styles={styles} c={c} />
 
         <TouchableOpacity
           style={[styles.saveBtn, saving && { opacity: 0.6 }]}
@@ -106,7 +109,7 @@ export default function EditExperienceScreen() {
         >
           {saving
             ? <ActivityIndicator color={c.white} size="small" />
-            : <Text style={styles.saveBtnText}>{isEdit ? 'Save Changes' : 'Add Experience'}</Text>}
+            : <Text style={styles.saveBtnText}>{isEdit ? t("profile.save_changes") : t("profile.add_experience")}</Text>}
         </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -118,12 +121,12 @@ function createStyles(c) {
   scroll: { flex: 1, backgroundColor: c.surface },
   content: { padding: 20, gap: 16, paddingBottom: 40 },
   fieldGroup: { gap: 6 },
-  label: { fontSize: 12, fontWeight: '600', color: c.foreground, textTransform: 'uppercase', letterSpacing: 0.4 },
-  optional: { fontWeight: '400', color: c['muted-foreground'], textTransform: 'none' },
+  label: { fontFamily: FONT_FAMILY_SEMIBOLD, fontSize: 12, color: c.foreground, textTransform: 'uppercase', letterSpacing: 0.4 },
+  optional: { fontFamily: FONT_FAMILY, fontWeight: '400', color: c['muted-foreground'], textTransform: 'none' },
   input: {
     backgroundColor: c.card, borderWidth: 1, borderColor: c.border,
     borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12,
-    fontSize: 14, color: c.foreground,
+    fontFamily: FONT_FAMILY, fontSize: 14, color: c.foreground,
   },
   inputMulti: { minHeight: 120, paddingTop: 12 },
   saveBtn: {
@@ -132,6 +135,6 @@ function createStyles(c) {
     shadowColor: c.primary, shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
   },
-  saveBtnText: { color: c.white, fontSize: 15, fontWeight: '700' },
+  saveBtnText: { fontFamily: FONT_FAMILY_BOLD, color: c.white, fontSize: 15 },
   });
 }

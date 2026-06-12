@@ -22,6 +22,7 @@ import { ThemeProvider, useTheme } from "../../shared/context/ThemeContext";
 import AnimatedSidebar from "../../shared/ui/AnimatedSidebar";
 import { USER_ROLE } from "../../shared/constants/enums";
 import { spacing, borderRadius, fontSize, fontWeight } from "../theme";
+import { FONT_FAMILY_SEMIBOLD } from "../fonts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import { useTranslation } from '../../shared/context/I18nContext';
@@ -102,6 +103,7 @@ function Header({ title, routeName }) {
     Pipeline: 'nav.pipeline',
     PipelinesPage: 'nav.pipeline',
     PipelineBuilder: 'nav.pipeline',
+    ContactUs: 'contact_us.badge',
   };
 
   const displayTitle = keyMap[routeName] ? t(keyMap[routeName]) : title;
@@ -137,7 +139,7 @@ const headerStyles = StyleSheet.create({
   title: {
     flex: 1,
     fontSize: 17,
-    fontWeight: fontWeight.semibold,
+    fontFamily: FONT_FAMILY_SEMIBOLD,
   },
 });
 
@@ -204,25 +206,25 @@ function MainScreens() {
           component={ApplicantProfilePage}
         />
         <InnerStack.Screen name="EditBio" component={EditBioScreen}
-          options={{ header: undefined, headerShown: true, headerTitle: t('profile.edit_titles.bio'),
+          options={{ header: undefined, headerShown: true, headerTitle: t('profile.edit_titles.bio'), headerTitleStyle: { fontFamily: FONT_FAMILY_SEMIBOLD },
                     headerStyle: { backgroundColor: c.primary }, headerTintColor: c.white }} />
         <InnerStack.Screen name="EditContact" component={EditContactScreen}
-          options={{ header: undefined, headerShown: true, headerTitle: t('profile.edit_titles.contact'),
+          options={{ header: undefined, headerShown: true, headerTitle: t('profile.edit_titles.contact'), headerTitleStyle: { fontFamily: FONT_FAMILY_SEMIBOLD },
                     headerStyle: { backgroundColor: c.primary }, headerTintColor: c.white }} />
         <InnerStack.Screen name="EditLinks" component={EditLinksScreen}
-          options={{ header: undefined, headerShown: true, headerTitle: t('profile.edit_titles.links'),
+          options={{ header: undefined, headerShown: true, headerTitle: t('profile.edit_titles.links'), headerTitleStyle: { fontFamily: FONT_FAMILY_SEMIBOLD },
                     headerStyle: { backgroundColor: c.primary }, headerTintColor: c.white }} />
         <InnerStack.Screen name="EditVolunteering" component={EditVolunteeringScreen}
-          options={{ header: undefined, headerShown: true, headerTitle: t('profile.edit_titles.volunteering'),
+          options={{ header: undefined, headerShown: true, headerTitle: t('profile.edit_titles.volunteering'), headerTitleStyle: { fontFamily: FONT_FAMILY_SEMIBOLD },
                     headerStyle: { backgroundColor: c.primary }, headerTintColor: c.white }} />
         <InnerStack.Screen name="EditLanguages" component={EditLanguagesScreen}
-          options={{ header: undefined, headerShown: true, headerTitle: t('profile.edit_titles.languages'),
+          options={{ header: undefined, headerShown: true, headerTitle: t('profile.edit_titles.languages'), headerTitleStyle: { fontFamily: FONT_FAMILY_SEMIBOLD },
                     headerStyle: { backgroundColor: c.primary }, headerTintColor: c.white }} />
         <InnerStack.Screen name="EditCertificates" component={EditCertificatesScreen}
-          options={{ header: undefined, headerShown: true, headerTitle: t('profile.edit_titles.certificates'),
+          options={{ header: undefined, headerShown: true, headerTitle: t('profile.edit_titles.certificates'), headerTitleStyle: { fontFamily: FONT_FAMILY_SEMIBOLD },
                     headerStyle: { backgroundColor: c.primary }, headerTintColor: c.white }} />
         <InnerStack.Screen name="EditAwards" component={EditAwardsScreen}
-          options={{ header: undefined, headerShown: true, headerTitle: t('profile.edit_titles.awards'),
+          options={{ header: undefined, headerShown: true, headerTitle: t('profile.edit_titles.awards'), headerTitleStyle: { fontFamily: FONT_FAMILY_SEMIBOLD },
                     headerStyle: { backgroundColor: c.primary }, headerTintColor: c.white }} />
         <InnerStack.Screen
           name="EditExperience"
@@ -231,6 +233,7 @@ function MainScreens() {
             header: undefined,
             headerShown: true,
             headerTitle: t('profile.edit_titles.experience'),
+            headerTitleStyle: { fontFamily: FONT_FAMILY_SEMIBOLD },
             headerStyle: { backgroundColor: c.primary },
             headerTintColor: c.white,
           }}
@@ -242,6 +245,7 @@ function MainScreens() {
             header: undefined,
             headerShown: true,
             headerTitle: t('profile.edit_titles.education'),
+            headerTitleStyle: { fontFamily: FONT_FAMILY_SEMIBOLD },
             headerStyle: { backgroundColor: c.primary },
             headerTintColor: c.white,
           }}
@@ -253,6 +257,7 @@ function MainScreens() {
             header: undefined,
             headerShown: true,
             headerTitle: t('profile.edit_titles.skills'),
+            headerTitleStyle: { fontFamily: FONT_FAMILY_SEMIBOLD },
             headerStyle: { backgroundColor: c.primary },
             headerTintColor: c.white,
           }}
@@ -264,6 +269,7 @@ function MainScreens() {
             header: undefined,
             headerShown: true,
             headerTitle: t('profile.edit_titles.projects'),
+            headerTitleStyle: { fontFamily: FONT_FAMILY_SEMIBOLD },
             headerStyle: { backgroundColor: c.primary },
             headerTintColor: c.white,
           }}
@@ -282,7 +288,7 @@ function MainScreens() {
       >
         <InnerStack.Screen name="RecruiterHome" component={RecruiterScreen} />
         <InnerStack.Screen name="ApplicantProfile" component={ApplicantProfilePage}
-          options={{ headerShown: true, headerTitle: t('profile.applicant_profile'),
+          options={{ headerShown: true, headerTitle: t('profile.applicant_profile'), headerTitleStyle: { fontFamily: FONT_FAMILY_SEMIBOLD },
                     headerStyle: { backgroundColor: c.primary },
                     headerTintColor: c.white }} />
         <InnerStack.Screen name="CompanyProfile" component={CompanyProfile} />
@@ -297,6 +303,7 @@ function MainScreens() {
           options={{
             headerShown: true,
             headerTitle: t('profile.screening_questions'),
+            headerTitleStyle: { fontFamily: FONT_FAMILY_SEMIBOLD },
             headerStyle: { backgroundColor: c.primary },
             headerTintColor: c.white,
           }}
@@ -307,6 +314,7 @@ function MainScreens() {
           options={{
             headerShown: true,
             headerTitle: t('publish_success'),
+            headerTitleStyle: { fontFamily: FONT_FAMILY_SEMIBOLD },
             headerStyle: { backgroundColor: c.primary },
             headerTintColor: c.white,
           }}
@@ -387,7 +395,7 @@ function RootNavigator({ onboardingSeen }) {
             headerShown: true,
 
             headerTitle: t('nav.job_details'),
-
+            headerTitleStyle: { fontFamily: FONT_FAMILY_SEMIBOLD },
             headerStyle: navHeaderStyle,
             headerTintColor: c["sidebar-foreground"],
           }}
@@ -399,7 +407,7 @@ function RootNavigator({ onboardingSeen }) {
             headerShown: true,
 
             headerTitle: t('nav.apply_job'),
-
+            headerTitleStyle: { fontFamily: FONT_FAMILY_SEMIBOLD },
             headerStyle: navHeaderStyle,
             headerTintColor: c["sidebar-foreground"],
           }}
@@ -411,7 +419,7 @@ function RootNavigator({ onboardingSeen }) {
             headerShown: true,
 
             headerTitle: t('nav.interview'),
-
+            headerTitleStyle: { fontFamily: FONT_FAMILY_SEMIBOLD },
             headerStyle: navHeaderStyle,
             headerTintColor: c["sidebar-foreground"],
           }}

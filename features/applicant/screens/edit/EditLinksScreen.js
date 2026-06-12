@@ -8,10 +8,13 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '../../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../../shared/context/I18nContext';
 import { fetchApplicantProfile, updateApplicantProfile } from '../../services/profile.service';
+import { FONT_FAMILY, FONT_FAMILY_BOLD } from '../../../../src/fonts';
 
 export default function EditLinksScreen() {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const c = theme.colors;
   const styles = createStyles(c);
   const navigation = useNavigation();
@@ -26,7 +29,7 @@ export default function EditLinksScreen() {
       .then(data => {
         setLinkedinUrl(data?.linkedin_url || '');
       })
-      .catch(() => Alert.alert('Error', 'Could not load profile.'))
+      .catch(() => Alert.alert(t("profile.error_title"), t("profile.error_load")))
       .finally(() => setLoading(false));
   }, [profileId]);
 
@@ -38,7 +41,7 @@ export default function EditLinksScreen() {
       });
       navigation.goBack();
     } catch (err) {
-      Alert.alert('Error', err?.message || 'Could not save changes.');
+      Alert.alert(t("profile.error_title"), err?.message || t("profile.error_save"));
     } finally {
       setSaving(false);
     }
@@ -56,15 +59,15 @@ export default function EditLinksScreen() {
               <Ionicons name="logo-linkedin" size={14} color={c.accent} />
             </View>
             <View>
-              <Text style={styles.label}>LinkedIn URL</Text>
-              <Text style={styles.hint}>Your LinkedIn profile link</Text>
+              <Text style={styles.label}>{t("profile.fields.linkedin_url")}</Text>
+              <Text style={styles.hint}>{t("profile.edit.linkedin_hint")}</Text>
             </View>
           </View>
           <TextInput
             style={styles.input}
             value={linkedinUrl}
             onChangeText={setLinkedinUrl}
-            placeholder="https://linkedin.com/in/username"
+            placeholder={t("profile.edit.linkedin_placeholder")}
             placeholderTextColor={c['muted-foreground']}
             autoCapitalize="none"
             autoCorrect={false}
@@ -80,7 +83,7 @@ export default function EditLinksScreen() {
         >
           {saving
             ? <ActivityIndicator color={c.white} size="small" />
-            : <Text style={styles.saveBtnText}>Save Changes</Text>}
+            : <Text style={styles.saveBtnText}>{t("profile.save_changes")}</Text>}
         </TouchableOpacity>
 
       </ScrollView>
@@ -96,10 +99,10 @@ function createStyles(c) {
   fieldGroup: { gap: 8 },
   labelRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   labelIcon: { width: 30, height: 30, borderRadius: 8, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
-  label: { fontSize: 13, fontWeight: '700', color: c.foreground },
-  hint: { fontSize: 12, color: c['muted-foreground'] },
+  label: { fontFamily: FONT_FAMILY_BOLD, fontSize: 13, color: c.foreground },
+  hint: { fontFamily: FONT_FAMILY, fontSize: 12, color: c['muted-foreground'] },
   input: {
-    backgroundColor: c.card, borderWidth: 1, borderColor: c.border,
+    fontFamily: FONT_FAMILY, backgroundColor: c.card, borderWidth: 1, borderColor: c.border,
     borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12,
     fontSize: 14, color: c.foreground,
   },
@@ -109,6 +112,6 @@ function createStyles(c) {
     shadowColor: c.primary, shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
   },
-  saveBtnText: { color: c.white, fontSize: 15, fontWeight: '700' },
+  saveBtnText: { fontFamily: FONT_FAMILY_BOLD, color: c.white, fontSize: 15 },
   });
 }

@@ -7,6 +7,7 @@ import { decode } from 'base64-arraybuffer';
 import { supabase } from "../../../shared/services/supabase";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
+import { FONT_FAMILY_BOLD, FONT_FAMILY_SEMIBOLD } from '../../../src/fonts';
 
 export default function AvatarModal({ open, onClose, userId, currentUrl, onUpdated, onDeleted }) {
   const { theme } = useTheme();
@@ -118,9 +119,9 @@ export default function AvatarModal({ open, onClose, userId, currentUrl, onUpdat
         }}>
           <Text style={{
             fontSize: 18,
-            fontWeight: "700",
             color: c.foreground,
             marginBottom: 20,
+            fontFamily: FONT_FAMILY_BOLD,
           }}>
             {t("applicant.profile_picture")}
           </Text>
@@ -137,7 +138,7 @@ export default function AvatarModal({ open, onClose, userId, currentUrl, onUpdat
                 opacity: uploading ? 0.5 : 1,
               }}
             >
-              <Text style={{ color: c['destructive-foreground'], fontSize: 14, fontWeight: "600" }}>
+              <Text style={{ color: c['destructive-foreground'], fontSize: 14, fontFamily: FONT_FAMILY_SEMIBOLD }}>
                 {uploading ? t("applicant.uploading") : t("applicant.upload_photo")}
               </Text>
             </TouchableOpacity>
@@ -155,7 +156,7 @@ export default function AvatarModal({ open, onClose, userId, currentUrl, onUpdat
                   opacity: uploading ? 0.5 : 1,
                 }}
               >
-                <Text style={{ color: c.red[600], fontSize: 14, fontWeight: "600" }}>
+                <Text style={{ color: c.red[600], fontSize: 14, fontFamily: FONT_FAMILY_SEMIBOLD }}>
                   Remove Photo
                 </Text>
               </TouchableOpacity>
@@ -171,7 +172,7 @@ export default function AvatarModal({ open, onClose, userId, currentUrl, onUpdat
                 alignItems: "center",
               }}
             >
-              <Text style={{ color: c['muted-foreground'], fontSize: 14, fontWeight: "600" }}>
+              <Text style={{ color: c['muted-foreground'], fontSize: 14, fontFamily: FONT_FAMILY_SEMIBOLD }}>
                 {t("applicant.cancel")}
               </Text>
             </TouchableOpacity>

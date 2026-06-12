@@ -15,6 +15,7 @@ import StageLibrary from "./StageLibrary";
 import StageCard from "./StageCard";
 import StageDetailsPanel from "./StageDetailsPanel";
 import { useTranslation } from "../../../shared/context/I18nContext";
+import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from "../../../src/fonts";
 
 export default function PipelineBuilder({
   job,
@@ -221,7 +222,7 @@ function createStyles(c, bottomSheetHeight, isRtl) {
     },
     libraryBtnText: {
       fontSize: 12,
-      fontWeight: "500",
+      fontFamily: FONT_FAMILY_MEDIUM,
       color: c['muted-foreground'],
     },
     bottomSheetOverlay: {
@@ -269,12 +270,13 @@ function createStyles(c, bottomSheetHeight, isRtl) {
     },
     jobTitle: {
       fontSize: 20,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.foreground,
       marginBottom: 2,
     },
     canvasHint: {
       fontSize: 12,
+      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
     },
     emptyState: {
@@ -299,12 +301,13 @@ function createStyles(c, bottomSheetHeight, isRtl) {
     },
     emptyTitle: {
       fontSize: 14,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       color: c['muted-foreground'],
       marginBottom: 4,
     },
     emptyHint: {
       fontSize: 12,
+      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
       textAlign: "center",
     },
@@ -346,14 +349,14 @@ function createStyles(c, bottomSheetHeight, isRtl) {
     },
     drawerHeaderLabel: {
       fontSize: 10,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c['muted-foreground'],
       letterSpacing: 1,
       textTransform: "uppercase",
     },
     detailsHeaderTitle: {
       fontSize: 14,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       color: c.foreground,
       flex: 1,
       marginRight: isRtl ? 0 : 8,

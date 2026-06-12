@@ -16,6 +16,7 @@ import { useTheme } from "../context/ThemeContext";
 import { useUser } from "../../features/auth/context/user.context";
 import { USER_ROLE } from "../constants/enums";
 import { spacing, borderRadius, fontSize, fontWeight } from "../../src/theme";
+import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from "../../src/fonts";
 import { useTranslation } from "../context/I18nContext";
 import LanguageSwitcher from "../i18n/LanguageSwitcher";
 
@@ -57,7 +58,7 @@ export default function AnimatedSidebar() {
     },
     {
       name: "ContactUs",
-      label: "Contact Us",
+      label: "contact_us.badge",
       icon: "mail-outline",
       screen: "ContactUs",
     },
@@ -102,7 +103,7 @@ export default function AnimatedSidebar() {
     },
     {
       name: "ContactUs",
-      label: "Contact Us",
+      label: "contact_us.badge",
       icon: "mail-outline",
       screen: "ContactUs",
     },
@@ -357,11 +358,11 @@ const styles = StyleSheet.create({
   },
   logoText: {
     fontSize: fontSize.xl,
-    fontWeight: fontWeight.bold,
+    fontFamily: FONT_FAMILY_BOLD,
   },
   wordmark: {
     fontSize: 17,
-    fontWeight: fontWeight.semibold,
+    fontFamily: FONT_FAMILY_SEMIBOLD,
     letterSpacing: -0.3,
   },
   userChip: {
@@ -383,15 +384,16 @@ const styles = StyleSheet.create({
   },
   avatarText: {
     fontSize: 13,
-    fontWeight: fontWeight.semibold,
+    fontFamily: FONT_FAMILY_SEMIBOLD,
   },
   userName: {
     fontSize: fontSize.sm,
-    fontWeight: fontWeight.semibold,
+    fontFamily: FONT_FAMILY_SEMIBOLD,
   },
   userRole: {
     fontSize: fontSize.xs,
     textTransform: "capitalize",
+    fontFamily: FONT_FAMILY,
   },
   navScroll: {
     flex: 1,
@@ -412,7 +414,7 @@ const styles = StyleSheet.create({
   navLabel: {
     flex: 1,
     fontSize: fontSize.sm,
-    fontWeight: fontWeight.medium,
+    fontFamily: FONT_FAMILY_MEDIUM,
   },
   themeButton: {
     flexDirection: "row",
@@ -424,7 +426,7 @@ const styles = StyleSheet.create({
   },
   themeText: {
     fontSize: fontSize.sm,
-    fontWeight: fontWeight.medium,
+    fontFamily: FONT_FAMILY_MEDIUM,
   },
   logoutButton: {
     flexDirection: "row",
@@ -437,6 +439,6 @@ const styles = StyleSheet.create({
   },
   logoutText: {
     fontSize: fontSize.sm,
-    fontWeight: fontWeight.medium,
+    fontFamily: FONT_FAMILY_MEDIUM,
   },
 });

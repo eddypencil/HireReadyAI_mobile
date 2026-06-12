@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../shared/context/I18nContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD, FONT_FAMILY_EXTRABOLD } from '../../../src/fonts';
 
 const MOCK_QUESTIONS = [
   { id: '1', text: 'Tell us about your experience with React Native.' },
@@ -14,7 +15,7 @@ const MOCK_QUESTIONS = [
 
 export default function InterviewPage() {
   const { theme } = useTheme();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const insets = useSafeAreaInsets();
   const c = theme.colors;
   const styles = createStyles(c);
@@ -182,7 +183,7 @@ export default function InterviewPage() {
           {recorded && currentIndex < questions.length - 1 && (
             <TouchableOpacity style={styles.nextButton} onPress={handleNext} activeOpacity={0.7}>
               <Text style={styles.nextButtonText}>{t("interview.next_question")}</Text>
-              <Ionicons name="arrow-forward" size={18} color={c['destructive-foreground']} />
+              <Ionicons name={language === 'ar' ? 'arrow-back' : 'arrow-forward'} size={18} color={c['destructive-foreground']} />
             </TouchableOpacity>
           )}
 
@@ -212,17 +213,20 @@ function createStyles(c) { return StyleSheet.create({
     marginTop: 12,
     color: c['muted-foreground'],
     fontSize: 15,
+    fontFamily: FONT_FAMILY,
   },
   errorText: {
     marginTop: 12,
     color: c.destructive,
     fontSize: 15,
+    fontFamily: FONT_FAMILY,
   },
   emptyText: {
     marginTop: 12,
     color: c['muted-foreground'],
     fontSize: 15,
     textAlign: 'center',
+    fontFamily: FONT_FAMILY,
   },
   header: {
     paddingBottom: 24,
@@ -236,7 +240,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   headerTitle: {
     fontSize: 24,
-    fontWeight: '800',
+    fontFamily: FONT_FAMILY_EXTRABOLD,
     color: c['destructive-foreground'],
   },
   body: {
@@ -253,7 +257,7 @@ function createStyles(c) { return StyleSheet.create({
   progressText: {
     fontSize: 13,
     color: c['muted-foreground'],
-    fontWeight: '600',
+    fontFamily: FONT_FAMILY_SEMIBOLD,
     marginBottom: 8,
   },
   progressBar: {
@@ -280,7 +284,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   questionText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FONT_FAMILY_SEMIBOLD,
     color: c.foreground,
     flex: 1,
     lineHeight: 22,
@@ -302,7 +306,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   timerText: {
     fontSize: 32,
-    fontWeight: '800',
+    fontFamily: FONT_FAMILY_EXTRABOLD,
     color: c.foreground,
     fontVariant: ['tabular-nums'],
   },
@@ -318,7 +322,7 @@ function createStyles(c) { return StyleSheet.create({
   recordButtonText: {
     color: c['destructive-foreground'],
     fontSize: 15,
-    fontWeight: '700',
+    fontFamily: FONT_FAMILY_BOLD,
   },
   transcriptCard: {
     backgroundColor: c.card,
@@ -336,13 +340,14 @@ function createStyles(c) { return StyleSheet.create({
   },
   transcriptTitle: {
     fontSize: 13,
-    fontWeight: '700',
+    fontFamily: FONT_FAMILY_BOLD,
     color: c.primary,
   },
   transcriptText: {
     fontSize: 14,
     color: c.foreground,
     lineHeight: 20,
+    fontFamily: FONT_FAMILY,
   },
   transcriptEmpty: {
     backgroundColor: c.card,
@@ -357,6 +362,7 @@ function createStyles(c) { return StyleSheet.create({
     fontSize: 13,
     color: c['muted-foreground'],
     marginTop: 8,
+    fontFamily: FONT_FAMILY,
   },
   nextButton: {
     flexDirection: 'row',
@@ -370,7 +376,7 @@ function createStyles(c) { return StyleSheet.create({
   nextButtonText: {
     color: c['destructive-foreground'],
     fontSize: 15,
-    fontWeight: '700',
+    fontFamily: FONT_FAMILY_BOLD,
   },
   completeBanner: {
     flexDirection: 'row',
@@ -382,6 +388,6 @@ function createStyles(c) { return StyleSheet.create({
   },
   completeText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontFamily: FONT_FAMILY_SEMIBOLD,
   },
 }); }

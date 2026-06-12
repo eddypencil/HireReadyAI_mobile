@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
+import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD } from "../../../src/fonts";
 
 export default function StageCard({
   stage,
@@ -125,7 +126,7 @@ function createStyles(c) {
     },
     name: {
       fontSize: 14,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       color: c.foreground,
     },
     nameSelected: {
@@ -133,6 +134,7 @@ function createStyles(c) {
     },
     type: {
       fontSize: 11,
+      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
       marginTop: 2,
       textTransform: "capitalize",
@@ -145,8 +147,8 @@ function createStyles(c) {
     },
     weightText: {
       fontSize: 11,
+      fontFamily: FONT_FAMILY_MEDIUM,
       color: c['muted-foreground'],
-      fontWeight: "500",
     },
     deleteBtn: {
       padding: 6,

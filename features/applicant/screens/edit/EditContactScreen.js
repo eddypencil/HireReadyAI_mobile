@@ -8,10 +8,13 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '../../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../../shared/context/I18nContext';
 import { fetchApplicantProfile, updateApplicantProfile } from '../../services/profile.service';
+import { FONT_FAMILY, FONT_FAMILY_BOLD } from '../../../../src/fonts';
 
 export default function EditContactScreen() {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const c = theme.colors;
   const styles = createStyles(c);
   const navigation = useNavigation();
@@ -28,7 +31,7 @@ export default function EditContactScreen() {
         setPhone(data?.phone || '');
         setLocation(data?.location || '');
       })
-      .catch(() => Alert.alert('Error', 'Could not load profile.'))
+      .catch(() => Alert.alert(t("profile.error_title"), t("profile.error_load")))
       .finally(() => setLoading(false));
   }, [profileId]);
 
@@ -41,7 +44,7 @@ export default function EditContactScreen() {
       });
       navigation.goBack();
     } catch {
-      Alert.alert('Error', 'Could not save changes.');
+      Alert.alert(t("profile.error_title"), t("profile.error_save"));
     } finally {
       setSaving(false);
     }
@@ -58,13 +61,13 @@ export default function EditContactScreen() {
             <View style={[styles.labelIcon, { backgroundColor: `${c.accent}18` }]}>
               <Ionicons name="call-outline" size={14} color={c.accent} />
             </View>
-            <Text style={styles.label}>Phone Number</Text>
+            <Text style={styles.label}>{t("profile.fields.phone")}</Text>
           </View>
           <TextInput
             style={styles.input}
             value={phone}
             onChangeText={setPhone}
-            placeholder="+20 1XX XXXX XXX"
+            placeholder={t("profile.edit.phone_placeholder")}
             placeholderTextColor={c['muted-foreground']}
             keyboardType="phone-pad"
           />
@@ -75,13 +78,13 @@ export default function EditContactScreen() {
             <View style={[styles.labelIcon, { backgroundColor: `${c.primary}18` }]}>
               <Ionicons name="location-outline" size={14} color={c.primary} />
             </View>
-            <Text style={styles.label}>Location</Text>
+            <Text style={styles.label}>{t("profile.fields.location")}</Text>
           </View>
           <TextInput
             style={styles.input}
             value={location}
             onChangeText={setLocation}
-            placeholder="e.g. Cairo, Egypt"
+            placeholder={t("profile.edit.location_placeholder")}
             placeholderTextColor={c['muted-foreground']}
             autoCapitalize="words"
           />
@@ -95,7 +98,7 @@ export default function EditContactScreen() {
         >
           {saving
             ? <ActivityIndicator color={c.white} size="small" />
-            : <Text style={styles.saveBtnText}>Save Changes</Text>}
+            : <Text style={styles.saveBtnText}>{t("profile.save_changes")}</Text>}
         </TouchableOpacity>
 
       </ScrollView>
@@ -111,9 +114,9 @@ function createStyles(c) {
   fieldGroup: { gap: 8 },
   labelRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   labelIcon: { width: 30, height: 30, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
-  label: { fontSize: 13, fontWeight: '700', color: c.foreground },
+  label: { fontFamily: FONT_FAMILY_BOLD, fontSize: 13, color: c.foreground },
   input: {
-    backgroundColor: c.card, borderWidth: 1, borderColor: c.border,
+    fontFamily: FONT_FAMILY, backgroundColor: c.card, borderWidth: 1, borderColor: c.border,
     borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12,
     fontSize: 14, color: c.foreground,
   },
@@ -123,6 +126,6 @@ function createStyles(c) {
     shadowColor: c.primary, shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
   },
-  saveBtnText: { color: c.white, fontSize: 15, fontWeight: '700' },
+  saveBtnText: { fontFamily: FONT_FAMILY_BOLD, color: c.white, fontSize: 15 },
   });
 }

@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../shared/context/I18nContext';
+import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD } from '../../../src/fonts';
 import { fetchApplicantProfile } from '../services/profile.service';
 import { deleteExperience } from '../services/experience.service';
 import { deleteEducation } from '../services/education.service';
@@ -240,12 +241,12 @@ function createStyles(c) {
     scroll: { flex: 1 },
     content: { padding: 16, gap: 14, paddingBottom: 40 },
     centered: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: c.background },
-    errorText: { fontSize: 14, color: c['muted-foreground'] },
+    errorText: { fontFamily: FONT_FAMILY, fontSize: 14, color: c['muted-foreground'] },
     tabBarScroll: { backgroundColor: c.card, borderRadius: 14, borderWidth: 1, borderColor: c.border },
     tabBarContent: { flexDirection: 'row', padding: 4, gap: 2 },
     tab: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 10 },
     tabActive: { backgroundColor: `${c.primary}12` },
-    tabLabel: { fontSize: 13, fontWeight: '600', color: c['muted-foreground'] },
-    tabLabelActive: { color: c.primary },
+    tabLabel: { fontFamily: FONT_FAMILY_SEMIBOLD, fontSize: 13, color: c['muted-foreground'] },
+    tabLabelActive: { fontFamily: FONT_FAMILY, color: c.primary },
   });
 }

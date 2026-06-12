@@ -2,6 +2,12 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../shared/context/ThemeContext';
+import {
+  FONT_FAMILY,
+  FONT_FAMILY_MEDIUM,
+  FONT_FAMILY_SEMIBOLD,
+  FONT_FAMILY_BOLD,
+} from '../../../src/fonts';
 import { useTranslation } from '../../../shared/context/I18nContext';
 
 function getInitials(name) {
@@ -173,7 +179,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   rank: {
     fontSize: 10,
-    fontWeight: '700',
+    fontFamily: FONT_FAMILY_BOLD,
     color: c['muted-foreground'],
     marginTop: 2,
     width: 20,
@@ -187,7 +193,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   avatarText: {
     fontSize: 11,
-    fontWeight: '700',
+    fontFamily: FONT_FAMILY_BOLD,
     color: c['destructive-foreground'],
   },
   nameSection: {
@@ -201,7 +207,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   name: {
     fontSize: 14,
-    fontWeight: '600',
+    fontFamily: FONT_FAMILY_SEMIBOLD,
     color: c.foreground,
   },
   selectedName: {
@@ -217,8 +223,8 @@ function createStyles(c) { return StyleSheet.create({
   },
   rejectedBadgeText: {
     fontSize: 10,
+    fontFamily: FONT_FAMILY_MEDIUM,
     color: c.destructive,
-    fontWeight: '500',
   },
   tag: {
     paddingHorizontal: 6,
@@ -228,7 +234,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   tagText: {
     fontSize: 10,
-    fontWeight: '500',
+    fontFamily: FONT_FAMILY_MEDIUM,
   },
   appliedRow: {
     flexDirection: 'row',
@@ -252,6 +258,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   aiText: {
     fontSize: 12,
+    fontFamily: FONT_FAMILY,
     color: c['muted-foreground'],
     lineHeight: 17,
     flex: 1,
@@ -277,7 +284,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   voterAvatarText: {
     fontSize: 9,
-    fontWeight: '700',
+    fontFamily: FONT_FAMILY_BOLD,
     color: c['destructive-foreground'],
   },
   voterOverflow: {
@@ -286,7 +293,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   voterOverflowText: {
     fontSize: 9,
-    fontWeight: '700',
+    fontFamily: FONT_FAMILY_BOLD,
     color: c['muted-foreground'],
   },
   scoreRow: {
@@ -296,11 +303,11 @@ function createStyles(c) { return StyleSheet.create({
   },
   aiMatchLabel: {
     fontSize: 12,
-    fontWeight: '500',
+    fontFamily: FONT_FAMILY_MEDIUM,
     color: c['muted-foreground'],
   },
   scoreBadge: {
-    fontWeight: '700',
+    fontFamily: FONT_FAMILY_BOLD,
     paddingHorizontal: 5,
     paddingVertical: 1,
     borderRadius: 3,
@@ -314,7 +321,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   voteCount: {
     fontSize: 12,
-    fontWeight: '500',
+    fontFamily: FONT_FAMILY_MEDIUM,
   },
   voteDivider: {
     color: c.border,

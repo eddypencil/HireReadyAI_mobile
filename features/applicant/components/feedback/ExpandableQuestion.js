@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../../shared/context/I18nContext';
+import { FONT_FAMILY, FONT_FAMILY_BOLD, FONT_FAMILY_SEMIBOLD } from '../../../../src/fonts';
 
 const TYPE_ICONS = {
   video: 'videocam-outline',
@@ -18,6 +20,7 @@ const TYPE_LABELS = {
 
 export default function ExpandableQuestion({ question, index }) {
   const { theme } = useTheme();
+  const { language: appLanguage } = useTranslation();
   const c = theme.colors;
   const [expanded, setExpanded] = useState(false);
 
@@ -25,7 +28,7 @@ export default function ExpandableQuestion({ question, index }) {
   const answerData = Array.isArray(answer) ? answer[0] : answer;
   const context = question.generation_context || {};
   const options = context.options || [];
-  const language = context.language || null;
+  const questionLanguage = context.language || null;
   const iconName = TYPE_ICONS[question.question_type] || 'document-text-outline';
   const typeLabel = TYPE_LABELS[question.question_type] || question.question_type;
   const iconStyle = (function () {
@@ -54,9 +57,9 @@ export default function ExpandableQuestion({ question, index }) {
         <View style={styles.headerText}>
           <View style={styles.metaRow}>
             <Text style={styles.typeLabel}>{typeLabel}</Text>
-            {language && (
+            {questionLanguage && (
               <View style={styles.langBadge}>
-                <Text style={styles.langText}>{language.toUpperCase()}</Text>
+                <Text style={styles.langText}>{questionLanguage.toUpperCase()}</Text>
               </View>
             )}
           </View>
@@ -71,7 +74,7 @@ export default function ExpandableQuestion({ question, index }) {
             </View>
           )}
           <Ionicons
-            name={expanded ? 'chevron-down' : 'chevron-forward'}
+            name={expanded ? 'chevron-down' : (appLanguage === 'ar' ? 'chevron-back' : 'chevron-forward')}
             size={16} color={c['muted-foreground']}
           />
         </View>
@@ -191,27 +194,27 @@ function createStyles(c) {
     iconBox: { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
     headerText: { flex: 1 },
     metaRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
-    typeLabel: { fontSize: 11, fontWeight: '600', color: c['muted-foreground'] },
+    typeLabel: { fontSize: 11, color: c['muted-foreground'], fontFamily: FONT_FAMILY_SEMIBOLD },
     langBadge: { backgroundColor: c.surface, borderRadius: 4, paddingHorizontal: 4, paddingVertical: 1 },
-    langText: { fontSize: 9, fontWeight: '700', color: c['muted-foreground'] },
-    questionText: { fontSize: 13, fontWeight: '500', color: c.foreground, lineHeight: 18 },
+    langText: { fontSize: 9, color: c['muted-foreground'], fontFamily: FONT_FAMILY_BOLD },
+    questionText: { fontSize: 13, color: c.foreground, lineHeight: 18, fontFamily: FONT_FAMILY },
     rightCol: { alignItems: 'center', gap: 6 },
     scoreBadge: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 },
-    scoreText: { fontSize: 11, fontWeight: '700' },
+    scoreText: { fontSize: 11, fontFamily: FONT_FAMILY_BOLD },
     expandedContent: { paddingHorizontal: 16, paddingBottom: 16 },
     divider: { height: 1, backgroundColor: c.border, marginBottom: 14 },
     sectionLabel: {
-      fontSize: 10, fontWeight: '700', color: c['muted-foreground'],
-      letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 8,
+      fontSize: 10, color: c['muted-foreground'],
+      letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 8, fontFamily: FONT_FAMILY_BOLD,
     },
     answerBox: {
       backgroundColor: c.surface, borderRadius: 10,
       borderWidth: 1, borderColor: c.border, padding: 12,
     },
-    answerText: { fontSize: 13, color: c.foreground, lineHeight: 20 },
+    answerText: { fontSize: 13, color: c.foreground, lineHeight: 20, fontFamily: FONT_FAMILY },
     codeBox: { backgroundColor: '#1e2d3d', borderRadius: 10, padding: 12 },
-    codeText: { fontSize: 12, color: c.white, lineHeight: 20 },
-    mutedText: { fontSize: 12, color: c['muted-foreground'], fontStyle: 'italic' },
+    codeText: { fontSize: 12, color: c.white, lineHeight: 20, fontFamily: FONT_FAMILY },
+    mutedText: { fontSize: 12, color: c['muted-foreground'], fontStyle: 'italic', fontFamily: FONT_FAMILY },
     optionsContainer: { gap: 6, marginBottom: 8 },
     optionRow: {
       flexDirection: 'row', alignItems: 'center', gap: 10,
@@ -224,16 +227,15 @@ function createStyles(c) {
       backgroundColor: c.surface, alignItems: 'center', justifyContent: 'center',
     },
     optionLetterSelected: { backgroundColor: c.accent },
-    optionLetterText: { fontSize: 10, fontWeight: '700', color: c['muted-foreground'] },
-    optionText: { fontSize: 13, color: c['muted-foreground'], flex: 1 },
+    optionLetterText: { fontSize: 10, color: c['muted-foreground'], fontFamily: FONT_FAMILY_BOLD },
+    optionText: { fontSize: 13, color: c['muted-foreground'], flex: 1, fontFamily: FONT_FAMILY },
     aiFeedbackBox: {
       backgroundColor: c.surface, borderRadius: 10,
       borderWidth: 1, borderColor: c.border, padding: 12, marginTop: 12,
     },
     aiFeedbackHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 },
-    aiFeedbackLabel: { fontSize: 10, fontWeight: '700', color: c.accent, letterSpacing: 0.8 },
-    aiFeedbackText: { fontSize: 13, color: c.foreground, lineHeight: 19, marginBottom: 8 },
-    aiFeedbackText: { fontSize: 13, color: c.foreground, lineHeight: 19, marginBottom: 8 },
+    aiFeedbackLabel: { fontSize: 10, color: c.accent, letterSpacing: 0.8, fontFamily: FONT_FAMILY_BOLD },
+    aiFeedbackText: { fontSize: 13, color: c.foreground, lineHeight: 19, marginBottom: 8, fontFamily: FONT_FAMILY },
     feedbackSectionOuter: {
       flexDirection: 'row', marginTop: 10, borderRadius: 8, overflow: 'hidden',
       backgroundColor: c.surface,
@@ -244,9 +246,9 @@ function createStyles(c) {
       flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', gap: 4,
       paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6,
     },
-    feedbackTagText: { fontSize: 10, fontWeight: '700', letterSpacing: 0.5 },
+    feedbackTagText: { fontSize: 10, letterSpacing: 0.5, fontFamily: FONT_FAMILY_BOLD },
     bullet: { fontSize: 16, lineHeight: 18, marginTop: -1 },
     feedbackItem: { flexDirection: 'row', alignItems: 'flex-start', gap: 6, marginBottom: 2 },
-    feedbackItemText: { fontSize: 12, flex: 1, lineHeight: 17, color: c.foreground },
+    feedbackItemText: { fontSize: 12, flex: 1, lineHeight: 17, color: c.foreground, fontFamily: FONT_FAMILY },
   });
 }

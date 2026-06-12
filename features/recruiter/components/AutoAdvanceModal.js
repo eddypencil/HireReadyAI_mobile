@@ -1,4 +1,4 @@
-//features\recruiter\components\AutoAdvanceModal.js
+// features/recruiter/components/AutoAdvanceModal.js
 import { useState, useCallback, useRef } from 'react';
 import {
   View,
@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
+import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD, FONT_FAMILY_EXTRABOLD } from '../../../src/fonts';
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../shared/context/I18nContext';
 import { supabase } from '../../../shared/services/supabase';
@@ -40,7 +41,7 @@ function createStyles(c) {
       borderBottomWidth: 1,
       borderBottomColor: c.border,
     },
-    headerTitle: { fontSize: 17, fontWeight: '700', color: c.foreground },
+    headerTitle: { fontSize: 17, fontFamily: FONT_FAMILY_BOLD, color: c.foreground },
     closeBtn: { padding: 4 },
     body: { padding: 20 },
     section: { marginBottom: 20 },
@@ -50,7 +51,7 @@ function createStyles(c) {
       alignItems: 'center',
       marginBottom: 8,
     },
-    label: { fontSize: 14, fontWeight: '600', color: c.foreground },
+    label: { fontSize: 14, fontFamily: FONT_FAMILY_SEMIBOLD, color: c.foreground },
     generateBtn: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -60,7 +61,7 @@ function createStyles(c) {
       borderRadius: 8,
       backgroundColor: c.primary + '1a',
     },
-    generateBtnText: { fontSize: 12, fontWeight: '600', color: c.primary },
+    generateBtnText: { fontSize: 12, fontFamily: FONT_FAMILY_SEMIBOLD, color: c.primary },
     generateBtnDisabled: { opacity: 0.5 },
     textarea: {
       backgroundColor: c['surface-muted'],
@@ -69,6 +70,7 @@ function createStyles(c) {
       borderColor: c.border,
       padding: 12,
       fontSize: 14,
+      fontFamily: FONT_FAMILY,
       color: c.foreground,
       minHeight: 90,
       textAlignVertical: 'top',
@@ -81,7 +83,7 @@ function createStyles(c) {
     },
     scoreValue: {
       fontSize: 28,
-      fontWeight: '800',
+      fontFamily: FONT_FAMILY_EXTRABOLD,
       color: c.primary,
       minWidth: 48,
       textAlign: 'center',
@@ -92,7 +94,7 @@ function createStyles(c) {
       justifyContent: 'space-between',
       marginTop: -4,
     },
-    sliderLabel: { fontSize: 11, color: c['muted-foreground'] },
+    sliderLabel: { fontSize: 11, fontFamily: FONT_FAMILY, color: c['muted-foreground'] },
     suggestionBox: {
       backgroundColor: c['surface-muted'],
       borderRadius: 10,
@@ -103,11 +105,11 @@ function createStyles(c) {
     },
     suggestionTitle: {
       fontSize: 12,
-      fontWeight: '700',
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.primary,
       marginBottom: 4,
     },
-    suggestionText: { fontSize: 12, color: c['muted-foreground'], lineHeight: 18 },
+    suggestionText: { fontSize: 12, fontFamily: FONT_FAMILY, color: c['muted-foreground'], lineHeight: 18 },
     footer: {
       flexDirection: 'row',
       gap: 12,
@@ -122,7 +124,7 @@ function createStyles(c) {
       borderColor: c.border,
       alignItems: 'center',
     },
-    cancelBtnText: { fontSize: 15, fontWeight: '600', color: c['muted-foreground'] },
+    cancelBtnText: { fontSize: 15, fontFamily: FONT_FAMILY_SEMIBOLD, color: c['muted-foreground'] },
     runBtn: {
       flex: 1,
       paddingVertical: 14,
@@ -133,7 +135,7 @@ function createStyles(c) {
       justifyContent: 'center',
       gap: 6,
     },
-    runBtnText: { fontSize: 15, fontWeight: '700', color: c['destructive-foreground'] },
+    runBtnText: { fontSize: 15, fontFamily: FONT_FAMILY_BOLD, color: c['destructive-foreground'] },
     runBtnDisabled: { opacity: 0.5 },
     generatingOverlay: {
       flex: 1,
@@ -151,12 +153,13 @@ function createStyles(c) {
     generatingText: {
       marginTop: 12,
       fontSize: 15,
-      fontWeight: '600',
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       color: c.foreground,
     },
     generatingSub: {
       marginTop: 4,
       fontSize: 12,
+      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
       textAlign: 'center',
     },
@@ -175,7 +178,7 @@ function createStyles(c) {
     },
     resultTitle: {
       fontSize: 18,
-      fontWeight: '700',
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.foreground,
       textAlign: 'center',
       marginBottom: 12,
@@ -191,8 +194,8 @@ function createStyles(c) {
       justifyContent: 'space-between',
       marginBottom: 8,
     },
-    resultStatLabel: { fontSize: 13, color: c['muted-foreground'] },
-    resultStatValue: { fontSize: 14, fontWeight: '700', color: c.foreground },
+    resultStatLabel: { fontSize: 13, fontFamily: FONT_FAMILY, color: c['muted-foreground'] },
+    resultStatValue: { fontSize: 14, fontFamily: FONT_FAMILY_BOLD, color: c.foreground },
     resultDivider: { height: 1, backgroundColor: c.border, marginVertical: 8 },
     resultDoneBtn: {
       paddingVertical: 14,
@@ -202,7 +205,7 @@ function createStyles(c) {
     },
     resultDoneBtnText: {
       fontSize: 15,
-      fontWeight: '700',
+      fontFamily: FONT_FAMILY_BOLD,
       color: c['destructive-foreground'],
     },
   });
@@ -443,7 +446,7 @@ export default function AutoAdvanceModal({
 
               {/* Candidate count */}
               <View style={styles.section}>
-                <Text style={{ fontSize: 12, color: c['muted-foreground'] }}>
+                <Text style={{ fontSize: 12, fontFamily: FONT_FAMILY, color: c['muted-foreground'] }}>
                   {t('recruiter.candidates_to_evaluate', { count: (precedingStageCandidates || []).length })}
                   {!hasCandidates ? ` — ${t('recruiter.no_candidates_to_evaluate')}` : ''}
                 </Text>

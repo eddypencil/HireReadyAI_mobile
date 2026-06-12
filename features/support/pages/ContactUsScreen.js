@@ -18,6 +18,7 @@ import { useTheme } from '../../../shared/context/ThemeContext';
 import { useUser } from '../../auth/context/user.context';
 import { spacing } from '../../../src/theme';
 import { useTranslation } from '../../../shared/context/I18nContext';
+import { FONT_FAMILY, FONT_FAMILY_BOLD, FONT_FAMILY_EXTRABOLD } from '../../../src/fonts';
 
 const SUPPORT_EMAIL = 'support@hireready.ai';
 const SUPPORT_PHONE = '+201234567899';
@@ -253,18 +254,19 @@ const styles = StyleSheet.create({
     },
     badge: {
         fontSize: 11,
-        fontWeight: '800',
+        fontFamily: FONT_FAMILY_EXTRABOLD,
         letterSpacing: 2,
         marginBottom: 6,
     },
     title: {
         fontSize: 24,
-        fontWeight: '800',
+        fontFamily: FONT_FAMILY_EXTRABOLD,
         marginBottom: 6,
     },
     subtitle: {
         fontSize: 13,
         lineHeight: 18,
+        fontFamily: FONT_FAMILY,
     },
     card: {
         borderWidth: 1,
@@ -274,7 +276,7 @@ const styles = StyleSheet.create({
     },
     label: {
         fontSize: 12,
-        fontWeight: '700',
+        fontFamily: FONT_FAMILY_BOLD,
         marginTop: 10,
         marginBottom: 6,
     },
@@ -283,6 +285,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: 10,
         fontSize: 14,
+        fontFamily: FONT_FAMILY,
     },
     textarea: {
         minHeight: 110,
@@ -298,22 +301,24 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         color: '#fff',
-        fontWeight: '700',
+        fontFamily: FONT_FAMILY_BOLD,
         marginLeft: 6,
     },
     error: {
         marginTop: 10,
         color: 'red',
         fontSize: 12,
+        fontFamily: FONT_FAMILY,
     },
     success: {
         marginTop: 10,
         color: 'green',
         fontSize: 12,
+        fontFamily: FONT_FAMILY,
     },
     sectionTitle: {
         fontSize: 14,
-        fontWeight: '800',
+        fontFamily: FONT_FAMILY_EXTRABOLD,
         marginBottom: 10,
     },
     infoRow: {

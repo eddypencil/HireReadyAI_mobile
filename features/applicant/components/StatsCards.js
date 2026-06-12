@@ -2,6 +2,7 @@ import { View, Text } from "react-native";
 import { APPLICATION_STAGE } from "../../../shared/constants/enums";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
+import { FONT_FAMILY, FONT_FAMILY_EXTRABOLD } from '../../../src/fonts';
 
 export default function StatsCards({ applications }) {
   const { theme } = useTheme();
@@ -34,8 +35,8 @@ export default function StatsCards({ applications }) {
           flex: 1, backgroundColor: c.card, borderRadius: 14, padding: 14,
           alignItems: "center", borderWidth: 1, borderColor: c.border,
         }}>
-          <Text style={{ fontSize: 24, fontWeight: "800", color: c.foreground }}>{s.value}</Text>
-          <Text style={{ fontSize: 11, color: c['muted-foreground'], marginTop: 2, textAlign: "center" }}>
+          <Text style={{ fontSize: 24, color: c.foreground, fontFamily: FONT_FAMILY_EXTRABOLD }}>{s.value}</Text>
+          <Text style={{ fontSize: 11, color: c['muted-foreground'], marginTop: 2, textAlign: "center", fontFamily: FONT_FAMILY }}>
             {t(s.labelKey)}
           </Text>
         </View>

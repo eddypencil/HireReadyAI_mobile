@@ -15,6 +15,7 @@ import { STAGE_TYPE_OPTIONS } from "../constants/stageLibrary";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import WeightSlider from "../../../shared/ui/Slider";
 import { useTranslation } from "../../../shared/context/I18nContext";
+import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from "../../../src/fonts";
 
 const DEBOUNCE_MS = 400;
 
@@ -320,12 +321,13 @@ function createStyles(c, isRtl) {
     },
     emptyTitle: {
       fontSize: 14,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       color: c['muted-foreground'],
       marginBottom: 4,
     },
     emptyHint: {
       fontSize: 12,
+      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
       textAlign: "center",
     },
@@ -338,7 +340,7 @@ function createStyles(c, isRtl) {
     },
     headerLabel: {
       fontSize: 10,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.primary,
       letterSpacing: 1,
       textTransform: "uppercase",
@@ -351,7 +353,7 @@ function createStyles(c, isRtl) {
     },
     headerTitle: {
       fontSize: 15,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.foreground,
       flex: 1,
     },
@@ -363,11 +365,12 @@ function createStyles(c, isRtl) {
     },
     lockedText: {
       fontSize: 10,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       color: c['muted-foreground'],
     },
     headerType: {
       fontSize: 12,
+      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
       textTransform: "capitalize",
       marginTop: 2,
@@ -381,7 +384,7 @@ function createStyles(c, isRtl) {
     },
     fieldLabel: {
       fontSize: 12,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       color: c['muted-foreground'],
     },
     input: {
@@ -391,6 +394,7 @@ function createStyles(c, isRtl) {
       paddingHorizontal: 12,
       paddingVertical: 10,
       fontSize: 14,
+      fontFamily: FONT_FAMILY,
       color: c.foreground,
     },
     fieldDisabled: {
@@ -409,6 +413,7 @@ function createStyles(c, isRtl) {
     },
     selectFieldText: {
       fontSize: 14,
+      fontFamily: FONT_FAMILY,
       flex: 1,
       color: c.foreground,
     },
@@ -427,7 +432,7 @@ function createStyles(c, isRtl) {
     },
     modalTitle: {
       fontSize: 16,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.foreground,
       marginBottom: 12,
     },
@@ -444,11 +449,12 @@ function createStyles(c, isRtl) {
     },
     modalOptionText: {
       fontSize: 15,
+      fontFamily: FONT_FAMILY,
       color: c.foreground,
     },
     modalOptionTextSelected: {
       color: c.primary,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
     },
     weightHeader: {
       flexDirection: "row",
@@ -457,7 +463,7 @@ function createStyles(c, isRtl) {
     },
     weightValue: {
       fontSize: 13,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.primary,
     },
 
@@ -468,6 +474,7 @@ function createStyles(c, isRtl) {
       paddingHorizontal: 12,
       paddingVertical: 10,
       fontSize: 14,
+      fontFamily: FONT_FAMILY,
       color: c.foreground,
       minHeight: 72,
       textAlignVertical: "top",
@@ -480,7 +487,7 @@ function createStyles(c, isRtl) {
     },
     advancedLabel: {
       fontSize: 10,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c['muted-foreground'],
       letterSpacing: 1,
       textTransform: "uppercase",
@@ -493,6 +500,7 @@ function createStyles(c, isRtl) {
     },
     advancedRowText: {
       fontSize: 12,
+      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
     },
     advancedToggle: {
@@ -522,10 +530,11 @@ function createStyles(c, isRtl) {
     },
     saveButtonText: {
       fontSize: 14,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       color: c.card,
     },
     saveButtonTextDisabled: {
+      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
     },
     rowReverse: { flexDirection: 'row-reverse' },
