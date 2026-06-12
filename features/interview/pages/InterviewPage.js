@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator, ScrollView, SafeAreaView } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator, ScrollView, SafeAreaView, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "../../../shared/context/ThemeContext";
@@ -30,6 +30,136 @@ const stageTypeLabel = {
   interview: "Interview",
 };
 
+function createStyles(c) {
+  return StyleSheet.create({
+    safeArea: { flex: 1, backgroundColor: c['surface-muted'] },
+    container: { flex: 1 },
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      backgroundColor: c.background,
+      borderBottomWidth: 1,
+      borderBottomColor: c.border,
+    },
+    headerLeft: { flexDirection: "row", alignItems: "center", gap: 12, flexShrink: 1 },
+    backBtn: {
+      width: 32,
+      height: 32,
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: c.border,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: c.card,
+    },
+    logoBox: {
+      width: 36,
+      height: 36,
+      borderRadius: 10,
+      backgroundColor: c.sidebar,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    logoText: { color: c['destructive-foreground'], fontSize: 18, fontWeight: "800" },
+    headerTitleText: { fontSize: 11, color: c['muted-foreground'], fontWeight: "500" },
+    headerSubtitleText: { fontSize: 13, color: c.foreground, fontWeight: "600", marginTop: 2 },
+    headerRight: { flexDirection: "row", alignItems: "center", gap: 10, flexShrink: 0 },
+    statsContainer: { alignItems: "flex-end", gap: 4 },
+    timerRow: { flexDirection: "row", alignItems: "center", gap: 4 },
+    timerText: { fontSize: 12, fontFamily: "monospace", fontWeight: "600" },
+    timerDivider: { fontSize: 12, color: c['muted-foreground'], opacity: 0.5 },
+    timerMax: { fontSize: 12, color: c['muted-foreground'], fontFamily: "monospace" },
+    stageBadge: {
+      borderRadius: 999,
+      borderWidth: 1,
+      borderColor: `${c.primary}33`,
+      paddingHorizontal: 10,
+      paddingVertical: 4,
+      backgroundColor: `${c.primary}1a`,
+    },
+    stageBadgeText: { fontSize: 11, fontWeight: "600", color: c.primary },
+    scrollContent: { flexGrow: 1, padding: 16, gap: 16 },
+    card: {
+      backgroundColor: c.card,
+      borderRadius: 16,
+      borderWidth: 1,
+      borderColor: c.border,
+      padding: 24,
+    },
+    questionHeader: { flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 12 },
+    questionNumberBadge: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      borderRadius: 999,
+      backgroundColor: `${c.primary}1a`,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderWidth: 1,
+      borderColor: `${c.primary}33`,
+    },
+    questionNumberText: { fontSize: 12, fontWeight: "600", color: c.primary },
+    questionTypeBadge: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      borderRadius: 999,
+      borderWidth: 1,
+      borderColor: c.border,
+      paddingHorizontal: 12,
+      paddingVertical: 5,
+    },
+    questionTypeText: { fontSize: 11, fontWeight: "500", color: c['muted-foreground'] },
+    questionText: { fontSize: 18, fontWeight: "700", color: c.foreground, lineHeight: 28 },
+    timerFooter: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 4 },
+    timerFooterLeft: { flexDirection: "row", alignItems: "center", gap: 6 },
+    timerFooterText: { fontSize: 13, fontFamily: "monospace", color: c['muted-foreground'] },
+    timerFooterMax: { fontSize: 13, color: c['muted-foreground'], fontFamily: "monospace" },
+    barWrapper: { flex: 1, marginHorizontal: 16, maxWidth: 140 },
+    barTrack: { height: 6, backgroundColor: c.border, borderRadius: 3, overflow: "hidden" },
+    barFill: { height: "100%", borderRadius: 3 },
+    timeUpText: { fontSize: 10, fontWeight: "600", color: c.destructive, marginTop: 4, textAlign: "right" },
+    remainingText: { fontSize: 12, color: c['muted-foreground'], fontWeight: "500" },
+    stateContainer: { alignItems: "center", gap: 24, paddingVertical: 20 },
+    stateIconWrapper: {
+      width: 72,
+      height: 72,
+      borderRadius: 20,
+      alignItems: "center",
+      justifyContent: "center",
+      borderWidth: 1,
+    },
+    stateTextWrapper: { alignItems: "center", gap: 8 },
+    stateTitle: { fontSize: 22, fontWeight: "700", color: c.foreground, textAlign: "center" },
+    stateDescription: { fontSize: 14, color: c['muted-foreground'], textAlign: "center", lineHeight: 22, paddingHorizontal: 16 },
+    primaryBtn: {
+      width: "100%",
+      backgroundColor: c.primary,
+      borderRadius: 14,
+      paddingVertical: 16,
+      alignItems: "center",
+    },
+    primaryBtnText: { fontSize: 15, fontWeight: "600", color: c['destructive-foreground'] },
+    secondaryBtn: {
+      borderWidth: 1,
+      borderColor: c.border,
+      borderRadius: 12,
+      paddingHorizontal: 32,
+      paddingVertical: 14,
+    },
+    secondaryBtnText: { fontSize: 14, fontWeight: "600", color: c.foreground },
+    spinnerContainer: { alignItems: "center", justifyContent: "center", paddingVertical: 48, gap: 16 },
+    spinnerText: { fontSize: 14, color: c['muted-foreground'], fontWeight: "500" },
+    evalDotsRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 12 },
+    evalDots: { flexDirection: "row", gap: 6 },
+    evalDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: c.primary },
+    evalText: { fontSize: 12, color: c['muted-foreground'], fontWeight: "500" },
+  });
+}
+
 function QuestionComponent({ question, applicationStageId, onAnswer }) {
   const props = { question, onAnswer };
   switch (question?.type) {
@@ -48,7 +178,7 @@ function QuestionComponent({ question, applicationStageId, onAnswer }) {
 function ProgressBar({ current, max, c }) {
   const pct = Math.min((current / max) * 100, 100);
   return (
-    <View style={{ height: 6, backgroundColor: c.border, borderRadius: 3, overflow: "hidden" }}>
+    <View style={{ height: 6, width: 80, backgroundColor: c.border, borderRadius: 3, overflow: "hidden" }}>
       <View style={{ width: `${pct}%`, height: "100%", backgroundColor: c.primary, borderRadius: 3 }} />
     </View>
   );
@@ -57,10 +187,11 @@ function ProgressBar({ current, max, c }) {
 function Spinner({ label, iconName }) {
   const { theme } = useTheme();
   const c = theme.colors;
+  const s = createStyles(c);
   return (
-    <View style={{ alignItems: "center", justifyContent: "center", paddingVertical: 48, gap: 16 }}>
+    <View style={s.spinnerContainer}>
       <ActivityIndicator size="large" color={c.primary} />
-      <Text style={{ fontSize: 13, color: c['muted-foreground'] }}>{label}</Text>
+      <Text style={s.spinnerText}>{label}</Text>
     </View>
   );
 }
@@ -70,6 +201,7 @@ export default function InterviewPage({ route, navigation }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const c = theme.colors;
+  const s = createStyles(c);
   const insets = useSafeAreaInsets();
 
   const [phase, setPhase] = useState(PHASE.INIT);
@@ -213,177 +345,86 @@ export default function InterviewPage({ route, navigation }) {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: c['surface-muted'] }} edges={["top"]}>
-      <View style={{ flex: 1 }}>
-        <View style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-          paddingHorizontal: 16,
-          paddingVertical: 10,
-          backgroundColor: c.background,
-          borderBottomWidth: 1,
-          borderBottomColor: c.border,
-        }}>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-            <TouchableOpacity
-              onPress={() => navigation.goBack()}
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: 8,
-                borderWidth: 1,
-                borderColor: c.border,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Ionicons name="chevron-back" size={16} color={c['muted-foreground']} />
-            </TouchableOpacity>
-            <View style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: c.sidebar, alignItems: "center", justifyContent: "center" }}>
-              <Text style={{ color: c['destructive-foreground'], fontSize: 16, fontWeight: "800" }}>H</Text>
+    <SafeAreaView style={s.safeArea} edges={["top"]}>
+      <KeyboardAvoidingView 
+        style={s.container} 
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
+      >
+        <View style={s.header}>
+          <View style={s.headerLeft}>
+            <View style={s.logoBox}>
+              <Text style={s.logoText}>H</Text>
             </View>
-            <View>
-              <Text style={{ fontSize: 10, color: c['muted-foreground'] }}>Interview Session</Text>
-              <Text style={{ fontSize: 11, color: c.foreground, opacity: 0.8 }}>{stage?.name ?? ""}</Text>
+            <View style={{ flexShrink: 1 }}>
+              <Text style={s.headerTitleText}>Interview Session</Text>
+              <Text style={s.headerSubtitleText} numberOfLines={1}>{stage?.name ?? ""}</Text>
             </View>
           </View>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+          <View style={s.headerRight}>
             {phase === PHASE.ANSWERING && (
-              <View style={{ alignItems: "flex-end", gap: 4 }}>
+              <View style={s.statsContainer}>
                 <ProgressBar current={questionNumber} max={maxQuestions} c={c} />
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                  <Ionicons name="time-outline" size={12} color={c['muted-foreground']} />
-                  <Text style={{
-                    fontSize: 11,
-                    fontFamily: "monospace",
-                    color: elapsed >= maxTime ? c.destructive : elapsed >= (maxTime || 0) * 0.8 ? c.warning : c['muted-foreground'],
-                  }}>
-                    {formatTime(elapsed)}
-                  </Text>
-                  {maxTime && (
-                    <>
-                      <Text style={{ fontSize: 11, color: c['muted-foreground'], opacity: 0.4 }}>/</Text>
-                      <Text style={{ fontSize: 11, color: c['muted-foreground'], fontFamily: "monospace" }}>{formatTime(maxTime)}</Text>
-                    </>
-                  )}
-                </View>
               </View>
             )}
-            <View style={{
-              borderRadius: 999,
-              borderWidth: 1,
-              borderColor: `${c.primary}33`,
-              paddingHorizontal: 10,
-              paddingVertical: 3,
-              backgroundColor: `${c.primary}1a`,
-            }}>
-              <Text style={{ fontSize: 10, fontWeight: "600", color: c.primary }}>{stageLabel}</Text>
+            <View style={s.stageBadge}>
+              <Text style={s.stageBadgeText}>{stageLabel}</Text>
             </View>
           </View>
         </View>
 
-        <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16, gap: 16 }}>
+        <ScrollView contentContainerStyle={s.scrollContent} keyboardShouldPersistTaps="handled">
           {(phase === PHASE.INIT || phase === PHASE.LOADING) && (
-            <View style={{
-              backgroundColor: c.card,
-              borderRadius: 16,
-              borderWidth: 1,
-              borderColor: c.border,
-              padding: 32,
-            }}>
+            <View style={s.card}>
               <Spinner label="Preparing your interview…" />
             </View>
           )}
 
           {phase === PHASE.EVALUATING && (
-            <View style={{
-              backgroundColor: c.card,
-              borderRadius: 16,
-              borderWidth: 1,
-              borderColor: c.border,
-              padding: 32,
-            }}>
+            <View style={s.card}>
               <Spinner label="Evaluating your answer…" />
-              <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 4, marginTop: 8 }}>
-                <View style={{ flexDirection: "row", gap: 4 }}>
+              <View style={s.evalDotsRow}>
+                <View style={s.evalDots}>
                   {[0, 150, 300].map((delay) => (
-                    <View key={delay} style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: c.primary }} />
+                    <View key={delay} style={s.evalDot} />
                   ))}
                 </View>
-                <Text style={{ fontSize: 10, color: c['muted-foreground'] }}>Generating next question</Text>
+                <Text style={s.evalText}>Generating next question</Text>
               </View>
             </View>
           )}
 
           {phase === PHASE.ANSWERING && currentQuestion && (
             <>
-              <View style={{
-                backgroundColor: c.card,
-                borderRadius: 16,
-                borderWidth: 1,
-                borderColor: c.border,
-                padding: 20,
-                gap: 12,
-              }}>
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                  <View style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 6,
-                    borderRadius: 999,
-                    backgroundColor: `${c.primary}14`,
-                    paddingHorizontal: 10,
-                    paddingVertical: 4,
-                    borderWidth: 1,
-                    borderColor: `${c.primary}26`,
-                  }}>
-                    <Ionicons name="help-circle" size={12} color={c.primary} />
-                    <Text style={{ fontSize: 10, fontWeight: "600", color: c.primary }}>
+              <View style={s.card}>
+                <View style={s.questionHeader}>
+                  <View style={s.questionNumberBadge}>
+                    <Ionicons name="help-circle" size={14} color={c.primary} />
+                    <Text style={s.questionNumberText}>
                       Q{questionNumber} / {maxQuestions}
                     </Text>
                   </View>
-                  <View style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 6,
-                    borderRadius: 999,
-                    borderWidth: 1,
-                    borderColor: c.border,
-                    paddingHorizontal: 10,
-                    paddingVertical: 3,
-                  }}>
+                  <View style={s.questionTypeBadge}>
                     <Ionicons
                       name={
                         currentQuestion.type === "code" ? "code-slash" :
                         currentQuestion.type === "video" ? "videocam" :
                         currentQuestion.type === "multiple_choice" ? "list" : "document-text"
                       }
-                      size={12}
+                      size={14}
                       color={c['muted-foreground']}
                     />
-                    <Text style={{ fontSize: 10, color: c['muted-foreground'] }}>
+                    <Text style={s.questionTypeText}>
                       {currentQuestion.type.replace("_", " ")}
                     </Text>
                   </View>
                 </View>
-                <Text style={{
-                  fontSize: 17,
-                  fontWeight: "700",
-                  color: c.foreground,
-                  lineHeight: 24,
-                }}>
+                <Text style={s.questionText}>
                   {currentQuestion.text}
                 </Text>
               </View>
 
-              <View style={{
-                backgroundColor: c.card,
-                borderRadius: 16,
-                borderWidth: 1,
-                borderColor: c.border,
-                padding: 20,
-              }}>
+              <View style={[s.card, { padding: 16 }]}>
                 <QuestionComponent
                   question={currentQuestion}
                   applicationStageId={applicationStage?.id}
@@ -391,35 +432,33 @@ export default function InterviewPage({ route, navigation }) {
                 />
               </View>
 
-              <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 4 }}>
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                  <Ionicons name="time-outline" size={14} color={c['muted-foreground']} />
-                  <Text style={{ fontSize: 12, fontFamily: "monospace", color: c['muted-foreground'] }}>
-                    {formatTime(elapsed)}
+              <View style={s.timerFooter}>
+                <View style={s.timerFooterLeft}>
+                  <Ionicons name="time-outline" size={16} color={c['muted-foreground']} />
+                  <Text style={[
+                    s.timerFooterText,
+                    { color: elapsed >= maxTime ? c.destructive : elapsed >= (maxTime || 0) * 0.8 ? c.warning : c.foreground }
+                  ]}>
+                    {maxTime ? formatTime(Math.max(0, maxTime - elapsed)) : formatTime(elapsed)}
                   </Text>
-                  {maxTime && (
-                    <>
-                      <Text style={{ fontSize: 12, color: c['muted-foreground'], opacity: 0.4 }}>/</Text>
-                      <Text style={{ fontSize: 12, fontFamily: "monospace", color: c['muted-foreground'] }}>{formatTime(maxTime)}</Text>
-                    </>
-                  )}
                 </View>
                 {maxTime && (
-                  <View style={{ flex: 1, marginHorizontal: 12, maxWidth: 120 }}>
-                    <View style={{ height: 6, backgroundColor: c.border, borderRadius: 3, overflow: "hidden" }}>
-                      <View style={{
-                        width: `${Math.min((elapsed / maxTime) * 100, 100)}%`,
-                        height: "100%",
-                        borderRadius: 3,
-                        backgroundColor: elapsed >= maxTime ? c.destructive : elapsed >= maxTime * 0.8 ? c.warning : c.primary,
-                      }} />
+                  <View style={s.barWrapper}>
+                    <View style={s.barTrack}>
+                      <View style={[
+                        s.barFill,
+                        {
+                          width: `${Math.min((elapsed / maxTime) * 100, 100)}%`,
+                          backgroundColor: elapsed >= maxTime ? c.destructive : elapsed >= maxTime * 0.8 ? c.warning : c.primary,
+                        }
+                      ]} />
                     </View>
                     {elapsed >= maxTime && (
-                      <Text style={{ fontSize: 9, fontWeight: "600", color: c.destructive, marginTop: 2 }}>Time's up</Text>
+                      <Text style={s.timeUpText}>Time's up</Text>
                     )}
                   </View>
                 )}
-                <Text style={{ fontSize: 11, color: c['muted-foreground'] }}>
+                <Text style={s.remainingText}>
                   {maxQuestions - questionNumber > 0
                     ? `${maxQuestions - questionNumber} remaining`
                     : "Final question"}
@@ -429,47 +468,27 @@ export default function InterviewPage({ route, navigation }) {
           )}
 
           {phase === PHASE.FINISHED && (
-            <View style={{
-              backgroundColor: c.card,
-              borderRadius: 16,
-              borderWidth: 1,
-              borderColor: c.border,
-              padding: 32,
-              alignItems: "center",
-              gap: 24,
-            }}>
-              <View style={{
-                width: 64,
-                height: 64,
-                borderRadius: 16,
-                backgroundColor: `${c.success}1a`,
-                alignItems: "center",
-                justifyContent: "center",
-                borderWidth: 1,
-                borderColor: `${c.success}33`,
-              }}>
-                <Ionicons name="checkmark-circle" size={32} color={c.success} />
+            <View style={[s.card, s.stateContainer]}>
+              <View style={[
+                s.stateIconWrapper,
+                { backgroundColor: `${c.success}1a`, borderColor: `${c.success}33` }
+              ]}>
+                <Ionicons name="checkmark-circle" size={36} color={c.success} />
               </View>
-              <View style={{ alignItems: "center", gap: 8 }}>
-                <Text style={{ fontSize: 22, fontWeight: "700", color: c.foreground }}>
+              <View style={s.stateTextWrapper}>
+                <Text style={s.stateTitle}>
                   {t("interview_page.finished.title")}
                 </Text>
-                <Text style={{ fontSize: 13, color: c['muted-foreground'], textAlign: "center", lineHeight: 20 }}>
+                <Text style={s.stateDescription}>
                   Your responses have been submitted and evaluated. The hiring team will review the results.
                 </Text>
               </View>
               <TouchableOpacity
                 onPress={() => navigation.goBack()}
                 activeOpacity={0.85}
-                style={{
-                  width: "100%",
-                  backgroundColor: c.primary,
-                  borderRadius: 12,
-                  paddingVertical: 14,
-                  alignItems: "center",
-                }}
+                style={s.primaryBtn}
               >
-                <Text style={{ fontSize: 14, fontWeight: "600", color: c['destructive-foreground'] }}>
+                <Text style={s.primaryBtnText}>
                   {t("interview_page.finished.back_to_application")}
                 </Text>
               </TouchableOpacity>
@@ -477,52 +496,32 @@ export default function InterviewPage({ route, navigation }) {
           )}
 
           {phase === PHASE.ERROR && (
-            <View style={{
-              backgroundColor: c.card,
-              borderRadius: 16,
-              borderWidth: 1,
-              borderColor: c.border,
-              padding: 32,
-              alignItems: "center",
-              gap: 20,
-            }}>
-              <View style={{
-                width: 56,
-                height: 56,
-                borderRadius: 16,
-                backgroundColor: `${c.destructive}1a`,
-                alignItems: "center",
-                justifyContent: "center",
-                borderWidth: 1,
-                borderColor: `${c.destructive}33`,
-              }}>
-                <Ionicons name="alert-circle" size={28} color={c.destructive} />
+            <View style={[s.card, s.stateContainer]}>
+              <View style={[
+                s.stateIconWrapper,
+                { backgroundColor: `${c.destructive}1a`, borderColor: `${c.destructive}33` }
+              ]}>
+                <Ionicons name="alert-circle" size={36} color={c.destructive} />
               </View>
-              <View style={{ alignItems: "center", gap: 4 }}>
-                <Text style={{ fontSize: 17, fontWeight: "600", color: c.foreground }}>
+              <View style={s.stateTextWrapper}>
+                <Text style={s.stateTitle}>
                   {t("interview_page.errors.title")}
                 </Text>
-                <Text style={{ fontSize: 13, color: c['muted-foreground'], textAlign: "center" }}>{errorMsg}</Text>
+                <Text style={s.stateDescription}>{errorMsg}</Text>
               </View>
               <TouchableOpacity
                 onPress={() => navigation.goBack()}
                 activeOpacity={0.8}
-                style={{
-                  borderWidth: 1,
-                  borderColor: c.border,
-                  borderRadius: 10,
-                  paddingHorizontal: 24,
-                  paddingVertical: 10,
-                }}
+                style={s.secondaryBtn}
               >
-                <Text style={{ fontSize: 13, fontWeight: "500", color: c.foreground }}>
+                <Text style={s.secondaryBtnText}>
                   {t("interview_page.errors.go_back")}
                 </Text>
               </TouchableOpacity>
             </View>
           )}
         </ScrollView>
-      </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

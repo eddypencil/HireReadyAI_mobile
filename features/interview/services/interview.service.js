@@ -72,29 +72,17 @@ export const fetchStageQuestions = async (applicationStageId) => {
 };
 
 export const generateNextQuestion = async (applicationStageId, previousAnswer = null) => {
-  const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
-
-  const res = await fetch(`${supabaseUrl}/functions/v1/generate-question`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${supabaseKey}`,
-      "apikey": supabaseKey,
-    },
-    body: JSON.stringify({ applicationStageId, previousAnswer }),
+  const { data, error } = await supabase.functions.invoke("generate-question", {
+    body: { applicationStageId, previousAnswer },
   });
 
-  let data;
-  try {
-    data = await res.json();
-  } catch {
-    throw new Error(`Edge function returned non-JSON (status ${res.status})`);
-  }
-
-  if (!res.ok) {
-    const detail = data?.error ?? data?.message ?? JSON.stringify(data);
-    throw new Error(`Interview AI error (${res.status}): ${detail}`);
+  if (error) {
+    let detail = error.message;
+    try {
+      const body = await error.context?.json?.();
+      detail = JSON.stringify(body ?? detail);
+    } catch { /* ignore */ }
+    throw new Error(`Interview AI error: ${detail}`);
   }
 
   if (data?.error) {

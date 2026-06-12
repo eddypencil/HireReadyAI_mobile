@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, ScrollView, ActivityIndicator } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
@@ -25,10 +25,137 @@ const LANG_INFO = {
   default: { color: "#2a6f97", label: "Code" },
 };
 
+function createStyles(c) {
+  return StyleSheet.create({
+    scrollContainer: { maxHeight: 500 },
+    container: { gap: 12 },
+    editorWrapper: {
+      borderRadius: 14,
+      borderWidth: 1,
+      borderColor: c.border,
+      backgroundColor: c.card,
+      overflow: "hidden",
+    },
+    editorHeader: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 16,
+      paddingVertical: 10,
+      backgroundColor: c['surface-muted'],
+      borderBottomWidth: 1,
+      borderBottomColor: c.border,
+    },
+    langBadge: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      borderRadius: 6,
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+    },
+    langBadgeText: { fontSize: 11, fontWeight: "700" },
+    tabHint: { fontSize: 11, color: c['muted-foreground'] },
+    editorBody: { flexDirection: "row", minHeight: 220 },
+    lineNumbers: {
+      width: 44,
+      paddingTop: 14,
+      backgroundColor: c['surface-muted'],
+      borderRightWidth: 1,
+      borderRightColor: c.border,
+      alignItems: "flex-end",
+      paddingRight: 10,
+    },
+    lineNumberText: { fontSize: 13, lineHeight: 22, color: c['muted-foreground'], opacity: 0.6 },
+    textInput: {
+      flex: 1,
+      paddingTop: 14,
+      paddingLeft: 14,
+      paddingRight: 14,
+      fontSize: 14,
+      lineHeight: 22,
+      color: c.foreground,
+      fontFamily: "monospace",
+      minHeight: 220,
+    },
+    editorFooter: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      backgroundColor: c['surface-muted'],
+      borderTopWidth: 1,
+      borderTopColor: c.border,
+    },
+    editorFooterText: { fontSize: 11, color: c['muted-foreground'], fontFamily: "monospace" },
+    submitBtnVisuals: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 6,
+      backgroundColor: c.primary,
+      borderRadius: 12,
+      paddingVertical: 14,
+    },
+    submitBtnVisualsText: { fontSize: 14, fontWeight: "600", color: c['destructive-foreground'] },
+    actionsContainer: { gap: 10 },
+    runBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 8,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: c.border,
+      backgroundColor: c.card,
+      paddingVertical: 12,
+    },
+    runBtnText: { fontSize: 14, fontWeight: "600", color: c.foreground },
+    consoleWrapper: {
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: c.border,
+      backgroundColor: c['surface-muted'], // Was #0d1117
+      padding: 14,
+      gap: 10,
+    },
+    consoleHeader: { flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 6 },
+    consoleHeaderText: { fontSize: 11, fontWeight: "600" },
+    consoleOutputText: { fontSize: 13, color: c.foreground, fontFamily: "monospace", lineHeight: 20 },
+    consoleErrorText: { fontSize: 13, color: c.destructive, fontFamily: "monospace", lineHeight: 20 },
+    metricsWrapper: { flexDirection: "row", gap: 10, paddingTop: 8, borderTopWidth: 1, borderTopColor: c.border },
+    metricBox: { flex: 1, borderRadius: 8, backgroundColor: `${c.foreground}0a`, padding: 8 },
+    metricLabel: { fontSize: 10, color: c['muted-foreground'] },
+    metricValue: { fontSize: 13, fontWeight: "600", color: c.foreground, fontFamily: "monospace", marginTop: 2 },
+    submitBtnStandard: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 6,
+      backgroundColor: c.primary,
+      borderRadius: 12,
+      paddingVertical: 14,
+    },
+    submitBtnStandardText: { fontSize: 14, fontWeight: "600", color: c['destructive-foreground'] },
+    expectedOutputToggle: { flexDirection: "row", alignItems: "center", gap: 6, paddingVertical: 4 },
+    expectedOutputToggleText: { fontSize: 12, color: c['muted-foreground'], fontWeight: "500" },
+    expectedOutputWrapper: {
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: c.border,
+      backgroundColor: c['surface-muted'],
+      padding: 12,
+    },
+    expectedOutputText: { fontSize: 13, color: c.foreground, fontFamily: "monospace" },
+  });
+}
+
 export default function CodeQuestion({ question, onAnswer }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const c = theme.colors;
+  const s = createStyles(c);
   const lang = question?.language?.toLowerCase() ?? "default";
   const langInfo = LANG_INFO[lang] ?? LANG_INFO.default;
   const placeholder = PLACEHOLDER[lang] ?? PLACEHOLDER.default;
@@ -84,51 +211,20 @@ export default function CodeQuestion({ question, onAnswer }) {
   };
 
   return (
-    <ScrollView style={{ maxHeight: 500 }} nestedScrollEnabled>
-      <View style={{ gap: 12 }}>
-        <View style={{
-          borderRadius: 12,
-          borderWidth: 1,
-          borderColor: c.border,
-          backgroundColor: c.card,
-          overflow: "hidden",
-        }}>
-          <View style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            paddingHorizontal: 14,
-            paddingVertical: 8,
-            backgroundColor: c['surface-muted'],
-            borderBottomWidth: 1,
-            borderBottomColor: c.border,
-          }}>
-            <View style={{
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 6,
-              backgroundColor: `${langInfo.color}1a`,
-              borderRadius: 6,
-              paddingHorizontal: 8,
-              paddingVertical: 2,
-            }}>
-              <Text style={{ fontSize: 10, fontWeight: "700", color: langInfo.color }}>{langInfo.label}</Text>
+    <ScrollView style={s.scrollContainer} nestedScrollEnabled>
+      <View style={s.container}>
+        <View style={s.editorWrapper}>
+          <View style={s.editorHeader}>
+            <View style={[s.langBadge, { backgroundColor: `${langInfo.color}1a` }]}>
+              <Text style={[s.langBadgeText, { color: langInfo.color }]}>{langInfo.label}</Text>
             </View>
-            <Text style={{ fontSize: 10, color: c['muted-foreground'] }}>Tab = 2 spaces</Text>
+            <Text style={s.tabHint}>Tab = 2 spaces</Text>
           </View>
 
-          <View style={{ flexDirection: "row", minHeight: 200 }}>
-            <View style={{
-              width: 40,
-              paddingTop: 12,
-              backgroundColor: c['surface-muted'],
-              borderRightWidth: 1,
-              borderRightColor: c.border,
-              alignItems: "flex-end",
-              paddingRight: 8,
-            }}>
+          <View style={s.editorBody}>
+            <View style={s.lineNumbers}>
               {lines.map((_, i) => (
-                <Text key={i} style={{ fontSize: 12, lineHeight: 21, color: c['muted-foreground'], opacity: 0.5 }}>
+                <Text key={i} style={s.lineNumberText}>
                   {i + 1}
                 </Text>
               ))}
@@ -143,31 +239,12 @@ export default function CodeQuestion({ question, onAnswer }) {
               autoCapitalize="none"
               autoCorrect={false}
               spellCheck={false}
-              style={{
-                flex: 1,
-                paddingTop: 12,
-                paddingLeft: 12,
-                paddingRight: 12,
-                fontSize: 13,
-                lineHeight: 21,
-                color: c.foreground,
-                fontFamily: "monospace",
-                minHeight: 200,
-              }}
+              style={s.textInput}
             />
           </View>
 
-          <View style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            paddingHorizontal: 14,
-            paddingVertical: 6,
-            backgroundColor: c['surface-muted'],
-            borderTopWidth: 1,
-            borderTopColor: c.border,
-          }}>
-            <Text style={{ fontSize: 10, color: c['muted-foreground'], fontFamily: "monospace" }}>
+          <View style={s.editorFooter}>
+            <Text style={s.editorFooterText}>
               Ln {lines.length} · {code.length} chars
             </Text>
           </View>
@@ -178,89 +255,63 @@ export default function CodeQuestion({ question, onAnswer }) {
             onPress={handleSubmit}
             disabled={isEmpty}
             activeOpacity={0.8}
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 6,
-              backgroundColor: c.primary,
-              borderRadius: 10,
-              paddingVertical: 12,
-              opacity: isEmpty ? 0.4 : 1,
-            }}
+            style={[s.submitBtnVisuals, { opacity: isEmpty ? 0.4 : 1 }]}
           >
-            <Ionicons name="checkmark-circle" size={16} color={c['destructive-foreground']} />
-            <Text style={{ fontSize: 13, fontWeight: "600", color: c['destructive-foreground'] }}>Submit Answer →</Text>
+            <Ionicons name="checkmark-circle" size={18} color={c['destructive-foreground']} />
+            <Text style={s.submitBtnVisualsText}>Submit Answer →</Text>
           </TouchableOpacity>
         ) : (
-          <View style={{ gap: 8 }}>
+          <View style={s.actionsContainer}>
             <TouchableOpacity
               onPress={handleRun}
               disabled={isEmpty || isRunning}
               activeOpacity={0.8}
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 6,
-                borderRadius: 10,
-                borderWidth: 1,
-                borderColor: c.border,
-                backgroundColor: c.card,
-                paddingVertical: 10,
-              }}
+              style={[s.runBtn, { opacity: (isEmpty || isRunning) ? 0.6 : 1 }]}
             >
               {isRunning ? (
                 <ActivityIndicator size="small" color={c.primary} />
               ) : (
                 <Ionicons name="play" size={16} color={c.primary} />
               )}
-              <Text style={{ fontSize: 13, fontWeight: "500", color: c.foreground }}>
+              <Text style={s.runBtnText}>
                 {isRunning ? "Running…" : "Run Code"}
               </Text>
             </TouchableOpacity>
 
             {consoleOutput && !isRunning && (
-              <View style={{
-                borderRadius: 10,
-                borderWidth: 1,
-                borderColor: c.border,
-                backgroundColor: "#0d1117",
-                padding: 12,
-                gap: 8,
-              }}>
+              <View style={s.consoleWrapper}>
                 {consoleOutput.stdout ? (
                   <View>
-                    <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 4 }}>
-                      <Ionicons name="checkmark-circle" size={12} color={c.success} />
-                      <Text style={{ fontSize: 10, fontWeight: "600", color: `${c.success}cc` }}>stdout</Text>
+                    <View style={s.consoleHeader}>
+                      <Ionicons name="checkmark-circle" size={14} color={c.success} />
+                      <Text style={[s.consoleHeaderText, { color: c.success }]}>stdout</Text>
                     </View>
-                    <Text style={{ fontSize: 12, color: "#e6edf3", fontFamily: "monospace", lineHeight: 18 }}>
+                    <Text style={s.consoleOutputText}>
                       {consoleOutput.stdout}
                     </Text>
                   </View>
                 ) : null}
                 {consoleOutput.stderr ? (
                   <View>
-                    <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 4 }}>
-                      <Ionicons name="close-circle" size={12} color={c.destructive} />
-                      <Text style={{ fontSize: 10, fontWeight: "600", color: `${c.destructive}cc` }}>stderr</Text>
+                    <View style={s.consoleHeader}>
+                      <Ionicons name="close-circle" size={14} color={c.destructive} />
+                      <Text style={[s.consoleHeaderText, { color: c.destructive }]}>stderr</Text>
                     </View>
-                    <Text style={{ fontSize: 12, color: "#f87171", fontFamily: "monospace", lineHeight: 18 }}>
+                    <Text style={s.consoleErrorText}>
                       {consoleOutput.stderr}
                     </Text>
                   </View>
                 ) : null}
-                <View style={{ flexDirection: "row", gap: 8, paddingTop: 4, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.1)" }}>
-                  <View style={{ flex: 1, borderRadius: 6, backgroundColor: "rgba(255,255,255,0.05)", padding: 6 }}>
-                    <Text style={{ fontSize: 9, color: c['muted-foreground'] }}>Time</Text>
-                    <Text style={{ fontSize: 12, fontWeight: "600", color: "#e6edf3", fontFamily: "monospace" }}>
+                <View style={s.metricsWrapper}>
+                  <View style={s.metricBox}>
+                    <Text style={s.metricLabel}>Time</Text>
+                    <Text style={s.metricValue}>
                       {consoleOutput.executionTime != null ? `${consoleOutput.executionTime}ms` : "—"}
                     </Text>
                   </View>
-                  <View style={{ flex: 1, borderRadius: 6, backgroundColor: "rgba(255,255,255,0.05)", padding: 6 }}>
-                    <Text style={{ fontSize: 9, color: c['muted-foreground'] }}>Memory</Text>
-                    <Text style={{ fontSize: 12, fontWeight: "600", color: "#e6edf3", fontFamily: "monospace" }}>
+                  <View style={s.metricBox}>
+                    <Text style={s.metricLabel}>Memory</Text>
+                    <Text style={s.metricValue}>
                       {consoleOutput.memoryUsage != null ? `${(consoleOutput.memoryUsage / 1024).toFixed(2)} KB` : "—"}
                     </Text>
                   </View>
@@ -272,19 +323,10 @@ export default function CodeQuestion({ question, onAnswer }) {
               onPress={handleSubmit}
               disabled={isEmpty}
               activeOpacity={0.8}
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 6,
-                backgroundColor: c.primary,
-                borderRadius: 10,
-                paddingVertical: 12,
-                opacity: isEmpty ? 0.4 : 1,
-              }}
+              style={[s.submitBtnStandard, { opacity: isEmpty ? 0.4 : 1 }]}
             >
-              <Ionicons name="checkmark-circle" size={16} color={c['destructive-foreground']} />
-              <Text style={{ fontSize: 13, fontWeight: "600", color: c['destructive-foreground'] }}>Submit Answer →</Text>
+              <Ionicons name="checkmark-circle" size={18} color={c['destructive-foreground']} />
+              <Text style={s.submitBtnStandardText}>Submit Answer →</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -292,21 +334,15 @@ export default function CodeQuestion({ question, onAnswer }) {
         {question?.expectedOutput && (
           <TouchableOpacity
             onPress={() => setShowExpected(!showExpected)}
-            style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
+            style={s.expectedOutputToggle}
           >
-            <Ionicons name={showExpected ? "chevron-down" : "chevron-forward"} size={14} color={c['muted-foreground']} />
-            <Text style={{ fontSize: 11, color: c['muted-foreground'] }}>Expected Output</Text>
+            <Ionicons name={showExpected ? "chevron-down" : "chevron-forward"} size={16} color={c['muted-foreground']} />
+            <Text style={s.expectedOutputToggleText}>Expected Output</Text>
           </TouchableOpacity>
         )}
         {showExpected && question?.expectedOutput && (
-          <View style={{
-            borderRadius: 8,
-            borderWidth: 1,
-            borderColor: c.border,
-            backgroundColor: c['surface-muted'],
-            padding: 10,
-          }}>
-            <Text style={{ fontSize: 12, color: c.foreground, fontFamily: "monospace" }}>
+          <View style={s.expectedOutputWrapper}>
+            <Text style={s.expectedOutputText}>
               {question.expectedOutput}
             </Text>
           </View>

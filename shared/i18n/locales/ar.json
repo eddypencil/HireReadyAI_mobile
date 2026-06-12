@@ -632,6 +632,8 @@
     "no_code": "لا يوجد تحدي برمجي",
     "no_cv_review": "لا مراجعة للسيرة",
     "transcript": "نص",
+    "show_more": "عرض المزيد",
+    "show_less": "عرض أقل",
     "a11y_navigates_to": "ينتقل إلى",
     "a11y_key_metrics": "قسم: المقاييس الرئيسية",
     "a11y_pipeline": "قسم: خط الأنابيب",

@@ -13,6 +13,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { getCandidateProfile, getCandidateStageQuestions } from '../services/candidateProfile.service';
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../shared/context/I18nContext';
+import { Video, ResizeMode } from 'expo-av';
 
 const STAGE_ICONS = {
   hr_interview: 'chatbubbles',
@@ -40,10 +41,13 @@ function createQStyles(c) {
     scorePillText: { fontSize: 12, fontWeight: '700' },
     body: { borderTopWidth: 1, borderTopColor: c.border, padding: 14 },
     sectionLabel: { fontSize: 10, fontWeight: '700', color: c['muted-foreground'], textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 },
+    videoPlayer: { width: '100%', height: 220, borderRadius: 10, backgroundColor: '#000', marginBottom: 12 },
     videoPlaceholder: { fontSize: 13, color: c.primary, fontWeight: '600', marginBottom: 8 },
     transcriptBox: { backgroundColor: c['surface-muted'], borderRadius: 8, padding: 10, borderWidth: 1, borderColor: c.border },
     transcriptLabel: { fontSize: 10, fontWeight: '700', color: c['muted-foreground'], marginBottom: 4, textTransform: 'uppercase' },
     transcriptText: { fontSize: 13, color: c.foreground, lineHeight: 18 },
+    showMoreBtn: { marginTop: 6, alignSelf: 'flex-start' },
+    showMoreText: { fontSize: 12, fontWeight: '700', color: c.primary },
     answerBox: { backgroundColor: c['surface-muted'], borderRadius: 8, padding: 12, borderWidth: 1, borderColor: c.border },
     answerText: { fontSize: 13, color: c.foreground, lineHeight: 19 },
     langBadge: { fontSize: 11, fontWeight: '700', color: c.primary, backgroundColor: c.primary + '12', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6, alignSelf: 'flex-start', marginBottom: 6, textTransform: 'uppercase' },
@@ -177,6 +181,7 @@ export default function CandidateAssessmentsScreen() {
 
   function ExpandableQuestion({ question, index }) {
     const [expanded, setExpanded] = useState(false);
+    const [showFullTranscript, setShowFullTranscript] = useState(false);
     const answer = question.application_answers;
     const answerData = Array.isArray(answer) ? answer[0] : answer;
     const context = question.generation_context || {};
@@ -224,17 +229,35 @@ export default function CandidateAssessmentsScreen() {
 
             {question.question_type === 'video' && (
               <View>
-                {answerData?.recording_url ? (
-                  <Text style={qStyles.videoPlaceholder}>
-                    <Ionicons name="videocam" size={14} /> {t("recruiter.recording_available")}
-                  </Text>
+                {(context?.video_url || context?.recording_url) ? (
+                  <Video
+                    source={{ uri: context.video_url || context.recording_url }}
+                    style={qStyles.videoPlayer}
+                    useNativeControls
+                    resizeMode={ResizeMode.CONTAIN}
+                    isLooping={false}
+                  />
                 ) : (
                   <Text style={qStyles.emptyText}>{t("recruiter.no_video_recording")}</Text>
                 )}
-                {answerData?.transcript && (
+                {answerData?.answer_text && (
                   <View style={qStyles.transcriptBox}>
                     <Text style={qStyles.transcriptLabel}>{t("recruiter.transcript")}</Text>
-                    <Text style={qStyles.transcriptText}>{answerData.transcript}</Text>
+                    <Text 
+                      style={qStyles.transcriptText}
+                      numberOfLines={showFullTranscript ? undefined : 3}
+                    >
+                      {answerData.answer_text}
+                    </Text>
+                    <TouchableOpacity 
+                      style={qStyles.showMoreBtn}
+                      onPress={() => setShowFullTranscript(!showFullTranscript)}
+                      activeOpacity={0.7}
+                    >
+                      <Text style={qStyles.showMoreText}>
+                        {showFullTranscript ? t("recruiter.show_less", "Show less") : t("recruiter.show_more", "Show more")}
+                      </Text>
+                    </TouchableOpacity>
                   </View>
                 )}
               </View>

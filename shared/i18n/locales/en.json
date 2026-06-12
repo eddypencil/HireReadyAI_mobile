@@ -632,6 +632,8 @@
     "no_code": "No code challenge",
     "no_cv_review": "No CV review",
     "transcript": "Transcript",
+    "show_more": "Show more",
+    "show_less": "Show less",
     "a11y_navigates_to": "Navigates to",
     "a11y_key_metrics": "Section: Key Metrics",
     "a11y_pipeline": "Section: Pipeline",
