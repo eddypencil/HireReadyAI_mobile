@@ -46,7 +46,7 @@ export default function ApplicantPage() {
     browseBtn: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: c.primary, paddingHorizontal: 24, paddingVertical: 12, borderRadius: 10, marginTop: 6 },
     browseBtnText: { color: c['destructive-foreground'], fontSize: 14, fontWeight: "600" },
     banner: {
-      backgroundColor: "#f97316",
+      backgroundColor: c.primary,
       borderRadius: 12,
       marginHorizontal: 20,
       marginTop: 10,
@@ -59,7 +59,7 @@ export default function ApplicantPage() {
       shadowRadius: 8,
       elevation: 4,
     },
-    bannerText: { flex: 1, color: "#fff", fontSize: 13, fontWeight: "600" },
+    bannerText: { flex: 1, color: c['destructive-foreground'], fontSize: 13, fontWeight: "600" },
     bannerClose: { padding: 4 },
   };
 
@@ -137,13 +137,13 @@ export default function ApplicantPage() {
             if (update.jobId) navigation.navigate("JobDetails", { id: update.jobId });
           }}
         >
-          <Ionicons name="notifications" size={18} color="#fff" />
+          <Ionicons name="notifications" size={18} color={c['destructive-foreground']} />
           <Text style={s.bannerText}>{update.message}</Text>
           <TouchableOpacity
             style={s.bannerClose}
             onPress={() => dismissStageUpdate(update.applicationId)}
           >
-            <Ionicons name="close" size={16} color="#fff" />
+            <Ionicons name="close" size={16} color={c['destructive-foreground']} />
           </TouchableOpacity>
         </TouchableOpacity>
       ))}

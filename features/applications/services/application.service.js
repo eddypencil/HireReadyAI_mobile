@@ -145,7 +145,7 @@ export const createApplication = async (applicationData) => {
           if (token) {
             sendPushNotification({
               token,
-              title: "New Application Received 📋",
+              title: "New Application Received",
               body: `${applicantName} applied for "${jobData.title}"`,
               data: {
                 type: "new_application",

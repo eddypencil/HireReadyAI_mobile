@@ -250,8 +250,8 @@ export async function moveToStage(applicationId, targetStageId) {
     if (pushToken && stageInfo) {
       // Build a human-readable message per stage type
       const stageMessages = {
-        shortlist: `🎉 Great news! You've been shortlisted for "${jobTitle}"`,
-        offer:     `🏆 Congratulations! You've received an offer for "${jobTitle}"`,
+        shortlist: `Great news! You have been shortlisted for "${jobTitle}"`,
+        offer:     `Congratulations! You have received an offer for "${jobTitle}"`,
       };
 
       const body =
@@ -260,7 +260,7 @@ export async function moveToStage(applicationId, targetStageId) {
 
       sendPushNotification({
         token: pushToken,
-        title: "Application Update 💼",
+        title: "Application Update",
         body,
         data: {
           type: "stage_update",

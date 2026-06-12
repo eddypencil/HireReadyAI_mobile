@@ -37,39 +37,24 @@ export function useRealtimeRecruiter(companyId) {
     }
 
     const channel = supabase
-      .channel(`recruiter-realtime-${companyId}`)
+      .channel(`recruiter-realtime-${companyId}-${Date.now()}`)
 
-      // New application submitted → increment badge
+      // Application submitted, updated, or deleted → refresh recruiter pipeline
       .on(
         "postgres_changes",
         {
-          event: "INSERT",
+          event: "*",
           schema: "public",
           table: "applications",
         },
         (payload) => {
-          // We only care about applications for this company's jobs.
-          // Since applications don't have company_id directly, we optimistically
-          // increment and let the page re-fetch on focus to reconcile.
-          console.log("[Realtime] New application:", payload.new?.id);
-          setNewApplicationsCount((prev) => prev + 1);
-          // Also trigger pipeline refresh so counts update
+          console.log("[Realtime] Application change for recruiter:", payload.eventType, payload.new?.id || payload.old?.id);
           setPipelineRefreshKey((k) => k + 1);
-        }
-      )
 
-      // Application stage changed → refresh pipeline view
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "applications",
-          filter: `job_postings.company_id=eq.${companyId}`,
-        },
-        (payload) => {
-          console.log("[Realtime] Application updated:", payload.new?.id);
-          setPipelineRefreshKey((k) => k + 1);
+          if (payload.eventType === "INSERT") {
+            // Optimistically increment badge for new application
+            setNewApplicationsCount((prev) => prev + 1);
+          }
         }
       )
 
@@ -163,32 +148,35 @@ export function useRealtimeApplicant(userId) {
     }
 
     const channel = supabase
-      .channel(`applicant-realtime-${userId}`)
+      .channel(`applicant-realtime-${userId}-${Date.now()}`)
 
-      // Own application row updated (stage moved, rejected, etc.)
+      // Own application row changed (updated, deleted, etc.)
       .on(
         "postgres_changes",
         {
-          event: "UPDATE",
+          event: "*",
           schema: "public",
           table: "applications",
           filter: `candidate_profile_id=eq.${userId}`,
         },
         (payload) => {
-          console.log("[Realtime] Application updated for applicant:", payload.new?.id);
+          console.log("[Realtime] Application change for applicant:", payload.eventType, payload.new?.id || payload.old?.id);
           // Trigger a re-fetch of all applications
           setApplicationsRefreshKey((k) => k + 1);
 
-          // Show an in-app banner for the stage change
-          if (payload.new?.current_stage_id !== payload.old?.current_stage_id) {
+          // Show an in-app banner for the stage change (only on UPDATE)
+          if (
+            payload.eventType === "UPDATE" &&
+            payload.new?.current_stage_id !== payload.old?.current_stage_id
+          ) {
             setStageUpdates((prev) => [
               {
                 applicationId: payload.new?.id,
                 jobId: payload.new?.job_id,
-                message: "Your application status has been updated! 🎉",
+                message: "Your application status has been updated.",
                 timestamp: Date.now(),
               },
-              ...prev.slice(0, 4), // keep max 5 updates
+              ...prev.filter((u) => u.applicationId !== payload.new?.id).slice(0, 4), // keep max 5 updates, deduplicated
             ]);
           }
         }
