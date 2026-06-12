@@ -42,6 +42,7 @@ export default function CompanyProfile() {
   const [memberName, setMemberName] = useState("");
   const [memberEmail, setMemberEmail] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [upgrading, setUpgrading] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editForm, setEditForm] = useState({
     name: "",
@@ -274,6 +275,19 @@ export default function CompanyProfile() {
     </View>
   );
 
+  const handleUpgrade = async () => {
+      if (!company?.id) return;
+      try {
+        setUpgrading(true);
+        const { url } = await createCheckoutSession(company.id);
+        window.location.href = url;
+      } catch (err) {
+        console.error("Error creating checkout session:", err);
+        setUpgrading(false);
+      }
+    };
+  
+
   const hasCover = !!company?.cover_url;
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -478,6 +492,8 @@ export default function CompanyProfile() {
           </View>
         )}
       </View>
+
+      <PlanBillingCard/>
 
       {/* Team Members Card */}
       <View style={styles.card}>
