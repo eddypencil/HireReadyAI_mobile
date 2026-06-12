@@ -49,17 +49,32 @@ function LoadingSkeleton({ c, styles }) {
   );
 }
 
-function KpiCard({ icon, value, label, color, c, accessibilityLabel, styles, isRtl }) {
+function KpiCard({ icon, value, label, color, badge, c, accessibilityLabel, styles, isRtl }) {
   return (
     <View
       style={[styles.kpiCard, { backgroundColor: c.card, borderColor: c.border }]}
       accessibilityRole="summary"
       accessibilityLabel={accessibilityLabel}
     >
-      <View style={[styles.kpiIconWrap, { backgroundColor: color + "18" }]}> 
+      <View style={[styles.kpiIconWrap, { backgroundColor: color + "18" }]}>
         <Ionicons name={icon} size={20} color={color} />
       </View>
-      <Text style={[styles.kpiValue, { color: c.foreground }]}>{value}</Text>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+        <Text style={[styles.kpiValue, { color: c.foreground }]}>{value}</Text>
+        {badge != null && (
+          <View style={{
+            backgroundColor: "#f97316",
+            borderRadius: 10,
+            minWidth: 20,
+            height: 20,
+            alignItems: "center",
+            justifyContent: "center",
+            paddingHorizontal: 5,
+          }}>
+            <Text style={{ color: "#fff", fontSize: 11, fontWeight: "800" }}>+{badge}</Text>
+          </View>
+        )}
+      </View>
       <Text style={[styles.kpiLabel, { color: c['muted-foreground'] }]}>{label}</Text>
     </View>
   );
@@ -131,15 +146,28 @@ export default function RecruiterScreen() {
   const KPI_CARD_WIDTH = (SCREEN_WIDTH - 40 - KPI_GAP) / 2;
   const styles = createStyles(c, KPI_CARD_WIDTH);
   const { company } = useCompany();
-  const { stats, pipelineSummaryData, trendData, topJobsData, isLoading, error } =
+  const { stats, pipelineSummaryData, trendData, topJobsData, isLoading, error, newApplicationsCount, clearNewApplications } =
     useDashboardData();
   const { t, language } = useTranslation();
   const isRtl = language === 'ar';
 
   const QUICK_ACTIONS = [
-    { label: t("recruiter.post_job"), icon: "add-circle-outline", screen: "JDGenerator" },
-    { label: t("recruiter.view_pipeline"), icon: "funnel-outline", screen: "Pipeline" },
-    { label: t("recruiter.review_shortlists"), icon: "document-text-outline", screen: "Shortlists" },
+    {
+      label: t("recruiter.post_job"),
+      icon: "add-circle-outline",
+      screen: "JDGenerator",
+    },
+    {
+      label: t("recruiter.view_pipeline"),
+      icon: "funnel-outline",
+      screen: "Pipeline",
+      onPress: () => { clearNewApplications(); navigation.navigate("Pipeline"); },
+    },
+    {
+      label: t("recruiter.review_shortlists"),
+      icon: "document-text-outline",
+      screen: "Shortlists",
+    },
   ];
 
   if (isLoading) {
@@ -174,6 +202,7 @@ export default function RecruiterScreen() {
       label: t("recruiter.candidates"),
       color: c.accent,
       a11y: t("recruiter.a11y_candidates", { count: stats.totalApplicants }),
+      badge: newApplicationsCount > 0 ? newApplicationsCount : null,
     },
     {
       icon: "checkmark-circle-outline",
@@ -353,7 +382,7 @@ export default function RecruiterScreen() {
               accessibilityRole="button"
               accessibilityLabel={action.label}
               accessibilityHint={t("recruiter.a11y_navigates_to", { screen: action.label })}
-              onPress={() => navigation.navigate(action.screen)}
+              onPress={action.onPress ?? (() => navigation.navigate(action.screen))}
             >
               <View style={[styles.quickActionIcon, { backgroundColor: `${c.primary}18` }]}>
                 <Ionicons name={action.icon} size={24} color={c.primary} />

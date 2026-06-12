@@ -1,5 +1,6 @@
 // src\features\applications\services\application.service.js
 import { supabase } from "../../../shared/services/supabase";
+import { sendPushNotification } from "../../../shared/services/notifications.service";
 //fetch all applications by applicant id
 export const fetchApplicationsByApplicantId = async (applicantId) => {
   const { data, error } = await supabase
@@ -109,6 +110,58 @@ export const createApplication = async (applicationData) => {
       { onConflict: "application_id,stage_id" }
     );
   }
+
+  // ── Notify recruiter (fire-and-forget) ───────────────────────────────────
+  try {
+    // Fetch the job title and company_id together
+    const { data: jobData } = await supabase
+      .from("job_postings")
+      .select("title, company_id")
+      .eq("id", applicationData.job_id)
+      .single();
+
+    if (jobData?.company_id) {
+      // Find a recruiter (company member) who has a push token
+      const { data: members } = await supabase
+        .from("company_memberships")
+        .select("profile_id, profiles(expo_push_token, full_name)")
+        .eq("company_id", jobData.company_id)
+        .not("profiles.expo_push_token", "is", null)
+        .limit(5);
+
+      if (members && members.length > 0) {
+        // Fetch the applicant's name for the notification body
+        const { data: applicantProfile } = await supabase
+          .from("profiles")
+          .select("full_name")
+          .eq("id", applicationData.candidate_profile_id)
+          .single();
+
+        const applicantName = applicantProfile?.full_name ?? "A candidate";
+
+        // Send to all recruiters in the company who have a push token
+        for (const member of members) {
+          const token = member.profiles?.expo_push_token;
+          if (token) {
+            sendPushNotification({
+              token,
+              title: "New Application Received 📋",
+              body: `${applicantName} applied for "${jobData.title}"`,
+              data: {
+                type: "new_application",
+                application_id: application.id,
+                job_id: applicationData.job_id,
+              },
+            });
+          }
+        }
+      }
+    }
+  } catch (notifErr) {
+    // Never let notification errors block the apply flow
+    console.warn("[Notifications] Failed to notify recruiter:", notifErr.message);
+  }
+  // ────────────────────────────────────────────────────────────────────────
 
   return application;
 };

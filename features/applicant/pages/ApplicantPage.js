@@ -13,6 +13,7 @@ import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
 import { spacing } from "../../../src/theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useRealtimeApplicant } from "../../../shared/hooks/useRealtime";
 
 export default function ApplicantPage() {
   const { theme } = useTheme();
@@ -25,6 +26,10 @@ export default function ApplicantPage() {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // ── Realtime ──────────────────────────────────────────────────────────────
+  const { stageUpdates, applicationsRefreshKey, dismissStageUpdate } =
+    useRealtimeApplicant(user?.id);
 
   const s = {
     container: { flex: 1, backgroundColor: c['surface-muted'] },
@@ -40,6 +45,22 @@ export default function ApplicantPage() {
     emptySubtitle: { fontSize: 13, color: c['muted-foreground'], textAlign: "center", lineHeight: 20, maxWidth: 260 },
     browseBtn: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: c.primary, paddingHorizontal: 24, paddingVertical: 12, borderRadius: 10, marginTop: 6 },
     browseBtnText: { color: c['destructive-foreground'], fontSize: 14, fontWeight: "600" },
+    banner: {
+      backgroundColor: "#f97316",
+      borderRadius: 12,
+      marginHorizontal: 20,
+      marginTop: 10,
+      padding: 14,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+      shadowColor: "#000",
+      shadowOpacity: 0.15,
+      shadowRadius: 8,
+      elevation: 4,
+    },
+    bannerText: { flex: 1, color: "#fff", fontSize: 13, fontWeight: "600" },
+    bannerClose: { padding: 4 },
   };
 
   const loadApplications = () => {
@@ -52,9 +73,15 @@ export default function ApplicantPage() {
       .finally(() => setLoading(false));
   };
 
+  // Initial load
   useEffect(() => { loadApplications(); }, [user?.id]);
 
-  if (loading) {
+  // Re-fetch silently when realtime detects a change
+  useEffect(() => {
+    if (applicationsRefreshKey > 0) loadApplications();
+  }, [applicationsRefreshKey]);
+
+  if (loading && applications.length === 0) {
     return (
       <View style={s.centered}>
         <ActivityIndicator size="large" color={c.primary} />
@@ -98,17 +125,42 @@ export default function ApplicantPage() {
   }
 
   return (
-    <ScrollView style={[s.container, { paddingTop: insets.top }]} contentContainerStyle={s.content}>
-      
+    <View style={{ flex: 1, backgroundColor: c['surface-muted'] }}>
+      {/* ── Realtime stage update banners ─────────────────────────────────── */}
+      {stageUpdates.map((update) => (
+        <TouchableOpacity
+          key={update.applicationId}
+          style={s.banner}
+          activeOpacity={0.85}
+          onPress={() => {
+            dismissStageUpdate(update.applicationId);
+            if (update.jobId) navigation.navigate("JobDetails", { id: update.jobId });
+          }}
+        >
+          <Ionicons name="notifications" size={18} color="#fff" />
+          <Text style={s.bannerText}>{update.message}</Text>
+          <TouchableOpacity
+            style={s.bannerClose}
+            onPress={() => dismissStageUpdate(update.applicationId)}
+          >
+            <Ionicons name="close" size={16} color="#fff" />
+          </TouchableOpacity>
+        </TouchableOpacity>
+      ))}
 
-      <StatsCards applications={applications} />
-      <ChartsSection applications={applications} />
-      <ApplicationsList
-        applications={applications}
-        onViewJob={(jobId) => navigation.navigate("JobDetails", { id: jobId })}
-      />
-      <InterviewList applications={applications} />
-      <View style={{ height: 32 }} />
-    </ScrollView>
+      <ScrollView
+        style={[s.container, { paddingTop: insets.top }]}
+        contentContainerStyle={s.content}
+      >
+        <StatsCards applications={applications} />
+        <ChartsSection applications={applications} />
+        <ApplicationsList
+          applications={applications}
+          onViewJob={(jobId) => navigation.navigate("JobDetails", { id: jobId })}
+        />
+        <InterviewList applications={applications} />
+        <View style={{ height: 32 }} />
+      </ScrollView>
+    </View>
   );
 }

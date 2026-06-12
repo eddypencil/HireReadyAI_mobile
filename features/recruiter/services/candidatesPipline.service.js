@@ -1,4 +1,5 @@
 import { supabase } from "../../../shared/services/supabase";
+import { sendPushNotification } from "../../../shared/services/notifications.service";
 
 /**
  * Fetch all applications for a specific company, with their current stage data.
@@ -222,6 +223,58 @@ export async function moveToStage(applicationId, targetStageId) {
     .eq("id", applicationId);
 
   if (updateErr) return { error: updateErr };
+
+  // ── Notify applicant (fire-and-forget) ─────────────────────────────────
+  try {
+    // Fetch the applicant's profile id + push token via the application
+    const { data: appWithProfile } = await supabase
+      .from("applications")
+      .select(`
+        candidate_profile_id,
+        profiles ( expo_push_token, full_name ),
+        job_postings ( title )
+      `)
+      .eq("id", applicationId)
+      .single();
+
+    const pushToken = appWithProfile?.profiles?.expo_push_token;
+    const jobTitle = appWithProfile?.job_postings?.title ?? "your application";
+
+    // Fetch the target stage name for the notification body
+    const { data: stageInfo } = await supabase
+      .from("recruitment_stages")
+      .select("name, stage_type")
+      .eq("id", targetStageId)
+      .single();
+
+    if (pushToken && stageInfo) {
+      // Build a human-readable message per stage type
+      const stageMessages = {
+        shortlist: `🎉 Great news! You've been shortlisted for "${jobTitle}"`,
+        offer:     `🏆 Congratulations! You've received an offer for "${jobTitle}"`,
+      };
+
+      const body =
+        stageMessages[stageInfo.stage_type] ??
+        `Your application for "${jobTitle}" has moved to the ${stageInfo.name} stage.`;
+
+      sendPushNotification({
+        token: pushToken,
+        title: "Application Update 💼",
+        body,
+        data: {
+          type: "stage_update",
+          application_id: applicationId,
+          stage_id: targetStageId,
+          stage_type: stageInfo.stage_type,
+        },
+      });
+    }
+  } catch (notifErr) {
+    // Never let notification errors block stage movement
+    console.warn("[Notifications] Failed to notify applicant:", notifErr.message);
+  }
+  // ───────────────────────────────────────────────────────────────────────
 
   return { error: null };
 }

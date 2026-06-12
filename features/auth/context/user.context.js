@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { supabase } from "../../../shared/services/supabase";
 import { getProfile, signUp, signIn, signOut, makeProfile } from "../services/auth.service";
 import { USER_ROLE } from "../../../shared/constants/enums";
+import { registerAndSavePushToken } from "../../../shared/services/notifications.service";
 
 const UserContext = createContext(null);
 
@@ -22,6 +23,8 @@ export function UserProvider({ children }) {
       const data = await getProfile(userId);
       if (data) {
         setProfile(toProfileModel(data));
+        // Register/refresh the Expo push token each time the profile loads
+        registerAndSavePushToken(userId);
       }
     } catch {}
   };

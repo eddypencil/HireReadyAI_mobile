@@ -2,9 +2,14 @@ import { useState, useEffect } from "react";
 import { fetchDashboardData } from "../services/dashboard.service";
 import { APPLICATION_STAGE } from "../../../shared/constants/enums";
 import { useUser } from "../../auth/context/user.context";
+import { useCompany } from "../../companies/pages/CompanyLayout";
+import { useRealtimeRecruiter } from "../../../shared/hooks/useRealtime";
 
 export const useDashboardData = () => {
   const { profile } = useUser();
+  const { company } = useCompany();
+  const { newApplicationsCount, pipelineRefreshKey, clearNewApplications } =
+    useRealtimeRecruiter(company?.id);
   const [jobs, setJobs] = useState([]);
   const [pipelineData, setPipelineData] = useState([]);
   const [pipelineSummaryData, setPipelineSummaryData] = useState(null);
@@ -185,7 +190,8 @@ export const useDashboardData = () => {
     };
 
     loadDashboardData();
-  }, [profile?.id]);
+  // pipelineRefreshKey increments when realtime detects a change → auto-reload
+  }, [profile?.id, pipelineRefreshKey]);
 
-  return { jobs, stats, pipelineData, pipelineSummaryData, trendData, topJobsData, isLoading, error };
+  return { jobs, stats, pipelineData, pipelineSummaryData, trendData, topJobsData, isLoading, error, newApplicationsCount, clearNewApplications };
 };
