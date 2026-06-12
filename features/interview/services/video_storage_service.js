@@ -1,9 +1,10 @@
 import { supabase } from "../../../shared/services/supabase";
+import { updateApplicationQuestion } from "./interview_database_service";
 
 const BUCKET_NAME = "interview-recordings";
 
-export const uploadRecording = async (blob, interviewId, questionId) => {
-  const fileName = `${interviewId}/${questionId}_${Date.now()}.webm`;
+export const uploadRecording = async (blob, applicationStageId, questionId) => {
+  const fileName = `${applicationStageId}/${questionId}_${Date.now()}.webm`;
 
   const { error: uploadError } = await supabase.storage
     .from(BUCKET_NAME)
@@ -19,48 +20,38 @@ export const uploadRecording = async (blob, interviewId, questionId) => {
     .from(BUCKET_NAME)
     .getPublicUrl(fileName);
 
-  const { error: updateError } = await supabase
-    .from("interview_questions")
-    .update({
+  await updateApplicationQuestion(questionId, {
+    generation_context: {
       recording_url: publicUrl,
       storage_path: fileName,
       transcription_status: "pending",
-    })
-    .eq("id", questionId);
-
-  if (updateError) throw updateError;
+    },
+  });
 
   return { publicUrl, fileName };
 };
 
-export const updateTranscript = async (questionId, transcript, confidence = null) => {
-  const updates = { transcript };
-  if (confidence !== null) {
-    updates.whisper_confidence = confidence;
-  }
-
-  const { error } = await supabase
-    .from("interview_questions")
-    .update(updates)
-    .eq("id", questionId);
-
-  if (error) throw error;
-};
-
-export const retryPendingTranscriptions = async (interviewId) => {
+export const retryPendingTranscriptions = async (applicationStageId) => {
   const { data: questions, error } = await supabase
-    .from("interview_questions")
-    .select("id, storage_path")
-    .eq("interview_id", interviewId)
-    .neq("transcription_status", "completed");
+    .from("application_questions")
+    .select("id, generation_context")
+    .eq("application_stage_id", applicationStageId);
 
   if (error) throw error;
   if (!questions?.length) return [];
 
+  const pending = questions.filter(
+    (q) =>
+      q.generation_context?.storage_path &&
+      q.generation_context?.transcription_status !== "completed"
+  );
+
+  if (!pending.length) return [];
+
   const results = await Promise.allSettled(
-    questions.map((q) =>
+    pending.map((q) =>
       supabase.functions.invoke("whisper-api", {
-        body: { audioPath: q.storage_path, questionId: q.id },
+        body: { audioPath: q.generation_context.storage_path, questionId: q.id },
       })
     )
   );
@@ -71,6 +62,5 @@ export const deleteRecording = async (filePath) => {
   const { error } = await supabase.storage
     .from(BUCKET_NAME)
     .remove([filePath]);
-
   if (error) throw error;
 };

@@ -155,6 +155,18 @@
     "applicant_badge": "مقدم طلب",
     "interview_stage": "مرحلة المقابلة"
   },
+  "interview_page": {
+    "errors": {
+      "title": "خطأ في المقابلة",
+      "no_active_stage": "لا توجد مرحلة مقابلة نشطة لهذا الطلب.",
+      "load_failed": "فشل تحميل المقابلة. حاول مرة أخرى.",
+      "go_back": "العودة"
+    },
+    "finished": {
+      "title": "تمت المقابلة!",
+      "back_to_application": "العودة إلى الطلبات"
+    }
+  },
   "errors": {
     "something_wrong": "حدث خطأ ما"
   },

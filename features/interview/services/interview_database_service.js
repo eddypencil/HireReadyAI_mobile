@@ -1,93 +1,56 @@
 import { supabase } from "../../../shared/services/supabase";
 
-// ─── Interviews ──────────────────────────────────────────────
-
-export const fetchInterviewById = async (interviewId) => {
+export const fetchInterviewStageByApplicationId = async (applicationId) => {
   const { data, error } = await supabase
-    .from("interviews")
+    .from("application_stages")
     .select(`
       *,
+      recruitment_stages!inner (
+        id, name, stage_type, job_id, description
+      ),
       applications (
-        id,
-        candidate_profile_id,
-        current_stage,
-        composite_score
-      )
-    `)
-    .eq("id", interviewId)
-    .single();
-  if (error) throw error;
-  return data;
-};
-
-export const fetchInterviewByApplicationId = async (applicationId) => {
-  const { data, error } = await supabase
-    .from("interviews")
-    .select(`
-      *,
-      applications (
-        id,
-        candidate_profile_id,
-        current_stage,
-        composite_score
+        id, candidate_profile_id, composite_score
       )
     `)
     .eq("application_id", applicationId)
-    .single();
+    .eq("recruitment_stages.stage_type", "interview")
+    .maybeSingle();
   if (error) throw error;
   return data;
 };
 
-export const createInterview = async (interviewData) => {
+export const updateApplicationStageStatus = async (applicationStageId, updates) => {
   const { data, error } = await supabase
-    .from("interviews")
-    .insert([interviewData])
-    .select()
-    .single();
-  if (error) throw error;
-  return data;
-};
-
-export const updateInterview = async (interviewId, updates) => {
-  const { data, error } = await supabase
-    .from("interviews")
+    .from("application_stages")
     .update(updates)
-    .eq("id", interviewId)
+    .eq("id", applicationStageId)
     .select()
     .single();
   if (error) throw error;
   return data;
 };
 
-export const deleteInterview = async (interviewId) => {
-  const { error } = await supabase
-    .from("interviews")
-    .delete()
-    .eq("id", interviewId);
-  if (error) throw error;
-};
-
-// ─── Interview Questions ─────────────────────────────────────
-
-export const fetchQuestionsByInterviewId = async (interviewId) => {
+export const fetchQuestionsByApplicationStageId = async (applicationStageId) => {
   const { data, error } = await supabase
-    .from("interview_questions")
+    .from("application_questions")
     .select(`
       *,
-      interview_question_scores (*)
+      application_answers (
+        id, answer_text, score, feedback, created_at
+      )
     `)
-    .eq("interview_id", interviewId)
-    .order("sort_order", { ascending: true });
+    .eq("application_stage_id", applicationStageId)
+    .order("order_index", { ascending: true });
   if (error) throw error;
   return data;
 };
 
-export const fetchQuestionById = async (questionId) => {
+export const fetchApplicationQuestionById = async (questionId) => {
   const { data, error } = await supabase
-    .from("interview_questions")
+    .from("application_questions")
     .select(`
       *,
-      interview_question_scores (*)
+      application_answers (*)
     `)
     .eq("id", questionId)
     .single();
@@ -95,9 +58,9 @@ export const fetchQuestionById = async (questionId) => {
   return data;
 };
 
-export const createQuestion = async (questionData) => {
+export const createApplicationQuestion = async (questionData) => {
   const { data, error } = await supabase
-    .from("interview_questions")
+    .from("application_questions")
     .insert([questionData])
     .select()
     .single();
@@ -105,18 +68,18 @@ export const createQuestion = async (questionData) => {
   return data;
 };
 
-export const bulkCreateQuestions = async (questionsData) => {
+export const bulkCreateApplicationQuestions = async (questionsData) => {
   const { data, error } = await supabase
-    .from("interview_questions")
+    .from("application_questions")
     .insert(questionsData)
     .select();
   if (error) throw error;
   return data;
 };
 
-export const updateQuestion = async (questionId, updates) => {
+export const updateApplicationQuestion = async (questionId, updates) => {
   const { data, error } = await supabase
-    .from("interview_questions")
+    .from("application_questions")
     .update(updates)
     .eq("id", questionId)
     .select()
@@ -125,77 +88,56 @@ export const updateQuestion = async (questionId, updates) => {
   return data;
 };
 
-export const deleteQuestion = async (questionId) => {
+export const deleteApplicationQuestion = async (questionId) => {
   const { error } = await supabase
-    .from("interview_questions")
+    .from("application_questions")
     .delete()
     .eq("id", questionId);
   if (error) throw error;
 };
 
-// ─── Interview Question Scores ───────────────────────────────
-
-export const fetchScoresByQuestionId = async (questionId) => {
+export const upsertApplicationAnswer = async (questionId, answerText, extra = {}) => {
   const { data, error } = await supabase
-    .from("interview_question_scores")
-    .select("*")
-    .eq("interview_question_id", questionId);
-  if (error) throw error;
-  return data;
-};
-
-export const fetchScoreById = async (scoreId) => {
-  const { data, error } = await supabase
-    .from("interview_question_scores")
-    .select("*")
-    .eq("id", scoreId)
-    .single();
-  if (error) throw error;
-  return data;
-};
-
-export const createScore = async (scoreData) => {
-  const { data, error } = await supabase
-    .from("interview_question_scores")
-    .insert([scoreData])
+    .from("application_answers")
+    .upsert(
+      { question_id: questionId, answer_text: answerText, ...extra },
+      { onConflict: "question_id" }
+    )
     .select()
     .single();
   if (error) throw error;
   return data;
 };
 
-export const bulkCreateScores = async (scoresData) => {
+export const fetchAnswerByQuestionId = async (questionId) => {
   const { data, error } = await supabase
-    .from("interview_question_scores")
-    .insert(scoresData)
-    .select();
+    .from("application_answers")
+    .select("*")
+    .eq("question_id", questionId)
+    .maybeSingle();
   if (error) throw error;
   return data;
 };
 
-export const updateScore = async (scoreId, updates) => {
+export const upsertStageEvaluation = async (applicationStageId, evalData) => {
   const { data, error } = await supabase
-    .from("interview_question_scores")
-    .update(updates)
-    .eq("id", scoreId)
+    .from("application_stage_evaluations")
+    .upsert(
+      { application_stage_id: applicationStageId, ...evalData },
+      { onConflict: "application_stage_id" }
+    )
     .select()
     .single();
   if (error) throw error;
   return data;
 };
 
-export const deleteScore = async (scoreId) => {
-  const { error } = await supabase
-    .from("interview_question_scores")
-    .delete()
-    .eq("id", scoreId);
+export const fetchStageEvaluation = async (applicationStageId) => {
+  const { data, error } = await supabase
+    .from("application_stage_evaluations")
+    .select("*")
+    .eq("application_stage_id", applicationStageId)
+    .maybeSingle();
   if (error) throw error;
-};
-
-export const deleteScoresByQuestionId = async (questionId) => {
-  const { error } = await supabase
-    .from("interview_question_scores")
-    .delete()
-    .eq("interview_question_id", questionId);
-  if (error) throw error;
+  return data;
 };

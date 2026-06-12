@@ -155,6 +155,18 @@
     "applicant_badge": "Applicant",
     "interview_stage": "Interview Stage"
   },
+  "interview_page": {
+    "errors": {
+      "title": "Interview Error",
+      "no_active_stage": "No active interview stage found for this application.",
+      "load_failed": "Failed to load interview. Please try again.",
+      "go_back": "Go Back"
+    },
+    "finished": {
+      "title": "Interview Complete!",
+      "back_to_application": "Back to Applications"
+    }
+  },
   "errors": {
     "something_wrong": "Something went wrong"
   },

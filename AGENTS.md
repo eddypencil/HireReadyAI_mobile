@@ -35,3 +35,29 @@ All feature components across all phases now use `useTheme()` + `useTranslation(
 - Hex opacity suffix: e.g. `` `${c['stage-applied']}26` `` for ~15% opacity
 - i18n: `t("namespace.key")` via `useTranslation()`
 - Stage colors: `stage-applied`, `stage-screening`, `stage-interview`, `stage-assessment`, `stage-final`, `stage-hired`, plus `success`/`warning`/`destructive`
+
+## Interview System (Rewritten June 2026)
+
+The mobile interview system now mirrors the web's new architecture:
+
+**Tables used:** `application_stages`, `application_questions`, `application_answers`, `application_stage_evaluations`
+
+**Key files:**
+- `features/interview/pages/InterviewPage.js` — state machine: INIT→LOADING→ANSWERING→EVALUATING→FINISHED→ERROR; timer with auto-submit, progress bar, resume support
+- `features/interview/services/interview.service.js` — `fetchActiveInterviewStage()`, `fetchStageQuestions()`, `generateNextQuestion()` (calls edge function)
+- `features/interview/services/interview_database_service.js` — CRUD for new tables
+- `features/interview/services/wandbox.service.js` — code execution via Wandbox API
+- `features/interview/services/video_storage_service.js` — upload to `generation_context` JSONB
+- `features/interview/hooks/useInterviewQuestions.js` — loads stage + questions
+- `features/interview/components/TextQuestion.js` — min 30 chars
+- `features/interview/components/MultipleChoiceQuestion.js` — radio-list options
+- `features/interview/components/CodeQuestion.js` — monospace editor + Wandbox run
+- `features/interview/components/VideoQuestion.js` — `expo-camera` recording + upload
+
+**Navigation:** InterviewList.js "Start Interview" button → `navigation.navigate("Interview", { applicationId })`
+
+**Status:** InterviewPage reads `application_stages` to determine interview progress, works with existing `application_stages` data already fetched by `fetchApplicationsByApplicantId`.
+
+**StatsCards.js** now counts interviews via `application_stages` (status `in_progress`/`completed`), offers via `current_recruitment_stage.stage_type === "offer"`, and rejected via `application_stages` status.
+
+**Key dependencies:** `expo-camera` installed for video recording.

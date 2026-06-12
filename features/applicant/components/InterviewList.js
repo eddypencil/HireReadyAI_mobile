@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { View, Text, TouchableOpacity, Linking, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import { APPLICATION_STAGE } from "../../../shared/constants/enums";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
@@ -101,6 +102,7 @@ export default function InterviewList({ applications }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const c = theme.colors;
+  const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState("all_interviews");
 
   const getStageStatus = (app) => {
@@ -386,6 +388,25 @@ export default function InterviewList({ applications }) {
                   </View>
 
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                    {isActive && (
+                      <TouchableOpacity
+                        onPress={() => navigation.navigate("Interview", { applicationId: app.id })}
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 5,
+                          backgroundColor: c.primary,
+                          borderRadius: 8,
+                          paddingHorizontal: 13,
+                          paddingVertical: 7,
+                        }}
+                      >
+                        <Ionicons name="play" size={10} color={c['destructive-foreground']} />
+                        <Text style={{ fontSize: 11, fontWeight: "700", color: c['destructive-foreground'] }}>
+                          Start {stageStatus?.label ?? "Interview"}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
                     {app.cv_file_url && (
                       <TouchableOpacity
                         onPress={() => Linking.openURL(app.cv_file_url)}
@@ -401,11 +422,7 @@ export default function InterviewList({ applications }) {
                         }}
                       >
                         <Ionicons name="document-outline" size={10} color={c.primary} />
-                        <Text style={{
-                          fontSize: 11,
-                          fontWeight: "700",
-                          color: c.primary,
-                        }}>{t("applicant.view_cv")}</Text>
+                        <Text style={{ fontSize: 11, fontWeight: "700", color: c.primary }}>{t("applicant.view_cv")}</Text>
                       </TouchableOpacity>
                     )}
                   </View>
