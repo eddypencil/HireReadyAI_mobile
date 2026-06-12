@@ -620,7 +620,7 @@ export default function PipelineCandidatesPage() {
       {/* Kanban Board */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.boardScroll}>
         <View style={[styles.board, isRtl && styles.rowReverse]}>
-          {stages.map((stage, stageIndex) => {
+          {sortedStages.map((stage, stageIndex) => {
             const nextStage = sortedStages[stageIndex + 1];
             const stageCandidates = candidatesByStage[stage.id] || [];
             console.log("STAGE:", stage.name, {

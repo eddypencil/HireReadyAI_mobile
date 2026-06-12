@@ -197,14 +197,7 @@ function MainScreens() {
         <InnerStack.Screen
           name="ApplicantFeedback"
           component={ApplicantFeedbackPage}
-          options={{
-            header: undefined,
-            headerShown: true,
-            headerTitle: "My Feedback",
-            headerStyle: { backgroundColor: c.primary },
-            headerTintColor: c.white,
-          }}
-rabic-localization-work
+         
         />
         <InnerStack.Screen
           name="ApplicantProfile"
@@ -303,7 +296,7 @@ rabic-localization-work
           component={ApplicationQuestionsPage}
           options={{
             headerShown: true,
-            headerTitle: "Screening Questions",
+            headerTitle: t('profile.screening_questions'),
             headerStyle: { backgroundColor: c.primary },
             headerTintColor: c.white,
           }}
@@ -313,7 +306,7 @@ rabic-localization-work
           component={JDPublishSuccessPage}
           options={{
             headerShown: true,
-            headerTitle: t('profile.screening_questions'),
+            headerTitle: t('publish_success'),
             headerStyle: { backgroundColor: c.primary },
             headerTintColor: c.white,
           }}
