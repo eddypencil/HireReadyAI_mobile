@@ -139,6 +139,8 @@ export function useRealtimeApplicant(userId) {
   const [applicationsRefreshKey, setApplicationsRefreshKey] = useState(0);
   const [newJobsCount, setNewJobsCount] = useState(0);
   const channelRef = useRef(null);
+  // Track known application IDs so DELETE events (which carry no filter data) can be matched
+  const knownAppIds = useRef(new Set());
 
   useEffect(() => {
     if (!userId) return;
@@ -147,28 +149,48 @@ export function useRealtimeApplicant(userId) {
       supabase.removeChannel(channelRef.current);
     }
 
+    // Pre-load known application IDs for this user so we can match DELETE events
+    supabase
+      .from("applications")
+      .select("id")
+      .eq("candidate_profile_id", userId)
+      .then(({ data }) => {
+        if (data) knownAppIds.current = new Set(data.map((r) => r.id));
+      });
+
     const channel = supabase
       .channel(`applicant-realtime-${userId}-${Date.now()}`)
 
-      // Own application row changed (updated, deleted, etc.)
+      // INSERT / UPDATE on own applications (filter works because full row is present)
       .on(
         "postgres_changes",
         {
-          event: "*",
+          event: "INSERT",
           schema: "public",
           table: "applications",
           filter: `candidate_profile_id=eq.${userId}`,
         },
         (payload) => {
-          console.log("[Realtime] Application change for applicant:", payload.eventType, payload.new?.id || payload.old?.id);
-          // Trigger a re-fetch of all applications
+          console.log("[Realtime] Application INSERT for applicant:", payload.new?.id);
+          // Track the new ID
+          if (payload.new?.id) knownAppIds.current.add(payload.new.id);
+          setApplicationsRefreshKey((k) => k + 1);
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "applications",
+          filter: `candidate_profile_id=eq.${userId}`,
+        },
+        (payload) => {
+          console.log("[Realtime] Application UPDATE for applicant:", payload.new?.id);
           setApplicationsRefreshKey((k) => k + 1);
 
-          // Show an in-app banner for the stage change (only on UPDATE)
-          if (
-            payload.eventType === "UPDATE" &&
-            payload.new?.current_stage_id !== payload.old?.current_stage_id
-          ) {
+          // Show an in-app banner for the stage change
+          if (payload.new?.current_stage_id !== payload.old?.current_stage_id) {
             setStageUpdates((prev) => [
               {
                 applicationId: payload.new?.id,
@@ -176,8 +198,27 @@ export function useRealtimeApplicant(userId) {
                 message: "Your application status has been updated.",
                 timestamp: Date.now(),
               },
-              ...prev.filter((u) => u.applicationId !== payload.new?.id).slice(0, 4), // keep max 5 updates, deduplicated
+              ...prev.filter((u) => u.applicationId !== payload.new?.id).slice(0, 4),
             ]);
+          }
+        }
+      )
+      // DELETE — no filter because Supabase only sends the PK on delete.
+      // We use knownAppIds to decide if it belongs to this user.
+      .on(
+        "postgres_changes",
+        {
+          event: "DELETE",
+          schema: "public",
+          table: "applications",
+        },
+        (payload) => {
+          const deletedId = payload.old?.id;
+          console.log("[Realtime] Application DELETE detected:", deletedId);
+          if (deletedId && knownAppIds.current.has(deletedId)) {
+            knownAppIds.current.delete(deletedId);
+            console.log("[Realtime] DELETE belongs to this user — refreshing");
+            setApplicationsRefreshKey((k) => k + 1);
           }
         }
       )

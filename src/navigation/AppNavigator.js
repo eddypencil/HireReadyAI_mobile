@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
+import * as Notifications from "expo-notifications";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   UserProvider,
@@ -424,6 +425,7 @@ function RootNavigator({ onboardingSeen }) {
 
 export default function AppNavigator() {
   const [onboardingSeen, setOnboardingSeen] = useState(null);
+  const navigationRef = useRef(null);
 
   useEffect(() => {
     AsyncStorage.removeItem("onboarding_seen");
@@ -432,10 +434,24 @@ export default function AppNavigator() {
     });
   }, []);
 
+  // Handle notification taps (works from background/killed state too)
+  useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+      const data = response.notification.request.content.data;
+      if (!navigationRef.current) return;
+      if (data?.type === 'stage_update') {
+        navigationRef.current.navigate('Main', { screen: 'ApplicantHome' });
+      } else if (data?.type === 'new_application') {
+        navigationRef.current.navigate('Main', { screen: 'Pipeline' });
+      }
+    });
+    return () => subscription.remove();
+  }, []);
+
   return (
     <UserProvider>
       <SidebarProvider>
-        <NavigationContainer>
+        <NavigationContainer ref={navigationRef}>
           <RootNavigator onboardingSeen={onboardingSeen} />
         </NavigationContainer>
       </SidebarProvider>

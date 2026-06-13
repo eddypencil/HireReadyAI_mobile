@@ -21,6 +21,7 @@ import {
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
 import AutoAdvanceModal from "../components/AutoAdvanceModal";
+import { supabase } from "../../../shared/services/supabase";
 
 const STAGE_TYPE_COLORS = {
   cv_review: "#6b7280",
@@ -306,6 +307,27 @@ export default function PipelineCandidatesPage() {
     if (!selectedJobId) return;
     fetchData();
   }, [selectedJobId]);
+
+  // Realtime: auto-refresh when applications change
+  useEffect(() => {
+    if (!company?.id) return;
+
+    const channel = supabase
+      .channel(`mobile-pipeline-${company.id}-${Date.now()}`)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "applications" },
+        () => fetchData()
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "applications" },
+        () => fetchData()
+      )
+      .subscribe();
+
+    return () => supabase.removeChannel(channel);
+  }, [company?.id, selectedJobId]);
 
   async function fetchData() {
     setLoading(true);

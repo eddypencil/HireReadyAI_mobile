@@ -32,7 +32,6 @@ export default function StatsCards({ applications }) {
   const total = applications?.length || 0;
   const interviewCount = applications?.filter(hasActiveInterviewStage).length || 0;
   const offerCount = applications?.filter(isHired).length || 0;
-  const rejectedCount = applications?.filter(isRejected).length || 0;
 
   const stats = [
     {
