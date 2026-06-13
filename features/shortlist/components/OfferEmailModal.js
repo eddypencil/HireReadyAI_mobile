@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
-  Alert,
+  Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../shared/context/ThemeContext';
@@ -20,6 +20,7 @@ import {
   FONT_FAMILY_BOLD,
 } from '../../../src/fonts';
 import { useTranslation } from '../../../shared/context/I18nContext';
+import { useThemedAlert } from '../../../shared/context/ThemedAlertContext';
 import { supabase } from '../../../shared/services/supabase';
 import { advanceToOffer } from '../services/shortlist.service';
 
@@ -39,6 +40,7 @@ export default function OfferEmailModal({
 }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { alert } = useThemedAlert();
   const c = theme.colors;
   const styles = createStyles(c);
   const isOffer = action === 'offer';
@@ -52,6 +54,8 @@ export default function OfferEmailModal({
   );
   const [body, setBody] = useState('');
   const [sending, setSending] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const screenWidth = Dimensions.get('window').width;
 
   const fillTemplate = () => {
     if (isOffer) {
@@ -73,7 +77,7 @@ export default function OfferEmailModal({
 
   const handleSend = async () => {
     if (!to || !subject || !body || !fromEmail) {
-      Alert.alert(t("shortlist.missing_fields"), t("shortlist.missing_fields_msg"));
+      alert(t("shortlist.missing_fields"), t("shortlist.missing_fields_msg"));
       return;
     }
     setSending(true);
@@ -86,7 +90,7 @@ export default function OfferEmailModal({
         .maybeSingle();
 
       if (!offerStage && isOffer) {
-        Alert.alert(t("shortlist.no_offer_stage"), t("shortlist.no_offer_stage_msg"));
+        alert(t("shortlist.no_offer_stage"), t("shortlist.no_offer_stage_msg"));
         setSending(false);
         return;
       }
@@ -112,12 +116,9 @@ export default function OfferEmailModal({
       }
 
       onSuccess?.();
-      onClose();
-      Alert.alert(t("shortlist.success"), isOffer
-        ? t("shortlist.offer_success")
-        : t("shortlist.reject_success"));
+      setShowSuccess(true);
     } catch (err) {
-      Alert.alert(t("shortlist.error"), err.message || t("shortlist.send_error"));
+      alert(t("shortlist.error"), err.message || t("shortlist.send_error"));
     } finally {
       setSending(false);
     }
@@ -245,6 +246,27 @@ export default function OfferEmailModal({
             </TouchableOpacity>
           </View>
         </View>
+
+        {showSuccess && (
+          <View style={styles.successOverlay}>
+            <View style={[styles.successModal, { width: Math.min(screenWidth * 0.85, 400) }]}>
+              <View style={styles.successIconWrap}>
+                <Ionicons name="checkmark-circle" size={56} color={c.success} />
+              </View>
+              <Text style={styles.successTitle}>{t("shortlist.success")}</Text>
+              <Text style={styles.successMessage}>
+                {isOffer ? t("shortlist.offer_success") : t("shortlist.reject_success")}
+              </Text>
+              <TouchableOpacity
+                style={styles.successButton}
+                onPress={() => { setShowSuccess(false); onClose(); }}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.successButtonText}>OK</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
       </KeyboardAvoidingView>
     </Modal>
   );
@@ -387,5 +409,60 @@ function createStyles(c) { return StyleSheet.create({
     fontSize: 14,
     fontFamily: FONT_FAMILY_SEMIBOLD,
     color: c['destructive-foreground'],
+  },
+
+  successOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: `${c.foreground}66`,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  successModal: {
+    backgroundColor: c.card,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: c.border,
+    paddingVertical: 32,
+    paddingHorizontal: 28,
+    alignItems: 'center',
+  },
+  successIconWrap: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: `${c.success}15`,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  successTitle: {
+    fontSize: 20,
+    fontFamily: FONT_FAMILY_BOLD,
+    color: c.foreground,
+    textAlign: 'center',
+  },
+  successMessage: {
+    fontSize: 14,
+    fontFamily: FONT_FAMILY,
+    color: c['muted-foreground'],
+    textAlign: 'center',
+    marginTop: 8,
+    lineHeight: 20,
+  },
+  successButton: {
+    backgroundColor: c.primary,
+    paddingHorizontal: 40,
+    paddingVertical: 12,
+    borderRadius: 12,
+    marginTop: 24,
+  },
+  successButtonText: {
+    color: c['destructive-foreground'],
+    fontSize: 15,
+    fontFamily: FONT_FAMILY_SEMIBOLD,
   },
 }); }
