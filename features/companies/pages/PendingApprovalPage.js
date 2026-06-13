@@ -6,6 +6,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../shared/context/ThemeContext";
+import { FONT_FAMILY, FONT_FAMILY_BOLD } from '../../../src/fonts';
 
 export default function PendingApprovalPage({ companyName }) {
   const { theme } = useTheme();
@@ -61,7 +62,7 @@ function createStyles(c) {
     },
     logoText: {
       fontSize: 18,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.foreground,
     },
     body: {
@@ -81,18 +82,20 @@ function createStyles(c) {
     },
     title: {
       fontSize: 22,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.foreground,
       marginBottom: 8,
     },
     subtitle: {
       fontSize: 14,
+      fontFamily: FONT_FAMILY,
       color: c.gray[600],
       textAlign: "center",
       marginBottom: 4,
     },
     hint: {
       fontSize: 12,
+      fontFamily: FONT_FAMILY,
       color: c.gray[400],
       textAlign: "center",
     },

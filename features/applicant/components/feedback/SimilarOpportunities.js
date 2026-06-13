@@ -5,11 +5,12 @@ import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../../shared/context/I18nContext';
 import { fetchSimilarJobs } from '../../../jobs/services/jobs.service';
+import { FONT_FAMILY, FONT_FAMILY_BOLD } from '../../../../src/fonts';
 
 export default function SimilarOpportunities({ jobId, seniorityLevel, jobType }) {
   const { theme } = useTheme();
   const c = theme.colors;
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const styles = createStyles(c);
   const navigation = useNavigation();
   const [jobs, setJobs] = useState([]);
@@ -60,7 +61,7 @@ export default function SimilarOpportunities({ jobId, seniorityLevel, jobType })
                 )}
               </View>
             </View>
-            <Ionicons name="chevron-forward" size={16} color={c['muted-foreground']} />
+            <Ionicons name={language === 'ar' ? 'chevron-back' : 'chevron-forward'} size={16} color={c['muted-foreground']} />
           </TouchableOpacity>
         );
       })}
@@ -80,7 +81,7 @@ function createStyles(c) {
     backgroundColor: c['surface-muted'],
     alignItems: 'center', justifyContent: 'center',
   },
-  heading: { fontSize: 14, fontWeight: '700', color: c.foreground },
+  
   row: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
     paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: c.border,
@@ -91,11 +92,14 @@ function createStyles(c) {
     backgroundColor: c['surface-muted'],
     alignItems: 'center', justifyContent: 'center', flexShrink: 0,
   },
-  logoText: { fontSize: 14, fontWeight: '700', color: c.primary },
+  
   info: { flex: 1 },
-  jobTitle: { fontSize: 13, fontWeight: '700', color: c.foreground, marginBottom: 3 },
+  
   meta: { flexDirection: 'row', gap: 10, flexWrap: 'wrap' },
   metaItem: { flexDirection: 'row', alignItems: 'center', gap: 3 },
-  metaText: { fontSize: 11, color: c['muted-foreground'] },
+  metaText: { fontSize: 11, color: c['muted-foreground'], fontFamily: FONT_FAMILY },
+  heading: { fontSize: 14, color: c.foreground, fontFamily: FONT_FAMILY_BOLD },
+  logoText: { fontSize: 14, color: c.primary, fontFamily: FONT_FAMILY_BOLD },
+  jobTitle: { fontSize: 13, color: c.foreground, marginBottom: 3, fontFamily: FONT_FAMILY_BOLD },
 });
 }

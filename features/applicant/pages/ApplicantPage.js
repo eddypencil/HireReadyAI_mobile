@@ -14,6 +14,7 @@ import { useTranslation } from "../../../shared/context/I18nContext";
 import { spacing } from "../../../src/theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRealtimeApplicant } from "../../../shared/hooks/useRealtime";
+import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from "../../../src/fonts";
 
 export default function ApplicantPage() {
   const { theme } = useTheme();
@@ -35,16 +36,16 @@ export default function ApplicantPage() {
     container: { flex: 1, backgroundColor: c['surface-muted'] },
     content: { padding: 20, gap: 20, paddingBottom: 40 },
     centered: { flex: 1, backgroundColor: c['surface-muted'], alignItems: "center", justifyContent: "center", padding: 24, gap: 12 },
-    errorText: { color: c.destructive, fontSize: 13, textAlign: "center", padding: 20 },
-    loadingText: { fontSize: 14, color: c['muted-foreground'], marginTop: 4 },
+    errorText: { fontFamily: FONT_FAMILY, color: c.destructive, fontSize: 13, textAlign: "center", padding: 20 },
+    loadingText: { fontFamily: FONT_FAMILY, fontSize: 14, color: c['muted-foreground'], marginTop: 4 },
     retryBtn: { backgroundColor: c.primary, paddingHorizontal: 24, paddingVertical: 10, borderRadius: 10, marginTop: 4 },
-    retryText: { color: c['destructive-foreground'], fontSize: 14, fontWeight: "600" },
+    retryText: { fontFamily: FONT_FAMILY_SEMIBOLD, color: c['destructive-foreground'], fontSize: 14 },
     emptyCard: { backgroundColor: c.card, borderRadius: 16, borderWidth: 1, borderColor: c.border, padding: 36, alignItems: "center", gap: 10, maxWidth: 320 },
     emptyIconBox: { width: 64, height: 64, borderRadius: 16, backgroundColor: c['surface-muted'], alignItems: "center", justifyContent: "center", marginBottom: 4 },
-    emptyTitle: { fontSize: 16, fontWeight: "700", color: c.foreground, textAlign: "center" },
-    emptySubtitle: { fontSize: 13, color: c['muted-foreground'], textAlign: "center", lineHeight: 20, maxWidth: 260 },
+    emptyTitle: { fontFamily: FONT_FAMILY_BOLD, fontSize: 16, color: c.foreground, textAlign: "center" },
+    emptySubtitle: { fontFamily: FONT_FAMILY, fontSize: 13, color: c['muted-foreground'], textAlign: "center", lineHeight: 20, maxWidth: 260 },
     browseBtn: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: c.primary, paddingHorizontal: 24, paddingVertical: 12, borderRadius: 10, marginTop: 6 },
-    browseBtnText: { color: c['destructive-foreground'], fontSize: 14, fontWeight: "600" },
+    browseBtnText: { fontFamily: FONT_FAMILY_SEMIBOLD, color: c['destructive-foreground'], fontSize: 14 },
     banner: {
       backgroundColor: c.primary,
       borderRadius: 12,
@@ -59,7 +60,7 @@ export default function ApplicantPage() {
       shadowRadius: 8,
       elevation: 4,
     },
-    bannerText: { flex: 1, color: c['destructive-foreground'], fontSize: 13, fontWeight: "600" },
+    bannerText: { flex: 1, color: c['destructive-foreground'], fontSize: 13, fontWeight: FONT_FAMILY_SEMIBOLD  },
     bannerClose: { padding: 4 },
   };
 

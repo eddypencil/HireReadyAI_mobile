@@ -14,6 +14,7 @@ import { getCandidateProfile, getCandidateStageQuestions } from '../services/can
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../shared/context/I18nContext';
 import { Video, ResizeMode } from 'expo-av';
+import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD, FONT_FAMILY_EXTRABOLD } from '../../../src/fonts';
 
 const STAGE_ICONS = {
   hr_interview: 'chatbubbles',
@@ -32,40 +33,42 @@ function createQStyles(c) {
     typeIcon: { width: 34, height: 34, borderRadius: 8, justifyContent: 'center', alignItems: 'center' },
     headerInfo: { flex: 1 },
     headerTags: { flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 2, flexWrap: 'wrap' },
-    typeLabel: { fontSize: 10, fontWeight: '700', textTransform: 'uppercase' },
-    langTag: { fontSize: 9, fontWeight: '700', color: c.primary, backgroundColor: c.primary + '12', paddingHorizontal: 5, paddingVertical: 1, borderRadius: 4, textTransform: 'uppercase' },
-    timeTag: { fontSize: 9, color: c['muted-foreground'] },
-    questionText: { fontSize: 13, fontWeight: '500', color: c.foreground, lineHeight: 18, marginTop: 2 },
+    typeLabel: { fontSize: 10, fontFamily: FONT_FAMILY_BOLD, textTransform: 'uppercase' },
+    langTag: { fontSize: 9, fontFamily: FONT_FAMILY_BOLD, color: c.primary, backgroundColor: c.primary + '12', paddingHorizontal: 5, paddingVertical: 1, borderRadius: 4, textTransform: 'uppercase' },
+    timeTag: { fontSize: 9, color: c['muted-foreground'], fontFamily: FONT_FAMILY },
+    questionText: { fontSize: 13, fontFamily: FONT_FAMILY_MEDIUM, color: c.foreground, lineHeight: 18, marginTop: 2 },
     headerRight: { flexDirection: 'row', alignItems: 'center', gap: 6 },
     scorePill: { borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2 },
-    scorePillText: { fontSize: 12, fontWeight: '700' },
+    scorePillText: { fontSize: 12, fontFamily: FONT_FAMILY_BOLD },
     body: { borderTopWidth: 1, borderTopColor: c.border, padding: 14 },
-    sectionLabel: { fontSize: 10, fontWeight: '700', color: c['muted-foreground'], textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 },
+
     videoPlayer: { width: '100%', height: 220, borderRadius: 10, backgroundColor: '#000', marginBottom: 12 },
-    videoPlaceholder: { fontSize: 13, color: c.primary, fontWeight: '600', marginBottom: 8 },
-    transcriptBox: { backgroundColor: c['surface-muted'], borderRadius: 8, padding: 10, borderWidth: 1, borderColor: c.border },
-    transcriptLabel: { fontSize: 10, fontWeight: '700', color: c['muted-foreground'], marginBottom: 4, textTransform: 'uppercase' },
-    transcriptText: { fontSize: 13, color: c.foreground, lineHeight: 18 },
     showMoreBtn: { marginTop: 6, alignSelf: 'flex-start' },
     showMoreText: { fontSize: 12, fontWeight: '700', color: c.primary },
+    sectionLabel: { fontSize: 10, fontFamily: FONT_FAMILY_BOLD, color: c['muted-foreground'], textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 },
+    videoPlaceholder: { fontSize: 13, color: c.primary, fontFamily: FONT_FAMILY_SEMIBOLD, marginBottom: 8 },
+    transcriptBox: { backgroundColor: c['surface-muted'], borderRadius: 8, padding: 10, borderWidth: 1, borderColor: c.border },
+    transcriptLabel: { fontSize: 10, fontFamily: FONT_FAMILY_BOLD, color: c['muted-foreground'], marginBottom: 4, textTransform: 'uppercase' },
+    transcriptText: { fontSize: 13, color: c.foreground, lineHeight: 18, fontFamily: FONT_FAMILY },
+
     answerBox: { backgroundColor: c['surface-muted'], borderRadius: 8, padding: 12, borderWidth: 1, borderColor: c.border },
-    answerText: { fontSize: 13, color: c.foreground, lineHeight: 19 },
-    langBadge: { fontSize: 11, fontWeight: '700', color: c.primary, backgroundColor: c.primary + '12', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6, alignSelf: 'flex-start', marginBottom: 6, textTransform: 'uppercase' },
+    answerText: { fontSize: 13, color: c.foreground, lineHeight: 19, fontFamily: FONT_FAMILY },
+    langBadge: { fontSize: 11, fontFamily: FONT_FAMILY_BOLD, color: c.primary, backgroundColor: c.primary + '12', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6, alignSelf: 'flex-start', marginBottom: 6, textTransform: 'uppercase' },
     codeBox: { backgroundColor: '#0f172a', borderRadius: 10, padding: 14 },
     codeText: { fontFamily: 'monospace', fontSize: 12, color: '#e2e8f0', lineHeight: 18 },
-    emptyText: { fontSize: 12, color: c['muted-foreground'], fontStyle: 'italic' },
+    emptyText: { fontSize: 12, color: c['muted-foreground'], fontStyle: 'italic', fontFamily: FONT_FAMILY },
     optionRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, paddingHorizontal: 10, borderRadius: 8, marginBottom: 4, borderWidth: 1, borderColor: c.border },
     rowReverse: { flexDirection: 'row-reverse' },
     optionSelected: { backgroundColor: c.primary + '08', borderColor: c.primary + '30' },
     optionLetter: { width: 20, height: 20, borderRadius: 10, justifyContent: 'center', alignItems: 'center', backgroundColor: c.border },
-    optionLetterText: { fontSize: 10, fontWeight: '700', color: c['muted-foreground'] },
-    optionText: { flex: 1, fontSize: 13, color: c.foreground },
+    optionLetterText: { fontSize: 10, fontFamily: FONT_FAMILY_BOLD, color: c['muted-foreground'] },
+    optionText: { flex: 1, fontSize: 13, color: c.foreground, fontFamily: FONT_FAMILY },
     feedbackBox: { backgroundColor: c.accent + '08', borderRadius: 10, borderWidth: 1, borderColor: c.accent + '25', padding: 12, marginTop: 10 },
     feedbackHeader: { flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 6 },
-    feedbackTitle: { fontSize: 10, fontWeight: '700', color: c.accent, textTransform: 'uppercase', letterSpacing: 0.5 },
-    feedbackText: { fontSize: 13, color: c.foreground, lineHeight: 18, marginBottom: 8 },
+    feedbackTitle: { fontSize: 10, fontFamily: FONT_FAMILY_BOLD, color: c.accent, textTransform: 'uppercase', letterSpacing: 0.5 },
+    feedbackText: { fontSize: 13, color: c.foreground, lineHeight: 18, marginBottom: 8, fontFamily: FONT_FAMILY },
     feedbackItem: { flexDirection: 'row', alignItems: 'flex-start', gap: 4, marginBottom: 4 },
-    feedbackItemText: { fontSize: 12, color: c['muted-foreground'], flex: 1 },
+    feedbackItemText: { fontSize: 12, color: c['muted-foreground'], flex: 1, fontFamily: FONT_FAMILY },
   });
 }
 
@@ -84,15 +87,15 @@ function createAssStyles(c) {
     rowReverse: { flexDirection: 'row-reverse' },
     backButton: { padding: 4 },
     bannerText: { flex: 1 },
-    bannerTitle: { fontSize: 18, fontWeight: '700', color: c['destructive-foreground'] },
-    bannerSubtitle: { fontSize: 13, color: 'rgba(255,255,255,0.8)', marginTop: 2 },
+    bannerTitle: { fontSize: 18, fontFamily: FONT_FAMILY_BOLD, color: c['destructive-foreground'] },
+    bannerSubtitle: { fontSize: 13, color: 'rgba(255,255,255,0.8)', marginTop: 2, fontFamily: FONT_FAMILY },
     questionCount: {
       backgroundColor: 'rgba(255,255,255,0.15)',
       borderRadius: 8,
       paddingHorizontal: 10,
       paddingVertical: 5,
     },
-    questionCountText: { fontSize: 11, fontWeight: '600', color: c['destructive-foreground'] },
+    questionCountText: { fontSize: 11, fontFamily: FONT_FAMILY_SEMIBOLD, color: c['destructive-foreground'] },
     tabBar: {
       backgroundColor: c.card,
       borderBottomWidth: 1,
@@ -109,8 +112,8 @@ function createAssStyles(c) {
       borderBottomColor: 'transparent',
     },
     tabActive: { borderBottomColor: c.primary },
-    tabText: { fontSize: 13, fontWeight: '500', color: c['muted-foreground'] },
-    tabTextActive: { color: c.primary, fontWeight: '600' },
+    tabText: { fontSize: 13, fontFamily: FONT_FAMILY_MEDIUM, color: c['muted-foreground'] },
+    tabTextActive: { color: c.primary, fontFamily: FONT_FAMILY_SEMIBOLD },
     emptyState: {
       margin: 16,
       borderRadius: 14,
@@ -118,8 +121,8 @@ function createAssStyles(c) {
       padding: 40,
       alignItems: 'center',
     },
-    emptyTitle: { fontSize: 16, fontWeight: '700', marginTop: 12 },
-    emptySubtitle: { fontSize: 13, marginTop: 4, textAlign: 'center' },
+    emptyTitle: { fontSize: 16, fontFamily: FONT_FAMILY_BOLD, marginTop: 12 },
+    emptySubtitle: { fontSize: 13, marginTop: 4, textAlign: 'center', fontFamily: FONT_FAMILY },
     content: { flex: 1, paddingHorizontal: 16, paddingTop: 16 },
     stageHeader: {
       borderRadius: 14,
@@ -132,13 +135,13 @@ function createAssStyles(c) {
     },
     stageHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 },
     stageIconWrap: { width: 36, height: 36, borderRadius: 10, justifyContent: 'center', alignItems: 'center', backgroundColor: c.primary },
-    stageName: { fontSize: 15, fontWeight: '700' },
-    stageType: { fontSize: 11, marginTop: 1, textTransform: 'capitalize' },
+    stageName: { fontSize: 15, fontFamily: FONT_FAMILY_BOLD },
+    stageType: { fontSize: 11, marginTop: 1, textTransform: 'capitalize', fontFamily: FONT_FAMILY },
     stageHeaderRight: { flexDirection: 'row', alignItems: 'center', gap: 6 },
     stageScore: { borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3 },
-    stageScoreText: { fontSize: 12, fontWeight: '700' },
+    stageScoreText: { fontSize: 12, fontFamily: FONT_FAMILY_BOLD },
     stageStatus: { borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3 },
-    stageStatusText: { fontSize: 11, fontWeight: '600' },
+    stageStatusText: { fontSize: 11, fontFamily: FONT_FAMILY_SEMIBOLD },
     evalRow: {
       borderRadius: 14,
       borderWidth: 1,
@@ -148,8 +151,8 @@ function createAssStyles(c) {
       justifyContent: 'space-between',
     },
     evalItem: { alignItems: 'center' },
-    evalLabel: { fontSize: 10, fontWeight: '700', color: c['muted-foreground'], textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 },
-    evalValue: { fontSize: 14, fontWeight: '700' },
+    evalLabel: { fontSize: 10, fontFamily: FONT_FAMILY_BOLD, color: c['muted-foreground'], textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 },
+    evalValue: { fontSize: 14, fontFamily: FONT_FAMILY_BOLD },
   });
 }
 
@@ -383,9 +386,9 @@ export default function CandidateAssessmentsScreen() {
     return (
       <View style={[assStyles.container, assStyles.centered, { backgroundColor: c.background }]}>
         <Ionicons name="alert-circle-outline" size={48} color={c.destructive} />
-        <Text style={{ color: c.destructive, marginTop: 8 }}>{error}</Text>
+        <Text style={{ color: c.destructive, marginTop: 8, fontFamily: FONT_FAMILY }}>{error}</Text>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={{ color: c.accent, marginTop: 8 }}>{t("recruiter.back_to_profile")}</Text>
+          <Text style={{ color: c.accent, marginTop: 8, fontFamily: FONT_FAMILY }}>{t("recruiter.back_to_profile")}</Text>
         </TouchableOpacity>
       </View>
     );

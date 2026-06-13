@@ -21,6 +21,7 @@ import { useUser } from "../../auth/context/user.context";
 import { MEMBERSHIP_PERMISSION } from "../../../shared/constants/enums";
 import { useSidebar } from "../../../shared/context/SidebarContext";
 import Snackbar from "../../../shared/ui/Snackbar";
+import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD, FONT_FAMILY_EXTRABOLD } from '../../../src/fonts';
 
 export default function NoCompanyView({ onCompanyJoined }) {
   const { theme } = useTheme();
@@ -502,7 +503,7 @@ function createStyles(c) {
     headerTitle: {
       flex: 1,
       fontSize: 17,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       color: c['sidebar-foreground'],
     },
     headerBar: {
@@ -528,12 +529,12 @@ function createStyles(c) {
     },
     logoText: {
       fontSize: 16,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c['destructive-foreground'],
     },
     wordmark: {
       fontSize: 17,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       color: c['sidebar-foreground'],
     },
     signOutBtn: {
@@ -548,6 +549,7 @@ function createStyles(c) {
     },
     signOutText: {
       fontSize: 12,
+      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
     },
     centered: {
@@ -559,6 +561,7 @@ function createStyles(c) {
     loadingText: {
       marginTop: 8,
       fontSize: 13,
+      fontFamily: FONT_FAMILY,
       color: c.gray[500],
     },
     errorBanner: {
@@ -572,6 +575,7 @@ function createStyles(c) {
     errorText: {
       color: c.red[700],
       fontSize: 13,
+      fontFamily: FONT_FAMILY,
     },
     hero: {
       alignItems: "center",
@@ -588,18 +592,19 @@ function createStyles(c) {
     },
     heroIconText: {
       fontSize: 28,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.foreground,
     },
     heroTitle: {
       fontSize: 26,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.foreground,
       marginBottom: 8,
       textAlign: "center",
     },
     heroSubtitle: {
       fontSize: 14,
+      fontFamily: FONT_FAMILY,
       color: c.gray[600],
       textAlign: "center",
       marginBottom: 20,
@@ -616,7 +621,7 @@ function createStyles(c) {
     createNewBtnText: {
       color: c.white,
       fontSize: 14,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
     },
     emptyState: {
       alignItems: "center",
@@ -630,6 +635,7 @@ function createStyles(c) {
       color: c.gray[500],
       marginBottom: 24,
       fontSize: 14,
+      fontFamily: FONT_FAMILY,
     },
     gridRow: {
       justifyContent: "space-between",
@@ -661,7 +667,7 @@ function createStyles(c) {
     },
     avatarLetter: {
       fontSize: 18,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.foreground,
     },
     cardInfo: {
@@ -669,16 +675,18 @@ function createStyles(c) {
     },
     companyName: {
       fontSize: 15,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       color: c.foreground,
       marginBottom: 2,
     },
     companyIndustry: {
       fontSize: 12,
+      fontFamily: FONT_FAMILY,
       color: c.gray[500],
     },
     companySize: {
       fontSize: 11,
+      fontFamily: FONT_FAMILY,
       color: c.gray[500],
       marginBottom: 12,
     },
@@ -694,7 +702,7 @@ function createStyles(c) {
     joinBtnText: {
       color: c.foreground,
       fontSize: 13,
-      fontWeight: "500",
+      fontFamily: FONT_FAMILY_MEDIUM,
     },
     backRow: {
       flexDirection: "row",
@@ -703,10 +711,12 @@ function createStyles(c) {
     },
     backArrow: {
       fontSize: 16,
+      fontFamily: FONT_FAMILY,
       color: c.gray[500],
     },
     backText: {
       fontSize: 13,
+      fontFamily: FONT_FAMILY,
       color: c.gray[500],
     },
     pricingRow: {
@@ -738,7 +748,7 @@ function createStyles(c) {
     },
     premiumBadgeText: {
       fontSize: 10,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.white,
     },
     planIconWrap: {
@@ -752,22 +762,23 @@ function createStyles(c) {
     },
     planIcon: {
       fontSize: 20,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.primary,
     },
     planName: {
       fontSize: 18,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.foreground,
       marginBottom: 4,
     },
     planPrice: {
       fontSize: 28,
-      fontWeight: "800",
+      fontFamily: FONT_FAMILY_EXTRABOLD,
       color: c.foreground,
     },
     planPeriod: {
       fontSize: 12,
+      fontFamily: FONT_FAMILY,
       color: c.gray[500],
       marginBottom: 20,
     },
@@ -783,10 +794,11 @@ function createStyles(c) {
     featureCheck: {
       fontSize: 14,
       color: c.emerald[500],
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
     },
     featureText: {
       fontSize: 13,
+      fontFamily: FONT_FAMILY,
       color: c.gray[600],
       flex: 1,
     },
@@ -799,7 +811,7 @@ function createStyles(c) {
     selectPlanBtnText: {
       color: c.white,
       fontSize: 14,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
     },
     comingSoonBtn: {
       backgroundColor: c.gray[200],
@@ -810,7 +822,7 @@ function createStyles(c) {
     comingSoonBtnText: {
       color: c.gray[500],
       fontSize: 14,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
     },
     formCard: {
       backgroundColor: c.white,
@@ -829,12 +841,13 @@ function createStyles(c) {
     },
     formBackArrow: {
       fontSize: 20,
+      fontFamily: FONT_FAMILY,
       color: c.gray[500],
       marginRight: 12,
     },
     formTitle: {
       fontSize: 18,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.foreground,
     },
     formBody: {
@@ -842,7 +855,7 @@ function createStyles(c) {
     },
     label: {
       fontSize: 12,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       color: c.gray[700],
       marginBottom: 6,
       marginTop: 12,
@@ -854,6 +867,7 @@ function createStyles(c) {
       paddingHorizontal: 14,
       paddingVertical: 10,
       fontSize: 14,
+      fontFamily: FONT_FAMILY,
       color: c.foreground,
       backgroundColor: c.white,
     },
@@ -871,6 +885,7 @@ function createStyles(c) {
       paddingHorizontal: 14,
       paddingVertical: 10,
       fontSize: 14,
+      fontFamily: FONT_FAMILY,
       color: c.foreground,
       backgroundColor: c.white,
       minHeight: 80,
@@ -883,6 +898,7 @@ function createStyles(c) {
       paddingHorizontal: 14,
       paddingVertical: 10,
       fontSize: 14,
+      fontFamily: FONT_FAMILY,
       color: c.foreground,
       backgroundColor: c.white,
       minHeight: 60,
@@ -907,7 +923,7 @@ function createStyles(c) {
     },
     cancelBtnText: {
       fontSize: 13,
-      fontWeight: "500",
+      fontFamily: FONT_FAMILY_MEDIUM,
       color: c.gray[700],
     },
     createBtn: {
@@ -921,7 +937,7 @@ function createStyles(c) {
     },
     createBtnText: {
       fontSize: 13,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       color: c.white,
     },
   });

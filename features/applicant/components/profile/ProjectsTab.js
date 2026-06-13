@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Linking } 
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../../shared/context/I18nContext';
+import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../../src/fonts';
 
 function ProjectMedia({ images, onAdd, viewOnly }) {
   const { theme } = useTheme();
@@ -175,7 +176,7 @@ function createStyles(c) {
     padding: 18, borderBottomWidth: 1, borderBottomColor: c.border,
   },
   sectionHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  sectionTitle: { fontSize: 15, fontWeight: '700', color: c.foreground },
+  sectionTitle: { fontSize: 15, color: c.foreground, fontFamily: FONT_FAMILY_BOLD },
   addBtn: {
     width: 28, height: 28, borderRadius: 14,
     backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center',
@@ -188,17 +189,17 @@ function createStyles(c) {
     backgroundColor: c.surface,
     alignItems: 'center', justifyContent: 'center', marginBottom: 4,
   },
-  emptyTitle: { fontSize: 15, fontWeight: '700', color: c.foreground, textAlign: 'center' },
+  emptyTitle: { fontSize: 15, color: c.foreground, textAlign: 'center', fontFamily: FONT_FAMILY_BOLD },
   emptySubtitle: {
     fontSize: 13, color: c['muted-foreground'],
-    textAlign: 'center', lineHeight: 19, maxWidth: 240,
+    textAlign: 'center', lineHeight: 19, maxWidth: 240, fontFamily: FONT_FAMILY,
   },
   emptyAddBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
     backgroundColor: c.primary, borderRadius: 20,
     paddingHorizontal: 20, paddingVertical: 10, marginTop: 6,
   },
-  emptyAddBtnText: { color: c.white, fontSize: 13, fontWeight: '600' },
+  emptyAddBtnText: { color: c.white, fontSize: 13, fontFamily: FONT_FAMILY_SEMIBOLD },
 
   // Project card — sits inside the section, separated by top border
   projectCard: {
@@ -215,11 +216,11 @@ function createStyles(c) {
     backgroundColor: `${c.primary}12`,
     alignItems: 'center', justifyContent: 'center', flexShrink: 0,
   },
-  projectName: { fontSize: 15, fontWeight: '700', color: c.foreground, flex: 1 },
+  projectName: { fontSize: 15, color: c.foreground, flex: 1, fontFamily: FONT_FAMILY_BOLD },
   projectActions: { flexDirection: 'row', gap: 12, flexShrink: 0 },
   projectDesc: {
     fontSize: 13, color: c.foreground, lineHeight: 20,
-    paddingHorizontal: 16, paddingBottom: 12,
+    paddingHorizontal: 16, paddingBottom: 12, fontFamily: FONT_FAMILY,
   },
   techRow: {
     flexDirection: 'row', flexWrap: 'wrap', gap: 6,
@@ -230,7 +231,7 @@ function createStyles(c) {
     borderWidth: 1, borderColor: `${c.accent}30`,
     borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4,
   },
-  techText: { fontSize: 11, color: c.accent, fontWeight: '600' },
+  techText: { fontSize: 11, color: c.accent, fontFamily: FONT_FAMILY_SEMIBOLD },
   projectLink: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
     marginHorizontal: 16, marginBottom: 12,
@@ -238,7 +239,7 @@ function createStyles(c) {
     borderWidth: 1, borderColor: `${c.accent}25`,
     borderRadius: 8, paddingHorizontal: 10, paddingVertical: 7,
   },
-  projectLinkText: { flex: 1, fontSize: 12, color: c.accent },
+  projectLinkText: { flex: 1, fontSize: 12, color: c.accent, fontFamily: FONT_FAMILY },
   gallerySection: { borderTopWidth: 1, borderTopColor: c.border },
   gallery: { padding: 12, gap: 8 },
   mediaTile: {
@@ -251,11 +252,11 @@ function createStyles(c) {
     alignItems: 'center', justifyContent: 'center', gap: 4,
     borderStyle: 'dashed', backgroundColor: c.card,
   },
-  addTileText: { fontSize: 11, color: c['muted-foreground'] },
+  addTileText: { fontSize: 11, color: c['muted-foreground'], fontFamily: FONT_FAMILY },
   addMediaBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
     borderTopWidth: 1, borderTopColor: c.border, padding: 14,
   },
-  addMediaText: { fontSize: 13, color: c['muted-foreground'], fontStyle: 'italic' },
+  addMediaText: { fontSize: 13, color: c['muted-foreground'], fontStyle: 'italic', fontFamily: FONT_FAMILY },
   });
 }

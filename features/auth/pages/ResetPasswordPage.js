@@ -12,6 +12,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../shared/context/I18nContext';
+import { FONT_FAMILY, FONT_FAMILY_BOLD, FONT_FAMILY_EXTRABOLD, FONT_FAMILY_SEMIBOLD } from '../../../src/fonts';
 
 export default function ResetPasswordPage() {
   const { theme } = useTheme();
@@ -58,22 +59,22 @@ export default function ResetPasswordPage() {
     container: { flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24, paddingVertical: 48 },
     branding: { alignItems: 'center', marginBottom: 40 },
     logo: { width: 56, height: 56, borderRadius: 14, backgroundColor: c['sidebar-active'], alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
-    logoText: { fontSize: 24, fontWeight: '800', color: c['destructive-foreground'] },
-    appName: { fontSize: 28, fontWeight: '700', color: c['sidebar-foreground'], letterSpacing: -0.5 },
+    logoText: { fontSize: 24, fontFamily: FONT_FAMILY_EXTRABOLD, color: c['destructive-foreground'] },
+    appName: { fontSize: 28, fontFamily: FONT_FAMILY_BOLD, color: c['sidebar-foreground'], letterSpacing: -0.5 },
     aiHighlight: { color: c.accent },
-    headline: { fontSize: 26, fontWeight: '700', color: c['sidebar-foreground'], marginBottom: 4 },
-    subheading: { fontSize: 14, color: c.accent, marginBottom: 32 },
+    headline: { fontSize: 26, fontFamily: FONT_FAMILY_BOLD, color: c['sidebar-foreground'], marginBottom: 4 },
+    subheading: { fontSize: 14, fontFamily: FONT_FAMILY, color: c.accent, marginBottom: 32 },
     form: { gap: 16 },
     fieldGroup: { gap: 6 },
-    label: { fontSize: 12, fontWeight: '600', color: c['sidebar-foreground'], letterSpacing: 0.5 },
-    input: { width: '100%', height: 44, borderRadius: 12, paddingHorizontal: 16, fontSize: 14, color: c.foreground, backgroundColor: c.card, borderWidth: 1, borderColor: c.border },
+    label: { fontSize: 12, fontFamily: FONT_FAMILY_SEMIBOLD, color: c['sidebar-foreground'], letterSpacing: 0.5 },
+    input: { width: '100%', height: 44, borderRadius: 12, paddingHorizontal: 16, fontSize: 14, fontFamily: FONT_FAMILY, color: c.foreground, backgroundColor: c.card, borderWidth: 1, borderColor: c.border },
     errorContainer: { backgroundColor: `${c.destructive}1a`, borderWidth: 1, borderColor: `${c.destructive}33`, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10 },
-    errorText: { fontSize: 13, color: c.destructive },
+    errorText: { fontSize: 13, fontFamily: FONT_FAMILY, color: c.destructive },
     button: { height: 48, backgroundColor: c.primary, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginTop: 4 },
     buttonDisabled: { opacity: 0.6 },
-    buttonText: { color: c['destructive-foreground'], fontSize: 15, fontWeight: '600' },
+    buttonText: { color: c['destructive-foreground'], fontSize: 15, fontFamily: FONT_FAMILY_SEMIBOLD },
     linkContainer: { alignItems: 'center', marginTop: 8, paddingVertical: 12 },
-    linkText: { fontSize: 13, color: c['muted-foreground'] },
+    linkText: { fontSize: 13, fontFamily: FONT_FAMILY, color: c['muted-foreground'] },
   };
 
   if (success) {

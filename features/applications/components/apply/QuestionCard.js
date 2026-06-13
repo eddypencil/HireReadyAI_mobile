@@ -2,6 +2,7 @@
 import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../../shared/context/I18nContext';
+import { FONT_FAMILY, FONT_FAMILY_MEDIUM } from '../../../../src/fonts';
 
 export default function QuestionCard({ question, value, onChange, error }) {
   const { theme } = useTheme();
@@ -83,6 +84,7 @@ function createStyles(c) { return StyleSheet.create({
     fontWeight: '500',
     color: c.foreground,
     lineHeight: 20,
+    fontFamily: FONT_FAMILY_MEDIUM,
   },
   required: {
     color: c.destructive,
@@ -108,6 +110,7 @@ function createStyles(c) { return StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
     color: c['muted-foreground'],
+    fontFamily: FONT_FAMILY_MEDIUM,
   },
   yesNoTextSelected: {
     color: c['destructive-foreground'],
@@ -121,6 +124,7 @@ function createStyles(c) { return StyleSheet.create({
     fontSize: 14,
     color: c.foreground,
     backgroundColor: c['surface-muted'],
+    fontFamily: FONT_FAMILY,
   },
   textarea: {
     borderWidth: 1,
@@ -132,6 +136,7 @@ function createStyles(c) { return StyleSheet.create({
     color: c.foreground,
     backgroundColor: c['surface-muted'],
     minHeight: 100,
+    fontFamily: FONT_FAMILY,
   },
   inputError: {
     borderColor: c.destructive,
@@ -139,5 +144,6 @@ function createStyles(c) { return StyleSheet.create({
   errorText: {
     fontSize: 12,
     color: c.destructive,
+    fontFamily: FONT_FAMILY,
   },
 }); }

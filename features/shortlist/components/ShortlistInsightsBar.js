@@ -2,6 +2,12 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../shared/context/ThemeContext';
+import {
+  FONT_FAMILY,
+  FONT_FAMILY_MEDIUM,
+  FONT_FAMILY_SEMIBOLD,
+  FONT_FAMILY_BOLD,
+} from '../../../src/fonts';
 import { useTranslation } from '../../../shared/context/I18nContext';
 
 export default function ShortlistInsightsBar({ insightsSummary, selectedJobTitle }) {
@@ -75,10 +81,10 @@ function createStyles(c) { return StyleSheet.create({
   },
   statText: {
     fontSize: 13,
-    fontWeight: '500',
+    fontFamily: FONT_FAMILY_MEDIUM,
   },
   bold: {
-    fontWeight: '700',
+    fontFamily: FONT_FAMILY_BOLD,
   },
   separator: {
     color: c.border,
@@ -91,14 +97,15 @@ function createStyles(c) { return StyleSheet.create({
   },
   totalText: {
     fontSize: 12,
+    fontFamily: FONT_FAMILY,
     color: c['muted-foreground'],
   },
   totalBold: {
-    fontWeight: '600',
+    fontFamily: FONT_FAMILY_SEMIBOLD,
     color: c.foreground,
   },
   awaitingBold: {
-    fontWeight: '600',
+    fontFamily: FONT_FAMILY_SEMIBOLD,
     color: c.warning,
   },
   badge: {
@@ -114,7 +121,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   badgeText: {
     fontSize: 11,
-    fontWeight: '500',
+    fontFamily: FONT_FAMILY_MEDIUM,
     color: c.primary,
   },
 }); }

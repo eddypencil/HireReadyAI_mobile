@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
+import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from "../../../src/fonts";
 
 function formatDate(dateString) {
   if (!dateString) return "";
@@ -128,17 +129,18 @@ function createStyles(c) {
     },
     seniorityText: {
       fontSize: 11,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       textTransform: "capitalize",
     },
     title: {
       fontSize: 16,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.foreground,
       marginBottom: 4,
     },
     date: {
       fontSize: 12,
+      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
       marginBottom: 16,
     },
@@ -166,10 +168,12 @@ function createStyles(c) {
     },
     stageChipText: {
       fontSize: 11,
+      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
     },
     stageArrow: {
       fontSize: 12,
+      fontFamily: FONT_FAMILY,
       color: c.border,
     },
     overflowBadge: {
@@ -182,11 +186,12 @@ function createStyles(c) {
     },
     overflowText: {
       fontSize: 11,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       color: c.primary,
     },
     noStages: {
       fontSize: 12,
+      fontFamily: FONT_FAMILY,
       fontStyle: "italic",
       color: c['muted-foreground'],
       marginBottom: 16,
@@ -198,7 +203,7 @@ function createStyles(c) {
     },
     footerText: {
       fontSize: 12,
-      fontWeight: "500",
+      fontFamily: FONT_FAMILY_MEDIUM,
       color: c['muted-foreground'],
     },
   });

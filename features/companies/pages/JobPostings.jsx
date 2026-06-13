@@ -17,6 +17,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD, FONT_FAMILY_EXTRABOLD } from '../../../src/fonts';
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
 import { Card } from "../../../shared/ui/Card";
@@ -110,7 +111,6 @@ function PickerDropdown({
                       isRtl && styles.textRight,
                       selected === item.value && {
                         color: theme.primary,
-                        fontWeight: "600",
                       },
                     ]}
                   >
@@ -1365,7 +1365,7 @@ const styles = StyleSheet.create({
   },
   listHeaderLabel: {
     fontSize: 10,
-    fontWeight: "600",
+    fontFamily: FONT_FAMILY_SEMIBOLD,
     letterSpacing: 1,
     textTransform: "uppercase",
     marginBottom: 10,
@@ -1388,6 +1388,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 14,
+    fontFamily: FONT_FAMILY,
     paddingVertical: 0,
   },
   tabRow: {
@@ -1404,13 +1405,14 @@ const styles = StyleSheet.create({
   },
   tabText: {
     fontSize: 13,
-    fontWeight: "500",
+    fontFamily: FONT_FAMILY_MEDIUM,
   },
   tabTextActive: {
-    fontWeight: "600",
+    fontFamily: FONT_FAMILY_SEMIBOLD,
   },
   tabSeparator: {
     fontSize: 16,
+    fontFamily: FONT_FAMILY,
     marginHorizontal: 8,
   },
   tabCountBadge: {
@@ -1422,7 +1424,7 @@ const styles = StyleSheet.create({
   },
   tabCountText: {
     fontSize: 10,
-    fontWeight: "600",
+    fontFamily: FONT_FAMILY_SEMIBOLD,
   },
   jobList: {
     padding: 16,
@@ -1447,7 +1449,7 @@ const styles = StyleSheet.create({
   },
   jobListTitle: {
     fontSize: 16,
-    fontWeight: "600",
+    fontFamily: FONT_FAMILY_SEMIBOLD,
     flex: 1,
   },
   jobListTitleLtr: {
@@ -1464,7 +1466,7 @@ const styles = StyleSheet.create({
   },
   jobStatusText: {
     fontSize: 11,
-    fontWeight: "600",
+    fontFamily: FONT_FAMILY_SEMIBOLD,
   },
   jobListMeta: {
     flexDirection: "row",
@@ -1473,6 +1475,7 @@ const styles = StyleSheet.create({
   },
   jobListMetaText: {
     fontSize: 12,
+    fontFamily: FONT_FAMILY,
   },
   jobMetaDivider: {
     width: 3,
@@ -1486,10 +1489,11 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    fontWeight: "600",
+    fontFamily: FONT_FAMILY_SEMIBOLD,
   },
   emptyHint: {
     fontSize: 13,
+    fontFamily: FONT_FAMILY,
     textAlign: "center",
     paddingHorizontal: 40,
   },
@@ -1509,7 +1513,7 @@ const styles = StyleSheet.create({
   },
   backText: {
     fontSize: 14,
-    fontWeight: "500",
+    fontFamily: FONT_FAMILY_MEDIUM,
     marginLeft: 2,
   },
   backTextRtl: {
@@ -1532,11 +1536,11 @@ const styles = StyleSheet.create({
   },
   detailTitle: {
     fontSize: 22,
-    fontWeight: "700",
+    fontFamily: FONT_FAMILY_BOLD,
   },
   editTitleInput: {
     fontSize: 20,
-    fontWeight: "700",
+    fontFamily: FONT_FAMILY_BOLD,
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 10,
@@ -1544,6 +1548,7 @@ const styles = StyleSheet.create({
   },
   detailSubtitle: {
     fontSize: 13,
+    fontFamily: FONT_FAMILY,
     marginTop: 4,
     textTransform: "capitalize",
   },
@@ -1560,7 +1565,7 @@ const styles = StyleSheet.create({
   },
   actionBtnOutlineText: {
     fontSize: 13,
-    fontWeight: "500",
+    fontFamily: FONT_FAMILY_MEDIUM,
   },
   actionBtnPrimary: {
     paddingHorizontal: 16,
@@ -1569,7 +1574,7 @@ const styles = StyleSheet.create({
   },
   actionBtnPrimaryText: {
     fontSize: 13,
-    fontWeight: "500",
+    fontFamily: FONT_FAMILY_MEDIUM,
     color: "#fff",
   },
 
@@ -1596,13 +1601,13 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontSize: 10,
-    fontWeight: "700",
+    fontFamily: FONT_FAMILY_BOLD,
     letterSpacing: 0.5,
     textTransform: "uppercase",
   },
   infoValue: {
     fontSize: 15,
-    fontWeight: "600",
+    fontFamily: FONT_FAMILY_SEMIBOLD,
     textTransform: "capitalize",
   },
   editInfoInput: {
@@ -1611,6 +1616,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     fontSize: 13,
+    fontFamily: FONT_FAMILY,
     flex: 1,
   },
   selectField: {
@@ -1624,6 +1630,7 @@ const styles = StyleSheet.create({
   },
   selectFieldText: {
     fontSize: 13,
+    fontFamily: FONT_FAMILY,
     flex: 1,
   },
   modalOverlay: {
@@ -1639,7 +1646,7 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 16,
-    fontWeight: "700",
+    fontFamily: FONT_FAMILY_BOLD,
     marginBottom: 12,
   },
   modalOption: {
@@ -1652,6 +1659,7 @@ const styles = StyleSheet.create({
   },
   modalOptionText: {
     fontSize: 15,
+    fontFamily: FONT_FAMILY,
   },
   salaryEditRow: {
     flexDirection: "row",
@@ -1660,6 +1668,7 @@ const styles = StyleSheet.create({
   },
   salaryDash: {
     fontSize: 13,
+    fontFamily: FONT_FAMILY,
   },
 
   // Content cards
@@ -1673,11 +1682,12 @@ const styles = StyleSheet.create({
   },
   contentCardTitle: {
     fontSize: 14,
-    fontWeight: "700",
+    fontFamily: FONT_FAMILY_BOLD,
     marginBottom: 10,
   },
   contentCardBody: {
     fontSize: 14,
+    fontFamily: FONT_FAMILY,
     lineHeight: 20,
   },
   editTextArea: {
@@ -1685,6 +1695,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     fontSize: 13,
+    fontFamily: FONT_FAMILY,
     textAlignVertical: "top",
     minHeight: 80,
   },
@@ -1696,11 +1707,13 @@ const styles = StyleSheet.create({
   },
   listItemText: {
     fontSize: 14,
+    fontFamily: FONT_FAMILY,
     flex: 1,
     lineHeight: 20,
   },
   noContent: {
     fontSize: 13,
+    fontFamily: FONT_FAMILY,
   },
 
   // Edit list
@@ -1719,6 +1732,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     fontSize: 13,
+    fontFamily: FONT_FAMILY,
   },
   editListAdd: {
     borderWidth: 1,
@@ -1726,6 +1740,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
     fontSize: 13,
+    fontFamily: FONT_FAMILY,
     marginTop: 4,
   },
 
@@ -1752,7 +1767,7 @@ const styles = StyleSheet.create({
   },
   skillChipText: {
     fontSize: 13,
-    fontWeight: "500",
+    fontFamily: FONT_FAMILY_MEDIUM,
   },
   addSkillInput: {
     borderWidth: 1,
@@ -1760,23 +1775,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 6,
     fontSize: 13,
+    fontFamily: FONT_FAMILY,
     minWidth: 100,
   },
 
   // Pipeline
   pipelineHeaderLabel: {
     fontSize: 10,
-    fontWeight: "700",
+    fontFamily: FONT_FAMILY_BOLD,
     letterSpacing: 1,
     textTransform: "uppercase",
     marginBottom: 4,
   },
   pipelineTitle: {
     fontSize: 16,
-    fontWeight: "700",
+    fontFamily: FONT_FAMILY_BOLD,
   },
   pipelineSubtitle: {
     fontSize: 12,
+    fontFamily: FONT_FAMILY,
     marginBottom: 16,
   },
   pipelineScroll: {
@@ -1791,6 +1808,7 @@ const styles = StyleSheet.create({
   },
   pipelineLoadingText: {
     fontSize: 13,
+    fontFamily: FONT_FAMILY,
   },
   emptyPipeline: {
     borderWidth: 2,
@@ -1802,6 +1820,7 @@ const styles = StyleSheet.create({
   },
   emptyPipelineText: {
     fontSize: 13,
+    fontFamily: FONT_FAMILY,
     textAlign: "center",
   },
   stageCard: {
@@ -1826,11 +1845,11 @@ const styles = StyleSheet.create({
   },
   stageNumberText: {
     fontSize: 13,
-    fontWeight: "700",
+    fontFamily: FONT_FAMILY_BOLD,
   },
   stageLabel: {
     fontSize: 10,
-    fontWeight: "700",
+    fontFamily: FONT_FAMILY_BOLD,
     letterSpacing: 1,
     textTransform: "uppercase",
   },
@@ -1839,7 +1858,7 @@ const styles = StyleSheet.create({
   },
   stageName: {
     fontSize: 15,
-    fontWeight: "700",
+    fontFamily: FONT_FAMILY_BOLD,
     marginBottom: 10,
   },
   stageBadges: {
@@ -1853,7 +1872,7 @@ const styles = StyleSheet.create({
   },
   weightBadgeText: {
     fontSize: 11,
-    fontWeight: "600",
+    fontFamily: FONT_FAMILY_SEMIBOLD,
   },
   aiBadge: {
     borderWidth: 1,
@@ -1863,7 +1882,7 @@ const styles = StyleSheet.create({
   },
   aiBadgeText: {
     fontSize: 11,
-    fontWeight: "600",
+    fontFamily: FONT_FAMILY_SEMIBOLD,
   },
   editPipelineBtn: {
     flexDirection: "row",
@@ -1878,7 +1897,7 @@ const styles = StyleSheet.create({
   },
   editPipelineBtnText: {
     fontSize: 13,
-    fontWeight: "600",
+    fontFamily: FONT_FAMILY_SEMIBOLD,
   },
   rowReverse: {
     flexDirection: "row-reverse",

@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../../shared/context/ThemeContext";
+import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD, FONT_FAMILY_EXTRABOLD } from '../../../../src/fonts';
 
 function getLabel(score, c) {
   if (score >= 91)
@@ -171,11 +172,11 @@ function createStyles(c) {
       justifyContent: "space-between",
     },
     scoreLeft: { gap: 1 },
-    scoreNum: { fontSize: 26, fontWeight: "800", color: c.foreground },
+    scoreNum: { fontSize: 26, color: c.foreground, fontFamily: FONT_FAMILY_EXTRABOLD },
     scoreLabel: {
       fontSize: 11,
       color: c["muted-foreground"],
-      fontWeight: "500",
+      fontFamily: FONT_FAMILY_MEDIUM,
     },
     scoreBadge: {
       borderWidth: 1,
@@ -183,7 +184,7 @@ function createStyles(c) {
       paddingHorizontal: 10,
       paddingVertical: 4,
     },
-    scoreBadgeText: { fontSize: 11, fontWeight: "700" },
+    scoreBadgeText: { fontSize: 11, fontFamily: FONT_FAMILY_BOLD },
     track: {
       height: 8,
       backgroundColor: c.surface,
@@ -191,12 +192,12 @@ function createStyles(c) {
       overflow: "hidden",
     },
     fill: { height: "100%", borderRadius: 4 },
-    message: { fontSize: 13, lineHeight: 19, fontWeight: "500" },
+    message: { fontSize: 13, lineHeight: 19, fontFamily: FONT_FAMILY_MEDIUM },
     missingSection: { gap: 8 },
     missingTitle: {
       fontSize: 12,
       color: c["muted-foreground"],
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
     },
     missingPills: { flexDirection: "row", flexWrap: "wrap", gap: 6 },
     missingPill: {
@@ -210,7 +211,7 @@ function createStyles(c) {
       paddingHorizontal: 10,
       paddingVertical: 5,
     },
-    missingPillText: { fontSize: 11, color: c.accent, fontWeight: "600" },
+    missingPillText: { fontSize: 11, color: c.accent, fontFamily: FONT_FAMILY_SEMIBOLD },
     morePill: {
       backgroundColor: c.surface,
       borderWidth: 1,
@@ -219,6 +220,6 @@ function createStyles(c) {
       paddingHorizontal: 10,
       paddingVertical: 5,
     },
-    morePillText: { fontSize: 11, color: c["muted-foreground"] },
+    morePillText: { fontSize: 11, color: c["muted-foreground"], fontFamily: FONT_FAMILY },
   });
 }

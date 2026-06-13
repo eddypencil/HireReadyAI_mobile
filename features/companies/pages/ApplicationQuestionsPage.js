@@ -24,6 +24,7 @@ import {
   FlatList,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../src/fonts';
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { supabase } from "../../../shared/services/supabase";
 import { useJobs } from "../../jobs/hooks/useJobs";
@@ -355,16 +356,17 @@ function createStyles(c) {
     },
     headerCardTitle: {
       fontSize: 15,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.foreground,
     },
     headerCardSubtitle: {
       fontSize: 13,
+      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
       lineHeight: 19,
     },
     headerCardJob: {
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       color: c.foreground,
     },
 
@@ -376,12 +378,13 @@ function createStyles(c) {
     },
     emptyTitle: {
       fontSize: 15,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       color: c.accent,
       marginTop: 8,
     },
     emptySubtitle: {
       fontSize: 13,
+      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
       textAlign: "center",
     },
@@ -415,7 +418,7 @@ function createStyles(c) {
     },
     questionNumberText: {
       fontSize: 12,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.white,
     },
     removeBtn: {
@@ -428,6 +431,7 @@ function createStyles(c) {
       paddingHorizontal: 12,
       paddingVertical: 10,
       fontSize: 14,
+      fontFamily: FONT_FAMILY,
       color: c.foreground,
       backgroundColor: c['surface-muted'],
       minHeight: 72,
@@ -450,7 +454,7 @@ function createStyles(c) {
     typeSelectorText: {
       fontSize: 12,
       color: c.primary,
-      fontWeight: "500",
+      fontFamily: FONT_FAMILY_MEDIUM,
     },
 
     // ── Type picker modal
@@ -470,7 +474,7 @@ function createStyles(c) {
     },
     typeModalTitle: {
       fontSize: 14,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.foreground,
       marginBottom: 8,
     },
@@ -487,11 +491,12 @@ function createStyles(c) {
     },
     typeOptionText: {
       fontSize: 14,
+      fontFamily: FONT_FAMILY,
       color: c.foreground,
     },
     typeOptionTextSelected: {
       color: c.primary,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
     },
 
     // ── Add question button
@@ -509,7 +514,7 @@ function createStyles(c) {
     },
     addQuestionBtnText: {
       fontSize: 14,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       color: c.primary,
     },
 
@@ -526,6 +531,7 @@ function createStyles(c) {
     },
     errorBannerText: {
       fontSize: 12,
+      fontFamily: FONT_FAMILY,
       color: c.red[600],
       flex: 1,
     },
@@ -541,6 +547,7 @@ function createStyles(c) {
     },
     questionCount: {
       fontSize: 12,
+      fontFamily: FONT_FAMILY,
       color: c.accent,
       textAlign: "center",
     },
@@ -559,7 +566,7 @@ function createStyles(c) {
     publishBtnText: {
       color: c.white,
       fontSize: 15,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
     },
   });
 }

@@ -17,6 +17,7 @@ import {
 } from "../services/candidateProfile.service";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
+import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD, FONT_FAMILY_EXTRABOLD } from '../../../src/fonts';
 
 function getInitials(name = "") {
   return (
@@ -85,11 +86,11 @@ function DimensionBar({ label, score, c, isRtl }) {
 const dimStyles = StyleSheet.create({
   row: { flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 10 },
   rowReverse: { flexDirection: "row-reverse" },
-  label: { fontSize: 12, fontWeight: "600", width: 100 },
+  label: { fontSize: 12, fontFamily: FONT_FAMILY_SEMIBOLD, width: 100 },
   textRight: { textAlign: "right" },
   track: { flex: 1, height: 8, borderRadius: 4, overflow: "hidden" },
   fill: { height: "100%", borderRadius: 4 },
-  score: { fontSize: 13, fontWeight: "700", width: 28, textAlign: "right" },
+  score: { fontSize: 13, fontFamily: FONT_FAMILY_BOLD, width: 28, textAlign: "right" },
 });
 
 function BulletList({ items, color, icon, isRtl }) {
@@ -125,7 +126,7 @@ const bulStyles = StyleSheet.create({
   item: { flexDirection: "row", alignItems: "flex-start", marginBottom: 4 },
   rowReverse: { flexDirection: "row-reverse" },
   icon: { marginRight: 6, marginTop: 1 },
-  text: { fontSize: 13, flex: 1, lineHeight: 18 },
+  text: { fontSize: 13, flex: 1, lineHeight: 18, fontFamily: FONT_FAMILY },
 });
 
 function StageScoreCard({
@@ -265,7 +266,7 @@ const sectionStyles = StyleSheet.create({
     gap: 6,
     marginBottom: 12,
   },
-  cardTitle: { fontSize: 15, fontWeight: "700" },
+  cardTitle: { fontSize: 15, fontFamily: FONT_FAMILY_BOLD },
   stageRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -275,12 +276,12 @@ const sectionStyles = StyleSheet.create({
   rowReverse: { flexDirection: "row-reverse" },
   textRight: { textAlign: "right" },
   dot: { width: 8, height: 8, borderRadius: 4 },
-  stageName: { fontSize: 13, fontWeight: "500", flex: 1 },
+  stageName: { fontSize: 13, fontFamily: FONT_FAMILY_MEDIUM, flex: 1 },
   scorePill: { borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2 },
-  scorePillText: { fontSize: 12, fontWeight: "700" },
+  scorePillText: { fontSize: 12, fontFamily: FONT_FAMILY_BOLD },
   statusText: {
     fontSize: 11,
-    fontWeight: "600",
+    fontFamily: FONT_FAMILY_SEMIBOLD,
     minWidth: 70,
     textAlign: "right",
   },
@@ -292,15 +293,15 @@ const sectionStyles = StyleSheet.create({
     paddingTop: 12,
     borderTopWidth: 1,
   },
-  assessLinkText: { flex: 1, fontSize: 13, fontWeight: "600" },
+  assessLinkText: { flex: 1, fontSize: 13, fontFamily: FONT_FAMILY_SEMIBOLD },
 });
 
 function createStyles(c) {
   return StyleSheet.create({
     container: { flex: 1 },
     centered: { justifyContent: "center", alignItems: "center" },
-    errorText: { fontSize: 16, fontWeight: "600", marginTop: 12 },
-    backLink: { fontSize: 14, fontWeight: "600", marginTop: 12 },
+    errorText: { fontSize: 16, fontFamily: FONT_FAMILY_SEMIBOLD, marginTop: 12 },
+    backLink: { fontSize: 14, fontFamily: FONT_FAMILY_SEMIBOLD, marginTop: 12 },
     backBtn: {
       flexDirection: "row",
       alignItems: "center",
@@ -308,7 +309,7 @@ function createStyles(c) {
       paddingHorizontal: 16,
       paddingBottom: 8,
     },
-    backBtnText: { fontSize: 14, fontWeight: "600" },
+    backBtnText: { fontSize: 14, fontFamily: FONT_FAMILY_SEMIBOLD },
     headerCard: {
       borderRadius: 14,
       borderWidth: 1,
@@ -325,7 +326,7 @@ function createStyles(c) {
       justifyContent: "center",
       alignItems: "center",
     },
-    avatarLargeText: { fontSize: 20, fontWeight: "700" },
+    avatarLargeText: { fontSize: 20, fontFamily: FONT_FAMILY_BOLD },
     headerInfo: { flex: 1 },
     headerNameRow: {
       flexDirection: "row",
@@ -333,15 +334,15 @@ function createStyles(c) {
       gap: 6,
       flexWrap: "wrap",
     },
-    headerName: { fontSize: 18, fontWeight: "700" },
+    headerName: { fontSize: 18, fontFamily: FONT_FAMILY_BOLD },
     rejectedBadge: {
       borderRadius: 6,
       paddingHorizontal: 8,
       paddingVertical: 2,
       borderWidth: 1,
     },
-    rejectedBadgeText: { fontSize: 11, fontWeight: "700" },
-    headerHeadline: { fontSize: 13, marginTop: 2 },
+    rejectedBadgeText: { fontSize: 11, fontFamily: FONT_FAMILY_BOLD },
+    headerHeadline: { fontSize: 13, marginTop: 2, fontFamily: FONT_FAMILY },
     headerMeta: {
       flexDirection: "row",
       flexWrap: "wrap",
@@ -349,7 +350,7 @@ function createStyles(c) {
       marginTop: 6,
     },
     metaItem: { flexDirection: "row", alignItems: "center", gap: 4 },
-    metaText: { fontSize: 12 },
+    metaText: { fontSize: 12, fontFamily: FONT_FAMILY },
     compositeWrap: { alignItems: "center", gap: 4 },
     compositeCircle: {
       width: 64,
@@ -359,10 +360,10 @@ function createStyles(c) {
       justifyContent: "center",
       alignItems: "center",
     },
-    compositeScore: { fontSize: 22, fontWeight: "800" },
+    compositeScore: { fontSize: 22, fontFamily: FONT_FAMILY_EXTRABOLD },
     compositeLabel: {
       fontSize: 10,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       textTransform: "uppercase",
       letterSpacing: 1,
     },
@@ -372,7 +373,7 @@ function createStyles(c) {
       paddingVertical: 2,
       borderWidth: 1,
     },
-    percentileText: { fontSize: 10, fontWeight: "700" },
+    percentileText: { fontSize: 10, fontFamily: FONT_FAMILY_BOLD },
     cvBanner: {
       borderRadius: 14,
       borderWidth: 1,
@@ -387,10 +388,10 @@ function createStyles(c) {
       marginBottom: 10,
     },
     cvBannerTitleRow: { flexDirection: "row", alignItems: "center", gap: 6 },
-    cvBannerTitle: { fontSize: 16, fontWeight: "700" },
+    cvBannerTitle: { fontSize: 16, fontFamily: FONT_FAMILY_BOLD },
     recoBadge: { borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4 },
-    recoBadgeText: { fontSize: 11, fontWeight: "800" },
-    cvFeedbackText: { fontSize: 14, lineHeight: 20, marginBottom: 12 },
+    recoBadgeText: { fontSize: 11, fontFamily: FONT_FAMILY_EXTRABOLD },
+    cvFeedbackText: { fontSize: 14, lineHeight: 20, marginBottom: 12, fontFamily: FONT_FAMILY },
     dimSection: { marginBottom: 12 },
     dimHeader: {
       flexDirection: "row",
@@ -398,7 +399,7 @@ function createStyles(c) {
       gap: 4,
       marginBottom: 10,
     },
-    dimHeaderText: { fontSize: 13, fontWeight: "700" },
+    dimHeaderText: { fontSize: 13, fontFamily: FONT_FAMILY_BOLD },
     noCvCard: {
       borderRadius: 14,
       borderWidth: 1,
@@ -407,8 +408,8 @@ function createStyles(c) {
       alignItems: "center",
       marginBottom: 16,
     },
-    noCvText: { fontSize: 15, fontWeight: "600", marginTop: 8 },
-    noCvSubtext: { fontSize: 12, marginTop: 4 },
+    noCvText: { fontSize: 15, fontFamily: FONT_FAMILY_SEMIBOLD, marginTop: 8 },
+    noCvSubtext: { fontSize: 12, marginTop: 4, fontFamily: FONT_FAMILY },
 
     viewProfileBtn: {
       flexDirection: "row",
@@ -419,7 +420,7 @@ function createStyles(c) {
       paddingVertical: 10,
       marginTop: 12,
     },
-    viewProfileBtnText: { fontSize: 14, fontWeight: "700", color: "#fff" },
+    viewProfileBtnText: { fontSize: 14, fontFamily: FONT_FAMILY_BOLD, color: "#fff" },
 
     rowReverse: { flexDirection: "row-reverse" },
     textRight: { textAlign: "right" },

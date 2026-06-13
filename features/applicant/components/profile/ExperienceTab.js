@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../../shared/context/I18nContext";
+import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_BOLD } from '../../../../src/fonts';
 
 function SectionHeader({ title, icon, onAdd, viewOnly }) {
   const { theme } = useTheme();
@@ -251,7 +252,7 @@ function createStyles(c) {
       borderBottomColor: c.border,
     },
     sectionHeaderLeft: { flexDirection: "row", alignItems: "center", gap: 8 },
-    sectionTitle: { fontSize: 15, fontWeight: "700", color: c.foreground },
+    sectionTitle: { fontSize: 15, color: c.foreground, fontFamily: FONT_FAMILY_BOLD },
     addBtn: {
       width: 28,
       height: 28,
@@ -270,6 +271,7 @@ function createStyles(c) {
       fontSize: 13,
       color: c["muted-foreground"],
       fontStyle: "italic",
+      fontFamily: FONT_FAMILY,
     },
     itemCard: {
       flexDirection: "row",
@@ -288,19 +290,20 @@ function createStyles(c) {
       flexShrink: 0,
     },
     itemContent: { flex: 1, gap: 3 },
-    itemTitle: { fontSize: 14, fontWeight: "700", color: c.foreground },
+    itemTitle: { fontSize: 14, color: c.foreground, fontFamily: FONT_FAMILY_BOLD },
     itemSubtitle: {
       fontSize: 13,
       color: c["muted-foreground"],
-      fontWeight: "500",
+      fontFamily: FONT_FAMILY_MEDIUM,
     },
-    itemExtra: { fontSize: 12, color: c["muted-foreground"] },
-    itemDate: { fontSize: 12, color: c["muted-foreground"] },
+    itemExtra: { fontSize: 12, color: c["muted-foreground"], fontFamily: FONT_FAMILY },
+    itemDate: { fontSize: 12, color: c["muted-foreground"], fontFamily: FONT_FAMILY },
     itemDesc: {
       fontSize: 13,
       color: c.foreground,
       lineHeight: 19,
       marginTop: 4,
+      fontFamily: FONT_FAMILY,
     },
     itemActions: { gap: 8, flexShrink: 0 },
   });

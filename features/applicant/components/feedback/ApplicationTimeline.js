@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../../shared/context/I18nContext';
+import { FONT_FAMILY, FONT_FAMILY_BOLD, FONT_FAMILY_SEMIBOLD } from '../../../../src/fonts';
 
 export default function ApplicationTimeline({ stages }) {
   const { theme } = useTheme();
@@ -93,7 +94,7 @@ function createStyles(c) {
     shadowRadius: 4, shadowOffset: { width: 0, height: 1 },
   },
   headingRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 18 },
-  heading: { fontSize: 14, fontWeight: '700', color: c.foreground, letterSpacing: -0.1 },
+  heading: { fontSize: 14, color: c.foreground, letterSpacing: -0.1, fontFamily: FONT_FAMILY_BOLD },
   row: { flexDirection: 'row', gap: 12 },
   dotCol: { alignItems: 'center' },
   haloOuter: {
@@ -108,11 +109,11 @@ function createStyles(c) {
   content: { flex: 1, paddingBottom: 20, paddingTop: 4 },
   between: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   textCol: { flex: 1, gap: 2, paddingRight: 8 },
-  stageName: { fontSize: 13, fontWeight: '600', color: c.foreground },
-  stageType: { fontSize: 11, color: c['muted-foreground'], textTransform: 'capitalize' },
+  stageName: { fontSize: 13, color: c.foreground, fontFamily: FONT_FAMILY_SEMIBOLD },
+  stageType: { fontSize: 11, color: c['muted-foreground'], textTransform: 'capitalize', fontFamily: FONT_FAMILY },
   rightMeta: { alignItems: 'flex-end', gap: 4, flexShrink: 0 },
   scoreBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  scoreText: { fontSize: 11, fontWeight: '700' },
-  statusText: { fontSize: 10, fontWeight: '600' },
+  scoreText: { fontSize: 11, fontFamily: FONT_FAMILY_BOLD },
+  statusText: { fontSize: 10, fontFamily: FONT_FAMILY_SEMIBOLD },
 });
 }

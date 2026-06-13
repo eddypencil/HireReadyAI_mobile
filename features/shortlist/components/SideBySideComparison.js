@@ -3,11 +3,12 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-nati
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../shared/context/I18nContext';
+import { FONT_FAMILY, FONT_FAMILY_BOLD, FONT_FAMILY_SEMIBOLD } from '../../../src/fonts';
 import ComparisonCard from './ComparisonCard';
 
 export default function SideBySideComparison({ selectedCandidates, onReorder }) {
   const { theme } = useTheme();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const c = theme.colors;
   const styles = createStyles(c);
   if (!selectedCandidates || selectedCandidates.length === 0) {
@@ -62,7 +63,7 @@ export default function SideBySideComparison({ selectedCandidates, onReorder }) 
                   style={[styles.reorderBtn, index === 0 && styles.reorderBtnDisabled]}
                 >
                   <Ionicons
-                    name="chevron-back"
+                    name={language === 'ar' ? 'chevron-forward' : 'chevron-back'}
                     size={16}
                     color={index === 0 ? c.border : c.primary}
                   />
@@ -74,7 +75,7 @@ export default function SideBySideComparison({ selectedCandidates, onReorder }) 
                   style={[styles.reorderBtn, index === selectedCandidates.length - 1 && styles.reorderBtnDisabled]}
                 >
                   <Ionicons
-                    name="chevron-forward"
+                    name={language === 'ar' ? 'chevron-back' : 'chevron-forward'}
                     size={16}
                     color={index === selectedCandidates.length - 1 ? c.border : c.primary}
                   />
@@ -112,6 +113,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   emptyText: {
     fontSize: 13,
+    fontFamily: FONT_FAMILY,
     color: c['muted-foreground'],
     textAlign: 'center',
   },
@@ -120,12 +122,13 @@ function createStyles(c) { return StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: '700',
+    fontFamily: FONT_FAMILY_BOLD,
     color: c.foreground,
     marginBottom: 2,
   },
   subtitle: {
     fontSize: 13,
+    fontFamily: FONT_FAMILY,
     color: c['muted-foreground'],
   },
   scrollContent: {
@@ -156,7 +159,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   reorderIndex: {
     fontSize: 13,
-    fontWeight: '600',
+    fontFamily: FONT_FAMILY_SEMIBOLD,
     color: c['muted-foreground'],
     minWidth: 16,
     textAlign: 'center',

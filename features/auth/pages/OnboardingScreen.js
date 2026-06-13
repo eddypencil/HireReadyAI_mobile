@@ -25,11 +25,12 @@ import {
   Dimensions,
   Animated,
   StatusBar,
-  Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { useTheme } from '../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../shared/context/I18nContext';
+import { FONT_FAMILY, FONT_FAMILY_BOLD, FONT_FAMILY_EXTRABOLD, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD } from '../../../src/fonts';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width, height } = Dimensions.get('window');
@@ -91,6 +92,7 @@ function WaveTop() {
 export default function OnboardingScreen({ navigation }) {
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
+  const { language } = useTranslation();
   const c = theme.colors;
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -149,7 +151,7 @@ export default function OnboardingScreen({ navigation }) {
               style={styles.backBtn}
               hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             >
-              <Text style={styles.backArrow}>‹</Text>
+              <Text style={styles.backArrow}>{language === 'ar' ? '›' : '‹'}</Text>
             </TouchableOpacity>
           ) : (
             <View style={{ width: 40 }} />
@@ -228,7 +230,7 @@ export default function OnboardingScreen({ navigation }) {
               onPress={() => goToSlide(currentIndex + 1)}
               activeOpacity={0.85}
             >
-              <Text style={styles.nextArrow}>›</Text>
+              <Text style={styles.nextArrow}>{language === 'ar' ? '‹' : '›'}</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -270,12 +272,12 @@ const styles = StyleSheet.create({
   backArrow: {
     color: NAVY,
     fontSize: 32,
-    fontWeight: '400',
+    fontFamily: FONT_FAMILY,
     marginTop: -7, 
   },
   skipText: {
     fontSize: 15,
-    fontWeight: '500',
+    fontFamily: FONT_FAMILY_MEDIUM,
     color: NAVY,
     letterSpacing: 0.2,
   },
@@ -312,14 +314,14 @@ const styles = StyleSheet.create({
     marginTop: 50,
     marginBottom: 30,
     lineHeight: 32,
-    fontFamily: Platform.select({ ios: 'System', android: 'sans-serif-medium' }),
+    fontFamily: FONT_FAMILY_EXTRABOLD,
   },
   subtitle: {
     fontSize: 14,
     color: 'rgba(255,255,255,0.75)',
     lineHeight: 21,
     letterSpacing: 0.1,
-    fontFamily: Platform.select({ ios: 'System', android: 'sans-serif' }),
+    fontFamily: FONT_FAMILY,
   },
 
   controlsRow: {
@@ -364,7 +366,7 @@ const styles = StyleSheet.create({
   nextArrow: {
     color: NAVY,
     fontSize: 32,
-    fontWeight: '400',
+    fontFamily: FONT_FAMILY,
     marginTop: -7,
     marginLeft: 3,
   },
@@ -382,6 +384,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
     letterSpacing: 0.3,
-    fontFamily: Platform.select({ ios: 'System', android: 'sans-serif-medium' }),
+    fontFamily: FONT_FAMILY_BOLD,
   },
 });

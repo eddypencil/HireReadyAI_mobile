@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
+import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD, FONT_FAMILY_EXTRABOLD } from '../../../src/fonts';
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
 import { useCompany } from "./CompanyLayout";
@@ -22,6 +23,30 @@ import {
   updateMembershipPermission,
 } from "../services/memberships.service";
 import { MEMBERSHIP_PERMISSION } from "../../../shared/constants/enums";
+import * as WebBrowser from "expo-web-browser";
+import * as Linking from "expo-linking";
+import PlanBillingCard from "../../payment/componants/ApplyForPreimum";
+import { createCheckoutSession } from "../../payment/services/premium.service";
+
+//helper for checkout 
+const openCheckout = async (url) => {
+  try {
+    const redirectUrl = Linking.createURL("premium/success");
+    const result = await WebBrowser.openAuthSessionAsync(
+    url,
+    redirectUrl
+  );
+
+    // Optional: handle result when user closes browser
+    console.log("Browser result:", result);
+
+    if (result.type === "cancel") {
+      console.log("User closed checkout");
+    }
+  } catch (err) {
+    console.error("Failed to open checkout:", err);
+  }
+};
 
 export default function CompanyProfile() {
   const {
@@ -41,6 +66,7 @@ export default function CompanyProfile() {
   const [memberName, setMemberName] = useState("");
   const [memberEmail, setMemberEmail] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [upgrading, setUpgrading] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editForm, setEditForm] = useState({
     name: "",
@@ -273,6 +299,22 @@ export default function CompanyProfile() {
     </View>
   );
 
+const handleUpgrade = async () => {
+  if (!company?.id) return;
+
+  try {
+    setUpgrading(true);
+
+    const { url } = await createCheckoutSession(company.id);
+
+    await openCheckout(url);
+  } catch (err) {
+    console.error("Error creating checkout session:", err);
+  } finally {
+    setUpgrading(false);
+  }
+};
+
   const hasCover = !!company?.cover_url;
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -478,6 +520,8 @@ export default function CompanyProfile() {
         )}
       </View>
 
+      <PlanBillingCard company={company} upgrading={upgrading} handleUpgrade={handleUpgrade}/>
+
       {/* Team Members Card */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>{t("companies.team_members")}</Text>
@@ -627,7 +671,7 @@ function createStyles(c) {
     uploadOverlayText: {
       color: c.white,
       fontSize: 13,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       marginTop: 6,
     },
     logoWrap: {
@@ -657,7 +701,7 @@ function createStyles(c) {
     },
     logoLetter: {
       fontSize: 26,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.primary,
     },
     logoOverlay: {
@@ -674,7 +718,7 @@ function createStyles(c) {
     logoOverlayText: {
       color: c.white,
       fontSize: 9,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       marginTop: 2,
     },
     editTopBtn: {
@@ -701,12 +745,13 @@ function createStyles(c) {
     },
     cardTitle: {
       fontSize: 18,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.foreground,
       marginBottom: 2,
     },
     cardSubtitle: {
       fontSize: 11,
+      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
       marginBottom: 16,
     },
@@ -718,7 +763,7 @@ function createStyles(c) {
     },
     fieldLabel: {
       fontSize: 10,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       color: c['muted-foreground'],
       textTransform: "uppercase",
       letterSpacing: 0.5,
@@ -731,6 +776,7 @@ function createStyles(c) {
       paddingHorizontal: 10,
       paddingVertical: 7,
       fontSize: 13,
+      fontFamily: FONT_FAMILY,
       color: c.foreground,
       backgroundColor: c.card,
     },
@@ -752,6 +798,7 @@ function createStyles(c) {
     },
     fieldValueText: {
       fontSize: 13,
+      fontFamily: FONT_FAMILY,
       color: c.foreground,
     },
     linksSection: {
@@ -770,6 +817,7 @@ function createStyles(c) {
       paddingHorizontal: 10,
       paddingVertical: 8,
       fontSize: 12,
+      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
       borderWidth: 1,
       borderColor: c.border,
@@ -793,7 +841,7 @@ function createStyles(c) {
     },
     cancelBtnText: {
       fontSize: 12,
-      fontWeight: "500",
+      fontFamily: FONT_FAMILY_MEDIUM,
       color: c['muted-foreground'],
     },
     saveBtn: {
@@ -804,7 +852,7 @@ function createStyles(c) {
     },
     saveBtnText: {
       fontSize: 12,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       color: c.white,
     },
     inviteForm: {
@@ -828,6 +876,7 @@ function createStyles(c) {
       paddingHorizontal: 12,
       paddingVertical: 9,
       fontSize: 12,
+      fontFamily: FONT_FAMILY,
       color: c.foreground,
     },
     inviteBtn: {
@@ -840,14 +889,14 @@ function createStyles(c) {
     inviteBtnText: {
       color: c.white,
       fontSize: 12,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
     },
     pendingSection: {
       marginBottom: 16,
     },
     sectionLabel: {
       fontSize: 11,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c['muted-foreground'],
       textTransform: "uppercase",
       letterSpacing: 0.5,
@@ -879,7 +928,7 @@ function createStyles(c) {
     acceptBtnText: {
       fontSize: 14,
       color: c.emerald[700],
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
     },
     rejectBtn: {
       width: 28,
@@ -892,7 +941,7 @@ function createStyles(c) {
     rejectBtnText: {
       fontSize: 14,
       color: c.red[700],
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
     },
     memberList: {
       gap: 12,
@@ -923,7 +972,7 @@ function createStyles(c) {
     },
     memberAvatarText: {
       fontSize: 11,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.foreground,
     },
     memberDetails: {
@@ -931,11 +980,12 @@ function createStyles(c) {
     },
     memberName: {
       fontSize: 13,
-      fontWeight: "500",
+      fontFamily: FONT_FAMILY_MEDIUM,
       color: c.foreground,
     },
     memberRole: {
       fontSize: 11,
+      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
     },
     memberActions: {
@@ -954,10 +1004,11 @@ function createStyles(c) {
     },
     permBadgeText: {
       fontSize: 10,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
     },
     removeIcon: {
       fontSize: 12,
+      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
       paddingLeft: 4,
     },

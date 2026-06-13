@@ -2,6 +2,7 @@
 import { ScrollView, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../../shared/context/ThemeContext';
+import { FONT_FAMILY_SEMIBOLD } from '../../../../src/fonts';
 
 const ICONS = {
   hr_interview: 'chatbubble-outline',
@@ -52,7 +53,7 @@ function createStyles(c) {
     borderBottomWidth: 2, borderBottomColor: 'transparent',
   },
   tabActive: { borderBottomColor: c.primary },
-  label: { fontSize: 13, fontWeight: '600', color: c['muted-foreground'] },
-  labelActive: { color: c.primary },
+  label: { fontSize: 13, color: c['muted-foreground'], fontFamily: FONT_FAMILY_SEMIBOLD },
+  labelActive: { color: c.primary, fontFamily: FONT_FAMILY_SEMIBOLD },
 });
 }
