@@ -26,6 +26,7 @@ async function saveAwards(userId, awards) {
 }
 
 function Field({ label, value, onChangeText, placeholder, multiline, optional, styles, c }) {
+  const { t } = useTranslation();
   return (
     <View style={styles.fieldGroup}>
       <Text style={styles.label}>

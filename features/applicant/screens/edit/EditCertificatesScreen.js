@@ -52,6 +52,7 @@ async function deleteCertificateImage(url) {
 }
 
 function Field({ label, value, onChangeText, placeholder, optional, keyboardType }) {
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const c = theme.colors;
   const styles = createStyles(c);

@@ -13,6 +13,7 @@ import { Volunteering } from '../../models';
 import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../../src/fonts';
 
 function Field({ label, value, onChangeText, placeholder, multiline, optional, styles, c }) {
+  const { t } = useTranslation();
   return (
     <View style={styles.fieldGroup}>
       <Text style={styles.label}>
