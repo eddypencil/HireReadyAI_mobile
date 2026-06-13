@@ -15,6 +15,7 @@ import StageLibrary from "./StageLibrary";
 import StageCard from "./StageCard";
 import StageDetailsPanel from "./StageDetailsPanel";
 import { useTranslation } from "../../../shared/context/I18nContext";
+import { useCompany } from "../../companies/pages/CompanyLayout";
 import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from "../../../src/fonts";
 
 export default function PipelineBuilder({
@@ -28,6 +29,7 @@ export default function PipelineBuilder({
   const { theme } = useTheme();
   const { t, language } = useTranslation();
   const isRtl = language === 'ar';
+  const { company } = useCompany();
   const c = theme.colors;
   const insets = useSafeAreaInsets();
   const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = useWindowDimensions();
@@ -152,7 +154,7 @@ export default function PipelineBuilder({
                 <Ionicons name="close-outline" size={22} color={c['muted-foreground']} />
               </TouchableOpacity>
             </View>
-            <StageLibrary onAddStage={handleAddFromLibrary} />
+            <StageLibrary onAddStage={handleAddFromLibrary} isPremium={company?.is_premium} />
           </View>
         </View>
       </Modal>

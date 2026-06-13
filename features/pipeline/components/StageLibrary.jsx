@@ -18,7 +18,9 @@ const ICON_MAP = {
   Award: "trophy-outline",
 };
 
-export default function StageLibrary({ onAddStage }) {
+const PREMIUM_STAGES = ["assessment_test", "coding_test", "background_check"];
+
+export default function StageLibrary({ onAddStage, isPremium }) {
   const { theme } = useTheme();
   const { t, language } = useTranslation();
   const isRtl = language === 'ar';
@@ -35,19 +37,24 @@ export default function StageLibrary({ onAddStage }) {
       <ScrollView style={styles.list} showsVerticalScrollIndicator={false}>
         {STAGE_LIBRARY.map((item) => {
           const iconName = ICON_MAP[item.icon] || "document-text-outline";
+          const isLocked = !isPremium && PREMIUM_STAGES.includes(item.key);
           return (
             <TouchableOpacity
               key={item.key}
-              onPress={() => onAddStage(item)}
-              style={[styles.stageButton, isRtl && styles.rowReverse]}
-              activeOpacity={0.7}
+              onPress={() => !isLocked && onAddStage(item)}
+              style={[styles.stageButton, isRtl && styles.rowReverse, isLocked && styles.stageButtonLocked]}
+              activeOpacity={isLocked ? 1 : 0.7}
+              disabled={isLocked}
             >
               <View style={[styles.iconWrap, isRtl && styles.iconWrapRtl]}>
-                <Ionicons name={iconName} size={18} color={c.primary} />
+                <Ionicons name={isLocked ? "lock-closed-outline" : iconName} size={18} color={isLocked ? c.border : c.primary} />
               </View>
               <View style={[styles.textWrap, isRtl && styles.textRight]}>
-                <Text style={[styles.label, isRtl && styles.textRight]} numberOfLines={1}>{item.label}</Text>
-                <Text style={[styles.subtitle, isRtl && styles.textRight]} numberOfLines={1}>{item.subtitle}</Text>
+                <View style={styles.labelRow}>
+                  <Text style={[styles.label, isRtl && styles.textRight, isLocked && styles.labelLocked]} numberOfLines={1}>{item.label}</Text>
+                  {isLocked && <Text style={styles.premiumBadge}>{t("companies.premium_badge")}</Text>}
+                </View>
+                <Text style={[styles.subtitle, isRtl && styles.textRight, isLocked && styles.subtitleLocked]} numberOfLines={1}>{item.subtitle}</Text>
               </View>
             </TouchableOpacity>
           );
@@ -120,6 +127,32 @@ function createStyles(c) {
       fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
       marginTop: 1,
+    },
+    stageButtonLocked: {
+      opacity: 0.5,
+    },
+    labelRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+    },
+    labelLocked: {
+      color: c['muted-foreground'],
+    },
+    subtitleLocked: {
+      color: c.border,
+    },
+    premiumBadge: {
+      fontSize: 9,
+      fontFamily: FONT_FAMILY_SEMIBOLD,
+      color: c.emerald[600],
+      backgroundColor: c.emerald[100],
+      paddingHorizontal: 5,
+      paddingVertical: 1,
+      borderRadius: 4,
+      overflow: "hidden",
+      textTransform: "uppercase",
+      letterSpacing: 0.3,
     },
   });
 }

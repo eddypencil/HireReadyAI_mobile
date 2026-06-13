@@ -60,7 +60,7 @@ export default function ApplicantPage() {
       shadowRadius: 8,
       elevation: 4,
     },
-    bannerText: { flex: 1, color: c['destructive-foreground'], fontSize: 13, fontWeight: FONT_FAMILY_SEMIBOLD  },
+    bannerText: { flex: 1, color: c['destructive-foreground'], fontSize: 13, fontFamily: FONT_FAMILY_SEMIBOLD},
     bannerClose: { padding: 4 },
   };
 

@@ -1,56 +1,62 @@
-
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Crown } from "lucide-react-native";
+import { useTheme } from "../../../shared/context/ThemeContext";
+import { useTranslation } from "../../../shared/context/I18nContext";
+import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from "../../../src/fonts";
 
 export default function PlanBillingCard({
   company,
   upgrading,
   handleUpgrade,
 }){
-
- 
+  const { theme } = useTheme();
+  const c = theme.colors;
+  const { t, language } = useTranslation();
+  const isRTL = language === "ar";
+  const styles = createStyles(c);
 
   return (
     <View style={styles.card}>
-      <View style={styles.row}>
+      <View style={[styles.row, { flexDirection: isRTL ? "row-reverse" : "row" }]}>
         <View style={styles.content}>
-          <Text style={styles.title}>Plan & Billing</Text>
+          <Text style={styles.title}>{t("companies.plan_billing")}</Text>
 
-          <Text style={styles.description}>
+          <Text style={[styles.description, { textAlign: isRTL ? "right" : "left" }]}>
             {company?.is_premium
-              ? "Your company is on the Premium plan."
-              : "Upgrade to unlock premium stage types in your pipeline."}
+              ? t("companies.premium_active")
+              : t("companies.upgrade_description")}
           </Text>
 
           {!company?.is_premium && (
             <View style={styles.features}>
-              <Text style={styles.feature}>• Assessment tests</Text>
-              <Text style={styles.feature}>• Coding tests</Text>
-              <Text style={styles.feature}>• Video interviews</Text>
-              <Text style={styles.feature}>• Background checks</Text>
+              <Text style={[styles.feature, { textAlign: isRTL ? "right" : "left" }]}>• {t("companies.feature_assessment")}</Text>
+              <Text style={[styles.feature, { textAlign: isRTL ? "right" : "left" }]}>• {t("companies.feature_coding")}</Text>
+              <Text style={[styles.feature, { textAlign: isRTL ? "right" : "left" }]}>• {t("companies.feature_video")}</Text>
+              <Text style={[styles.feature, { textAlign: isRTL ? "right" : "left" }]}>• {t("companies.feature_background")}</Text>
             </View>
           )}
         </View>
 
         <View>
           {company?.is_premium ? (
-            <View style={styles.premiumBadge}>
-              <Crown size={14} color="#16a34a" />
-              <Text style={styles.premiumText}>Premium</Text>
+            <View style={[styles.premiumBadge, { flexDirection: isRTL ? "row-reverse" : "row" }]}>
+              <Crown size={14} color={c.emerald[700]} />
+              <Text style={styles.premiumText}>{t("companies.premium_badge")}</Text>
             </View>
           ) : (
             <TouchableOpacity
               style={[
+                { flexDirection: isRTL ? "row-reverse" : "row" },
                 styles.upgradeButton,
                 upgrading && styles.upgradeButtonDisabled,
               ]}
               onPress={handleUpgrade}
               disabled={upgrading}
             >
-              <Crown size={16} color="#fff" />
+              <Crown size={16} color={c.white} />
               <Text style={styles.upgradeText}>
-                {upgrading ? "Redirecting..." : "Upgrade - $29"}
+                {upgrading ? t("companies.redirecting") : t("companies.upgrade_button")}
               </Text>
             </TouchableOpacity>
           )}
@@ -60,89 +66,80 @@ export default function PlanBillingCard({
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
-  },
-
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    gap: 16,
-  },
-
-  content: {
-    flex: 1,
-  },
-
-  title: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#111827",
-    marginBottom: 4,
-  },
-
-  description: {
-    fontSize: 12,
-    color: "#6b7280",
-    lineHeight: 18,
-  },
-
-  features: {
-    marginTop: 10,
-    gap: 4,
-  },
-
-  feature: {
-    fontSize: 12,
-    color: "#9ca3af",
-  },
-
-  premiumBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 10,
-    backgroundColor: "#dcfce7",
-    borderWidth: 1,
-    borderColor: "#bbf7d0",
-  },
-
-  premiumText: {
-    color: "#16a34a",
-    fontSize: 12,
-    fontWeight: "700",
-  },
-
-  upgradeButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    backgroundColor: "#2563eb",
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 10,
-  },
-
-  upgradeButtonDisabled: {
-    opacity: 0.5,
-  },
-
-  upgradeText: {
-    color: "#fff",
-    fontSize: 12,
-    fontWeight: "600",
-  },
-});
+function createStyles(c) {
+  return StyleSheet.create({
+    card: {
+      backgroundColor: c.card,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: c.border,
+      padding: 20,
+      marginHorizontal: 20,
+      marginTop: 20,
+      marginBottom: 20,
+    },
+    row: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "flex-start",
+      gap: 16,
+    },
+    content: {
+      flex: 1,
+    },
+    title: {
+      fontSize: 18,
+      fontFamily: FONT_FAMILY_BOLD,
+      color: c.foreground,
+      marginBottom: 2,
+    },
+    description: {
+      fontSize: 11,
+      fontFamily: FONT_FAMILY,
+      color: c['muted-foreground'],
+      lineHeight: 18,
+    },
+    features: {
+      marginTop: 10,
+      gap: 4,
+    },
+    feature: {
+      fontSize: 12,
+      fontFamily: FONT_FAMILY,
+      color: c['muted-foreground'],
+    },
+    premiumBadge: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 4,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: 10,
+      backgroundColor: c.emerald[100],
+      borderWidth: 1,
+      borderColor: c.emerald[200],
+    },
+    premiumText: {
+      color: c.emerald[700],
+      fontSize: 12,
+      fontFamily: FONT_FAMILY_SEMIBOLD,
+    },
+    upgradeButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      backgroundColor: c.primary,
+      paddingHorizontal: 14,
+      paddingVertical: 10,
+      borderRadius: 10,
+    },
+    upgradeButtonDisabled: {
+      opacity: 0.5,
+    },
+    upgradeText: {
+      color: c.white,
+      fontSize: 12,
+      fontFamily: FONT_FAMILY_SEMIBOLD,
+    },
+  });
+}

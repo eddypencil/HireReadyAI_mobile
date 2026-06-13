@@ -27,6 +27,7 @@ import * as WebBrowser from "expo-web-browser";
 import * as Linking from "expo-linking";
 import PlanBillingCard from "../../payment/componants/ApplyForPreimum";
 import { createCheckoutSession } from "../../payment/services/premium.service";
+import PaymentSuccessModal from "../../payment/components/PaymentSuccessModal";
 
 //helper for checkout 
 const openCheckout = async (url) => {
@@ -37,14 +38,15 @@ const openCheckout = async (url) => {
     redirectUrl
   );
 
-    // Optional: handle result when user closes browser
     console.log("Browser result:", result);
 
     if (result.type === "cancel") {
       console.log("User closed checkout");
     }
+    return result;
   } catch (err) {
     console.error("Failed to open checkout:", err);
+    return null;
   }
 };
 
@@ -58,6 +60,7 @@ export default function CompanyProfile() {
     frameworkFile,
     setFrameworkFile,
     permission,
+    reload,
   } = useCompany();
   const { theme } = useTheme();
   const c = theme.colors;
@@ -67,6 +70,7 @@ export default function CompanyProfile() {
   const [memberEmail, setMemberEmail] = useState("");
   const [uploading, setUploading] = useState(false);
   const [upgrading, setUpgrading] = useState(false);
+  const [successVisible, setSuccessVisible] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editForm, setEditForm] = useState({
     name: "",
@@ -307,7 +311,13 @@ const handleUpgrade = async () => {
 
     const { url } = await createCheckoutSession(company.id);
 
-    await openCheckout(url);
+    const result = await openCheckout(url);
+
+    if (result?.type === "success") {
+      await new Promise((r) => setTimeout(r, 2500));
+      reload();
+      setSuccessVisible(true);
+    }
   } catch (err) {
     console.error("Error creating checkout session:", err);
   } finally {
@@ -317,6 +327,7 @@ const handleUpgrade = async () => {
 
   const hasCover = !!company?.cover_url;
   return (
+    <>
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* Cover Image */}
       <View style={styles.coverWrap}>
@@ -621,6 +632,11 @@ const handleUpgrade = async () => {
         </View>
       </View>
     </ScrollView>
+      <PaymentSuccessModal
+        visible={successVisible}
+        onDismiss={() => setSuccessVisible(false)}
+      />
+    </>
   );
 }
 

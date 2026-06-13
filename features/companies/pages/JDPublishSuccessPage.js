@@ -1,10 +1,12 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../shared/context/ThemeContext";
+import { useTranslation } from "../../../shared/context/I18nContext";
 import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../src/fonts';
 
 export default function JDPublishSuccessPage({ route, navigation }) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const c = theme.colors;
   const styles = createStyles(c);
   const { title } = route.params || {};
@@ -15,9 +17,9 @@ export default function JDPublishSuccessPage({ route, navigation }) {
         <View style={styles.iconWrap}>
           <Ionicons name="checkmark-circle" size={64} color={c.success} />
         </View>
-        <Text style={styles.title}>Job Published!</Text>
+        <Text style={styles.title}>{t("companies.job_published_title")}</Text>
         <Text style={styles.subtitle}>
-          <Text style={styles.jobTitle}>{title}</Text> has been published successfully.
+          {t("companies.job_published_subtitle", { title })}
         </Text>
 
         <View style={styles.actions}>
@@ -27,7 +29,7 @@ export default function JDPublishSuccessPage({ route, navigation }) {
             activeOpacity={0.85}
           >
             <Ionicons name="briefcase-outline" size={18} color={c.white} />
-            <Text style={styles.primaryBtnText}>View Job Postings</Text>
+            <Text style={styles.primaryBtnText}>{t("companies.view_job_postings")}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -36,7 +38,7 @@ export default function JDPublishSuccessPage({ route, navigation }) {
             activeOpacity={0.75}
           >
             <Ionicons name="home-outline" size={18} color={c.primary} />
-            <Text style={styles.secondaryBtnText}>Back to Dashboard</Text>
+            <Text style={styles.secondaryBtnText}>{t("companies.back_to_dashboard")}</Text>
           </TouchableOpacity>
         </View>
       </View>

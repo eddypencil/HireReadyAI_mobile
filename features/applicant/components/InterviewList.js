@@ -375,7 +375,7 @@ export default function InterviewList({ applications }) {
                         paddingHorizontal: 8,
                         paddingVertical: 2,
                         fontSize: 10,
-                        fontWeight: FONT_FAMILY_SEMIBOLD,
+                        fontFamily: FONT_FAMILY_SEMIBOLD,
                         color: c['muted-foreground'],
                         fontFamily: "monospace",
                       }}>
@@ -403,7 +403,7 @@ export default function InterviewList({ applications }) {
                         }}
                       >
                         <Ionicons name="play" size={10} color={c['destructive-foreground']} />
-                        <Text style={{ fontSize: 11, fontWeight: FONT_FAMILY_BOLD, color: c['destructive-foreground'] }}>
+                        <Text style={{ fontSize: 11, fontFamily: FONT_FAMILY_BOLD, color: c['destructive-foreground'] }}>
                           Start {stageStatus?.label ?? "Interview"}
                         </Text>
                       </TouchableOpacity>

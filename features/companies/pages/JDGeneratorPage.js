@@ -164,7 +164,7 @@ export default function JDGeneratorPage() {
     behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
     <ScrollView style={styles.pageContainer} contentContainerStyle={styles.pageContent}>
-      <Text style={styles.pageTitle}>Job Description Generator</Text>
+      <Text style={styles.pageTitle}>{t("companies.jd_generator_title")}</Text>
 
       <View style={styles.formCard}>
         <View style={styles.formFields}>
