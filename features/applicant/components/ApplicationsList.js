@@ -3,6 +3,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { APPLICATION_STAGE } from "../../../shared/constants/enums";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
+import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../src/fonts';
 
 const stageColorMap = {
   [APPLICATION_STAGE.applied]: 'stage-applied',
@@ -86,9 +87,9 @@ function StagePill({ label, cfg }) {
       }} />
       <Text style={{
         fontSize: 11,
-        fontWeight: "600",
         color: cfg.text,
         letterSpacing: 0.1,
+        fontFamily: FONT_FAMILY_SEMIBOLD,
       }}>{label}</Text>
     </View>
   );
@@ -126,7 +127,7 @@ export default function ApplicationsList({ applications, onViewJob }) {
           gap: 8,
         }}>
           <Ionicons name="briefcase-outline" size={32} color={c.border} />
-          <Text style={{ fontSize: 13, color: c['muted-foreground'] }}>
+          <Text style={{ fontSize: 13, color: c['muted-foreground'], fontFamily: FONT_FAMILY }}>
             {t("applicant.no_applications")}
           </Text>
         </View>
@@ -162,10 +163,10 @@ export default function ApplicationsList({ applications, onViewJob }) {
             <Ionicons name="layers-outline" size={16} color={c.primary} />
           </View>
           <View>
-            <Text style={{ fontSize: 15, fontWeight: "700", color: c.foreground }}>
+            <Text style={{ fontSize: 15, color: c.foreground, fontFamily: FONT_FAMILY_BOLD }}>
               {t("applicant.applications")}
             </Text>
-            <Text style={{ fontSize: 12, color: c['muted-foreground'], marginTop: 1 }}>
+            <Text style={{ fontSize: 12, color: c['muted-foreground'], marginTop: 1, fontFamily: FONT_FAMILY }}>
               {t("applicant.track_applications")}
             </Text>
           </View>
@@ -179,7 +180,7 @@ export default function ApplicationsList({ applications, onViewJob }) {
             alignItems: "center",
             justifyContent: "center",
           }}>
-            <Text style={{ fontSize: 11, fontWeight: "700", color: c['destructive-foreground'] }}>
+            <Text style={{ fontSize: 11, color: c['destructive-foreground'], fontFamily: FONT_FAMILY_BOLD }}>
               {applications.length}
             </Text>
           </View>
@@ -231,10 +232,10 @@ export default function ApplicationsList({ applications, onViewJob }) {
                 }}>
                   <Text style={{
                     fontSize: 13,
-                    fontWeight: "700",
                     color: c.foreground,
                     flex: 1,
                     paddingRight: 8,
+                    fontFamily: FONT_FAMILY_BOLD,
                   }}>
                     {job?.title || t("applicant.unknown_position")}
                   </Text>
@@ -243,7 +244,7 @@ export default function ApplicationsList({ applications, onViewJob }) {
 
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 5, marginBottom: 8 }}>
                   <Ionicons name="briefcase-outline" size={12} color={c['muted-foreground']} />
-                  <Text style={{ fontSize: 12, color: c['muted-foreground'], fontWeight: "500" }}>
+                  <Text style={{ fontSize: 12, color: c['muted-foreground'], fontFamily: FONT_FAMILY }}>
                     {company?.name || t("applicant.unknown_company")}
                   </Text>
                 </View>
@@ -258,14 +259,14 @@ export default function ApplicationsList({ applications, onViewJob }) {
                 }}>
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                     <Ionicons name="time-outline" size={10} color={c['muted-foreground']} />
-                    <Text style={{ fontSize: 11, color: c['muted-foreground'] }}>
+                    <Text style={{ fontSize: 11, color: c['muted-foreground'], fontFamily: FONT_FAMILY }}>
                       {t("applicant.applied")} {formatDate(app.applied_at, language)}
                     </Text>
                   </View>
                   {job?.closed_at && (
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                       <Ionicons name="calendar-outline" size={10} color={c['muted-foreground']} />
-                      <Text style={{ fontSize: 11, color: c['muted-foreground'] }}>
+                      <Text style={{ fontSize: 11, color: c['muted-foreground'], fontFamily: FONT_FAMILY }}>
                         {t("applicant.closes")} {formatDate(job.closed_at, language)}
                       </Text>
                     </View>
@@ -292,10 +293,10 @@ export default function ApplicationsList({ applications, onViewJob }) {
                     elevation: 4,
                   }}
                 >
-                  <Text style={{ fontSize: 12, fontWeight: "600", color: c['destructive-foreground'] }}>
+                  <Text style={{ fontSize: 12, color: c['destructive-foreground'], fontFamily: FONT_FAMILY_SEMIBOLD }}>
                     {t("applicant.view_job")}
                   </Text>
-                  <Ionicons name="arrow-forward" size={12} color={c['destructive-foreground']} />
+                  <Ionicons name={language === 'ar' ? 'arrow-back' : 'arrow-forward'} size={12} color={c['destructive-foreground']} />
                 </TouchableOpacity>
               </View>
             );

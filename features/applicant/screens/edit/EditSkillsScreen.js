@@ -8,20 +8,23 @@ import {
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../../shared/context/ThemeContext';
+import { useTranslation } from '../../../../shared/context/I18nContext';
 import { addSkill, updateSkill } from '../../services/skills.service';
 import { Skill } from '../../models';
+import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../../src/fonts';
 
 const LEVELS = ['beginner', 'intermediate', 'advanced', 'expert'];
 
 const LEVEL_CONFIG = {
-  beginner:     { bg: '#fef9c3', text: '#854d0e', border: '#fde047', label: 'Beginner',     desc: 'Just started learning' },
-  intermediate: { bg: '#dbeafe', text: '#1d4ed8', border: '#93c5fd', label: 'Intermediate', desc: 'Working knowledge' },
-  advanced:     { bg: '#dcfce7', text: '#15803d', border: '#86efac', label: 'Advanced',     desc: 'Strong command' },
-  expert:       { bg: '#ede9fe', text: '#6d28d9', border: '#c4b5fd', label: 'Expert',       desc: 'Deep expertise' },
+  beginner:     { bg: '#fef9c3', text: '#854d0e', border: '#fde047' },
+  intermediate: { bg: '#dbeafe', text: '#1d4ed8', border: '#93c5fd' },
+  advanced:     { bg: '#dcfce7', text: '#15803d', border: '#86efac' },
+  expert:       { bg: '#ede9fe', text: '#6d28d9', border: '#c4b5fd' },
 };
 
 export default function EditSkillsScreen() {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const c = theme.colors;
   const styles = createStyles(c);
   const navigation = useNavigation();
@@ -34,7 +37,7 @@ export default function EditSkillsScreen() {
   const [level, setLevel] = useState(item?.level || 'intermediate');
 
   const handleSave = async () => {
-    if (!name.trim()) { Alert.alert('Required', 'Skill name is required.'); return; }
+    if (!name.trim()) { Alert.alert(t("profile.error_title"), t("profile.edit.error_skill_name")); return; }
 
     setSaving(true);
     try {
@@ -49,7 +52,7 @@ export default function EditSkillsScreen() {
       onSave?.();
       navigation.goBack();
     } catch {
-      Alert.alert('Error', 'Could not save skill. Please try again.');
+      Alert.alert(t("profile.error_title"), t("profile.edit.error_save"));
     } finally {
       setSaving(false);
     }
@@ -61,12 +64,12 @@ export default function EditSkillsScreen() {
 
         {/* Skill name */}
         <View style={styles.fieldGroup}>
-          <Text style={styles.label}>Skill Name</Text>
+          <Text style={styles.label}>{t("profile.edit.skill_name")}</Text>
           <TextInput
             style={styles.input}
             value={name}
             onChangeText={setName}
-            placeholder="e.g. React Native"
+            placeholder={t("profile.edit.skill_placeholder")}
             placeholderTextColor={c['muted-foreground']}
             autoCapitalize="words"
             autoCorrect={false}
@@ -75,7 +78,7 @@ export default function EditSkillsScreen() {
 
         {/* Level picker */}
         <View style={styles.fieldGroup}>
-          <Text style={styles.label}>Proficiency Level</Text>
+          <Text style={styles.label}>{t("profile.edit.proficiency_level")}</Text>
           <View style={styles.levelsGrid}>
             {LEVELS.map(l => {
               const cfg = LEVEL_CONFIG[l];
@@ -97,10 +100,10 @@ export default function EditSkillsScreen() {
                     </View>
                   )}
                   <Text style={[styles.levelCardLabel, { color: active ? cfg.text : c.foreground }]}>
-                    {cfg.label}
+                    {t("profile.levels." + l)}
                   </Text>
                   <Text style={[styles.levelCardDesc, { color: active ? cfg.text : c['muted-foreground'] }]}>
-                    {cfg.desc}
+                    {t("profile.edit.level_descs." + l)}
                   </Text>
                 </TouchableOpacity>
               );
@@ -114,7 +117,7 @@ export default function EditSkillsScreen() {
         >
           {saving
             ? <ActivityIndicator color={c.white} size="small" />
-            : <Text style={styles.saveBtnText}>{isEdit ? 'Save Changes' : 'Add Skill'}</Text>}
+            : <Text style={styles.saveBtnText}>{isEdit ? t("profile.save_changes") : t("profile.edit.add_skill")}</Text>}
         </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -126,9 +129,9 @@ function createStyles(c) {
   scroll: { flex: 1, backgroundColor: c.surface },
   content: { padding: 20, gap: 20, paddingBottom: 40 },
   fieldGroup: { gap: 10 },
-  label: { fontSize: 12, fontWeight: '600', color: c.foreground, textTransform: 'uppercase', letterSpacing: 0.4 },
+  label: { fontFamily: FONT_FAMILY_SEMIBOLD, fontSize: 12, color: c.foreground, textTransform: 'uppercase', letterSpacing: 0.4 },
   input: {
-    backgroundColor: c.card, borderWidth: 1, borderColor: c.border,
+    fontFamily: FONT_FAMILY, backgroundColor: c.card, borderWidth: 1, borderColor: c.border,
     borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12,
     fontSize: 14, color: c.foreground,
   },
@@ -143,14 +146,14 @@ function createStyles(c) {
     width: 18, height: 18, borderRadius: 9,
     alignItems: 'center', justifyContent: 'center',
   },
-  levelCardLabel: { fontSize: 14, fontWeight: '700' },
-  levelCardDesc: { fontSize: 11, lineHeight: 16 },
+  levelCardLabel: { fontFamily: FONT_FAMILY_BOLD, fontSize: 14 },
+  levelCardDesc: { fontFamily: FONT_FAMILY, fontSize: 11, lineHeight: 16 },
   saveBtn: {
     backgroundColor: c.primary, borderRadius: 12, paddingVertical: 14,
     alignItems: 'center', marginTop: 4,
     shadowColor: c.primary, shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
   },
-  saveBtnText: { color: c.white, fontSize: 15, fontWeight: '700' },
+  saveBtnText: { fontFamily: FONT_FAMILY_BOLD, color: c.white, fontSize: 15 },
   });
 }

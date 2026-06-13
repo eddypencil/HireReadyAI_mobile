@@ -2,6 +2,7 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../../shared/context/ThemeContext';
+import { FONT_FAMILY, FONT_FAMILY_BOLD, FONT_FAMILY_SEMIBOLD } from '../../../../src/fonts';
 import { useTranslation } from '../../../../shared/context/I18nContext';
 
 function collectSkills(arrays) {
@@ -64,14 +65,14 @@ function createStyles(c) {
     backgroundColor: c['surface-muted'],
     alignItems: 'center', justifyContent: 'center',
   },
-  heading: { fontSize: 14, fontWeight: '700', color: c.foreground },
-  subtitle: { fontSize: 13, color: c['muted-foreground'], marginBottom: 14, lineHeight: 19 },
+  heading: { fontSize: 14, color: c.foreground, fontFamily: FONT_FAMILY_BOLD },
+  subtitle: { fontSize: 13, color: c['muted-foreground'], marginBottom: 14, lineHeight: 19, fontFamily: FONT_FAMILY },
   pills: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   pill: {
     paddingHorizontal: 12, paddingVertical: 7, borderRadius: 8,
     backgroundColor: c['surface-muted'],
     borderWidth: 1, borderColor: c.border,
   },
-  pillText: { fontSize: 12, fontWeight: '600', color: c.primary },
+  pillText: { fontSize: 12, color: c.primary, fontFamily: FONT_FAMILY_SEMIBOLD },
 });
 }

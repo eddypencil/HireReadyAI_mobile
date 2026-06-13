@@ -20,6 +20,7 @@ import {
 } from "../services/candidatesPipline.service";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
+import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD, FONT_FAMILY_EXTRABOLD } from '../../../src/fonts';
 import AutoAdvanceModal from "../components/AutoAdvanceModal";
 import { supabase } from "../../../shared/services/supabase";
 
@@ -53,7 +54,7 @@ function createStyles(c) {
   return StyleSheet.create({
     container: { flex: 1 },
     centered: { justifyContent: "center", alignItems: "center" },
-    loadingText: { marginTop: 12, fontSize: 14 },
+    loadingText: { marginTop: 12, fontSize: 14, fontFamily: FONT_FAMILY },
     headerBar: {
       flexDirection: "row",
       alignItems: "center",
@@ -75,7 +76,7 @@ function createStyles(c) {
     jobSelectorText: {
       flex: 1,
       fontSize: 15,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       color: c["destructive-foreground"],
     },
     autoAdvanceBtn: {
@@ -98,13 +99,14 @@ function createStyles(c) {
     },
     infoText: {
       fontSize: 13,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       color: c.primary,
       flex: 1,
     },
     infoHint: {
       fontSize: 11,
       color: c["muted-foreground"],
+      fontFamily: FONT_FAMILY,
     },
     boardScroll: { flex: 1 },
     board: {
@@ -126,7 +128,7 @@ function createStyles(c) {
       paddingHorizontal: 4,
     },
     stageDot: { width: 10, height: 10, borderRadius: 5, marginRight: 8 },
-    columnTitle: { fontSize: 14, fontWeight: "700", flex: 1 },
+    columnTitle: { fontSize: 14, fontFamily: FONT_FAMILY_BOLD, flex: 1 },
     countBadge: {
       backgroundColor: c["surface-muted"],
       borderRadius: 10,
@@ -135,7 +137,7 @@ function createStyles(c) {
       borderWidth: 1,
       borderColor: c.border,
     },
-    countText: { fontSize: 12, fontWeight: "700", color: c.primary },
+    countText: { fontSize: 12, fontFamily: FONT_FAMILY_BOLD, color: c.primary },
     columnBody: { maxHeight: 500 },
     emptyColumn: {
       borderWidth: 2,
@@ -146,7 +148,7 @@ function createStyles(c) {
       alignItems: "center",
       justifyContent: "center",
     },
-    emptyColumnText: { fontSize: 12, marginTop: 6 },
+    emptyColumnText: { fontSize: 12, marginTop: 6, fontFamily: FONT_FAMILY },
     candidateCard: {
       backgroundColor: c.card,
       borderRadius: 12,
@@ -170,17 +172,17 @@ function createStyles(c) {
     avatarText: {
       color: c["destructive-foreground"],
       fontSize: 12,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
     },
     candidateInfo: { flex: 1 },
-    candidateName: { fontSize: 13, fontWeight: "700", color: c.foreground },
-    candidateRole: { fontSize: 11, color: c["muted-foreground"], marginTop: 1 },
+    candidateName: { fontSize: 13, fontFamily: FONT_FAMILY_BOLD, color: c.foreground },
+    candidateRole: { fontSize: 11, color: c["muted-foreground"], marginTop: 1, fontFamily: FONT_FAMILY },
     scoreBadge: {
       borderRadius: 8,
       paddingHorizontal: 8,
       paddingVertical: 4,
     },
-    scoreText: { fontSize: 12, fontWeight: "800" },
+    scoreText: { fontSize: 12, fontFamily: FONT_FAMILY_EXTRABOLD },
     rightActions: {
       flexDirection: "row",
       alignItems: "center",
@@ -215,7 +217,7 @@ function createStyles(c) {
       borderBottomWidth: 1,
       borderBottomColor: c.border,
     },
-    modalTitle: { fontSize: 17, fontWeight: "700", color: c.foreground },
+    modalTitle: { fontSize: 17, fontFamily: FONT_FAMILY_BOLD, color: c.foreground },
     jobOption: {
       flexDirection: "row",
       alignItems: "center",
@@ -227,13 +229,14 @@ function createStyles(c) {
     },
     jobOptionActive: { backgroundColor: c.primary + "08" },
     jobOptionInfo: { flex: 1 },
-    jobOptionTitle: { fontSize: 15, fontWeight: "600", color: c.foreground },
-    jobOptionDept: { fontSize: 12, color: c["muted-foreground"], marginTop: 2 },
+    jobOptionTitle: { fontSize: 15, fontFamily: FONT_FAMILY_SEMIBOLD, color: c.foreground },
+    jobOptionDept: { fontSize: 12, color: c["muted-foreground"], marginTop: 2, fontFamily: FONT_FAMILY },
     emptyJobsText: {
       textAlign: "center",
       padding: 30,
       color: c["muted-foreground"],
       fontSize: 14,
+      fontFamily: FONT_FAMILY,
     },
     moveModal: {
       backgroundColor: c.card,
@@ -248,6 +251,7 @@ function createStyles(c) {
       paddingHorizontal: 20,
       paddingTop: 12,
       paddingBottom: 8,
+      fontFamily: FONT_FAMILY,
     },
     moveOption: {
       flexDirection: "row",
@@ -262,7 +266,7 @@ function createStyles(c) {
     moveOptionText: {
       flex: 1,
       fontSize: 15,
-      fontWeight: "500",
+      fontFamily: FONT_FAMILY_MEDIUM,
       color: c.foreground,
     },
     advanceAllBtn: {
@@ -276,7 +280,7 @@ function createStyles(c) {
       borderWidth: 1,
       borderColor: c.primary + "33",
     },
-    advanceAllBtnText: { fontSize: 11, fontWeight: "700", color: c.primary },
+    advanceAllBtnText: { fontSize: 11, fontFamily: FONT_FAMILY_BOLD, color: c.primary },
   });
 }
 

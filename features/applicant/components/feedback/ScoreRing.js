@@ -2,6 +2,7 @@
 import { View, Text, StyleSheet } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { useTheme } from '../../../../shared/context/ThemeContext';
+import { FONT_FAMILY_EXTRABOLD, FONT_FAMILY_BOLD } from '../../../../src/fonts';
 
 export default function ScoreRing({ score, size = 92, strokeWidth = 8, percentileTag, onDark = false }) {
   const { theme } = useTheme();
@@ -60,8 +61,8 @@ function createStyles(c) {
   return StyleSheet.create({
   wrapper: { alignItems: 'center', gap: 6 },
   scoreCenter: { alignItems: 'center', justifyContent: 'center' },
-  scoreText: { fontSize: 24, fontWeight: '800', letterSpacing: -0.5 },
-  outOf: { fontSize: 9, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1, marginTop: 1 },
+  scoreText: { fontSize: 24, letterSpacing: -0.5, fontFamily: FONT_FAMILY_EXTRABOLD },
+  outOf: { fontSize: 9, textTransform: 'uppercase', letterSpacing: 1, marginTop: 1, fontFamily: FONT_FAMILY_BOLD },
   percentileBadge: {
     borderWidth: 1, borderColor: c.primary,
     backgroundColor: c['surface-muted'],
@@ -71,6 +72,6 @@ function createStyles(c) {
     borderColor: `${c.white}59`,
     backgroundColor: `${c.white}26`,
   },
-  percentileText: { fontSize: 10, fontWeight: '700', color: c.primary },
+  percentileText: { fontSize: 10, color: c.primary, fontFamily: FONT_FAMILY_BOLD },
 });
 }

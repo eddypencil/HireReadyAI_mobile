@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'rea
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../../shared/context/I18nContext';
+import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../../src/fonts';
 
 const LEVEL_COLORS = {
   beginner:     { bg: '#fef9c3', text: '#854d0e', border: '#fde047' },
@@ -229,29 +230,29 @@ function createStyles(c) {
     padding: 16, borderBottomWidth: 1, borderBottomColor: c.border,
   },
   sectionHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  sectionTitle: { fontSize: 15, fontWeight: '700', color: c.foreground },
+  sectionTitle: { fontSize: 15, color: c.foreground, fontFamily: FONT_FAMILY_BOLD },
   addBtn: {
     width: 28, height: 28, borderRadius: 14,
     backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center',
   },
   emptyRow: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 16 },
-  emptyText: { fontSize: 13, color: c['muted-foreground'], fontStyle: 'italic' },
+  emptyText: { fontSize: 13, color: c['muted-foreground'], fontStyle: 'italic', fontFamily: FONT_FAMILY },
   pillsContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, padding: 16 },
   skillPill: {
     flexDirection: 'row', alignItems: 'center', gap: 5,
     borderWidth: 1, borderRadius: 20, paddingHorizontal: 12, paddingVertical: 6,
   },
-  skillPillText: { fontSize: 13, fontWeight: '600' },
-  skillLevel: { fontSize: 11, fontWeight: '500' },
+  skillPillText: { fontSize: 13, fontFamily: FONT_FAMILY_SEMIBOLD },
+  skillLevel: { fontSize: 11, fontFamily: FONT_FAMILY_MEDIUM },
   langRow: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     padding: 14, borderTopWidth: 1, borderTopColor: c.border,
   },
   langLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  langName: { fontSize: 14, fontWeight: '600', color: c.foreground },
+  langName: { fontSize: 14, color: c.foreground, fontFamily: FONT_FAMILY_SEMIBOLD },
   langRight: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   levelBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20 },
-  levelBadgeText: { fontSize: 11, fontWeight: '600' },
+  levelBadgeText: { fontSize: 11, fontFamily: FONT_FAMILY_SEMIBOLD },
 
   // Certificate card — wraps info row + image
   certCard: {
@@ -266,10 +267,10 @@ function createStyles(c) {
     alignItems: 'center', justifyContent: 'center', flexShrink: 0,
   },
   certInfo: { flex: 1, gap: 3 },
-  certName: { fontSize: 14, fontWeight: '700', color: c.foreground },
-  certMeta: { fontSize: 12, color: c['muted-foreground'] },
-  certField: { fontSize: 12, color: c.accent },
-  certDesc: { fontSize: 13, color: c.foreground, lineHeight: 18, marginTop: 2 },
+  certName: { fontSize: 14, color: c.foreground, fontFamily: FONT_FAMILY_BOLD },
+  certMeta: { fontSize: 12, color: c['muted-foreground'], fontFamily: FONT_FAMILY },
+  certField: { fontSize: 12, color: c.accent, fontFamily: FONT_FAMILY },
+  certDesc: { fontSize: 13, color: c.foreground, lineHeight: 18, marginTop: 2, fontFamily: FONT_FAMILY },
   rowActions: {
     flexDirection: 'column', gap: 8, flexShrink: 0,
     alignItems: 'center', justifyContent: 'center',

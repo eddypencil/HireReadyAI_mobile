@@ -2,6 +2,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform } from 'r
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import { spacing, borderRadius, fontSize, fontWeight, shadow } from '../../src/theme';
+import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD } from '../../src/fonts';
 
 export default function Navbar({ searchQuery, setSearchQuery, onAddJobClick }) {
   const { theme } = useTheme();
@@ -70,6 +71,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: borderRadius.lg,
     fontSize: fontSize.sm,
+    fontFamily: FONT_FAMILY,
   },
   addButton: {
     flexDirection: 'row',
@@ -83,6 +85,6 @@ const styles = StyleSheet.create({
   },
   addButtonText: {
     fontSize: fontSize.sm,
-    fontWeight: fontWeight.semibold,
+    fontFamily: FONT_FAMILY_SEMIBOLD,
   },
 });

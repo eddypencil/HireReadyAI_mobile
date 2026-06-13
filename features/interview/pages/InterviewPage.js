@@ -1,5 +1,6 @@
+
 import { useEffect, useRef, useState } from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator, ScrollView, SafeAreaView, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, ActivityIndicator, ScrollView, SafeAreaView, KeyboardAvoidingView, Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "../../../shared/context/ThemeContext";
@@ -13,6 +14,7 @@ import TextQuestion from "../components/TextQuestion";
 import MultipleChoiceQuestion from "../components/MultipleChoiceQuestion";
 import CodeQuestion from "../components/CodeQuestion";
 import VideoQuestion from "../components/VideoQuestion";
+import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD, FONT_FAMILY_EXTRABOLD } from '../../../src/fonts';
 
 const PHASE = {
   INIT: "init",

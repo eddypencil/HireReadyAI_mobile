@@ -1,6 +1,7 @@
 // features/applicant/components/feedback/DimensionBar.js
 import { View, Text, StyleSheet } from 'react-native';
 import { useTheme } from '../../../../shared/context/ThemeContext';
+import { FONT_FAMILY, FONT_FAMILY_BOLD } from '../../../../src/fonts';
 
 export default function DimensionBar({ label, score }) {
   const { theme } = useTheme();
@@ -25,7 +26,7 @@ function createStyles(c) {
   row: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   label: {
     fontSize: 13, color: c['muted-foreground'],
-    width: 130, textTransform: 'capitalize', lineHeight: 18,
+    width: 130, textTransform: 'capitalize', lineHeight: 18, fontFamily: FONT_FAMILY,
   },
   track: {
     flex: 1, height: 8,
@@ -33,6 +34,6 @@ function createStyles(c) {
     borderRadius: 6, overflow: 'hidden',
   },
   bar: { height: '100%', borderRadius: 6 },
-  score: { fontSize: 13, fontWeight: '700', color: c.foreground, width: 28, textAlign: 'right' },
+  score: { fontSize: 13, color: c.foreground, width: 28, textAlign: 'right', fontFamily: FONT_FAMILY_BOLD },
 });
 }

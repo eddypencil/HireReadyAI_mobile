@@ -14,6 +14,11 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../shared/context/ThemeContext';
+import {
+  FONT_FAMILY,
+  FONT_FAMILY_SEMIBOLD,
+  FONT_FAMILY_BOLD,
+} from '../../../src/fonts';
 import { useTranslation } from '../../../shared/context/I18nContext';
 import { supabase } from '../../../shared/services/supabase';
 import { advanceToOffer } from '../services/shortlist.service';
@@ -272,11 +277,12 @@ function createStyles(c) { return StyleSheet.create({
   },
   title: {
     fontSize: 17,
-    fontWeight: '700',
+    fontFamily: FONT_FAMILY_BOLD,
     color: c.foreground,
   },
   subtitle: {
     fontSize: 12,
+    fontFamily: FONT_FAMILY,
     color: c['muted-foreground'],
     marginTop: 2,
   },
@@ -302,7 +308,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   templateBtnText: {
     fontSize: 13,
-    fontWeight: '600',
+    fontFamily: FONT_FAMILY_SEMIBOLD,
     color: c.primary,
   },
   fieldGroup: {
@@ -310,7 +316,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   fieldLabel: {
     fontSize: 12,
-    fontWeight: '600',
+    fontFamily: FONT_FAMILY_SEMIBOLD,
     color: c['muted-foreground'],
     marginBottom: 6,
     textTransform: 'uppercase',
@@ -323,6 +329,7 @@ function createStyles(c) { return StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 14,
+    fontFamily: FONT_FAMILY,
     color: c.foreground,
     backgroundColor: c['surface-muted'],
   },
@@ -360,7 +367,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   cancelBtnText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontFamily: FONT_FAMILY_SEMIBOLD,
     color: c['muted-foreground'],
   },
   sendBtn: {
@@ -378,7 +385,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   sendBtnText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontFamily: FONT_FAMILY_SEMIBOLD,
     color: c['destructive-foreground'],
   },
 }); }

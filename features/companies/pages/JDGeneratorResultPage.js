@@ -9,6 +9,7 @@ import {
   Modal,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../src/fonts';
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
 import { supabase } from "../../../shared/services/supabase";
@@ -339,23 +340,25 @@ function createStyles(c) {
     },
     loadingText: {
       fontSize: 16,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       color: c.foreground,
       marginTop: 20,
     },
     loadingSubtext: {
       fontSize: 13,
+      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
       marginTop: 6,
     },
     errorTitle: {
       fontSize: 18,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.foreground,
       marginTop: 16,
     },
     errorBody: {
       fontSize: 13,
+      fontFamily: FONT_FAMILY,
       color: c.primary,
       textAlign: "center",
       marginTop: 8,
@@ -371,7 +374,7 @@ function createStyles(c) {
     retryBtnText: {
       color: c['destructive-foreground'],
       fontSize: 14,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
     },
     previewColumn: {
       backgroundColor: c.card,
@@ -389,11 +392,12 @@ function createStyles(c) {
     },
     aiBadgeText: {
       fontSize: 11,
+      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
     },
     previewTitle: {
       fontSize: 22,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.foreground,
     },
     previewMeta: {
@@ -409,6 +413,7 @@ function createStyles(c) {
     },
     metaText: {
       fontSize: 12,
+      fontFamily: FONT_FAMILY,
       color: c.primary,
       textTransform: "capitalize",
     },
@@ -419,6 +424,7 @@ function createStyles(c) {
     },
     salaryDisplayText: {
       fontSize: 13,
+      fontFamily: FONT_FAMILY,
       color: c.primary,
     },
     divider: {
@@ -430,12 +436,13 @@ function createStyles(c) {
     },
     previewSectionTitle: {
       fontSize: 14,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.foreground,
       marginBottom: 2,
     },
     previewSectionBody: {
       fontSize: 14,
+      fontFamily: FONT_FAMILY,
       color: c.foreground,
       lineHeight: 22,
     },
@@ -453,6 +460,7 @@ function createStyles(c) {
     },
     listItem: {
       fontSize: 13,
+      fontFamily: FONT_FAMILY,
       color: c.foreground,
       flex: 1,
       lineHeight: 20,
@@ -473,6 +481,7 @@ function createStyles(c) {
     },
     skillText: {
       fontSize: 13,
+      fontFamily: FONT_FAMILY,
       color: c.foreground,
     },
     errorBanner: {
@@ -484,6 +493,7 @@ function createStyles(c) {
     },
     errorBannerText: {
       fontSize: 12,
+      fontFamily: FONT_FAMILY,
       color: c.destructive,
     },
     publishBtn: {
@@ -501,7 +511,7 @@ function createStyles(c) {
     publishBtnText: {
       color: c['destructive-foreground'],
       fontSize: 15,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
     },
     successContainer: {
       flex: 1,
@@ -523,13 +533,14 @@ function createStyles(c) {
     },
     successTitle: {
       fontSize: 22,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.foreground,
       marginBottom: 8,
       textAlign: "center",
     },
     successSubtitle: {
       fontSize: 13,
+      fontFamily: FONT_FAMILY,
       color: c.foreground,
       textAlign: "center",
       lineHeight: 22,
@@ -562,13 +573,14 @@ function createStyles(c) {
     },
     promptTitle: {
       fontSize: 18,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.foreground,
       textAlign: "center",
       marginBottom: 10,
     },
     promptBody: {
       fontSize: 13,
+      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
       textAlign: "center",
       lineHeight: 20,
@@ -588,7 +600,7 @@ function createStyles(c) {
     promptPrimaryBtnText: {
       color: c['destructive-foreground'],
       fontSize: 15,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
     },
     promptSecondaryBtn: {
       borderWidth: 1,
@@ -601,7 +613,7 @@ function createStyles(c) {
     promptSecondaryBtnText: {
       color: c['muted-foreground'],
       fontSize: 14,
-      fontWeight: "500",
+      fontFamily: FONT_FAMILY_MEDIUM,
     },
   });
 }

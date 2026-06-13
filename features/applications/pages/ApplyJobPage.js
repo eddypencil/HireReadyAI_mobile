@@ -13,13 +13,14 @@ import { supabase } from '../../../shared/services/supabase';
 import QuestionCard from '../components/apply/QuestionCard';
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../shared/context/I18nContext';
+import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../src/fonts';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system/legacy';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ApplyJobPage() {
   const { theme } = useTheme();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const c = theme.colors;
   const insets = useSafeAreaInsets();
   const styles = createStyles(c);
@@ -376,7 +377,7 @@ export default function ApplyJobPage() {
               activeOpacity={0.8}
             >
               <Text style={styles.nextButtonText}>{t("applications.next")}</Text>
-              <Ionicons name="arrow-forward" size={16} color={c['destructive-foreground']} />
+              <Ionicons name={language === 'ar' ? 'arrow-back' : 'arrow-forward'} size={16} color={c['destructive-foreground']} />
             </TouchableOpacity>
           ) : (
             <TouchableOpacity
@@ -424,6 +425,7 @@ function createStyles(c) { return StyleSheet.create({
     fontWeight: '700',
     color: c.foreground,
     marginBottom: 16,
+    fontFamily: FONT_FAMILY_BOLD,
   },
   stepsRow: {
     flexDirection: 'row',
@@ -433,10 +435,12 @@ function createStyles(c) { return StyleSheet.create({
   stepLabel: {
     fontSize: 12,
     color: c['muted-foreground'],
+    fontFamily: FONT_FAMILY,
   },
   stepLabelActive: {
     color: c.primary,
     fontWeight: '600',
+    fontFamily: FONT_FAMILY_SEMIBOLD,
   },
   progressBarBg: {
     height: 6,
@@ -463,11 +467,13 @@ function createStyles(c) { return StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: c.foreground,
+    fontFamily: FONT_FAMILY_BOLD,
   },
   cardSubtitle: {
     fontSize: 13,
     color: c['muted-foreground'],
     marginTop: -8,
+    fontFamily: FONT_FAMILY,
   },
 
   // Form fields
@@ -478,6 +484,7 @@ function createStyles(c) { return StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
     color: c.foreground,
+    fontFamily: FONT_FAMILY_SEMIBOLD,
   },
   required: {
     color: c.destructive,
@@ -491,6 +498,7 @@ function createStyles(c) { return StyleSheet.create({
     fontSize: 14,
     color: c.foreground,
     backgroundColor: c['surface-muted'],
+    fontFamily: FONT_FAMILY,
   },
   inputError: {
     borderColor: c.destructive,
@@ -498,6 +506,7 @@ function createStyles(c) { return StyleSheet.create({
   errorText: {
     fontSize: 12,
     color: c.destructive,
+    fontFamily: FONT_FAMILY,
   },
 
   // Upload
@@ -518,14 +527,17 @@ function createStyles(c) { return StyleSheet.create({
     fontSize: 14,
     color: c['muted-foreground'],
     textAlign: 'center',
+    fontFamily: FONT_FAMILY,
   },
   uploadTextSelected: {
     color: c.primary,
     fontWeight: '500',
+    fontFamily: FONT_FAMILY_MEDIUM,
   },
   uploadSubtext: {
     fontSize: 12,
     color: c['muted-foreground'],
+    fontFamily: FONT_FAMILY,
   },
 
   // Questions
@@ -537,6 +549,7 @@ function createStyles(c) { return StyleSheet.create({
     color: c['muted-foreground'],
     textAlign: 'center',
     paddingVertical: 20,
+    fontFamily: FONT_FAMILY,
   },
 
   // Footer
@@ -558,6 +571,7 @@ function createStyles(c) { return StyleSheet.create({
     fontSize: 15,
     fontWeight: '500',
     color: c.foreground,
+    fontFamily: FONT_FAMILY_MEDIUM,
   },
   nextButton: {
     flex: 1,
@@ -578,6 +592,7 @@ function createStyles(c) { return StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     color: c['destructive-foreground'],
+    fontFamily: FONT_FAMILY_SEMIBOLD,
   },
   submitButton: {
     flex: 1,
@@ -599,5 +614,6 @@ function createStyles(c) { return StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     color: c['destructive-foreground'],
+    fontFamily: FONT_FAMILY_SEMIBOLD,
   },
 }); }

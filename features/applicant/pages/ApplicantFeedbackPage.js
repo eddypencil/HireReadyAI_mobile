@@ -25,6 +25,7 @@ import {
 } from "../../recruiter/services/candidateProfile.service";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
+import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../src/fonts';
 
 // ── Sub-components
 import AppSelector from "../components/feedback/AppSelector";
@@ -411,8 +412,8 @@ function createStyles(c) {
       shadowRadius: 8,
       elevation: 4,
     },
-    label: { fontSize: 13, fontWeight: "600", color: c["muted-foreground"] },
-    labelActive: { fontSize: 13, fontWeight: "700", color: c.white },
+    label: { fontFamily: FONT_FAMILY_SEMIBOLD, fontSize: 13, color: c["muted-foreground"] },
+    labelActive: { fontFamily: FONT_FAMILY_BOLD, fontSize: 13, color: c.white },
   });
 
   const styles = StyleSheet.create({
@@ -436,7 +437,7 @@ function createStyles(c) {
       backgroundColor: c.background,
       padding: 24,
     },
-    loadingText: { fontSize: 14, color: c["muted-foreground"], marginTop: 10 },
+    loadingText: { fontFamily: FONT_FAMILY, fontSize: 14, color: c["muted-foreground"], marginTop: 10 },
 
     emptyCard: {
       backgroundColor: c.card,
@@ -461,12 +462,13 @@ function createStyles(c) {
       justifyContent: "center",
     },
     emptyTitle: {
+      fontFamily: FONT_FAMILY_BOLD,
       fontSize: 16,
-      fontWeight: "700",
       color: c.foreground,
       textAlign: "center",
     },
     emptySubtitle: {
+      fontFamily: FONT_FAMILY,
       fontSize: 13,
       color: c["muted-foreground"],
       textAlign: "center",
@@ -485,15 +487,16 @@ function createStyles(c) {
       marginTop: 6,
     },
     emptyBtnText: {
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.white,
       fontSize: 14,
-      fontWeight: "700",
       letterSpacing: 0.2,
     },
 
     emptyTab: { alignItems: "center", paddingVertical: 60, gap: 10 },
-    emptyTabTitle: { fontSize: 15, fontWeight: "700", color: c.foreground },
+    emptyTabTitle: { fontFamily: FONT_FAMILY_BOLD, fontSize: 15, color: c.foreground },
     emptyTabSubtitle: {
+      fontFamily: FONT_FAMILY,
       fontSize: 13,
       color: c["muted-foreground"],
       textAlign: "center",

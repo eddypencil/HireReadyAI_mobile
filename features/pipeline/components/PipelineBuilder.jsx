@@ -15,6 +15,8 @@ import StageLibrary from "./StageLibrary";
 import StageCard from "./StageCard";
 import StageDetailsPanel from "./StageDetailsPanel";
 import { useTranslation } from "../../../shared/context/I18nContext";
+import { useCompany } from "../../companies/pages/CompanyLayout";
+import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from "../../../src/fonts";
 
 export default function PipelineBuilder({
   job,
@@ -27,6 +29,7 @@ export default function PipelineBuilder({
   const { theme } = useTheme();
   const { t, language } = useTranslation();
   const isRtl = language === 'ar';
+  const { company } = useCompany();
   const c = theme.colors;
   const insets = useSafeAreaInsets();
   const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = useWindowDimensions();
@@ -151,7 +154,7 @@ export default function PipelineBuilder({
                 <Ionicons name="close-outline" size={22} color={c['muted-foreground']} />
               </TouchableOpacity>
             </View>
-            <StageLibrary onAddStage={handleAddFromLibrary} />
+            <StageLibrary onAddStage={handleAddFromLibrary} isPremium={company?.is_premium} />
           </View>
         </View>
       </Modal>
@@ -221,7 +224,7 @@ function createStyles(c, bottomSheetHeight, isRtl) {
     },
     libraryBtnText: {
       fontSize: 12,
-      fontWeight: "500",
+      fontFamily: FONT_FAMILY_MEDIUM,
       color: c['muted-foreground'],
     },
     bottomSheetOverlay: {
@@ -269,12 +272,13 @@ function createStyles(c, bottomSheetHeight, isRtl) {
     },
     jobTitle: {
       fontSize: 20,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.foreground,
       marginBottom: 2,
     },
     canvasHint: {
       fontSize: 12,
+      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
     },
     emptyState: {
@@ -299,12 +303,13 @@ function createStyles(c, bottomSheetHeight, isRtl) {
     },
     emptyTitle: {
       fontSize: 14,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       color: c['muted-foreground'],
       marginBottom: 4,
     },
     emptyHint: {
       fontSize: 12,
+      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
       textAlign: "center",
     },
@@ -346,14 +351,14 @@ function createStyles(c, bottomSheetHeight, isRtl) {
     },
     drawerHeaderLabel: {
       fontSize: 10,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c['muted-foreground'],
       letterSpacing: 1,
       textTransform: "uppercase",
     },
     detailsHeaderTitle: {
       fontSize: 14,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       color: c.foreground,
       flex: 1,
       marginRight: isRtl ? 0 : 8,

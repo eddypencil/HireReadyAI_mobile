@@ -24,55 +24,59 @@ import {
   FlatList,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../src/fonts';
 import { useTheme } from "../../../shared/context/ThemeContext";
+import { useTranslation } from "../../../shared/context/I18nContext";
 import { supabase } from "../../../shared/services/supabase";
 import { useJobs } from "../../jobs/hooks/useJobs";
 import { useCompany } from "./CompanyLayout";
 import { useUser } from "../../auth/context/user.context";
 import { seedAnchorStages } from "../../recruiter/services/candidatesPipline.service";
 
-const QUESTION_TYPES = [
-  { label: "Short answer", value: "text", icon: "text-outline" },
-  { label: "Long answer", value: "textarea", icon: "document-text-outline" },
-  { label: "Yes / No", value: "yes_no", icon: "checkmark-circle-outline" },
+const QUESTION_TYPES = (t) => [
+  { label: t("companies.short_answer"), value: "text", icon: "text-outline" },
+  { label: t("companies.long_answer"), value: "textarea", icon: "document-text-outline" },
+  { label: t("companies.yes_no"), value: "yes_no", icon: "checkmark-circle-outline" },
 ];
 
 // ── Small inline type picker modal
 function TypePickerModal({ visible, selected, onSelect, onClose }) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const c = theme.colors;
   const styles = createStyles(c);
+  const types = QUESTION_TYPES(t);
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <TouchableOpacity style={styles.typeOverlay} activeOpacity={1} onPress={onClose}>
         <View style={styles.typeModal}>
-          <Text style={styles.typeModalTitle}>Answer Type</Text>
-          {QUESTION_TYPES.map((t) => (
+          <Text style={styles.typeModalTitle}>{t("companies.answer_type")}</Text>
+          {types.map((typ) => (
             <TouchableOpacity
-              key={t.value}
+              key={typ.value}
               style={[
                 styles.typeOption,
-                selected === t.value && styles.typeOptionSelected,
+                selected === typ.value && styles.typeOptionSelected,
               ]}
               onPress={() => {
-                onSelect(t.value);
+                onSelect(typ.value);
                 onClose();
               }}
             >
               <Ionicons
-                name={t.icon}
+                name={typ.icon}
                 size={18}
-                color={selected === t.value ? c.primary : c.accent}
+                color={selected === typ.value ? c.primary : c.accent}
               />
               <Text
                 style={[
                   styles.typeOptionText,
-                  selected === t.value && styles.typeOptionTextSelected,
+                  selected === typ.value && styles.typeOptionTextSelected,
                 ]}
               >
-                {t.label}
+                {typ.label}
               </Text>
-              {selected === t.value && (
+              {selected === typ.value && (
                 <Ionicons name="checkmark" size={16} color={c.primary} style={{ marginLeft: "auto" }} />
               )}
             </TouchableOpacity>
@@ -86,10 +90,12 @@ function TypePickerModal({ visible, selected, onSelect, onClose }) {
 // ── Single question card
 function QuestionCard({ question, index, total, onChange, onRemove }) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const c = theme.colors;
   const styles = createStyles(c);
   const [typePickerVisible, setTypePickerVisible] = useState(false);
-  const typeLabel = QUESTION_TYPES.find((t) => t.value === question.type)?.label || "Short answer";
+  const types = QUESTION_TYPES(t);
+  const typeLabel = types.find((x) => x.value === question.type)?.label || t("companies.short_answer");
 
   return (
     <View style={styles.questionCard}>
@@ -112,7 +118,7 @@ function QuestionCard({ question, index, total, onChange, onRemove }) {
         style={styles.questionInput}
         value={question.question}
         onChangeText={(t) => onChange("question", t)}
-        placeholder="Write your question here..."
+        placeholder={t("companies.write_question_placeholder")}
         placeholderTextColor={c['muted-foreground']}
         multiline
         textAlignVertical="top"
@@ -125,7 +131,7 @@ function QuestionCard({ question, index, total, onChange, onRemove }) {
         activeOpacity={0.75}
       >
         <Ionicons
-          name={QUESTION_TYPES.find((t) => t.value === question.type)?.icon || "text-outline"}
+          name={types.find((x) => x.value === question.type)?.icon || "text-outline"}
           size={15}
           color={c['muted-foreground']}
         />
@@ -146,6 +152,7 @@ function QuestionCard({ question, index, total, onChange, onRemove }) {
 // ── Main page
 export default function ApplicationQuestionsPage({ route, navigation }) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const c = theme.colors;
   const styles = createStyles(c);
   const { jobParams, aiResult, companyId, profileId } = route.params;
@@ -242,10 +249,9 @@ export default function ApplicationQuestionsPage({ route, navigation }) {
         <View style={styles.headerCard}>
           <Ionicons name="help-circle-outline" size={28} color={c['muted-foreground']} />
           <View style={styles.headerCardText}>
-            <Text style={styles.headerCardTitle}>Application Questions</Text>
+            <Text style={styles.headerCardTitle}>{t("companies.application_questions")}</Text>
             <Text style={styles.headerCardSubtitle}>
-              Add questions applicants will answer when applying for{" "}
-              <Text style={styles.headerCardJob}>{jobParams.title}</Text>
+              {t("companies.application_questions_subtitle", { title: jobParams.title })}
             </Text>
           </View>
         </View>
@@ -254,9 +260,9 @@ export default function ApplicationQuestionsPage({ route, navigation }) {
         {questions.length === 0 ? (
           <View style={styles.emptyState}>
             <Ionicons name="chatbox-ellipses-outline" size={40} color={c['muted-foreground']} />
-            <Text style={styles.emptyTitle}>No questions yet</Text>
+            <Text style={styles.emptyTitle}>{t("companies.no_questions_yet")}</Text>
             <Text style={styles.emptySubtitle}>
-              Tap "Add Question" below to get started
+              {t("companies.tap_add_question")}
             </Text>
           </View>
         ) : (
@@ -281,7 +287,7 @@ export default function ApplicationQuestionsPage({ route, navigation }) {
           activeOpacity={0.75}
         >
           <Ionicons name="add-circle-outline" size={20} color={c.primary} />
-          <Text style={styles.addQuestionBtnText}>Add Question</Text>
+          <Text style={styles.addQuestionBtnText}>{t("companies.add_question")}</Text>
         </TouchableOpacity>
 
         {/* ── Error banner */}
@@ -297,7 +303,7 @@ export default function ApplicationQuestionsPage({ route, navigation }) {
       <View style={styles.bottomBar}>
         {filledCount > 0 && (
           <Text style={styles.questionCount}>
-            {filledCount} question{filledCount !== 1 ? "s" : ""} ready
+            {filledCount === 1 ? t("companies.question_ready", { count: filledCount }) : t("companies.questions_ready", { count: filledCount })}
           </Text>
         )}
         <TouchableOpacity
@@ -314,7 +320,7 @@ export default function ApplicationQuestionsPage({ route, navigation }) {
           ) : (
             <>
               <Ionicons name="arrow-up-circle-outline" size={18} color={c.white} />
-              <Text style={styles.publishBtnText}>Publish with Questions</Text>
+              <Text style={styles.publishBtnText}>{t("companies.publish_with_questions")}</Text>
             </>
           )}
         </TouchableOpacity>
@@ -355,16 +361,17 @@ function createStyles(c) {
     },
     headerCardTitle: {
       fontSize: 15,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.foreground,
     },
     headerCardSubtitle: {
       fontSize: 13,
+      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
       lineHeight: 19,
     },
     headerCardJob: {
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       color: c.foreground,
     },
 
@@ -376,12 +383,13 @@ function createStyles(c) {
     },
     emptyTitle: {
       fontSize: 15,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       color: c.accent,
       marginTop: 8,
     },
     emptySubtitle: {
       fontSize: 13,
+      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
       textAlign: "center",
     },
@@ -415,7 +423,7 @@ function createStyles(c) {
     },
     questionNumberText: {
       fontSize: 12,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.white,
     },
     removeBtn: {
@@ -428,6 +436,7 @@ function createStyles(c) {
       paddingHorizontal: 12,
       paddingVertical: 10,
       fontSize: 14,
+      fontFamily: FONT_FAMILY,
       color: c.foreground,
       backgroundColor: c['surface-muted'],
       minHeight: 72,
@@ -450,7 +459,7 @@ function createStyles(c) {
     typeSelectorText: {
       fontSize: 12,
       color: c.primary,
-      fontWeight: "500",
+      fontFamily: FONT_FAMILY_MEDIUM,
     },
 
     // ── Type picker modal
@@ -470,7 +479,7 @@ function createStyles(c) {
     },
     typeModalTitle: {
       fontSize: 14,
-      fontWeight: "700",
+      fontFamily: FONT_FAMILY_BOLD,
       color: c.foreground,
       marginBottom: 8,
     },
@@ -487,11 +496,12 @@ function createStyles(c) {
     },
     typeOptionText: {
       fontSize: 14,
+      fontFamily: FONT_FAMILY,
       color: c.foreground,
     },
     typeOptionTextSelected: {
       color: c.primary,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
     },
 
     // ── Add question button
@@ -509,7 +519,7 @@ function createStyles(c) {
     },
     addQuestionBtnText: {
       fontSize: 14,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
       color: c.primary,
     },
 
@@ -526,6 +536,7 @@ function createStyles(c) {
     },
     errorBannerText: {
       fontSize: 12,
+      fontFamily: FONT_FAMILY,
       color: c.red[600],
       flex: 1,
     },
@@ -541,6 +552,7 @@ function createStyles(c) {
     },
     questionCount: {
       fontSize: 12,
+      fontFamily: FONT_FAMILY,
       color: c.accent,
       textAlign: "center",
     },
@@ -559,7 +571,7 @@ function createStyles(c) {
     publishBtnText: {
       color: c.white,
       fontSize: 15,
-      fontWeight: "600",
+      fontFamily: FONT_FAMILY_SEMIBOLD,
     },
   });
 }
