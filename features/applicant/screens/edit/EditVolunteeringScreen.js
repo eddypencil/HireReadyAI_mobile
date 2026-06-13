@@ -2,9 +2,10 @@
 import { useState } from 'react';
 import {
   View, Text, TextInput, StyleSheet, ScrollView,
-  TouchableOpacity, ActivityIndicator, Alert,
+  TouchableOpacity, ActivityIndicator,
   KeyboardAvoidingView, Platform,
 } from 'react-native';
+import { useThemedAlert } from '../../../../shared/context/ThemedAlertContext';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../../shared/context/I18nContext';
@@ -37,6 +38,7 @@ function Field({ label, value, onChangeText, placeholder, multiline, optional, s
 export default function EditVolunteeringScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { alert } = useThemedAlert();
   const c = theme.colors;
   const styles = createStyles(c);
   const navigation = useNavigation();
@@ -55,8 +57,8 @@ export default function EditVolunteeringScreen() {
   const set = k => v => setForm(p => ({ ...p, [k]: v }));
 
   const handleSave = async () => {
-    if (!form.role.trim()) { Alert.alert(t("profile.error_title"), t("profile.edit.error_role")); return; }
-    if (!form.organization.trim()) { Alert.alert(t("profile.error_title"), t("profile.edit.error_organization")); return; }
+    if (!form.role.trim()) { alert(t("profile.error_title"), t("profile.edit.error_role")); return; }
+    if (!form.organization.trim()) { alert(t("profile.error_title"), t("profile.edit.error_organization")); return; }
     setSaving(true);
     try {
       const vol = new Volunteering({
@@ -73,7 +75,7 @@ export default function EditVolunteeringScreen() {
       }
       navigation.goBack();
     } catch {
-      Alert.alert(t("profile.error_title"), t("profile.edit.error_save"));
+      alert(t("profile.error_title"), t("profile.edit.error_save"));
     } finally {
       setSaving(false);
     }

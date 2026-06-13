@@ -6,8 +6,8 @@ import {
   StyleSheet,
   Animated,
   ScrollView,
-  Alert,
 } from "react-native";
+import { useThemedAlert } from "../context/ThemedAlertContext";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
@@ -23,6 +23,7 @@ import LanguageSwitcher from "../i18n/LanguageSwitcher";
 const SIDEBAR_WIDTH = 280;
 
 export default function AnimatedSidebar() {
+  const { alert } = useThemedAlert();
   const { isOpen, close } = useSidebar();
   const { theme, toggleTheme, isDark } = useTheme();
   const { language, t } = useTranslation();
@@ -158,7 +159,7 @@ export default function AnimatedSidebar() {
         navigation.navigate(screenName);
       }
     } else {
-      Alert.alert("Unavailable", "Join or create an organization first.");
+      alert("Unavailable", "Join or create an organization first.");
     }
   };
 

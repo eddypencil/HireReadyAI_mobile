@@ -6,13 +6,13 @@ import {
     TouchableOpacity,
     StyleSheet,
     ScrollView,
-    Alert,
     Linking,
     KeyboardAvoidingView,
     Platform,
     ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useThemedAlert } from '../../../shared/context/ThemedAlertContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useUser } from '../../auth/context/user.context';
@@ -28,6 +28,7 @@ export default function ContactUsScreen() {
     const { theme } = useTheme();
     const { profile } = useUser();
     const { t } = useTranslation();
+    const { alert } = useThemedAlert();
     const c = theme.colors;
 
     const [formData, setFormData] = useState({
@@ -55,7 +56,7 @@ export default function ContactUsScreen() {
 
     const handleSubmit = async () => {
         if (!formData.name || !formData.email || !formData.message) {
-            Alert.alert(
+            alert(
                 t('contact_us.title'),
                 t('contact_us.missing_fields')
             );

@@ -2,12 +2,13 @@
 import { useState, useCallback } from 'react';
 import {
   View, Text, ScrollView, StyleSheet,
-  ActivityIndicator, TouchableOpacity, Alert,
+      ActivityIndicator, TouchableOpacity,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../shared/context/I18nContext';
+import { useThemedAlert } from '../../../shared/context/ThemedAlertContext';
 import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD } from '../../../src/fonts';
 import { fetchApplicantProfile } from '../services/profile.service';
 import { deleteExperience } from '../services/experience.service';
@@ -82,6 +83,7 @@ export default function ApplicantProfilePage() {
   const { profileId, viewOnly = false } = route.params || {};
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { alert } = useThemedAlert();
   const c = theme.colors;
   const styles = createStyles(c);
 
@@ -99,7 +101,7 @@ export default function ApplicantProfilePage() {
       const data = await fetchApplicantProfile(profileId);
       setProfile(data);
     } catch {
-      Alert.alert(t('profile.error_title'), t('profile.error_load'));
+      alert(t('profile.error_title'), t('profile.error_load'));
     } finally {
       setLoading(false);
     }
@@ -109,7 +111,7 @@ export default function ApplicantProfilePage() {
 
   // ── Delete by index
   const handleDelete = (field, index) => {
-    Alert.alert(t('profile.delete'), t('profile.delete_confirm'), [
+    alert(t('profile.delete'), t('profile.delete_confirm'), [
       { text: t('profile.cancel'), style: 'cancel' },
       {
         text: t('profile.delete'), style: 'destructive',
@@ -123,7 +125,7 @@ export default function ApplicantProfilePage() {
             }
             await loadProfile();
           } catch {
-            Alert.alert(t('profile.error_title'), t('profile.error_delete'));
+            alert(t('profile.error_title'), t('profile.error_delete'));
           }
         },
       },

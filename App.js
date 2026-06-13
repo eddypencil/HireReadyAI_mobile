@@ -6,6 +6,7 @@ import { View, ActivityIndicator } from 'react-native';
 import { ThemeProvider } from './shared/context/ThemeContext';
 import { I18nProvider } from './shared/context/I18nContext';
 import { SidebarProvider } from './shared/context/SidebarContext';
+import { ThemedAlertProvider } from './shared/context/ThemedAlertContext';
 import { useCairoFonts } from './src/fonts';
 import AppNavigator from './src/navigation/AppNavigator';
 
@@ -25,10 +26,12 @@ export default function App() {
       <SafeAreaProvider>
         <I18nProvider>
           <ThemeProvider>
-            <SidebarProvider>
-              <StatusBar style="auto" />
-              <AppNavigator />
-            </SidebarProvider>
+            <ThemedAlertProvider>
+              <SidebarProvider>
+                <StatusBar style="auto" />
+                <AppNavigator />
+              </SidebarProvider>
+            </ThemedAlertProvider>
           </ThemeProvider>
         </I18nProvider>
       </SafeAreaProvider>

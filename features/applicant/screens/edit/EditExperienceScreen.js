@@ -2,9 +2,10 @@
 import { useState } from 'react';
 import {
   View, Text, TextInput, StyleSheet, ScrollView,
-  TouchableOpacity, ActivityIndicator, Alert,
+  TouchableOpacity, ActivityIndicator,
   KeyboardAvoidingView, Platform,
 } from 'react-native';
+import { useThemedAlert } from '../../../../shared/context/ThemedAlertContext';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../../shared/context/I18nContext';
@@ -38,6 +39,7 @@ function Field({ label, value, onChangeText, placeholder, multiline, optional, k
 export default function EditExperienceScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { alert } = useThemedAlert();
   const c = theme.colors;
   const styles = createStyles(c);
   const navigation = useNavigation();
@@ -62,9 +64,9 @@ export default function EditExperienceScreen() {
   const set = k => v => setForm(p => ({ ...p, [k]: v }));
 
   const handleSave = async () => {
-    if (!form.title.trim()) { Alert.alert(t("profile.error_title"), t("profile.edit.error_job_title")); return; }
-    if (!form.companyName.trim()) { Alert.alert(t("profile.error_title"), t("profile.edit.error_company_name")); return; }
-    if (!form.from.trim()) { Alert.alert(t("profile.error_title"), t("profile.edit.error_start_date")); return; }
+    if (!form.title.trim()) { alert(t("profile.error_title"), t("profile.edit.error_job_title")); return; }
+    if (!form.companyName.trim()) { alert(t("profile.error_title"), t("profile.edit.error_company_name")); return; }
+    if (!form.from.trim()) { alert(t("profile.error_title"), t("profile.edit.error_start_date")); return; }
 
     setSaving(true);
     try {
@@ -86,7 +88,7 @@ export default function EditExperienceScreen() {
       onSave?.();
       navigation.goBack();
     } catch {
-      Alert.alert(t("profile.error_title"), t("profile.edit.error_save"));
+      alert(t("profile.error_title"), t("profile.edit.error_save"));
     } finally {
       setSaving(false);
     }

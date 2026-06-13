@@ -2,9 +2,10 @@
 import { useState } from 'react';
 import {
   View, Text, TextInput, StyleSheet, ScrollView,
-  TouchableOpacity, ActivityIndicator, Alert,
+  TouchableOpacity, ActivityIndicator,
   KeyboardAvoidingView, Platform,
 } from 'react-native';
+import { useThemedAlert } from '../../../../shared/context/ThemedAlertContext';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '../../../../shared/context/ThemeContext';
@@ -25,6 +26,7 @@ const LEVEL_COLORS = {
 export default function EditLanguagesScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { alert } = useThemedAlert();
   const c = theme.colors;
   const styles = createStyles(c);
   const navigation = useNavigation();
@@ -36,7 +38,7 @@ export default function EditLanguagesScreen() {
   const [level, setLevel] = useState(item?.level || 'conversational');
 
   const handleSave = async () => {
-    if (!name.trim()) { Alert.alert(t("profile.error_title"), t("profile.edit.error_language_name")); return; }
+    if (!name.trim()) { alert(t("profile.error_title"), t("profile.edit.error_language_name")); return; }
     setSaving(true);
     try {
       const lang = new Language({ name: name.trim(), level });
@@ -47,7 +49,7 @@ export default function EditLanguagesScreen() {
       }
       navigation.goBack();
     } catch {
-      Alert.alert(t("profile.error_title"), t("profile.edit.error_save"));
+      alert(t("profile.error_title"), t("profile.edit.error_save"));
     } finally {
       setSaving(false);
     }

@@ -2,9 +2,10 @@
 import { useState } from 'react';
 import {
   View, Text, TextInput, StyleSheet, ScrollView,
-  TouchableOpacity, ActivityIndicator, Alert,
+  TouchableOpacity, ActivityIndicator,
   KeyboardAvoidingView, Platform, Image,
 } from 'react-native';
+import { useThemedAlert } from '../../../../shared/context/ThemedAlertContext';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
@@ -78,6 +79,7 @@ function Field({ label, value, onChangeText, placeholder, optional, keyboardType
 export default function EditCertificatesScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { alert } = useThemedAlert();
   const c = theme.colors;
   const styles = createStyles(c);
   const navigation = useNavigation();
@@ -100,7 +102,7 @@ export default function EditCertificatesScreen() {
   const handlePickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert(t("profile.edit.permission_title"), t("profile.edit.permission_gallery"));
+      alert(t("profile.edit.permission_title"), t("profile.edit.permission_gallery"));
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -118,14 +120,14 @@ export default function EditCertificatesScreen() {
       const url = await uploadCertificateImage(profileId, file.uri);
       setImageUrl(url);
     } catch (err) {
-      Alert.alert(t("profile.error_title"), err?.message || t("profile.edit.error_save"));
+      alert(t("profile.error_title"), err?.message || t("profile.edit.error_save"));
     } finally {
       setUploadingImage(false);
     }
   };
 
   const handleRemoveImage = () => {
-    Alert.alert(t("profile.edit.remove_title"), t("profile.edit.remove_confirm_certificate"), [
+    alert(t("profile.edit.remove_title"), t("profile.edit.remove_confirm_certificate"), [
       { text: t("profile.edit.cancel"), style: 'cancel' },
       {
         text: t("profile.edit.remove"), style: 'destructive',
@@ -141,7 +143,7 @@ export default function EditCertificatesScreen() {
 
   const handleSave = async () => {
     if (!form.name.trim()) {
-      Alert.alert(t("profile.error_title"), t("profile.edit.error_certificate_name"));
+      alert(t("profile.error_title"), t("profile.edit.error_certificate_name"));
       return;
     }
     setSaving(true);
@@ -160,7 +162,7 @@ export default function EditCertificatesScreen() {
       }
       navigation.goBack();
     } catch {
-      Alert.alert(t("profile.error_title"), t("profile.edit.error_save"));
+      alert(t("profile.error_title"), t("profile.edit.error_save"));
     } finally {
       setSaving(false);
     }

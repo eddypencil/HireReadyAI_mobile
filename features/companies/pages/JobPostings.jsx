@@ -8,7 +8,6 @@ import {
   FlatList,
   Modal,
   ActivityIndicator,
-  Alert,
   StyleSheet,
   Pressable,
   KeyboardAvoidingView,
@@ -20,6 +19,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD, FONT_FAMILY_EXTRABOLD } from '../../../src/fonts';
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
+import { useThemedAlert } from '../../../shared/context/ThemedAlertContext';
 import { Card } from "../../../shared/ui/Card";
 import { updateJobPosting } from "../services/companies.service";
 import { getPipeline } from "../../pipeline/services/pipeline.service";
@@ -137,6 +137,7 @@ export default function JobPostings() {
   const insets = useSafeAreaInsets();
   const { theme: appTheme, isDark } = useTheme();
   const { t, language } = useTranslation();
+  const { alert } = useThemedAlert();
   const isRtl = language === "ar";
   const c = appTheme.colors;
   const theme = {
@@ -292,7 +293,7 @@ export default function JobPostings() {
       setIsEditing(false);
     } catch (err) {
       console.error("Failed to update job:", err);
-      Alert.alert(t("companies.error_title"), t("companies.update_failed"));
+      alert(t("companies.error_title"), t("companies.update_failed"));
     } finally {
       setSaving(false);
     }

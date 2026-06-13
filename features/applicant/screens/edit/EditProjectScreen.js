@@ -2,9 +2,10 @@
 import { useState } from 'react';
 import {
   View, Text, TextInput, StyleSheet, ScrollView,
-  TouchableOpacity, ActivityIndicator, Alert,
+  TouchableOpacity, ActivityIndicator,
   KeyboardAvoidingView, Platform, Image,
 } from 'react-native';
+import { useThemedAlert } from '../../../../shared/context/ThemedAlertContext';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
@@ -79,6 +80,7 @@ async function deleteImage(url) {
 export default function EditProjectScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { alert } = useThemedAlert();
   const c = theme.colors;
   const styles = createStyles(c);
   const navigation = useNavigation();
@@ -103,7 +105,7 @@ export default function EditProjectScreen() {
   const handlePickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert(t("profile.edit.permission_title"), t("profile.edit.permission_gallery_screenshots"));
+      alert(t("profile.edit.permission_title"), t("profile.edit.permission_gallery_screenshots"));
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -121,14 +123,14 @@ export default function EditProjectScreen() {
       const url = await uploadImage(profileId, file.uri);
       setImages(prev => [...prev, url]);
     } catch (err) {
-      Alert.alert(t("profile.error_title"), err?.message || t("profile.edit.error_save"));
+      alert(t("profile.error_title"), err?.message || t("profile.edit.error_save"));
     } finally {
       setUploadingImage(false);
     }
   };
 
   const handleRemoveImage = (index) => {
-    Alert.alert(t("profile.edit.remove_title"), t("profile.edit.remove_confirm_screenshot"), [
+    alert(t("profile.edit.remove_title"), t("profile.edit.remove_confirm_screenshot"), [
       { text: t("profile.edit.cancel"), style: 'cancel' },
       {
         text: t("profile.edit.remove"), style: 'destructive',
@@ -142,7 +144,7 @@ export default function EditProjectScreen() {
 
   const handleSave = async () => {
     if (!form.name.trim()) {
-      Alert.alert(t("profile.error_title"), t("profile.edit.error_project_name"));
+      alert(t("profile.error_title"), t("profile.edit.error_project_name"));
       return;
     }
     setSaving(true);
@@ -168,7 +170,7 @@ export default function EditProjectScreen() {
 
       navigation.goBack();
     } catch {
-      Alert.alert(t("profile.error_title"), t("profile.edit.error_save"));
+      alert(t("profile.error_title"), t("profile.edit.error_save"));
     } finally {
       setSaving(false);
     }

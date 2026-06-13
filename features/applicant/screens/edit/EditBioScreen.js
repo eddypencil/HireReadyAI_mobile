@@ -2,9 +2,10 @@
 import { useState, useEffect } from 'react';
 import {
   View, Text, TextInput, StyleSheet, ScrollView,
-  TouchableOpacity, ActivityIndicator, Alert,
+  TouchableOpacity, ActivityIndicator,
   KeyboardAvoidingView, Platform,
 } from 'react-native';
+import { useThemedAlert } from '../../../../shared/context/ThemedAlertContext';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../../shared/context/I18nContext';
@@ -14,6 +15,7 @@ import { FONT_FAMILY, FONT_FAMILY_BOLD } from '../../../../src/fonts';
 export default function EditBioScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { alert } = useThemedAlert();
   const c = theme.colors;
   const styles = createStyles(c);
   const navigation = useNavigation();
@@ -30,7 +32,7 @@ export default function EditBioScreen() {
         setHeadline(data?.headline || '');
         setBio(data?.bio || '');
       })
-      .catch(() => Alert.alert(t("profile.error_title"), t("profile.error_load")))
+      .catch(() => alert(t("profile.error_title"), t("profile.error_load")))
       .finally(() => setLoading(false));
   }, [profileId]);
 
@@ -43,7 +45,7 @@ export default function EditBioScreen() {
       });
       navigation.goBack();
     } catch {
-      Alert.alert(t("profile.error_title"), t("profile.error_save"));
+      alert(t("profile.error_title"), t("profile.error_save"));
     } finally {
       setSaving(false);
     }

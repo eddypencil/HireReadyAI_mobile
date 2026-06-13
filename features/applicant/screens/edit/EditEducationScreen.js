@@ -2,9 +2,10 @@
 import { useState } from 'react';
 import {
   View, Text, TextInput, StyleSheet, ScrollView,
-  TouchableOpacity, ActivityIndicator, Alert,
+  TouchableOpacity, ActivityIndicator,
   KeyboardAvoidingView, Platform,
 } from 'react-native';
+import { useThemedAlert } from '../../../../shared/context/ThemedAlertContext';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../../shared/context/I18nContext';
@@ -40,6 +41,7 @@ function Field({ label, value, onChangeText, placeholder, multiline, optional, s
 export default function EditEducationScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { alert } = useThemedAlert();
   const c = theme.colors;
   const styles = createStyles(c);
   const navigation = useNavigation();
@@ -61,8 +63,8 @@ export default function EditEducationScreen() {
   const set = k => v => setForm(p => ({ ...p, [k]: v }));
 
   const handleSave = async () => {
-    if (!form.university.trim()) { Alert.alert(t("profile.error_title"), t("profile.edit.error_university")); return; }
-    if (!form.startYear.trim()) { Alert.alert(t("profile.error_title"), t("profile.edit.error_start_year")); return; }
+    if (!form.university.trim()) { alert(t("profile.error_title"), t("profile.edit.error_university")); return; }
+    if (!form.startYear.trim()) { alert(t("profile.error_title"), t("profile.edit.error_start_year")); return; }
 
     setSaving(true);
     try {
@@ -85,7 +87,7 @@ export default function EditEducationScreen() {
       onSave?.();
       navigation.goBack();
     } catch {
-      Alert.alert(t("profile.error_title"), t("profile.edit.error_save"));
+      alert(t("profile.error_title"), t("profile.edit.error_save"));
     } finally {
       setSaving(false);
     }

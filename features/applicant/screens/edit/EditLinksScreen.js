@@ -2,9 +2,10 @@
 import { useState, useEffect } from 'react';
 import {
   View, Text, TextInput, StyleSheet, ScrollView,
-  TouchableOpacity, ActivityIndicator, Alert,
+  TouchableOpacity, ActivityIndicator,
   KeyboardAvoidingView, Platform,
 } from 'react-native';
+import { useThemedAlert } from '../../../../shared/context/ThemedAlertContext';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '../../../../shared/context/ThemeContext';
@@ -15,6 +16,7 @@ import { FONT_FAMILY, FONT_FAMILY_BOLD } from '../../../../src/fonts';
 export default function EditLinksScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { alert } = useThemedAlert();
   const c = theme.colors;
   const styles = createStyles(c);
   const navigation = useNavigation();
@@ -29,7 +31,7 @@ export default function EditLinksScreen() {
       .then(data => {
         setLinkedinUrl(data?.linkedin_url || '');
       })
-      .catch(() => Alert.alert(t("profile.error_title"), t("profile.error_load")))
+      .catch(() => alert(t("profile.error_title"), t("profile.error_load")))
       .finally(() => setLoading(false));
   }, [profileId]);
 
@@ -41,7 +43,7 @@ export default function EditLinksScreen() {
       });
       navigation.goBack();
     } catch (err) {
-      Alert.alert(t("profile.error_title"), err?.message || t("profile.error_save"));
+      alert(t("profile.error_title"), err?.message || t("profile.error_save"));
     } finally {
       setSaving(false);
     }

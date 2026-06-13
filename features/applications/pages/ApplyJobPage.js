@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, TouchableOpacity,
-  TextInput, ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Modal, useWindowDimensions,
+      TextInput, ActivityIndicator, KeyboardAvoidingView, Platform, Modal, useWindowDimensions,
 } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -13,6 +13,7 @@ import { supabase } from '../../../shared/services/supabase';
 import QuestionCard from '../components/apply/QuestionCard';
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../shared/context/I18nContext';
+import { useThemedAlert } from '../../../shared/context/ThemedAlertContext';
 import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../src/fonts';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system/legacy';
@@ -21,6 +22,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export default function ApplyJobPage() {
   const { theme } = useTheme();
   const { t, language } = useTranslation();
+  const { alert } = useThemedAlert();
   const c = theme.colors;
   const insets = useSafeAreaInsets();
   const { width: screenWidth } = useWindowDimensions();
@@ -127,7 +129,7 @@ export default function ApplyJobPage() {
       clearFieldError('resume');
     }
   } catch (err) {
-    Alert.alert(t("applications.error"), t("applications.error_document_picker"));
+    alert(t("applications.error"), t("applications.error_document_picker"));
   }
 };
 
@@ -174,7 +176,7 @@ export default function ApplyJobPage() {
         .maybeSingle();
 
       if (existing) {
-        Alert.alert(t("applications.already_applied_title"), t("applications.already_applied_message"));
+        alert(t("applications.already_applied_title"), t("applications.already_applied_message"));
         return;
       }
 
@@ -224,7 +226,7 @@ export default function ApplyJobPage() {
       setShowSuccess(true);
     } catch (err) {
       console.error('Submit error:', err);
-      Alert.alert(t("applications.error"), t("applications.submit_error"));
+      alert(t("applications.error"), t("applications.submit_error"));
     } finally {
       setSubmitting(false);
     }
