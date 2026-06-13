@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, TouchableOpacity,
-  TextInput, ActivityIndicator, Alert, KeyboardAvoidingView, Platform,
+  TextInput, ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Modal,
 } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -35,6 +35,7 @@ export default function ApplyJobPage() {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const [errors, setErrors] = useState({});
   const [resumeFile, setResumeFile] = useState(null);
   const [form, setForm] = useState({
@@ -219,11 +220,7 @@ export default function ApplyJobPage() {
       console.log("[triggerCvReview] cvText length:", cvText.trim().length, "preview:", cvText.trim().slice(0, 200));
       triggerCvReview(application.id, cvText.trim());
 
-      Alert.alert(
-        t("applications.application_submitted"),
-        t("applications.success_message"),
-        [{ text: t("applications.ok"), onPress: () => navigation.navigate('Main', { screen: 'JobsTab' }) }]
-      );
+      setShowSuccess(true);
     } catch (err) {
       console.error('Submit error:', err);
       Alert.alert(t("applications.error"), t("applications.submit_error"));
@@ -396,6 +393,25 @@ export default function ApplyJobPage() {
         </View>
 
       </ScrollView>
+
+      <Modal visible={showSuccess} transparent animationType="fade" statusBarTranslucent>
+        <View style={styles.successOverlay}>
+          <View style={styles.successModal}>
+            <View style={styles.successIconWrap}>
+              <Ionicons name="checkmark-circle" size={56} color={c.success} />
+            </View>
+            <Text style={styles.successTitle}>{t("applications.application_submitted")}</Text>
+            <Text style={styles.successMessage}>{t("applications.success_message")}</Text>
+            <TouchableOpacity
+              style={styles.successButton}
+              onPress={() => navigation.navigate('Main', { screen: 'JobsTab' })}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.successButtonText}>{t("applications.ok")}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   );
 }
@@ -614,6 +630,58 @@ function createStyles(c) { return StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     color: c['destructive-foreground'],
+    fontFamily: FONT_FAMILY_SEMIBOLD,
+  },
+
+  successOverlay: {
+    flex: 1,
+    backgroundColor: `${c.foreground}66`,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  successModal: {
+    backgroundColor: c.card,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: c.border,
+    paddingVertical: 32,
+    paddingHorizontal: 28,
+    alignItems: 'center',
+    marginHorizontal: 24,
+  },
+  successIconWrap: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: `${c.success}15`,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  successTitle: {
+    fontSize: 20,
+    fontFamily: FONT_FAMILY_BOLD,
+    color: c.foreground,
+    textAlign: 'center',
+  },
+  successMessage: {
+    fontSize: 14,
+    fontFamily: FONT_FAMILY,
+    color: c['muted-foreground'],
+    textAlign: 'center',
+    marginTop: 8,
+    lineHeight: 20,
+  },
+  successButton: {
+    backgroundColor: c.primary,
+    paddingHorizontal: 40,
+    paddingVertical: 12,
+    borderRadius: 12,
+    marginTop: 24,
+  },
+  successButtonText: {
+    color: c['destructive-foreground'],
+    fontSize: 15,
     fontFamily: FONT_FAMILY_SEMIBOLD,
   },
 }); }

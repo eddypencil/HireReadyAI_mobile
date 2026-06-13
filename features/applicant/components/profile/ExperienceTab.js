@@ -140,7 +140,7 @@ export default function ExperienceTab({ profile, viewOnly, onEdit, onDelete }) {
                 .join(" · ")}
               date={[item.from, item.to || t("profile.present")]
                 .filter(Boolean)
-                .join(" — ")}
+                .join(" - ")}
               description={item.description}
               onEdit={() => onEdit("experience", item, index)}
               onDelete={() => onDelete("experience", index)}
@@ -185,7 +185,7 @@ export default function ExperienceTab({ profile, viewOnly, onEdit, onDelete }) {
                 .join(" · ")}
               date={[item.start_year, item.end_year || t("profile.present")]
                 .filter(Boolean)
-                .join(" — ")}
+                .join(" - ")}
               description={null}
               onEdit={() => onEdit("education", item, index)}
               onDelete={() => onDelete("education", index)}
@@ -220,7 +220,7 @@ export default function ExperienceTab({ profile, viewOnly, onEdit, onDelete }) {
               subtitle={item.organization}
               date={[item.start, item.end || t("profile.present")]
                 .filter(Boolean)
-                .join(" — ")}
+                .join(" - ")}
               description={item.description}
               onEdit={() => onEdit("volunteering", item, index)}
               onDelete={() => onDelete("volunteering", index)}

@@ -138,13 +138,13 @@ export default function ShortlistCandidateCard({ entry, index, isSelected, onCli
           <Text style={[styles.aiMatchLabel, isRtl && styles.textRight]}>
             {t("shortlist.ai_match")} {' '}
             <Text style={[styles.scoreBadge, { backgroundColor: scoreBg, color: scoreText }]}> 
-              {composite_score || '—'}
+              {composite_score || '-'}
             </Text>
           </Text>
           <View style={[styles.voteCountRow, isRtl && styles.rowReverse]}>
             <Ionicons name="thumbs-up" size={12} color={c.success} />
             <Text style={[styles.voteCount, { color: c.success }]}>{upVotes}</Text>
-            <Text style={styles.voteDivider}>—</Text>
+            <Text style={styles.voteDivider}>-</Text>
             <Ionicons name="thumbs-down" size={12} color={c.destructive} />
             <Text style={[styles.voteCount, { color: c.destructive }]}>{downVotes}</Text>
           </View>

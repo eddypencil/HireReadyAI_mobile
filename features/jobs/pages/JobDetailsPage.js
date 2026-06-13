@@ -160,9 +160,6 @@ export default function JobDetailsPage() {
               </View>
             )}
           </View>
-          <TouchableOpacity style={s.bookmarkButton} onPress={() => {}}>
-            <Ionicons name="bookmark-outline" size={20} color={c.primary} />
-          </TouchableOpacity>
         </View>
 
         <Text style={s.jobTitle}>{job.title}</Text>
@@ -279,9 +276,6 @@ export default function JobDetailsPage() {
                 <View style={{ flex: 1 }}>
                   <View style={s.similarJobTitleRow}>
                     <Text style={s.similarJobTitle} numberOfLines={1}>{sj.title}</Text>
-                    <TouchableOpacity onPress={() => {}} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                      <Ionicons name="bookmark-outline" size={16} color={c['muted-foreground']} />
-                    </TouchableOpacity>
                   </View>
                   <Text style={s.similarJobMeta} numberOfLines={1}>
                     {sj.companies?.name}{sj.companies?.location && ` • ${sj.companies.location}`}

@@ -20,7 +20,7 @@ function getLabel(score, c) {
       color: "#f97316",
     };
   return {
-    text: "Your profile needs work — recruiters may skip incomplete profiles.",
+    text: "Your profile needs work - recruiters may skip incomplete profiles.",
     color: "#eab308",
   };
 }

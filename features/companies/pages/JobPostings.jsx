@@ -449,7 +449,6 @@ export default function JobPostings() {
                         borderColor: theme.border,
                         color: theme.foreground,
                       },
-                      isRtl && styles.textRight,
                     ]}
                     value={editForm.title}
                     onChangeText={(t) => setEditForm({ ...editForm, title: t })}
@@ -655,7 +654,6 @@ export default function JobPostings() {
                           borderColor: theme.border,
                           color: theme.foreground,
                         },
-                        isRtl && styles.textRight,
                       ]}
                       value={String(editForm.salary_min || "")}
                       onChangeText={(t) =>
@@ -677,7 +675,6 @@ export default function JobPostings() {
                           borderColor: theme.border,
                           color: theme.foreground,
                         },
-                        isRtl && styles.textRight,
                       ]}
                       value={String(editForm.salary_max || "")}
                       onChangeText={(t) =>
@@ -756,7 +753,6 @@ export default function JobPostings() {
                       borderColor: theme.border,
                       color: theme.mutedForeground,
                     },
-                    isRtl && styles.textRight,
                   ]}
                   value={editForm.description || ""}
                   onChangeText={(t) =>
@@ -818,7 +814,6 @@ export default function JobPostings() {
                             borderColor: theme.border,
                             color: theme.foreground,
                           },
-                          isRtl && styles.textRight,
                         ]}
                         value={resp}
                         onChangeText={(t) => {
@@ -913,7 +908,6 @@ export default function JobPostings() {
                             borderColor: theme.border,
                             color: theme.foreground,
                           },
-                          isRtl && styles.textRight,
                         ]}
                         value={req}
                         onChangeText={(t) => {
@@ -1026,9 +1020,8 @@ export default function JobPostings() {
                           borderColor: theme.border,
                           color: theme.mutedForeground,
                         },
-                        isRtl && styles.textRight,
-                      ]}
-                      placeholder={t("companies.add_skill_placeholder")}
+                    ]}
+                    placeholder={t("companies.add_skill_placeholder")}
                       placeholderTextColor={theme.muted}
                       onSubmitEditing={(e) =>
                         handleArrayInputSubmit(e, "skills")
@@ -1258,7 +1251,7 @@ export default function JobPostings() {
           >
             <Ionicons name="search-outline" size={16} color={theme.muted} />
             <TextInput
-              style={[styles.searchInput, { color: theme.foreground }, isRtl && styles.textRight]}
+              style={[styles.searchInput, { color: theme.foreground }]}
               placeholder={t("companies.search_jobs_placeholder")}
               placeholderTextColor={theme.muted}
               value={searchQuery}

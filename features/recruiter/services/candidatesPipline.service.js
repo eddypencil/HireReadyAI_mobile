@@ -330,7 +330,7 @@ export async function seedAnchorStages(jobId) {
       stage_type: "offer",
       order_index: 9999,
       is_locked: true,
-      description: "Terminal success stage — candidate receives an offer.",
+      description: "Terminal success stage - candidate receives an offer.",
     },
   ];
 

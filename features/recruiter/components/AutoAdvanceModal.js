@@ -448,7 +448,7 @@ export default function AutoAdvanceModal({
               <View style={styles.section}>
                 <Text style={{ fontSize: 12, fontFamily: FONT_FAMILY, color: c['muted-foreground'] }}>
                   {t('recruiter.candidates_to_evaluate', { count: (precedingStageCandidates || []).length })}
-                  {!hasCandidates ? ` — ${t('recruiter.no_candidates_to_evaluate')}` : ''}
+                  {!hasCandidates ? ` - ${t('recruiter.no_candidates_to_evaluate')}` : ''}
                 </Text>
               </View>
             </ScrollView>

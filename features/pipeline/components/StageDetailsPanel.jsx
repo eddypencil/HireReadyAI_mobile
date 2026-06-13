@@ -194,7 +194,7 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
         <View style={styles.fieldGroup}>
           <Text style={[styles.fieldLabel, isRtl && styles.textRight]}>{t("pipeline.stage_name")}</Text>
           <TextInput
-            style={[styles.input, stage.is_locked && styles.fieldDisabled, isRtl && styles.textRight]}
+            style={[styles.input, stage.is_locked && styles.fieldDisabled]}
             value={form.name}
             onChangeText={(t) => handleChange("name", t)}
             editable={!stage.is_locked}
@@ -237,7 +237,7 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
         <View style={styles.fieldGroup}>
           <Text style={styles.fieldLabel}>{t("pipeline.description")}</Text>
           <TextInput
-            style={[styles.textArea, stage.is_locked && styles.fieldDisabled, isRtl && styles.textRight]}
+            style={[styles.textArea, stage.is_locked && styles.fieldDisabled]}
             value={form.description}
             onChangeText={(t) => handleChange("description", t)}
             editable={!stage.is_locked}
@@ -252,7 +252,7 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
         <View style={styles.fieldGroup}>
           <Text style={styles.fieldLabel}>{t("pipeline.num_questions")}</Text>
           <TextInput
-            style={[styles.input, stage.is_locked && styles.fieldDisabled, isRtl && styles.textRight]}
+            style={[styles.input, stage.is_locked && styles.fieldDisabled]}
             value={String(form.num_questions || 0)}
             onChangeText={(t) => handleChange("num_questions", parseInt(t) || 0)}
             editable={!stage.is_locked}

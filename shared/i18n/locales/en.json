@@ -495,7 +495,11 @@
     "short_answer": "Short answer",
     "long_answer": "Long answer",
     "yes_no": "Yes / No",
-    "write_question_placeholder": "Write your question here..."
+    "write_question_placeholder": "Write your question here...",
+    "add_screening_questions": "Add Screening Questions",
+    "add_screening_subtitle": "Add questions applicants will answer when applying. You can also do this later.",
+    "add_questions": "Add Questions",
+    "skip_publish": "Skip & Publish"
   },
   "shortlist": {
     "title": "Shortlists",
