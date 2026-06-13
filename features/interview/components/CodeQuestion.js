@@ -236,6 +236,7 @@ export default function CodeQuestion({ question, onAnswer }) {
               onKeyPress={handleKeyDown}
               multiline
               textAlignVertical="top"
+              contextMenuHidden={true} 
               autoCapitalize="none"
               autoCorrect={false}
               spellCheck={false}
