@@ -291,7 +291,14 @@
       "back": "Back"
     },
     "start": "Start",
-    "interview": "Interview"
+    "interview": "Interview",
+    "leave_confirm": {
+      "title": "Leave interview?",
+      "message": "Your answers so far will be submitted and the interview will end. You won't be able to resume.",
+      "confirm": "Leave & Submit",
+      "cancel": "Stay",
+      "submitting": "Submitting your interview…"
+    }
   },
   "errors": {
     "something_wrong": "Something went wrong"

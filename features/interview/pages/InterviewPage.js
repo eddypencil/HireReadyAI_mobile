@@ -684,39 +684,38 @@ export default function InterviewPage({ route, navigation }) {
         </View>
       </Modal>
 
-      <Modal visible={showLeaveConfirm} transparent animationType="fade" statusBarTranslucent>
+      <Modal visible={showLeaveConfirm} transparent animationType="fade" statusBarTranslucent onRequestClose={handleCancelLeave}>
         <View style={s.desktopOverlay}>
           <View style={[s.desktopModal, { width: Math.min(screenWidth * 0.85, 400) }]}>
             {isLeaving ? (
-              <>
+              <View style={{ alignItems: 'center', paddingVertical: 16 }}>
                 <ActivityIndicator size="large" color={c.primary} />
-                <Text style={[s.desktopMessage, { marginTop: 16 }]}>
-                  Submitting your interview…
+                <Text style={[s.desktopMessage, { marginTop: 20 }]}>
+                  {t("interview_page.leave_confirm.submitting")}
                 </Text>
-              </>
+              </View>
             ) : (
               <>
-                <View style={[s.desktopIconWrap, { backgroundColor: `${c.warning}15` }]}>
-                  <Ionicons name="exit-outline" size={36} color={c.warning} />
+                <View style={[s.desktopIconWrap, { width: 80, height: 80, borderRadius: 40, backgroundColor: `${c.destructive}15`, marginBottom: 12 }]}>
+                  <Ionicons name="exit-outline" size={48} color={c.destructive} />
                 </View>
-                <Text style={s.desktopTitle}>Leave interview?</Text>
-                <Text style={s.desktopMessage}>
-                  Your answers so far will be submitted and the interview will end.
-                  You won't be able to resume.
+                <Text style={s.desktopTitle}>{t("interview_page.leave_confirm.title")}</Text>
+                <Text style={[s.desktopMessage, { paddingHorizontal: 0 }]}>
+                  {t("interview_page.leave_confirm.message")}
                 </Text>
                 <TouchableOpacity
-                  style={[s.desktopPrimaryBtn, { backgroundColor: c.destructive }]}
+                  style={[s.desktopPrimaryBtn, { backgroundColor: c.destructive, paddingVertical: 12 }]}
                   onPress={handleConfirmLeave}
                   activeOpacity={0.85}
                 >
-                  <Text style={s.desktopPrimaryBtnText}>Leave & Submit</Text>
+                  <Text style={s.desktopPrimaryBtnText}>{t("interview_page.leave_confirm.confirm")}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={s.desktopSecondaryBtn}
+                  style={[s.desktopSecondaryBtn, { paddingVertical: 12 }]}
                   onPress={handleCancelLeave}
                   activeOpacity={0.75}
                 >
-                  <Text style={s.desktopSecondaryBtnText}>Stay</Text>
+                  <Text style={s.desktopSecondaryBtnText}>{t("interview_page.leave_confirm.cancel")}</Text>
                 </TouchableOpacity>
               </>
             )}
