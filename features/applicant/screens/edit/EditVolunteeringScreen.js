@@ -82,11 +82,11 @@ export default function EditVolunteeringScreen() {
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Field label={t("profile.edit.role")} value={form.role} onChangeText={set('role')} placeholder={t("profile.edit.role_placeholder")} styles={styles} c={c} />
-        <Field label={t("profile.edit.organization")} value={form.organization} onChangeText={set('organization')} placeholder={t("profile.edit.organization_placeholder")} styles={styles} c={c} />
-        <Field label={t("profile.edit.start_date")} value={form.start} onChangeText={set('start')} placeholder={t("profile.edit.start_date_placeholder")} optional styles={styles} c={c} />
-        <Field label={t("profile.edit.end_date")} value={form.end} onChangeText={set('end')} placeholder={t("profile.edit.end_date_placeholder")} optional styles={styles} c={c} />
-        <Field label={t("profile.edit.description")} value={form.description} onChangeText={set('description')} placeholder={t("profile.edit.volunteering_placeholder")} multiline optional styles={styles} c={c} />
+        <Field label={t("profile.edit.role")} value={form.role} onChangeText={set('role')} placeholder="e.g. Mentor" styles={styles} c={c} />
+        <Field label={t("profile.edit.organization")} value={form.organization} onChangeText={set('organization')} placeholder="e.g. Egyptian Food Bank" styles={styles} c={c} />
+        <Field label={t("profile.edit.start_date")} value={form.start} onChangeText={set('start')} placeholder="YYYY-MM  e.g. 2022-03" optional styles={styles} c={c} />
+        <Field label={t("profile.edit.end_date")} value={form.end} onChangeText={set('end')} placeholder="YYYY-MM  or leave blank if ongoing" optional styles={styles} c={c} />
+        <Field label={t("profile.edit.description")} value={form.description} onChangeText={set('description')} placeholder="What did you do?" multiline optional styles={styles} c={c} />
         <TouchableOpacity style={[styles.saveBtn, saving && { opacity: 0.6 }]} onPress={handleSave} disabled={saving} activeOpacity={0.85}>
           {saving ? <ActivityIndicator color={c.white} size="small" /> : <Text style={styles.saveBtnText}>{isEdit ? t("profile.save_changes") : t("profile.add_volunteering")}</Text>}
         </TouchableOpacity>

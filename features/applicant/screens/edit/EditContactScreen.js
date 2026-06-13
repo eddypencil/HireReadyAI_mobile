@@ -67,7 +67,7 @@ export default function EditContactScreen() {
             style={styles.input}
             value={phone}
             onChangeText={setPhone}
-            placeholder={t("profile.edit.phone_placeholder")}
+            placeholder="+20 1XX XXXX XXX"
             placeholderTextColor={c['muted-foreground']}
             keyboardType="phone-pad"
           />
@@ -84,7 +84,7 @@ export default function EditContactScreen() {
             style={styles.input}
             value={location}
             onChangeText={setLocation}
-            placeholder={t("profile.edit.location_placeholder")}
+            placeholder="e.g. Cairo, Egypt"
             placeholderTextColor={c['muted-foreground']}
             autoCapitalize="words"
           />

@@ -659,7 +659,7 @@ export default function JobPostings() {
                       onChangeText={(t) =>
                         setEditForm({ ...editForm, salary_min: t })
                       }
-                      placeholder={t("companies.min")}
+                      placeholder="Min"
                       placeholderTextColor={theme.muted}
                       keyboardType="numeric"
                       accessibilityLabel={t("companies.min_salary")}
@@ -680,7 +680,7 @@ export default function JobPostings() {
                       onChangeText={(t) =>
                         setEditForm({ ...editForm, salary_max: t })
                       }
-                      placeholder={t("companies.max")}
+                      placeholder="Max"
                       placeholderTextColor={theme.muted}
                       keyboardType="numeric"
                       accessibilityLabel={t("companies.max_salary")}
@@ -837,7 +837,7 @@ export default function JobPostings() {
                       },
                       isRtl && styles.textRight,
                     ]}
-                    placeholder={t("companies.type_to_add")}
+                    placeholder="Type to add..."
                     placeholderTextColor={theme.muted}
                     onSubmitEditing={(e) =>
                       handleArrayInputSubmit(e, "responsibilities")
@@ -928,7 +928,7 @@ export default function JobPostings() {
                       },
                       isRtl && styles.textRight,
                     ]}
-                    placeholder={t("companies.type_to_add")}
+                    placeholder="Type to add..."
                     placeholderTextColor={theme.muted}
                     onSubmitEditing={(e) =>
                       handleArrayInputSubmit(e, "requirements")
@@ -1021,7 +1021,7 @@ export default function JobPostings() {
                           color: theme.mutedForeground,
                         },
                     ]}
-                    placeholder={t("companies.add_skill_placeholder")}
+                    placeholder="Type a skill and press Enter"
                       placeholderTextColor={theme.muted}
                       onSubmitEditing={(e) =>
                         handleArrayInputSubmit(e, "skills")
@@ -1252,7 +1252,7 @@ export default function JobPostings() {
             <Ionicons name="search-outline" size={16} color={theme.muted} />
             <TextInput
               style={[styles.searchInput, { color: theme.foreground }]}
-              placeholder={t("companies.search_jobs_placeholder")}
+              placeholder="Search jobs..."
               placeholderTextColor={theme.muted}
               value={searchQuery}
               onChangeText={setSearchQuery}

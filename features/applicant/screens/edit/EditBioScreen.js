@@ -62,7 +62,7 @@ export default function EditBioScreen() {
             style={styles.input}
             value={headline}
             onChangeText={setHeadline}
-            placeholder={t("profile.edit.headline_placeholder")}
+            placeholder="e.g. Frontend Developer at Vodafone"
             placeholderTextColor={c['muted-foreground']}
             autoCapitalize="sentences"
           />
@@ -75,7 +75,7 @@ export default function EditBioScreen() {
             style={[styles.input, styles.inputMulti]}
             value={bio}
             onChangeText={setBio}
-            placeholder={t("profile.edit.bio_placeholder")}
+            placeholder="e.g. I'm a frontend developer with 2 years of experience building cross-platform apps..."
             placeholderTextColor={c['muted-foreground']}
             multiline
             numberOfLines={5}

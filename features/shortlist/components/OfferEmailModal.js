@@ -161,7 +161,7 @@ export default function OfferEmailModal({
                 style={[styles.input, !fromName && styles.inputWarning]}
                 value={fromName}
                 onChangeText={setFromName}
-                placeholder={t("shortlist.from_name_placeholder")}
+                placeholder="Your name"
                 placeholderTextColor={c['muted-foreground']}
               />
             </View>
@@ -174,7 +174,7 @@ export default function OfferEmailModal({
                 style={[styles.input, !fromEmail && styles.inputWarning]}
                 value={fromEmail}
                 onChangeText={setFromEmail}
-                placeholder={t("shortlist.from_email_placeholder")}
+                placeholder="your@email.com"
                 placeholderTextColor={c['muted-foreground']}
                 keyboardType="email-address"
                 autoCapitalize="none"
@@ -189,7 +189,7 @@ export default function OfferEmailModal({
                 style={[styles.input, !to && styles.inputWarning]}
                 value={to}
                 onChangeText={setTo}
-                placeholder={t("shortlist.to_placeholder")}
+                placeholder="candidate@email.com"
                 placeholderTextColor={c['muted-foreground']}
                 keyboardType="email-address"
                 autoCapitalize="none"
@@ -204,7 +204,7 @@ export default function OfferEmailModal({
                 style={[styles.input, !subject && styles.inputWarning]}
                 value={subject}
                 onChangeText={setSubject}
-                placeholder={t("shortlist.subject_placeholder")}
+                placeholder="Offer of Employment"
                 placeholderTextColor={c['muted-foreground']}
               />
             </View>
@@ -217,7 +217,7 @@ export default function OfferEmailModal({
                 style={[styles.bodyInput, !body && styles.inputWarning]}
                 value={body}
                 onChangeText={setBody}
-                placeholder={t("shortlist.body_placeholder")}
+                placeholder="Write your message here..."
                 placeholderTextColor={c['muted-foreground']}
                 multiline
                 textAlignVertical="top"

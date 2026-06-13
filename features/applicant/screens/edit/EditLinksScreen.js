@@ -67,7 +67,7 @@ export default function EditLinksScreen() {
             style={styles.input}
             value={linkedinUrl}
             onChangeText={setLinkedinUrl}
-            placeholder={t("profile.edit.linkedin_placeholder")}
+            placeholder="https://linkedin.com/in/username"
             placeholderTextColor={c['muted-foreground']}
             autoCapitalize="none"
             autoCorrect={false}

@@ -1,6 +1,6 @@
 
 import { useEffect, useRef, useState } from "react";
-import { StyleSheet, View, Text, TouchableOpacity, ActivityIndicator, ScrollView, SafeAreaView, KeyboardAvoidingView, Platform } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, ActivityIndicator, ScrollView, SafeAreaView, KeyboardAvoidingView, Platform, Modal, useWindowDimensions } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "../../../shared/context/ThemeContext";
@@ -159,6 +159,75 @@ function createStyles(c) {
     evalDots: { flexDirection: "row", gap: 6 },
     evalDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: c.primary },
     evalText: { fontSize: 12, color: c['muted-foreground'], fontWeight: "500" },
+
+    desktopOverlay: {
+      flex: 1,
+      backgroundColor: `${c.foreground}66`,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    desktopModal: {
+      backgroundColor: c.card,
+      borderRadius: 20,
+      borderWidth: 1,
+      borderColor: c.border,
+      paddingVertical: 32,
+      paddingHorizontal: 28,
+      alignItems: 'center',
+      width: '85%',
+      maxWidth: 400,
+    },
+    desktopIconWrap: {
+      width: 72,
+      height: 72,
+      borderRadius: 36,
+      backgroundColor: `${c.primary}15`,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: 16,
+    },
+    desktopTitle: {
+      fontSize: 20,
+      fontFamily: FONT_FAMILY_BOLD,
+      color: c.foreground,
+      textAlign: 'center',
+    },
+    desktopMessage: {
+      fontSize: 14,
+      fontFamily: FONT_FAMILY,
+      color: c['muted-foreground'],
+      textAlign: 'center',
+      marginTop: 8,
+      lineHeight: 20,
+      paddingHorizontal: 8,
+    },
+    desktopPrimaryBtn: {
+      width: '100%',
+      backgroundColor: c.primary,
+      borderRadius: 12,
+      paddingVertical: 14,
+      alignItems: 'center',
+      marginTop: 24,
+    },
+    desktopPrimaryBtnText: {
+      fontSize: 15,
+      fontFamily: FONT_FAMILY_SEMIBOLD,
+      color: c['destructive-foreground'],
+    },
+    desktopSecondaryBtn: {
+      width: '100%',
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: c.border,
+      paddingVertical: 14,
+      alignItems: 'center',
+      marginTop: 10,
+    },
+    desktopSecondaryBtnText: {
+      fontSize: 15,
+      fontFamily: FONT_FAMILY_SEMIBOLD,
+      color: c.foreground,
+    },
   });
 }
 
@@ -203,6 +272,7 @@ export default function InterviewPage({ route, navigation }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const c = theme.colors;
+  const { width: screenWidth } = useWindowDimensions();
   const s = createStyles(c);
   const insets = useSafeAreaInsets();
 
@@ -216,6 +286,7 @@ export default function InterviewPage({ route, navigation }) {
   const [elapsed, setElapsed] = useState(0);
   const [maxTime, setMaxTime] = useState(null);
   const [timeExceeded, setTimeExceeded] = useState(false);
+  const [showDesktopPrompt, setShowDesktopPrompt] = useState(true);
   const generatingRef = useRef(false);
 
   const requestNextQuestion = async (stageId, previousAnswer, currentAnsweredCount) => {
@@ -249,7 +320,7 @@ export default function InterviewPage({ route, navigation }) {
   };
 
   useEffect(() => {
-    if (!applicationId) return;
+    if (!applicationId || showDesktopPrompt) return;
     (async () => {
       try {
         const stage = await fetchActiveInterviewStage(applicationId);
@@ -312,7 +383,7 @@ export default function InterviewPage({ route, navigation }) {
         setPhase(PHASE.ERROR);
       }
     })();
-  }, [applicationId, t]);
+  }, [applicationId, t, showDesktopPrompt]);
 
   useEffect(() => {
     if (phase !== PHASE.ANSWERING) return;
@@ -524,6 +595,32 @@ export default function InterviewPage({ route, navigation }) {
           )}
         </ScrollView>
       </KeyboardAvoidingView>
+
+      <Modal visible={showDesktopPrompt} transparent animationType="fade" statusBarTranslucent>
+        <View style={s.desktopOverlay}>
+          <View style={[s.desktopModal, { width: Math.min(screenWidth * 0.85, 400) }]}>
+            <View style={s.desktopIconWrap}>
+              <Ionicons name="laptop-outline" size={36} color={c.primary} />
+            </View>
+            <Text style={s.desktopTitle}>{t("interview_page.desktop_prompt.title")}</Text>
+            <Text style={s.desktopMessage}>{t("interview_page.desktop_prompt.message")}</Text>
+            <TouchableOpacity
+              style={s.desktopPrimaryBtn}
+              onPress={() => setShowDesktopPrompt(false)}
+              activeOpacity={0.85}
+            >
+              <Text style={s.desktopPrimaryBtnText}>{t("interview_page.desktop_prompt.continue")}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={s.desktopSecondaryBtn}
+              onPress={() => navigation.goBack()}
+              activeOpacity={0.75}
+            >
+              <Text style={s.desktopSecondaryBtnText}>{t("interview_page.desktop_prompt.back")}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }

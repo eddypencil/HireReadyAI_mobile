@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, TouchableOpacity,
-  TextInput, ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Modal,
+  TextInput, ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Modal, useWindowDimensions,
 } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -23,6 +23,7 @@ export default function ApplyJobPage() {
   const { t, language } = useTranslation();
   const c = theme.colors;
   const insets = useSafeAreaInsets();
+  const { width: screenWidth } = useWindowDimensions();
   const styles = createStyles(c);
   const route = useRoute();
   const navigation = useNavigation();
@@ -264,7 +265,7 @@ export default function ApplyJobPage() {
                 style={[styles.input, errors.fullName && styles.inputError]}
                 value={form.fullName}
                 onChangeText={v => { setForm(p => ({ ...p, fullName: v })); clearFieldError('fullName'); }}
-                placeholder={t("applications.full_name_placeholder")}
+                placeholder="Your full name"
                 placeholderTextColor={c['muted-foreground']}
               />
               {errors.fullName && <Text style={styles.errorText}>{errors.fullName}</Text>}
@@ -276,7 +277,7 @@ export default function ApplyJobPage() {
                 style={[styles.input, errors.email && styles.inputError]}
                 value={form.email}
                 onChangeText={v => { setForm(p => ({ ...p, email: v })); clearFieldError('email'); }}
-                placeholder={t("applications.email_placeholder")}
+                placeholder="your@email.com"
                 placeholderTextColor={c['muted-foreground']}
                 keyboardType="email-address"
                 autoCapitalize="none"
@@ -290,7 +291,7 @@ export default function ApplyJobPage() {
                 style={[styles.input, errors.phone && styles.inputError]}
                 value={form.phone}
                 onChangeText={v => { setForm(p => ({ ...p, phone: v })); clearFieldError('phone'); }}
-                placeholder={t("applications.phone_placeholder")}
+                placeholder="+20 100 000 0000"
                 placeholderTextColor={c['muted-foreground']}
                 keyboardType="phone-pad"
               />
@@ -396,7 +397,7 @@ export default function ApplyJobPage() {
 
       <Modal visible={showSuccess} transparent animationType="fade" statusBarTranslucent>
         <View style={styles.successOverlay}>
-          <View style={styles.successModal}>
+          <View style={[styles.successModal, { width: Math.min(screenWidth * 0.85, 400) }]}>
             <View style={styles.successIconWrap}>
               <Ionicons name="checkmark-circle" size={56} color={c.success} />
             </View>
@@ -647,7 +648,8 @@ function createStyles(c) { return StyleSheet.create({
     paddingVertical: 32,
     paddingHorizontal: 28,
     alignItems: 'center',
-    marginHorizontal: 24,
+    width: '85%',
+    maxWidth: 400,
   },
   successIconWrap: {
     width: 80,

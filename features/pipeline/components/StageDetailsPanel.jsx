@@ -198,7 +198,7 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
             value={form.name}
             onChangeText={(t) => handleChange("name", t)}
             editable={!stage.is_locked}
-            placeholder={t("pipeline.stage_name_placeholder")}
+            placeholder="e.g. Initial Screening"
             placeholderTextColor={c['muted-foreground']}
           />
         </View>
@@ -244,7 +244,7 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
             multiline
             numberOfLines={3}
             textAlignVertical="top"
-            placeholder={t("pipeline.description_placeholder")}
+            placeholder="Describe what happens at this stage..."
             placeholderTextColor={c['muted-foreground']}
           />
         </View>
@@ -257,7 +257,7 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
             onChangeText={(t) => handleChange("num_questions", parseInt(t) || 0)}
             editable={!stage.is_locked}
             keyboardType="numeric"
-            placeholder={t("pipeline.num_questions_placeholder")}
+            placeholder="Auto-calculated from template"
             placeholderTextColor={c['muted-foreground']}
           />
         </View>

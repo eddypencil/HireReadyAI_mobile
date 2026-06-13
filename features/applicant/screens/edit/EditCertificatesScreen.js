@@ -170,10 +170,10 @@ export default function EditCertificatesScreen() {
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
 
-        <Field label={t("profile.edit.certificate_name")} value={form.name} onChangeText={set('name')} placeholder={t("profile.edit.certificate_name_placeholder")} />
-        <Field label={t("profile.edit.issuing_org")} value={form.organization} onChangeText={set('organization')} placeholder={t("profile.edit.issuing_org_placeholder")} optional />
-        <Field label={t("profile.edit.field_subject")} value={form.field} onChangeText={set('field')} placeholder={t("profile.edit.field_subject_placeholder")} optional />
-        <Field label={t("profile.edit.date")} value={form.date} onChangeText={set('date')} placeholder={t("profile.edit.date_placeholder")} optional />
+        <Field label={t("profile.edit.certificate_name")} value={form.name} onChangeText={set('name')} placeholder="e.g. AWS Certified Developer" />
+        <Field label={t("profile.edit.issuing_org")} value={form.organization} onChangeText={set('organization')} placeholder="e.g. Amazon Web Services" optional />
+        <Field label={t("profile.edit.field_subject")} value={form.field} onChangeText={set('field')} placeholder="e.g. Cloud Computing" optional />
+        <Field label={t("profile.edit.date")} value={form.date} onChangeText={set('date')} placeholder="e.g. 2024-03 or March 2024" optional />
 
         {/* Image section */}
         <View style={styles.divider} />

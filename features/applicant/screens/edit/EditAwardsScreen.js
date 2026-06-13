@@ -94,10 +94,10 @@ export default function EditAwardsScreen() {
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Field label={t("profile.edit.award_title")} value={form.title} onChangeText={set('title')} placeholder={t("profile.edit.award_title_placeholder")} styles={styles} c={c} />
-        <Field label={t("profile.edit.issuer")} value={form.issuer} onChangeText={set('issuer')} placeholder={t("profile.edit.issuer_placeholder")} optional styles={styles} c={c} />
-        <Field label={t("profile.edit.year")} value={form.year} onChangeText={set('year')} placeholder={t("profile.edit.year_placeholder")} optional styles={styles} c={c} />
-        <Field label={t("profile.edit.description")} value={form.description} onChangeText={set('description')} placeholder={t("profile.edit.description_placeholder_award")} multiline optional styles={styles} c={c} />
+        <Field label={t("profile.edit.award_title")} value={form.title} onChangeText={set('title')} placeholder="e.g. Best Graduation Project" styles={styles} c={c} />
+        <Field label={t("profile.edit.issuer")} value={form.issuer} onChangeText={set('issuer')} placeholder="e.g. ITI" optional styles={styles} c={c} />
+        <Field label={t("profile.edit.year")} value={form.year} onChangeText={set('year')} placeholder="e.g. 2024" optional styles={styles} c={c} />
+        <Field label={t("profile.edit.description")} value={form.description} onChangeText={set('description')} placeholder="Brief description of the award..." multiline optional styles={styles} c={c} />
         <TouchableOpacity style={[styles.saveBtn, saving && { opacity: 0.6 }]} onPress={handleSave} disabled={saving} activeOpacity={0.85}>
           {saving ? <ActivityIndicator color={c.white} size="small" /> : <Text style={styles.saveBtnText}>{isEdit ? t("profile.save_changes") : t("profile.edit.add_award")}</Text>}
         </TouchableOpacity>

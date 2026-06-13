@@ -96,12 +96,12 @@ export default function EditExperienceScreen() {
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
 
-        <Field label={t("profile.edit.job_title")} value={form.title} onChangeText={set('title')} placeholder={t("profile.edit.job_title_placeholder")} styles={styles} c={c} t={t} />
-        <Field label={t("profile.edit.company_name")} value={form.companyName} onChangeText={set('companyName')} placeholder={t("profile.edit.company_name_placeholder")} styles={styles} c={c} t={t}/>
-        <Field label={t("profile.edit.industry")} value={form.industry} onChangeText={set('industry')} placeholder={t("profile.edit.industry_placeholder")} optional styles={styles} c={c} t={t}/>
-        <Field label={t("profile.edit.from")} value={form.from} onChangeText={set('from')} placeholder={t("profile.edit.from_placeholder")} styles={styles} c={c} t={t} />
-        <Field label={t("profile.edit.to")} value={form.to} onChangeText={set('to')} placeholder={t("profile.edit.to_placeholder")} optional styles={styles} c={c} t={t}/>
-        <Field label={t("profile.edit.description")} value={form.description} onChangeText={set('description')} placeholder={t("profile.edit.description_placeholder")} multiline optional styles={styles} c={c}  t={t} />
+        <Field label={t("profile.edit.job_title")} value={form.title} onChangeText={set('title')} placeholder="e.g. Frontend Developer" styles={styles} c={c} t={t} />
+        <Field label={t("profile.edit.company_name")} value={form.companyName} onChangeText={set('companyName')} placeholder="e.g. Vodafone Egypt" styles={styles} c={c} t={t}/>
+        <Field label={t("profile.edit.industry")} value={form.industry} onChangeText={set('industry')} placeholder="e.g. Telecommunications" optional styles={styles} c={c} t={t}/>
+        <Field label={t("profile.edit.from")} value={form.from} onChangeText={set('from')} placeholder="YYYY-MM  e.g. 2023-06" styles={styles} c={c} t={t} />
+        <Field label={t("profile.edit.to")} value={form.to} onChangeText={set('to')} placeholder="YYYY-MM  or 'Present'" optional styles={styles} c={c} t={t}/>
+        <Field label={t("profile.edit.description")} value={form.description} onChangeText={set('description')} placeholder="Describe your responsibilities and achievements..." multiline optional styles={styles} c={c}  t={t} />
 
         <TouchableOpacity
           style={[styles.saveBtn, saving && { opacity: 0.6 }]}

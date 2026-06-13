@@ -283,7 +283,15 @@
     "finished": {
       "title": "Interview Complete!",
       "back_to_application": "Back to Applications"
-    }
+    },
+    "desktop_prompt": {
+      "title": "Desktop Recommended",
+      "message": "For the best experience, we recommend taking this interview on a desktop computer. You may continue on mobile if preferred.",
+      "continue": "Continue",
+      "back": "Back"
+    },
+    "start": "Start",
+    "interview": "Interview"
   },
   "errors": {
     "something_wrong": "Something went wrong"

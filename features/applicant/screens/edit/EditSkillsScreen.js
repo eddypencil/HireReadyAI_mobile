@@ -69,7 +69,7 @@ export default function EditSkillsScreen() {
             style={styles.input}
             value={name}
             onChangeText={setName}
-            placeholder={t("profile.edit.skill_placeholder")}
+            placeholder="e.g. React Native"
             placeholderTextColor={c['muted-foreground']}
             autoCapitalize="words"
             autoCorrect={false}

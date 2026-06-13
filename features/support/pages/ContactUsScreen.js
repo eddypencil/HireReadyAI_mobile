@@ -137,7 +137,7 @@ export default function ContactUsScreen() {
                         value={formData.name}
                         onChangeText={(v) => handleChange('name', v)}
                         style={[styles.input, { color: c.foreground, borderColor: c.border }]}
-                        placeholder={t('contact_us.name_placeholder')}
+                        placeholder="Your name"
                         placeholderTextColor={c['muted-foreground']}
                     />
 
@@ -148,7 +148,7 @@ export default function ContactUsScreen() {
                         value={formData.email}
                         onChangeText={(v) => handleChange('email', v)}
                         style={[styles.input, { color: c.foreground, borderColor: c.border }]}
-                        placeholder={t('contact_us.email_placeholder')}
+                        placeholder="you@company.com"
                         keyboardType="email-address"
                         placeholderTextColor={c['muted-foreground']}
                     />
@@ -160,7 +160,7 @@ export default function ContactUsScreen() {
                         value={formData.company}
                         onChangeText={(v) => handleChange('company', v)}
                         style={[styles.input, { color: c.foreground, borderColor: c.border }]}
-                        placeholder={t('contact_us.company_placeholder')}
+                        placeholder="Company name"
                         placeholderTextColor={c['muted-foreground']}
                     />
 
@@ -176,7 +176,7 @@ export default function ContactUsScreen() {
                             styles.textarea,
                             { color: c.foreground, borderColor: c.border },
                         ]}
-                        placeholder={t('contact_us.message_placeholder')}
+                        placeholder="Tell us about your request..."
                         placeholderTextColor={c['muted-foreground']}
                     />
 

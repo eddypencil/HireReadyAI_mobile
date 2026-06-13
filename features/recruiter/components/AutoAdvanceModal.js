@@ -403,7 +403,7 @@ export default function AutoAdvanceModal({
                   style={[styles.textarea, generating && styles.textareaDisabled]}
                   value={criteria}
                   onChangeText={setCriteria}
-                  placeholder={t('recruiter.criteria_placeholder')}
+                  placeholder="Describe the criteria for shortlisting candidates..."
                   placeholderTextColor={c['muted-foreground']}
                   multiline
                   editable={!generating}

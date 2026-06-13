@@ -114,12 +114,12 @@ export default function EditEducationScreen() {
           </View>
         </View>
 
-        <Field label={t("profile.edit.university")} value={form.university} onChangeText={set('university')} placeholder={t("profile.edit.university_placeholder")} styles={styles} c={c} />
-        <Field label={t("profile.edit.faculty")} value={form.faculty} onChangeText={set('faculty')} placeholder={t("profile.edit.faculty_placeholder")} optional styles={styles} c={c} />
-        <Field label={t("profile.edit.major")} value={form.major} onChangeText={set('major')} placeholder={t("profile.edit.major_placeholder")} optional styles={styles} c={c} />
-        <Field label={t("profile.edit.start_year")} value={form.startYear} onChangeText={set('startYear')} placeholder={t("profile.edit.start_year_placeholder")} styles={styles} c={c} />
-        <Field label={t("profile.edit.end_year")} value={form.endYear} onChangeText={set('endYear')} placeholder={t("profile.edit.end_year_placeholder")} optional styles={styles} c={c} />
-        <Field label={t("profile.edit.grade")} value={form.grade} onChangeText={set('grade')} placeholder={t("profile.edit.grade_placeholder")} optional styles={styles} c={c} />
+        <Field label={t("profile.edit.university")} value={form.university} onChangeText={set('university')} placeholder="e.g. Cairo University" styles={styles} c={c} />
+        <Field label={t("profile.edit.faculty")} value={form.faculty} onChangeText={set('faculty')} placeholder="e.g. Faculty of Engineering" optional styles={styles} c={c} />
+        <Field label={t("profile.edit.major")} value={form.major} onChangeText={set('major')} placeholder="e.g. Systems & Biomedical Engineering" optional styles={styles} c={c} />
+        <Field label={t("profile.edit.start_year")} value={form.startYear} onChangeText={set('startYear')} placeholder="e.g. 2020" styles={styles} c={c} />
+        <Field label={t("profile.edit.end_year")} value={form.endYear} onChangeText={set('endYear')} placeholder="e.g. 2024  (leave blank if ongoing)" optional styles={styles} c={c} />
+        <Field label={t("profile.edit.grade")} value={form.grade} onChangeText={set('grade')} placeholder="e.g. 3.8 / 4.0 or Excellent" optional styles={styles} c={c} />
 
         <TouchableOpacity
           style={[styles.saveBtn, saving && { opacity: 0.6 }]}

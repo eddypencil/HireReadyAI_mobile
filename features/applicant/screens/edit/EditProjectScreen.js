@@ -178,10 +178,10 @@ export default function EditProjectScreen() {
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
 
-        <Field label={t("profile.edit.project_name")} value={form.name} onChangeText={set('name')} placeholder={t("profile.edit.project_name_placeholder")} styles={styles} c={c} />
-        <Field label={t("profile.edit.description")} value={form.description} onChangeText={set('description')} placeholder={t("profile.edit.description_placeholder_alt")} multiline optional styles={styles} c={c} />
-        <Field label={t("profile.edit.technologies")} value={form.technologies} onChangeText={set('technologies')} placeholder={t("profile.edit.technologies_placeholder")} optional styles={styles} c={c} />
-        <Field label={t("profile.edit.project_url")} value={form.url} onChangeText={set('url')} placeholder={t("profile.edit.project_url_placeholder")} optional keyboardType="url" styles={styles} c={c} />
+        <Field label={t("profile.edit.project_name")} value={form.name} onChangeText={set('name')} placeholder="e.g. HireReadyAI Mobile App" styles={styles} c={c} />
+        <Field label={t("profile.edit.description")} value={form.description} onChangeText={set('description')} placeholder="What does this project do and what problem does it solve?" multiline optional styles={styles} c={c} />
+        <Field label={t("profile.edit.technologies")} value={form.technologies} onChangeText={set('technologies')} placeholder="React Native, Supabase, Expo  (comma separated)" optional styles={styles} c={c} />
+        <Field label={t("profile.edit.project_url")} value={form.url} onChangeText={set('url')} placeholder="https://github.com/... or live link" optional keyboardType="url" styles={styles} c={c} />
 
         {/* Screenshots */}
         <View style={styles.divider} />

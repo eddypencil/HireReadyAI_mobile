@@ -307,7 +307,7 @@ export default function ShortlistDetailPanel({
           numberOfLines={2}
           value={noteBody}
           onChangeText={setNoteBody}
-          placeholder={t("shortlist.note_placeholder")}
+          placeholder="Add a note..."
           placeholderTextColor={c['muted-foreground']}
           textAlignVertical="top"
         />

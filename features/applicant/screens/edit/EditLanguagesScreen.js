@@ -63,7 +63,7 @@ export default function EditLanguagesScreen() {
             style={styles.input}
             value={name}
             onChangeText={setName}
-            placeholder={t("profile.edit.language_placeholder")}
+            placeholder="e.g. Arabic, English, French"
             placeholderTextColor={c['muted-foreground']}
             autoCapitalize="words"
             autoCorrect={false}
