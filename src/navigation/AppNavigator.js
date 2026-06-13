@@ -7,7 +7,7 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
 import * as Notifications from "expo-notifications";
@@ -68,7 +68,7 @@ import PipelineBuilderPage from "../../features/pipeline/pages/PipelineBuilderPa
 import InterviewPage from "../../features/interview/pages/InterviewPage";
 import ApplyJobPage from "../../features/applications/pages/ApplyJobPage";
 import ContactUsScreen from "../../features/support/pages/ContactUsScreen";
-import { confirmPayment } from "../../features/payment/services/premium.service";
+
 
 const AuthStack = createNativeStackNavigator();
 const RootStack = createNativeStackNavigator();
@@ -359,31 +359,32 @@ function RootNavigator({ onboardingSeen }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const c = theme.colors;
+  const navigation = useNavigation();
 
-useEffect(() => {
-  const handleDeepLink = async (url) => {
-    if (!url) return;
+  useEffect(() => {
+    const handleDeepLink = async (url) => {
+      if (!url) return;
 
-    if (url.includes("premium/success")) {
-      console.log("Payment success 🎉");
+      if (url.includes("premium/success")) {
+        console.log("Payment success, redirecting to CompanyProfile");
+        if (navigation) {
+          navigation.navigate('Main', { screen: 'CompanyProfile' });
+        }
+      }
 
-      // Refresh company data here
-      // await refetchCompany();
-    }
+      if (url.includes("premium/cancel")) {
+        console.log("Payment cancelled");
+      }
+    };
 
-    if (url.includes("premium/cancel")) {
-      console.log("Payment cancelled");
-    }
-  };
+    Linking.getInitialURL().then(handleDeepLink);
 
-  Linking.getInitialURL().then(handleDeepLink);
+    const subscription = Linking.addEventListener("url", (event) => {
+      handleDeepLink(event.url);
+    });
 
-  const subscription = Linking.addEventListener("url", (event) => {
-    handleDeepLink(event.url);
-  });
-
-  return () => subscription.remove();
-}, []);
+    return () => subscription.remove();
+  }, [navigation]);
   if (loading || onboardingSeen === null) {
     return (
       <View

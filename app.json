@@ -1,9 +1,9 @@
 {
   "expo": {
-    "scheme": "hirereadyai",
     "name": "HireReadyAI",
-    "slug": "hirereadyai-govps-9e8e0at5mfdwlh5",
+    "slug": "HireReadyAI",
     "version": "1.0.0",
+    "scheme": "hirereadyai",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -38,9 +38,8 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "4db44267-023a-4806-b7d7-a9519a80df5a"
+        "projectId": "ee6a48b2-f123-491b-9d1f-f225c829630b"
       }
-    },
-    "owner": "eddypencils-team"
+    }
   }
 }
