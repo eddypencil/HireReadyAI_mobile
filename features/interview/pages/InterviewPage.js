@@ -1,6 +1,6 @@
 
 import { useEffect, useRef, useState } from "react";
-import { StyleSheet, View, Text, TouchableOpacity, ActivityIndicator, ScrollView, SafeAreaView, KeyboardAvoidingView, Platform, Modal, useWindowDimensions } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, ActivityIndicator, ScrollView, SafeAreaView, KeyboardAvoidingView, Platform, Modal, useWindowDimensions, AppState } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "../../../shared/context/ThemeContext";
@@ -9,6 +9,7 @@ import {
   fetchActiveInterviewStage,
   fetchStageQuestions,
   generateNextQuestion,
+  abandonInterview,
 } from "../services/interview.service";
 import TextQuestion from "../components/TextQuestion";
 import MultipleChoiceQuestion from "../components/MultipleChoiceQuestion";
@@ -287,7 +288,17 @@ export default function InterviewPage({ route, navigation }) {
   const [maxTime, setMaxTime] = useState(null);
   const [timeExceeded, setTimeExceeded] = useState(false);
   const [showDesktopPrompt, setShowDesktopPrompt] = useState(true);
+  const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
+  const [isLeaving, setIsLeaving] = useState(false);
   const generatingRef = useRef(false);
+  const phaseRef = useRef(phase);
+  const currentQuestionRef = useRef(currentQuestion);
+  const applicationStageRef = useRef(applicationStage);
+  const pendingNavActionRef = useRef(null);
+
+  phaseRef.current = phase;
+  currentQuestionRef.current = currentQuestion;
+  applicationStageRef.current = applicationStage;
 
   const requestNextQuestion = async (stageId, previousAnswer, currentAnsweredCount) => {
     if (generatingRef.current) return;
@@ -331,6 +342,12 @@ export default function InterviewPage({ route, navigation }) {
         }
 
         setApplicationStage(stage);
+
+        if (stage.status === "passed" || stage.status === "failed" || stage.status === "abandoned") {
+          setPhase(PHASE.FINISHED);
+          return;
+        }
+
         const mq = stage.recruitment_stages.evaluation_criteria?.max_questions ?? 8;
         setMaxQuestions(mq);
 
@@ -398,6 +415,51 @@ export default function InterviewPage({ route, navigation }) {
       handleAnswer("");
     }
   }, [elapsed, maxTime, phase, timeExceeded]);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
+      const p = phaseRef.current;
+      if (p !== PHASE.ANSWERING && p !== PHASE.LOADING && p !== PHASE.EVALUATING) return;
+      if (generatingRef.current) return;
+
+      e.preventDefault();
+      pendingNavActionRef.current = e;
+      setShowLeaveConfirm(true);
+    });
+    return unsubscribe;
+  }, [navigation]);
+
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state !== 'background') return;
+      const p = phaseRef.current;
+      if (p !== PHASE.ANSWERING && p !== PHASE.LOADING && p !== PHASE.EVALUATING) return;
+      if (generatingRef.current) return;
+
+      abandonInterview(applicationStageRef.current?.id);
+    });
+    return () => sub.remove();
+  }, []);
+
+  const handleConfirmLeave = async () => {
+    if (isLeaving) return;
+    setIsLeaving(true);
+    try {
+      await abandonInterview(applicationStageRef.current?.id);
+    } catch (e) {
+      console.error("abandon interview error:", e);
+    }
+    setShowLeaveConfirm(false);
+    if (pendingNavActionRef.current) {
+      navigation.dispatch(pendingNavActionRef.current.data.action);
+      pendingNavActionRef.current = null;
+    }
+  };
+
+  const handleCancelLeave = () => {
+    setShowLeaveConfirm(false);
+    pendingNavActionRef.current = null;
+  };
 
   const handleAnswer = async (answerText) => {
     if (!currentQuestion || !applicationStage) return;
@@ -618,6 +680,46 @@ export default function InterviewPage({ route, navigation }) {
             >
               <Text style={s.desktopSecondaryBtnText}>{t("interview_page.desktop_prompt.back")}</Text>
             </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal visible={showLeaveConfirm} transparent animationType="fade" statusBarTranslucent>
+        <View style={s.desktopOverlay}>
+          <View style={[s.desktopModal, { width: Math.min(screenWidth * 0.85, 400) }]}>
+            {isLeaving ? (
+              <>
+                <ActivityIndicator size="large" color={c.primary} />
+                <Text style={[s.desktopMessage, { marginTop: 16 }]}>
+                  Submitting your interview…
+                </Text>
+              </>
+            ) : (
+              <>
+                <View style={[s.desktopIconWrap, { backgroundColor: `${c.warning}15` }]}>
+                  <Ionicons name="exit-outline" size={36} color={c.warning} />
+                </View>
+                <Text style={s.desktopTitle}>Leave interview?</Text>
+                <Text style={s.desktopMessage}>
+                  Your answers so far will be submitted and the interview will end.
+                  You won't be able to resume.
+                </Text>
+                <TouchableOpacity
+                  style={[s.desktopPrimaryBtn, { backgroundColor: c.destructive }]}
+                  onPress={handleConfirmLeave}
+                  activeOpacity={0.85}
+                >
+                  <Text style={s.desktopPrimaryBtnText}>Leave & Submit</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={s.desktopSecondaryBtn}
+                  onPress={handleCancelLeave}
+                  activeOpacity={0.75}
+                >
+                  <Text style={s.desktopSecondaryBtnText}>Stay</Text>
+                </TouchableOpacity>
+              </>
+            )}
           </View>
         </View>
       </Modal>

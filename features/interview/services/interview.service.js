@@ -91,3 +91,14 @@ export const generateNextQuestion = async (applicationStageId, previousAnswer = 
 
   return data;
 };
+
+export const abandonInterview = async (applicationStageId) => {
+  const { error } = await supabase
+    .from("application_stages")
+    .update({
+      status: "abandoned",
+      completed_at: new Date().toISOString(),
+    })
+    .eq("id", applicationStageId);
+  if (error) throw error;
+};

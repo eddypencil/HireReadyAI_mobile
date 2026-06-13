@@ -117,6 +117,10 @@ export default function InterviewList({ applications }) {
       (s) => s.stage_id === currentStageId,
     );
 
+    if (appStage?.status === "abandoned") {
+      return { status: "completed", label: "Abandoned" };
+    }
+
     const hasScore = appStage?.score != null;
 
     if (!hasScore) {
