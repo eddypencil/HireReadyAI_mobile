@@ -120,7 +120,7 @@ function createStyles(c) {
   });
 }
 
-export default function VideoQuestion({ question, applicationStageId, onAnswer }) {
+export default function VideoQuestion({ question, applicationStageId, onAnswer, onStatusChange }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const c = theme.colors;
@@ -250,6 +250,7 @@ export default function VideoQuestion({ question, applicationStageId, onAnswer }
     if (!audioUri && !videoUri) return;
 
     setStatus("transcribing");
+    onStatusChange?.("transcribing");
 
     try {
       const sourceUri = audioUri ?? videoUri;

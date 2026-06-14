@@ -28,6 +28,7 @@ export default function PipelineBuilderPage() {
     handleDeleteStage,
     moveStage,
     handleReorderStages,
+    refetch,
   } = usePipeline(jobId);
 
   if (loading) {
@@ -96,6 +97,7 @@ export default function PipelineBuilderPage() {
           onUpdateStage={handleUpdateStage}
           onDeleteStage={handleDeleteStage}
           moveStage={moveStage}
+          onRefresh={refetch}
         />
       </View>
     </View>

@@ -20,6 +20,7 @@ const PHASE = {
   INIT: "init",
   LOADING: "loading",
   ANSWERING: "answering",
+  UPLOADING: "uploading",
   EVALUATING: "evaluating",
   FINISHED: "finished",
   ERROR: "error",
@@ -230,8 +231,8 @@ function createStyles(c) {
   });
 }
 
-function QuestionComponent({ question, applicationStageId, onAnswer }) {
-  const props = { question, onAnswer };
+function QuestionComponent({ question, applicationStageId, onAnswer, onStatusChange }) {
+  const props = { question, onAnswer, onStatusChange };
   switch (question?.type) {
     case "video":
       return <VideoQuestion {...props} applicationStageId={applicationStageId} />;
@@ -468,6 +469,12 @@ export default function InterviewPage({ route, navigation }) {
     );
   };
 
+  const handleStatusChange = (status) => {
+    if (status === "uploading" || status === "transcribing") {
+      setPhase(PHASE.UPLOADING);
+    }
+  };
+
   const stage = applicationStage?.recruitment_stages;
   const stageLabel = stageTypeLabel[stage?.stage_type] ?? stage?.name ?? "Interview";
 
@@ -495,7 +502,7 @@ export default function InterviewPage({ route, navigation }) {
             </View>
           </View>
           <View style={s.headerRight}>
-            {phase === PHASE.ANSWERING && (
+            {(phase === PHASE.ANSWERING || phase === PHASE.UPLOADING) && (
               <View style={s.statsContainer}>
                 <ProgressBar current={questionNumber} max={maxQuestions} c={c} />
               </View>
@@ -527,7 +534,7 @@ export default function InterviewPage({ route, navigation }) {
             </View>
           )}
 
-          {phase === PHASE.ANSWERING && currentQuestion && (
+          {(phase === PHASE.ANSWERING || phase === PHASE.UPLOADING) && currentQuestion && (
             <>
               <View style={s.card}>
                 <View style={s.questionHeader}>
@@ -562,6 +569,7 @@ export default function InterviewPage({ route, navigation }) {
                   question={currentQuestion}
                   applicationStageId={applicationStage?.id}
                   onAnswer={handleAnswer}
+                  onStatusChange={handleStatusChange}
                 />
               </View>
 

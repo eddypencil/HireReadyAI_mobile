@@ -31,6 +31,7 @@ export default function PipelineBuilder({
   onUpdateStage,
   onDeleteStage,
   moveStage,
+  onRefresh,
 }) {
   const { theme } = useTheme();
   const { t, language } = useTranslation();
@@ -81,8 +82,9 @@ export default function PipelineBuilder({
         }
       }
       setPendingLibraryItem(null);
+      if (onRefresh) onRefresh();
     },
-    [onAddStage]
+    [onAddStage, onRefresh]
   );
 
   const handleStageSelect = useCallback(

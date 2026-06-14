@@ -509,17 +509,7 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
             </View>
           )}
 
-          <View style={styles.advancedSection}>
-            <Text style={[styles.advancedLabel, isRtl && styles.textRight]}>{t("pipeline.advanced_coming_soon")}</Text>
-            {["pipeline.ai_evaluation", "pipeline.manual_review", "pipeline.auto_advance", "pipeline.auto_reject" ].map(
-              (key) => (
-                <View key={key} style={[styles.advancedRow, isRtl && styles.rowReverse]}>
-                  <Text style={[styles.advancedRowText, isRtl && styles.textRight]}>{t(key)}</Text>
-                  <View style={styles.advancedToggle} />
-                </View>
-              )
-            )}
-          </View>
+          
         </View>
 
       </ScrollView>

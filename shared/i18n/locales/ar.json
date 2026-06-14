@@ -744,7 +744,55 @@
     "tap_to_append": "اضغط للإضافة",
     "untitled_stage": "مرحلة بدون عنوان",
     "advanced_coming_soon": "الإعدادات المتقدمة قريباً",
-    "select_stage_hint": "اختر نوع المرحلة من المكتبة"
+    "select_stage_hint": "اختر نوع المرحلة من المكتبة",
+    "ai_evaluation": "تقييم ذكي",
+    "manual_review": "مراجعة يدوية",
+    "auto_advance": "تقديم تلقائي",
+    "auto_reject": "رفض تلقائي"
+  },
+  "stage_details": {
+    "evaluation_criteria": {
+      "title": "معايير التقييم",
+      "subtitle": "حدد كيف يتم تقييم هذه المرحلة",
+      "regenerate": "إعادة إنشاء",
+      "regenerating": "جاري إعادة الإنشاء...",
+      "regenerate_confirm": "سيؤدي هذا إلى استبدال جميع المعايير الحالية. هل تريد المتابعة؟",
+      "weight_total": "الوزن الإجمالي",
+      "empty": "لا توجد معايير بعد. أضف واحدة أدناه أو أنشئ تلقائياً.",
+      "weight_zero_warning": "الوزن 0%",
+      "required_label": "إلزامي",
+      "min_questions_label": "الحد الأدنى للأسئلة",
+      "concepts_label": "المفاهيم",
+      "add_concept_placeholder": "أضف مفهوماً...",
+      "add_competency": "إضافة كفاءة",
+      "weight_error": "يجب أن يكون مجموع الأوزان 100% بالضبط"
+    }
+  },
+  "stage_config_dialog": {
+    "title": "تكوين المرحلة",
+    "subtitle": "تخصيص إعدادات المرحلة",
+    "fields": {
+      "name": "اسم المرحلة",
+      "description": "الوصف",
+      "num_questions": "عدد الأسئلة",
+      "pass_score": "درجة النجاح (%)"
+    },
+    "placeholders": {
+      "description": "صف ما يحدث في هذه المرحلة..."
+    },
+    "errors": {
+      "name_required": "اسم المرحلة مطلوب",
+      "description_required": "الوصف مطلوب",
+      "num_questions_min": "مطلوب سؤال واحد على الأقل",
+      "pass_score_range": "يجب أن تكون درجة النجاح بين 0 و 100"
+    },
+    "generating_criteria": "جاري إنشاء معايير التقييم...",
+    "criteria_warning": "تعذر إنشاء معايير التقييم تلقائياً. يرجى التهيئة يدوياً.",
+    "buttons": {
+      "cancel": "إلغاء",
+      "confirm": "إضافة إلى خط الأنابيب",
+      "adding": "جاري الإضافة..."
+    }
   },
   "applications": {
     "apply_title": "تقدم لهذه الوظيفة",

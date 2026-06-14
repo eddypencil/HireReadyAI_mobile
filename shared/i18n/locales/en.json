@@ -743,7 +743,55 @@
     "tap_to_append": "Tap to append",
     "untitled_stage": "Untitled Stage",
     "advanced_coming_soon": "Advanced settings coming soon",
-    "select_stage_hint": "Select a stage type from the library"
+    "select_stage_hint": "Select a stage type from the library",
+    "ai_evaluation": "AI Evaluation",
+    "manual_review": "Manual Review",
+    "auto_advance": "Auto-Advance",
+    "auto_reject": "Auto-Reject"
+  },
+  "stage_details": {
+    "evaluation_criteria": {
+      "title": "Evaluation Criteria",
+      "subtitle": "Define how this stage is evaluated",
+      "regenerate": "Regenerate",
+      "regenerating": "Regenerating...",
+      "regenerate_confirm": "This will replace all current criteria. Continue?",
+      "weight_total": "Total Weight",
+      "empty": "No criteria yet. Add one below or auto-generate.",
+      "weight_zero_warning": "Weight is 0%",
+      "required_label": "Required",
+      "min_questions_label": "Min Questions",
+      "concepts_label": "Concepts",
+      "add_concept_placeholder": "Add concept...",
+      "add_competency": "Add Competency",
+      "weight_error": "Weights must total exactly 100%"
+    }
+  },
+  "stage_config_dialog": {
+    "title": "Configure Stage",
+    "subtitle": "Customize stage settings",
+    "fields": {
+      "name": "Stage Name",
+      "description": "Description",
+      "num_questions": "Number of Questions",
+      "pass_score": "Pass Score (%)"
+    },
+    "placeholders": {
+      "description": "Describe what happens at this stage..."
+    },
+    "errors": {
+      "name_required": "Stage name is required",
+      "description_required": "Description is required",
+      "num_questions_min": "Minimum 1 question required",
+      "pass_score_range": "Pass score must be between 0 and 100"
+    },
+    "generating_criteria": "Generating evaluation criteria...",
+    "criteria_warning": "Evaluation criteria could not be auto-generated. Please configure manually.",
+    "buttons": {
+      "cancel": "Cancel",
+      "confirm": "Add to Pipeline",
+      "adding": "Adding..."
+    }
   },
   "applications": {
     "apply_title": "Apply for this job",

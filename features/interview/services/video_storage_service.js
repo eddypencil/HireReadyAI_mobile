@@ -101,6 +101,19 @@ export const uploadVideoInBackground = async (videoUri, applicationStageId, ques
         video_storage_path: fileName,
       },
     });
+
+    // Also pre-create/upsert the application_answers row with the video URL
+    // so the applicant view (ExpandableQuestion) can find it.
+    await supabase
+      .from("application_answers")
+      .upsert(
+        { 
+          question_id: questionId, 
+          recording_url: publicUrl,
+          storage_path: fileName
+        },
+        { onConflict: "question_id" }
+      );
   } catch (err) {
     // Silent — video is supplementary; don't surface this to the user
     console.warn("Background video upload error:", err?.message);
