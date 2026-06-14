@@ -8,28 +8,36 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
-  FlatList,
   StyleSheet,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { fetchAllCompanies, createCompany } from "../services/companies.service";
 import { addMembership } from "../services/memberships.service";
 import { useUser } from "../../auth/context/user.context";
 import { MEMBERSHIP_PERMISSION } from "../../../shared/constants/enums";
-import { useSidebar } from "../../../shared/context/SidebarContext";
 import Snackbar from "../../../shared/ui/Snackbar";
 
+const AVATAR_COLORS = [
+  '#01497c', '#2a6f97', '#468faf', '#61a5c2', '#89c2d9',
+  '#013a63', '#035a8f', '#1e7fa5', '#3b9bc7', '#5dade2',
+];
+
+function getAvatarColor(name) {
+  if (!name) return AVATAR_COLORS[0];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+}
 
 export default function NoCompanyView({ onCompanyJoined }) {
   const { theme } = useTheme();
   const c = theme.colors;
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
-  const { profile, signOutUser } = useUser();
-  const { toggle } = useSidebar();
+  const { profile } = useUser();
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -115,106 +123,62 @@ export default function NoCompanyView({ onCompanyJoined }) {
     }
   };
 
-  const handleSignOut = () => {
-    
-    signOutUser();
-  };
-
-  const renderHeader = () => (
-    <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
-      <TouchableOpacity onPress={toggle} style={styles.menuBtn}>
-        <Ionicons name="menu" size={22} color={c.white} />
-      </TouchableOpacity>
-      <Text style={styles.headerTitle}>Company Setup</Text>
-      <View style={{ width: 40 }} />
-    </View>
-  );
-
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="small" color={c.primary} />
+        <ActivityIndicator size="large" color={c.primary} />
         <Text style={styles.loadingText}>{t("companies.loading_companies")}</Text>
       </View>
     );
   }
 
-  const renderCompanyCard = ({ item: company }) => (
-    <View style={styles.companyCard}>
-      <View style={styles.cardHeader}>
-        <View style={styles.avatarCircle}>
-          <Text style={styles.avatarLetter}>
-            {company.name?.charAt(0).toUpperCase()}
-          </Text>
-        </View>
-        <View style={styles.cardInfo}>
-          <Text style={styles.companyName}>{company.name}</Text>
-          <Text style={styles.companyIndustry}>
-            {company.industry || t("companies.organization")}
-          </Text>
-        </View>
-      </View>
-      {company.size && (
-        <Text style={styles.companySize}>
-          {t("companies.employees_count", { size: company.size.toLocaleString() })}
-        </Text>
-      )}
-      <TouchableOpacity
-        style={[styles.joinBtn, joining === company.id && styles.joinBtnDisabled]}
-        onPress={() => handleJoinCompany(company.id)}
-        disabled={joining === company.id}
-      >
-        <Text style={styles.joinBtnText}>
-          {joining === company.id ? t("companies.joining") : t("companies.join")}
-        </Text>
-      </TouchableOpacity>
-    </View>
-  );
-
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
+      style={{ flex: 1, backgroundColor: c['surface-muted'] }}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <View style={[styles.headerBar, { paddingTop: insets.top }]}>
-        <View style={styles.logoWrap}>
-          <View style={styles.logoMark}>
-            <Text style={styles.logoText}>H</Text>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+      >
+        {/* ---- Error Banner ---- */}
+        {error && (
+          <View style={styles.errorBanner}>
+            <Ionicons name="alert-circle" size={16} color={c['destructive']} />
+            <Text style={styles.errorText}>{error}</Text>
           </View>
-          <Text style={styles.wordmark}>HireReadyAI</Text>
-        </View>
-        <TouchableOpacity onPress={signOutUser} style={styles.signOutBtn}>
-          <Ionicons name="log-out" size={16} color={c['muted-foreground']} />
-          <Text style={styles.signOutText}>{t("companies.sign_out")}</Text>
-        </TouchableOpacity>
-      </View>
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+        )}
 
-      {/* Pricing Step */}
-      {showingPricing && !selectedPlan && (
-        <View>
-          <TouchableOpacity onPress={() => setShowingPricing(false)} style={styles.backRow}>
-            <Text style={styles.backArrow}>{"< "}</Text>
-            <Text style={styles.backText}>Back</Text>
-          </TouchableOpacity>
-          <View style={styles.hero}>
-            <Text style={styles.heroTitle}>Choose your plan</Text>
-            <Text style={styles.heroSubtitle}>
-              Start with a free plan and upgrade anytime
-            </Text>
-          </View>
-          <View style={styles.pricingRow}>
+        {/* ===== PRICING STEP ===== */}
+        {showingPricing && !selectedPlan && (
+          <View>
+            <TouchableOpacity onPress={() => setShowingPricing(false)} style={styles.backRow}>
+              <Ionicons name="arrow-back" size={18} color={c['muted-foreground']} />
+              <Text style={styles.backText}>{t("companies.back")}</Text>
+            </TouchableOpacity>
+            <View style={styles.hero}>
+              <View style={styles.heroIcon}>
+                <Ionicons name="rocket" size={28} color={c.primary} />
+              </View>
+              <Text style={styles.heroTitle}>{t("companies.choose_plan")}</Text>
+              <Text style={styles.heroSubtitle}>{t("companies.choose_plan_subtitle")}</Text>
+            </View>
+
+            {/* Free Plan */}
             <View style={styles.planCard}>
               <View style={styles.planIconWrap}>
-                <Text style={styles.planIcon}>✓</Text>
+                <Ionicons name="rocket-outline" size={22} color={c.primary} />
               </View>
-              <Text style={styles.planName}>Free</Text>
-              <Text style={styles.planPrice}>$0</Text>
-              <Text style={styles.planPeriod}>forever</Text>
+              <Text style={styles.planName}>{t("companies.plan_free")}</Text>
+              <View style={styles.planPriceRow}>
+                <Text style={styles.planPrice}>{t("companies.plan_free_price")}</Text>
+                <Text style={styles.planPeriod}>{t("companies.plan_free_period")}</Text>
+              </View>
               <View style={styles.planFeatures}>
-                {["Up to 10 active job postings", "Basic candidate management", "Team collaboration (up to 5 members)", "Email support"].map((f, i) => (
+                {t("companies.plan_free_features").split("|").map((f, i) => (
                   <View key={i} style={styles.featureRow}>
-                    <Text style={styles.featureCheck}>✓</Text>
+                    <Ionicons name="checkmark-circle" size={18} color={c.success} />
                     <Text style={styles.featureText}>{f}</Text>
                   </View>
                 ))}
@@ -223,253 +187,307 @@ export default function NoCompanyView({ onCompanyJoined }) {
                 style={styles.selectPlanBtn}
                 onPress={() => { setSelectedPlan("free"); setIsCreating(true); }}
               >
-                <Text style={styles.selectPlanBtnText}>Get Started Free</Text>
+                <Text style={styles.selectPlanBtnText}>{t("companies.get_started_free")}</Text>
               </TouchableOpacity>
             </View>
+
+            {/* Premium Plan */}
             <View style={[styles.planCard, styles.planCardPremium]}>
               <View style={styles.premiumBadge}>
-                <Text style={styles.premiumBadgeText}>Coming Soon</Text>
+                <Text style={styles.premiumBadgeText}>{t("companies.coming_soon")}</Text>
               </View>
-              <View style={styles.planIconWrap}>
-                <Text style={[styles.planIcon, { color: c.amber[500] }]}>★</Text>
+              <View style={[styles.planIconWrap, { backgroundColor: c.accent + '18' }]}>
+                <Ionicons name="diamond" size={22} color={c.accent} />
               </View>
-              <Text style={styles.planName}>Premium</Text>
-              <Text style={styles.planPrice}>$29</Text>
-              <Text style={styles.planPeriod}>/month</Text>
+              <Text style={styles.planName}>{t("companies.plan_premium")}</Text>
+              <View style={styles.planPriceRow}>
+                <Text style={styles.planPrice}>{t("companies.plan_premium_price")}</Text>
+                <Text style={styles.planPeriod}>{t("companies.plan_premium_period")}</Text>
+              </View>
               <View style={styles.planFeatures}>
-                {["Unlimited job postings", "AI-powered candidate screening", "Advanced analytics & reports", "Priority support", "Custom branding"].map((f, i) => (
+                {t("companies.plan_premium_features").split("|").map((f, i) => (
                   <View key={i} style={styles.featureRow}>
-                    <Text style={styles.featureCheck}>✓</Text>
+                    <Ionicons name="checkmark-circle" size={18} color={c.success} />
                     <Text style={styles.featureText}>{f}</Text>
                   </View>
                 ))}
               </View>
               <TouchableOpacity style={styles.comingSoonBtn} disabled>
-                <Text style={styles.comingSoonBtnText}>Coming Soon</Text>
+                <Text style={styles.comingSoonBtnText}>{t("companies.coming_soon")}</Text>
               </TouchableOpacity>
             </View>
           </View>
-        </View>
         )}
-      {showingPricing && (
-        <View style={{ flex: 1, backgroundColor: c['surface-muted'] }}>
-          {renderHeader()}
-          <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-          {error && (
-            <View style={styles.errorBanner}>
-              <Text style={styles.errorText}>{error}</Text>
-            </View>
-          )}
 
-          {/* Create Company Form */}
-          {isCreating && selectedPlan === "free" && (
-            <View style={styles.formCard}>
-              <View style={styles.formHeader}>
-            <TouchableOpacity onPress={() => { setIsCreating(false); setSelectedPlan(null); setShowingPricing(true); }}>
-              <Text style={styles.formBackArrow}>{"<"}</Text>
-            </TouchableOpacity>
-            <Text style={styles.formTitle}>Create Company</Text>
+        {/* ===== CREATE COMPANY FORM ===== */}
+        {isCreating && selectedPlan === "free" && (
+          <View style={styles.formCard}>
+            <View style={styles.formHeader}>
+              <TouchableOpacity onPress={() => { setIsCreating(false); setSelectedPlan(null); setShowingPricing(true); }}>
+                <Ionicons name="arrow-back" size={20} color={c['muted-foreground']} />
+              </TouchableOpacity>
+              <Text style={styles.formTitle}>{t("companies.create_company_title")}</Text>
+            </View>
+            <ScrollView style={styles.formBody} nestedScrollEnabled keyboardShouldPersistTaps="handled">
+              <Text style={styles.label}>{t("companies.company_name")}</Text>
+              <TextInput
+                style={styles.input}
+                value={newCompany.name}
+                onChangeText={(t) => setNewCompany({ ...newCompany, name: t })}
+                placeholder={t("companies.company_name_placeholder")}
+                placeholderTextColor={c['muted-foreground']}
+              />
+
+              <Text style={styles.label}>{t("companies.industry")}</Text>
+              <TextInput
+                style={styles.input}
+                value={newCompany.industry}
+                onChangeText={(t) => setNewCompany({ ...newCompany, industry: t })}
+                placeholder={t("companies.industry_placeholder_example")}
+                placeholderTextColor={c['muted-foreground']}
+              />
+
+              <View style={styles.row}>
+                <View style={styles.halfField}>
+                  <Text style={styles.label}>{t("companies.company_size")}</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={newCompany.size}
+                    onChangeText={(t) => setNewCompany({ ...newCompany, size: t })}
+                    placeholder={t("companies.size_placeholder")}
+                    placeholderTextColor={c['muted-foreground']}
+                    keyboardType="numeric"
+                  />
+                </View>
+                <View style={styles.halfField}>
+                  <Text style={styles.label}>{t("companies.location")}</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={newCompany.location}
+                    onChangeText={(t) => setNewCompany({ ...newCompany, location: t })}
+                    placeholder={t("companies.location_placeholder")}
+                    placeholderTextColor={c['muted-foreground']}
+                  />
+                </View>
+              </View>
+
+              <Text style={styles.label}>{t("companies.founded")}</Text>
+              <TextInput
+                style={styles.input}
+                value={newCompany.founding_date}
+                onChangeText={(t) => setNewCompany({ ...newCompany, founding_date: t })}
+                placeholder={t("companies.founded_placeholder")}
+                placeholderTextColor={c['muted-foreground']}
+              />
+
+              <Text style={styles.label}>{t("companies.about")}</Text>
+              <TextInput
+                style={styles.textArea}
+                value={newCompany.description}
+                onChangeText={(t) => setNewCompany({ ...newCompany, description: t })}
+                placeholder={t("companies.about_placeholder")}
+                placeholderTextColor={c['muted-foreground']}
+                multiline
+                numberOfLines={3}
+                textAlignVertical="top"
+              />
+
+              <View style={styles.row}>
+                <View style={styles.halfField}>
+                  <Text style={styles.label}>{t("companies.culture")}</Text>
+                  <TextInput
+                    style={styles.textAreaSmall}
+                    value={newCompany.culture}
+                    onChangeText={(t) => setNewCompany({ ...newCompany, culture: t })}
+                    placeholder={t("companies.culture_placeholder")}
+                    placeholderTextColor={c['muted-foreground']}
+                    multiline
+                    numberOfLines={2}
+                    textAlignVertical="top"
+                  />
+                </View>
+                <View style={styles.halfField}>
+                  <Text style={styles.label}>{t("companies.benefits")}</Text>
+                  <TextInput
+                    style={styles.textAreaSmall}
+                    value={newCompany.benefits}
+                    onChangeText={(t) => setNewCompany({ ...newCompany, benefits: t })}
+                    placeholder={t("companies.benefits_placeholder")}
+                    placeholderTextColor={c['muted-foreground']}
+                    multiline
+                    numberOfLines={2}
+                    textAlignVertical="top"
+                  />
+                </View>
+              </View>
+
+              <Text style={styles.label}>{t("companies.website")}</Text>
+              <TextInput
+                style={styles.input}
+                value={newCompany.website_url}
+                onChangeText={(t) => setNewCompany({ ...newCompany, website_url: t })}
+                placeholder={t("companies.website_placeholder")}
+                placeholderTextColor={c['muted-foreground']}
+                keyboardType="url"
+              />
+
+              <View style={styles.row}>
+                <View style={styles.halfField}>
+                  <Text style={styles.label}>{t("companies.linkedin")}</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={newCompany.linkedin_url}
+                    onChangeText={(t) => setNewCompany({ ...newCompany, linkedin_url: t })}
+                    placeholder={t("companies.linkedin_placeholder")}
+                    placeholderTextColor={c['muted-foreground']}
+                    keyboardType="url"
+                  />
+                </View>
+                <View style={styles.halfField}>
+                  <Text style={styles.label}>{t("companies.twitter")}</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={newCompany.twitter_url}
+                    onChangeText={(t) => setNewCompany({ ...newCompany, twitter_url: t })}
+                    placeholder={t("companies.twitter_placeholder")}
+                    placeholderTextColor={c['muted-foreground']}
+                    keyboardType="url"
+                  />
+                </View>
+              </View>
+
+              <View style={styles.formActions}>
+                <TouchableOpacity
+                  style={styles.cancelBtn}
+                  onPress={() => { setIsCreating(false); setSelectedPlan(null); }}
+                >
+                  <Text style={styles.cancelBtnText}>{t("companies.cancel")}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.createBtn, isSubmitting && styles.createBtnDisabled]}
+                  onPress={handleCreateCompany}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <ActivityIndicator size="small" color={c.white} />
+                  ) : (
+                    <Text style={styles.createBtnText}>{t("companies.create_company")}</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
           </View>
-          <ScrollView style={styles.formBody} nestedScrollEnabled>
-            <Text style={styles.label}>Company Name</Text>
-            <TextInput
-              style={styles.input}
-              value={newCompany.name}
-              onChangeText={(t) => setNewCompany({ ...newCompany, name: t })}
-              placeholder="Acme Corp"
-              placeholderTextColor={c['muted-foreground']}
-            />
+        )}
 
-            <Text style={styles.label}>{t("companies.industry")}</Text>
-            <TextInput
-              style={styles.input}
-              value={newCompany.industry}
-              onChangeText={(t) => setNewCompany({ ...newCompany, industry: t })}
-              placeholder="e.g. Technology, Healthcare"
-              placeholderTextColor={c['muted-foreground']}
-            />
-
-            <View style={styles.row}>
-              <View style={styles.halfField}>
-                <Text style={styles.label}>{t("companies.company_size")}</Text>
-                <TextInput
-                  style={styles.input}
-                  value={newCompany.size}
-                  onChangeText={(t) => setNewCompany({ ...newCompany, size: t })}
-                  placeholder="Employees"
-                  placeholderTextColor={c['muted-foreground']}
-                  keyboardType="numeric"
-                />
+        {/* ===== MAIN VIEW ===== */}
+        {!showingPricing && !isCreating && (
+          <>
+            {/* Hero Section */}
+            <View style={styles.hero}>
+              <View style={styles.heroBannerIcon}>
+                <Ionicons name="business" size={32} color={c.white} />
               </View>
-              <View style={styles.halfField}>
-                <Text style={styles.label}>{t("companies.location")}</Text>
-                <TextInput
-                  style={styles.input}
-                  value={newCompany.location}
-                  onChangeText={(t) => setNewCompany({ ...newCompany, location: t })}
-                  placeholder="City, Country"
-                  placeholderTextColor={c['muted-foreground']}
-                />
-              </View>
+              <Text style={styles.heroTitle}>{t("companies.join_or_create")}</Text>
+              <Text style={styles.heroSubtitle}>{t("companies.hero_subtitle")}</Text>
+              {companies.length > 0 && (
+                <TouchableOpacity
+                  style={styles.createNewBtn}
+                  onPress={() => setShowingPricing(true)}
+                >
+                  <Ionicons name="add-circle" size={18} color={c.white} />
+                  <Text style={styles.createNewBtnText}>{t("companies.create_new")}</Text>
+                </TouchableOpacity>
+              )}
             </View>
 
-            <Text style={styles.label}>Founded</Text>
-            <TextInput
-              style={styles.input}
-              value={newCompany.founding_date}
-              onChangeText={(t) => setNewCompany({ ...newCompany, founding_date: t })}
-              placeholder="YYYY-MM-DD"
-              placeholderTextColor={c['muted-foreground']}
-            />
-
-            <Text style={styles.label}>About</Text>
-            <TextInput
-              style={styles.textArea}
-              value={newCompany.description}
-              onChangeText={(t) => setNewCompany({ ...newCompany, description: t })}
-              placeholder="Tell applicants about your company..."
-              placeholderTextColor={c['muted-foreground']}
-              multiline
-              numberOfLines={3}
-              textAlignVertical="top"
-            />
-
-            <View style={styles.row}>
-              <View style={styles.halfField}>
-                <Text style={styles.label}>Culture</Text>
-                <TextInput
-                  style={styles.textAreaSmall}
-                  value={newCompany.culture}
-                  onChangeText={(t) => setNewCompany({ ...newCompany, culture: t })}
-                  placeholder="Company values, culture..."
-                  placeholderTextColor={c['muted-foreground']}
-                  multiline
-                  numberOfLines={2}
-                  textAlignVertical="top"
-                />
+            {/* Empty State */}
+            {companies.length === 0 ? (
+              <View style={styles.emptyState}>
+                <View style={styles.emptyIconWrap}>
+                  <Ionicons name="building-outline" size={48} color={c['muted-foreground']} />
+                </View>
+                <Text style={styles.emptyTitle}>{t("companies.no_companies")}</Text>
+                <Text style={styles.emptyDesc}>{t("companies.hero_subtitle")}</Text>
+                <TouchableOpacity
+                  style={styles.createNewBtn}
+                  onPress={() => setShowingPricing(true)}
+                >
+                  <Ionicons name="add-circle" size={18} color={c.white} />
+                  <Text style={styles.createNewBtnText}>{t("companies.create_a_company")}</Text>
+                </TouchableOpacity>
               </View>
-              <View style={styles.halfField}>
-                <Text style={styles.label}>Benefits</Text>
-                <TextInput
-                  style={styles.textAreaSmall}
-                  value={newCompany.benefits}
-                  onChangeText={(t) => setNewCompany({ ...newCompany, benefits: t })}
-                  placeholder="Perks, benefits..."
-                  placeholderTextColor={c['muted-foreground']}
-                  multiline
-                  numberOfLines={2}
-                  textAlignVertical="top"
-                />
+            ) : (
+              /* Company Cards */
+              <View style={styles.cardList}>
+                {companies.map((company) => {
+                  const avatarColor = getAvatarColor(company.name);
+                  const isJoining = joining === company.id;
+                  return (
+                    <View key={company.id} style={styles.companyCard}>
+                      <View style={styles.cardTop}>
+                        <View style={[styles.avatarCircle, { backgroundColor: avatarColor }]}>
+                          <Text style={styles.avatarLetter}>
+                            {company.name?.charAt(0).toUpperCase()}
+                          </Text>
+                        </View>
+                        <View style={styles.cardInfo}>
+                          <Text style={styles.companyName} numberOfLines={1}>
+                            {company.name}
+                          </Text>
+                          {company.industry && (
+                            <View style={[styles.industryBadge, { backgroundColor: avatarColor + '1A' }]}>
+                              <Text style={[styles.industryText, { color: avatarColor }]}>
+                                {company.industry}
+                              </Text>
+                            </View>
+                          )}
+                        </View>
+                      </View>
+
+                      <View style={styles.cardMeta}>
+                        {company.location ? (
+                          <View style={styles.metaItem}>
+                            <Ionicons name="location-outline" size={13} color={c['muted-foreground']} />
+                            <Text style={styles.metaText} numberOfLines={1}>{company.location}</Text>
+                          </View>
+                        ) : null}
+                        {company.size ? (
+                          <View style={styles.metaItem}>
+                            <Ionicons name="people-outline" size={13} color={c['muted-foreground']} />
+                            <Text style={styles.metaText}>{t("companies.emp_count", { count: company.size })}</Text>
+                          </View>
+                        ) : null}
+                      </View>
+
+                      {company.description ? (
+                        <Text style={styles.cardDesc} numberOfLines={2}>
+                          {company.description}
+                        </Text>
+                      ) : null}
+
+                      <TouchableOpacity
+                        style={[styles.joinBtn, isJoining && styles.joinBtnDisabled]}
+                        onPress={() => handleJoinCompany(company.id)}
+                        disabled={isJoining}
+                      >
+                        {isJoining ? (
+                          <ActivityIndicator size="small" color={c.white} />
+                        ) : (
+                          <>
+                            <Ionicons name="enter-outline" size={16} color={c.white} />
+                            <Text style={styles.joinBtnText}>{t("companies.join_company")}</Text>
+                          </>
+                        )}
+                      </TouchableOpacity>
+                    </View>
+                  );
+                })}
               </View>
-            </View>
-
-            <Text style={styles.label}>Website</Text>
-            <TextInput
-              style={styles.input}
-              value={newCompany.website_url}
-              onChangeText={(t) => setNewCompany({ ...newCompany, website_url: t })}
-              placeholder="https://example.com"
-              placeholderTextColor={c['muted-foreground']}
-              keyboardType="url"
-            />
-
-            <View style={styles.row}>
-              <View style={styles.halfField}>
-                <Text style={styles.label}>LinkedIn</Text>
-                <TextInput
-                  style={styles.input}
-                  value={newCompany.linkedin_url}
-                  onChangeText={(t) => setNewCompany({ ...newCompany, linkedin_url: t })}
-                  placeholder="LinkedIn URL"
-                  placeholderTextColor={c['muted-foreground']}
-                  keyboardType="url"
-                />
-              </View>
-              <View style={styles.halfField}>
-                <Text style={styles.label}>Twitter</Text>
-                <TextInput
-                  style={styles.input}
-                  value={newCompany.twitter_url}
-                  onChangeText={(t) => setNewCompany({ ...newCompany, twitter_url: t })}
-                  placeholder="Twitter URL"
-                  placeholderTextColor={c['muted-foreground']}
-                  keyboardType="url"
-                />
-              </View>
-            </View>
-
-            <View style={styles.formActions}>
-              <TouchableOpacity
-                style={styles.cancelBtn}
-                onPress={() => { setIsCreating(false); setSelectedPlan(null); }}
-              >
-                <Text style={styles.cancelBtnText}>{t("companies.cancel")}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.createBtn, isSubmitting && styles.createBtnDisabled]}
-                onPress={handleCreateCompany}
-                disabled={isSubmitting}
-              >
-                <Text style={styles.createBtnText}>
-                  {isSubmitting ? t("companies.creating") : t("companies.create_company")}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </ScrollView>
-        </View>
-      )}
-        </ScrollView>
-      </View>
-      )}
-
-      {/* Main View */}
-      {!showingPricing && !isCreating && (
-        <>
-          <View style={styles.hero}>
-            <View style={styles.heroIcon}>
-              <Text style={styles.heroIconText}>H</Text>
-            </View>
-            <Text style={styles.heroTitle}>{t("companies.join_or_create")}</Text>
-            <Text style={styles.heroSubtitle}>
-              {t("companies.hero_subtitle")}
-            </Text>
-            {companies.length > 0 && (
-              <TouchableOpacity
-                style={styles.createNewBtn}
-                onPress={() => setShowingPricing(true)}
-              >
-                <Text style={styles.createNewBtnText}>
-                  {t("companies.create_new")}
-                </Text>
-              </TouchableOpacity>
             )}
-          </View>
+          </>
+        )}
+      </ScrollView>
 
-          {companies.length === 0 ? (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyText}>
-                {t("companies.no_companies")}
-              </Text>
-              <TouchableOpacity
-                style={styles.createNewBtn}
-                onPress={() => setShowingPricing(true)}
-              >
-                <Text style={styles.createNewBtnText}>{t("companies.create_a_company")}</Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <FlatList
-              data={companies}
-              keyExtractor={(item) => item.id}
-              renderItem={renderCompanyCard}
-              numColumns={2}
-              scrollEnabled={false}
-              columnWrapperStyle={styles.gridRow}
-            />
-          )}
-        </>
-      )}
-    </ScrollView>
       <Snackbar
         message={error}
         visible={!!error}
@@ -486,111 +504,66 @@ function createStyles(c) {
       backgroundColor: c['surface-muted'],
     },
     content: {
-      padding: 24,
+      padding: 20,
       paddingBottom: 40,
-    },
-    header: {
-      flexDirection: "row",
-      alignItems: "center",
-      paddingHorizontal: 16,
-      paddingBottom: 12,
-      backgroundColor: c.sidebar,
-    },
-    menuBtn: {
-      padding: 4,
-      marginRight: 12,
-    },
-    headerTitle: {
-      flex: 1,
-      fontSize: 17,
-      fontWeight: '600',
-      color: c['sidebar-foreground'],
-    },
-    headerBar: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-      paddingHorizontal: 16,
-      paddingBottom: 8,
-      backgroundColor: c.sidebar,
-    },
-    logoWrap: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 8,
-    },
-    logoMark: {
-      width: 28,
-      height: 28,
-      borderRadius: 6,
-      backgroundColor: c.accent,
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    logoText: {
-      fontSize: 16,
-      fontWeight: '700',
-      color: c['destructive-foreground'],
-    },
-    wordmark: {
-      fontSize: 17,
-      fontWeight: '600',
-      color: c['sidebar-foreground'],
-    },
-    signOutBtn: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 6,
-      paddingHorizontal: 10,
-      paddingVertical: 6,
-      borderRadius: 6,
-      borderWidth: 1,
-      borderColor: c.border,
-    },
-    signOutText: {
-      fontSize: 12,
-      color: c['muted-foreground'],
+      paddingTop: 30,
     },
     centered: {
       flex: 1,
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: c.gray[50],
+      backgroundColor: c['surface-muted'],
     },
     loadingText: {
-      marginTop: 8,
-      fontSize: 13,
-      color: c.gray[500],
+      marginTop: 12,
+      fontSize: 14,
+      color: c['muted-foreground'],
     },
     errorBanner: {
-      backgroundColor: c.red[50],
-      borderColor: c.red[200],
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+      backgroundColor: c.destructive + '15',
       borderWidth: 1,
-      borderRadius: 8,
+      borderColor: c.destructive + '30',
+      borderRadius: 10,
       padding: 12,
       marginBottom: 16,
     },
     errorText: {
-      color: c.red[700],
+      flex: 1,
+      color: c.destructive,
       fontSize: 13,
     },
+
+    /* Hero */
     hero: {
       alignItems: "center",
-      marginBottom: 32,
+      marginBottom: 28,
+      marginTop: 8,
     },
-    heroIcon: {
+    heroBannerIcon: {
       width: 64,
       height: 64,
-      borderRadius: 16,
-      backgroundColor: c.border,
+      borderRadius: 18,
+      backgroundColor: c.primary,
       alignItems: "center",
       justifyContent: "center",
       marginBottom: 16,
+      shadowColor: c.primary,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 8,
+      elevation: 6,
     },
-    heroIconText: {
-      fontSize: 28,
-      fontWeight: '700',
-      color: c.foreground,
+    heroIcon: {
+      width: 56,
+      height: 56,
+      borderRadius: 16,
+      backgroundColor: c.primary + '15',
+      alignItems: "center",
+      justifyContent: "center",
+      marginBottom: 16,
     },
     heroTitle: {
       fontSize: 26,
@@ -601,130 +574,168 @@ function createStyles(c) {
     },
     heroSubtitle: {
       fontSize: 14,
-      color: c.gray[600],
+      color: c['muted-foreground'],
       textAlign: "center",
       marginBottom: 20,
+      lineHeight: 20,
     },
     createNewBtn: {
       flexDirection: "row",
       alignItems: "center",
-      justifyContent: "center",
+      gap: 8,
       backgroundColor: c.primary,
       paddingHorizontal: 24,
-      paddingVertical: 12,
-      borderRadius: 8,
+      paddingVertical: 13,
+      borderRadius: 10,
     },
     createNewBtnText: {
       color: c.white,
       fontSize: 14,
       fontWeight: '600',
     },
+
+    /* Empty State */
     emptyState: {
       alignItems: "center",
-      backgroundColor: c.white,
-      borderRadius: 12,
+      backgroundColor: c.card,
+      borderRadius: 16,
       borderWidth: 1,
-      borderColor: c.gray[100],
-      padding: 48,
+      borderColor: c.border,
+      padding: 40,
     },
-    emptyText: {
-      color: c.gray[500],
-      marginBottom: 24,
-      fontSize: 14,
-    },
-    gridRow: {
-      justifyContent: "space-between",
-      marginBottom: 12,
-    },
-    companyCard: {
-      flex: 1,
-      backgroundColor: c.white,
-      borderRadius: 12,
-      borderWidth: 1,
-      borderColor: c.gray[100],
-      padding: 16,
-      marginHorizontal: 4,
-      justifyContent: "space-between",
-    },
-    cardHeader: {
-      flexDirection: "row",
-      alignItems: "flex-start",
-      marginBottom: 12,
-    },
-    avatarCircle: {
-      width: 44,
-      height: 44,
-      borderRadius: 8,
-      backgroundColor: c.border,
+    emptyIconWrap: {
+      width: 80,
+      height: 80,
+      borderRadius: 40,
+      backgroundColor: c['surface-muted'],
       alignItems: "center",
       justifyContent: "center",
-      marginRight: 10,
+      marginBottom: 16,
+    },
+    emptyTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: c.foreground,
+      marginBottom: 8,
+    },
+    emptyDesc: {
+      fontSize: 13,
+      color: c['muted-foreground'],
+      textAlign: "center",
+      marginBottom: 24,
+      lineHeight: 18,
+    },
+
+    /* Company Card */
+    cardList: {
+      gap: 12,
+    },
+    companyCard: {
+      backgroundColor: c.card,
+      borderRadius: 14,
+      borderWidth: 1,
+      borderColor: c.border,
+      padding: 16,
+    },
+    cardTop: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginBottom: 10,
+    },
+    avatarCircle: {
+      width: 48,
+      height: 48,
+      borderRadius: 12,
+      alignItems: "center",
+      justifyContent: "center",
+      marginRight: 12,
     },
     avatarLetter: {
-      fontSize: 18,
+      fontSize: 20,
       fontWeight: '700',
-      color: c.foreground,
+      color: c.white,
     },
     cardInfo: {
       flex: 1,
     },
     companyName: {
-      fontSize: 15,
+      fontSize: 16,
       fontWeight: '600',
       color: c.foreground,
-      marginBottom: 2,
+      marginBottom: 4,
     },
-    companyIndustry: {
-      fontSize: 12,
-      color: c.gray[500],
+    industryBadge: {
+      alignSelf: "flex-start",
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+      borderRadius: 6,
     },
-    companySize: {
+    industryText: {
       fontSize: 11,
-      color: c.gray[500],
-      marginBottom: 12,
+      fontWeight: '600',
+    },
+    cardMeta: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: 12,
+      marginBottom: 8,
+    },
+    metaItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 4,
+    },
+    metaText: {
+      fontSize: 12,
+      color: c['muted-foreground'],
+    },
+    cardDesc: {
+      fontSize: 13,
+      color: c['muted-foreground'],
+      lineHeight: 18,
+      marginBottom: 14,
     },
     joinBtn: {
-      backgroundColor: c['surface-muted'],
-      paddingVertical: 10,
-      borderRadius: 8,
+      flexDirection: "row",
       alignItems: "center",
+      justifyContent: "center",
+      gap: 6,
+      backgroundColor: c.primary,
+      paddingVertical: 12,
+      borderRadius: 10,
     },
     joinBtnDisabled: {
-      opacity: 0.5,
+      opacity: 0.6,
     },
     joinBtnText: {
-      color: c.foreground,
-      fontSize: 13,
-      fontWeight: '500',
+      color: c.white,
+      fontSize: 14,
+      fontWeight: '600',
     },
+
+    /* Back */
     backRow: {
       flexDirection: "row",
       alignItems: "center",
+      gap: 6,
       marginBottom: 16,
     },
-    backArrow: {
-      fontSize: 16,
-      color: c.gray[500],
-    },
     backText: {
-      fontSize: 13,
-      color: c.gray[500],
+      fontSize: 14,
+      color: c['muted-foreground'],
     },
-    pricingRow: {
-      gap: 16,
-      marginBottom: 24,
-    },
+
+    /* Pricing Cards */
     planCard: {
-      backgroundColor: c.white,
-      borderRadius: 12,
+      backgroundColor: c.card,
+      borderRadius: 14,
       borderWidth: 1,
-      borderColor: c.gray[100],
+      borderColor: c.border,
       padding: 24,
       marginBottom: 12,
     },
     planCardPremium: {
       borderColor: c.accent,
-      backgroundColor: c['surface-muted'],
       position: "relative",
       overflow: "hidden",
     },
@@ -732,7 +743,7 @@ function createStyles(c) {
       position: "absolute",
       top: 12,
       right: 12,
-      backgroundColor: c.primary,
+      backgroundColor: c.accent,
       borderRadius: 12,
       paddingHorizontal: 10,
       paddingVertical: 3,
@@ -743,18 +754,13 @@ function createStyles(c) {
       color: c.white,
     },
     planIconWrap: {
-      width: 40,
-      height: 40,
-      borderRadius: 10,
-      backgroundColor: c['surface-muted'],
+      width: 44,
+      height: 44,
+      borderRadius: 12,
+      backgroundColor: c.primary + '15',
       alignItems: "center",
       justifyContent: "center",
       marginBottom: 12,
-    },
-    planIcon: {
-      fontSize: 20,
-      fontWeight: '700',
-      color: c.primary,
     },
     planName: {
       fontSize: 18,
@@ -762,15 +768,20 @@ function createStyles(c) {
       color: c.foreground,
       marginBottom: 4,
     },
+    planPriceRow: {
+      flexDirection: "row",
+      alignItems: "baseline",
+      gap: 4,
+      marginBottom: 20,
+    },
     planPrice: {
-      fontSize: 28,
+      fontSize: 30,
       fontWeight: '800',
       color: c.foreground,
     },
     planPeriod: {
-      fontSize: 12,
-      color: c.gray[500],
-      marginBottom: 20,
+      fontSize: 13,
+      color: c['muted-foreground'],
     },
     planFeatures: {
       gap: 10,
@@ -781,57 +792,49 @@ function createStyles(c) {
       alignItems: "center",
       gap: 8,
     },
-    featureCheck: {
-      fontSize: 14,
-      color: c.emerald[500],
-      fontWeight: '700',
-    },
     featureText: {
       fontSize: 13,
-      color: c.gray[600],
+      color: c['muted-foreground'],
       flex: 1,
     },
     selectPlanBtn: {
       backgroundColor: c.primary,
-      paddingVertical: 12,
-      borderRadius: 8,
+      paddingVertical: 13,
+      borderRadius: 10,
       alignItems: "center",
     },
     selectPlanBtnText: {
       color: c.white,
-      fontSize: 14,
+      fontSize: 15,
       fontWeight: '600',
     },
     comingSoonBtn: {
-      backgroundColor: c.gray[200],
-      paddingVertical: 12,
-      borderRadius: 8,
+      backgroundColor: c.border,
+      paddingVertical: 13,
+      borderRadius: 10,
       alignItems: "center",
     },
     comingSoonBtnText: {
-      color: c.gray[500],
+      color: c['muted-foreground'],
       fontSize: 14,
       fontWeight: '600',
     },
+
+    /* Form */
     formCard: {
-      backgroundColor: c.white,
-      borderRadius: 12,
+      backgroundColor: c.card,
+      borderRadius: 14,
       borderWidth: 1,
-      borderColor: c.gray[100],
+      borderColor: c.border,
       overflow: "hidden",
-      maxHeight: "100%",
     },
     formHeader: {
       flexDirection: "row",
       alignItems: "center",
+      gap: 12,
       padding: 20,
       borderBottomWidth: 1,
-      borderBottomColor: c.gray[100],
-    },
-    formBackArrow: {
-      fontSize: 20,
-      color: c.gray[500],
-      marginRight: 12,
+      borderBottomColor: c.border,
     },
     formTitle: {
       fontSize: 18,
@@ -842,21 +845,21 @@ function createStyles(c) {
       padding: 20,
     },
     label: {
-      fontSize: 12,
+      fontSize: 13,
       fontWeight: '600',
-      color: c.gray[700],
+      color: c.foreground,
       marginBottom: 6,
-      marginTop: 12,
+      marginTop: 14,
     },
     input: {
       borderWidth: 1,
-      borderColor: c.gray[300],
-      borderRadius: 8,
+      borderColor: c.border,
+      borderRadius: 10,
       paddingHorizontal: 14,
-      paddingVertical: 10,
+      paddingVertical: 12,
       fontSize: 14,
       color: c.foreground,
-      backgroundColor: c.white,
+      backgroundColor: c.card,
     },
     row: {
       flexDirection: "row",
@@ -867,25 +870,25 @@ function createStyles(c) {
     },
     textArea: {
       borderWidth: 1,
-      borderColor: c.gray[300],
-      borderRadius: 8,
+      borderColor: c.border,
+      borderRadius: 10,
       paddingHorizontal: 14,
-      paddingVertical: 10,
+      paddingVertical: 12,
       fontSize: 14,
       color: c.foreground,
-      backgroundColor: c.white,
+      backgroundColor: c.card,
       minHeight: 80,
       textAlignVertical: "top",
     },
     textAreaSmall: {
       borderWidth: 1,
-      borderColor: c.gray[300],
-      borderRadius: 8,
+      borderColor: c.border,
+      borderRadius: 10,
       paddingHorizontal: 14,
-      paddingVertical: 10,
+      paddingVertical: 12,
       fontSize: 14,
       color: c.foreground,
-      backgroundColor: c.white,
+      backgroundColor: c.card,
       minHeight: 60,
       textAlignVertical: "top",
     },
@@ -896,29 +899,31 @@ function createStyles(c) {
       marginTop: 24,
       paddingTop: 16,
       borderTopWidth: 1,
-      borderTopColor: c.gray[100],
+      borderTopColor: c.border,
     },
     cancelBtn: {
-      paddingHorizontal: 16,
-      paddingVertical: 10,
-      borderRadius: 8,
+      paddingHorizontal: 18,
+      paddingVertical: 11,
+      borderRadius: 10,
       borderWidth: 1,
-      borderColor: c.gray[300],
-      backgroundColor: c.white,
+      borderColor: c.border,
+      backgroundColor: c.card,
     },
     cancelBtnText: {
       fontSize: 13,
       fontWeight: '500',
-      color: c.gray[700],
+      color: c['muted-foreground'],
     },
     createBtn: {
-      paddingHorizontal: 20,
-      paddingVertical: 10,
-      borderRadius: 8,
+      paddingHorizontal: 22,
+      paddingVertical: 11,
+      borderRadius: 10,
       backgroundColor: c.primary,
+      minWidth: 100,
+      alignItems: "center",
     },
     createBtnDisabled: {
-      opacity: 0.5,
+      opacity: 0.6,
     },
     createBtnText: {
       fontSize: 13,
