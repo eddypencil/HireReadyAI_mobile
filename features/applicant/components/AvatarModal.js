@@ -8,7 +8,7 @@ import { supabase } from "../../../shared/services/supabase";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
 import { useThemedAlert } from '../../../shared/context/ThemedAlertContext';
-import { FONT_FAMILY_BOLD, FONT_FAMILY_SEMIBOLD } from '../../../src/fonts';
+
 
 export default function AvatarModal({ open, onClose, userId, currentUrl, onUpdated, onDeleted }) {
   const { theme } = useTheme();
@@ -40,7 +40,7 @@ export default function AvatarModal({ open, onClose, userId, currentUrl, onUpdat
       const ext = file.uri.split(".").pop()?.split("?")[0] || "jpg";
       const filePath = `avatars/${userId}.${ext}`;
 
-      // ── Use base64 instead of fetch() to avoid Android network request failed
+      // -- Use base64 instead of fetch() to avoid Android network request failed
       const base64 = await new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.onload = () => {
@@ -122,8 +122,7 @@ export default function AvatarModal({ open, onClose, userId, currentUrl, onUpdat
           <Text style={{
             fontSize: 18,
             color: c.foreground,
-            marginBottom: 20,
-            fontFamily: FONT_FAMILY_BOLD,
+            marginBottom: 20, fontWeight: '700',
           }}>
             {t("applicant.profile_picture")}
           </Text>
@@ -140,7 +139,7 @@ export default function AvatarModal({ open, onClose, userId, currentUrl, onUpdat
                 opacity: uploading ? 0.5 : 1,
               }}
             >
-              <Text style={{ color: c['destructive-foreground'], fontSize: 14, fontFamily: FONT_FAMILY_SEMIBOLD }}>
+              <Text style={{ color: c['destructive-foreground'], fontSize: 14, fontWeight: '600' }}>
                 {uploading ? t("applicant.uploading") : t("applicant.upload_photo")}
               </Text>
             </TouchableOpacity>
@@ -158,7 +157,7 @@ export default function AvatarModal({ open, onClose, userId, currentUrl, onUpdat
                   opacity: uploading ? 0.5 : 1,
                 }}
               >
-                <Text style={{ color: c.red[600], fontSize: 14, fontFamily: FONT_FAMILY_SEMIBOLD }}>
+                <Text style={{ color: c.red[600], fontSize: 14, fontWeight: '600' }}>
                   Remove Photo
                 </Text>
               </TouchableOpacity>
@@ -174,7 +173,7 @@ export default function AvatarModal({ open, onClose, userId, currentUrl, onUpdat
                 alignItems: "center",
               }}
             >
-              <Text style={{ color: c['muted-foreground'], fontSize: 14, fontFamily: FONT_FAMILY_SEMIBOLD }}>
+              <Text style={{ color: c['muted-foreground'], fontSize: 14, fontWeight: '600' }}>
                 {t("applicant.cancel")}
               </Text>
             </TouchableOpacity>

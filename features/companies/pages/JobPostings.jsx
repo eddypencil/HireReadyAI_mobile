@@ -16,7 +16,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD, FONT_FAMILY_EXTRABOLD } from '../../../src/fonts';
+
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
 import { useThemedAlert } from '../../../shared/context/ThemedAlertContext';
@@ -1359,7 +1359,7 @@ const styles = StyleSheet.create({
   },
   listHeaderLabel: {
     fontSize: 10,
-    fontFamily: FONT_FAMILY_SEMIBOLD,
+    fontWeight: '600',
     letterSpacing: 1,
     textTransform: "uppercase",
     marginBottom: 10,
@@ -1382,7 +1382,6 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 14,
-    fontFamily: FONT_FAMILY,
     paddingVertical: 0,
   },
   tabRow: {
@@ -1399,14 +1398,13 @@ const styles = StyleSheet.create({
   },
   tabText: {
     fontSize: 13,
-    fontFamily: FONT_FAMILY_MEDIUM,
+    fontWeight: '500',
   },
   tabTextActive: {
-    fontFamily: FONT_FAMILY_SEMIBOLD,
+    fontWeight: '600',
   },
   tabSeparator: {
     fontSize: 16,
-    fontFamily: FONT_FAMILY,
     marginHorizontal: 8,
   },
   tabCountBadge: {
@@ -1418,7 +1416,7 @@ const styles = StyleSheet.create({
   },
   tabCountText: {
     fontSize: 10,
-    fontFamily: FONT_FAMILY_SEMIBOLD,
+    fontWeight: '600',
   },
   jobList: {
     padding: 16,
@@ -1443,7 +1441,7 @@ const styles = StyleSheet.create({
   },
   jobListTitle: {
     fontSize: 16,
-    fontFamily: FONT_FAMILY_SEMIBOLD,
+    fontWeight: '600',
     flex: 1,
   },
   jobListTitleLtr: {
@@ -1460,7 +1458,7 @@ const styles = StyleSheet.create({
   },
   jobStatusText: {
     fontSize: 11,
-    fontFamily: FONT_FAMILY_SEMIBOLD,
+    fontWeight: '600',
   },
   jobListMeta: {
     flexDirection: "row",
@@ -1469,7 +1467,6 @@ const styles = StyleSheet.create({
   },
   jobListMetaText: {
     fontSize: 12,
-    fontFamily: FONT_FAMILY,
   },
   jobMetaDivider: {
     width: 3,
@@ -1483,11 +1480,10 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    fontFamily: FONT_FAMILY_SEMIBOLD,
+    fontWeight: '600',
   },
   emptyHint: {
     fontSize: 13,
-    fontFamily: FONT_FAMILY,
     textAlign: "center",
     paddingHorizontal: 40,
   },
@@ -1507,7 +1503,7 @@ const styles = StyleSheet.create({
   },
   backText: {
     fontSize: 14,
-    fontFamily: FONT_FAMILY_MEDIUM,
+    fontWeight: '500',
     marginLeft: 2,
   },
   backTextRtl: {
@@ -1530,11 +1526,11 @@ const styles = StyleSheet.create({
   },
   detailTitle: {
     fontSize: 22,
-    fontFamily: FONT_FAMILY_BOLD,
+    fontWeight: '700',
   },
   editTitleInput: {
     fontSize: 20,
-    fontFamily: FONT_FAMILY_BOLD,
+    fontWeight: '700',
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 10,
@@ -1542,7 +1538,6 @@ const styles = StyleSheet.create({
   },
   detailSubtitle: {
     fontSize: 13,
-    fontFamily: FONT_FAMILY,
     marginTop: 4,
     textTransform: "capitalize",
   },
@@ -1559,7 +1554,7 @@ const styles = StyleSheet.create({
   },
   actionBtnOutlineText: {
     fontSize: 13,
-    fontFamily: FONT_FAMILY_MEDIUM,
+    fontWeight: '500',
   },
   actionBtnPrimary: {
     paddingHorizontal: 16,
@@ -1568,7 +1563,7 @@ const styles = StyleSheet.create({
   },
   actionBtnPrimaryText: {
     fontSize: 13,
-    fontFamily: FONT_FAMILY_MEDIUM,
+    fontWeight: '500',
     color: "#fff",
   },
 
@@ -1595,13 +1590,13 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontSize: 10,
-    fontFamily: FONT_FAMILY_BOLD,
+    fontWeight: '700',
     letterSpacing: 0.5,
     textTransform: "uppercase",
   },
   infoValue: {
     fontSize: 15,
-    fontFamily: FONT_FAMILY_SEMIBOLD,
+    fontWeight: '600',
     textTransform: "capitalize",
   },
   editInfoInput: {
@@ -1610,7 +1605,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     fontSize: 13,
-    fontFamily: FONT_FAMILY,
     flex: 1,
   },
   selectField: {
@@ -1624,7 +1618,6 @@ const styles = StyleSheet.create({
   },
   selectFieldText: {
     fontSize: 13,
-    fontFamily: FONT_FAMILY,
     flex: 1,
   },
   modalOverlay: {
@@ -1640,7 +1633,7 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 16,
-    fontFamily: FONT_FAMILY_BOLD,
+    fontWeight: '700',
     marginBottom: 12,
   },
   modalOption: {
@@ -1653,7 +1646,6 @@ const styles = StyleSheet.create({
   },
   modalOptionText: {
     fontSize: 15,
-    fontFamily: FONT_FAMILY,
   },
   salaryEditRow: {
     flexDirection: "row",
@@ -1662,7 +1654,6 @@ const styles = StyleSheet.create({
   },
   salaryDash: {
     fontSize: 13,
-    fontFamily: FONT_FAMILY,
   },
 
   // Content cards
@@ -1676,12 +1667,11 @@ const styles = StyleSheet.create({
   },
   contentCardTitle: {
     fontSize: 14,
-    fontFamily: FONT_FAMILY_BOLD,
+    fontWeight: '700',
     marginBottom: 10,
   },
   contentCardBody: {
     fontSize: 14,
-    fontFamily: FONT_FAMILY,
     lineHeight: 20,
   },
   editTextArea: {
@@ -1689,7 +1679,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     fontSize: 13,
-    fontFamily: FONT_FAMILY,
     textAlignVertical: "top",
     minHeight: 80,
   },
@@ -1701,13 +1690,11 @@ const styles = StyleSheet.create({
   },
   listItemText: {
     fontSize: 14,
-    fontFamily: FONT_FAMILY,
     flex: 1,
     lineHeight: 20,
   },
   noContent: {
     fontSize: 13,
-    fontFamily: FONT_FAMILY,
   },
 
   // Edit list
@@ -1726,7 +1713,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     fontSize: 13,
-    fontFamily: FONT_FAMILY,
   },
   editListAdd: {
     borderWidth: 1,
@@ -1734,7 +1720,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
     fontSize: 13,
-    fontFamily: FONT_FAMILY,
     marginTop: 4,
   },
 
@@ -1761,7 +1746,7 @@ const styles = StyleSheet.create({
   },
   skillChipText: {
     fontSize: 13,
-    fontFamily: FONT_FAMILY_MEDIUM,
+    fontWeight: '500',
   },
   addSkillInput: {
     borderWidth: 1,
@@ -1769,25 +1754,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 6,
     fontSize: 13,
-    fontFamily: FONT_FAMILY,
     minWidth: 100,
   },
 
   // Pipeline
   pipelineHeaderLabel: {
     fontSize: 10,
-    fontFamily: FONT_FAMILY_BOLD,
+    fontWeight: '700',
     letterSpacing: 1,
     textTransform: "uppercase",
     marginBottom: 4,
   },
   pipelineTitle: {
     fontSize: 16,
-    fontFamily: FONT_FAMILY_BOLD,
+    fontWeight: '700',
   },
   pipelineSubtitle: {
     fontSize: 12,
-    fontFamily: FONT_FAMILY,
     marginBottom: 16,
   },
   pipelineScroll: {
@@ -1802,7 +1785,6 @@ const styles = StyleSheet.create({
   },
   pipelineLoadingText: {
     fontSize: 13,
-    fontFamily: FONT_FAMILY,
   },
   emptyPipeline: {
     borderWidth: 2,
@@ -1814,7 +1796,6 @@ const styles = StyleSheet.create({
   },
   emptyPipelineText: {
     fontSize: 13,
-    fontFamily: FONT_FAMILY,
     textAlign: "center",
   },
   stageCard: {
@@ -1839,11 +1820,11 @@ const styles = StyleSheet.create({
   },
   stageNumberText: {
     fontSize: 13,
-    fontFamily: FONT_FAMILY_BOLD,
+    fontWeight: '700',
   },
   stageLabel: {
     fontSize: 10,
-    fontFamily: FONT_FAMILY_BOLD,
+    fontWeight: '700',
     letterSpacing: 1,
     textTransform: "uppercase",
   },
@@ -1852,7 +1833,7 @@ const styles = StyleSheet.create({
   },
   stageName: {
     fontSize: 15,
-    fontFamily: FONT_FAMILY_BOLD,
+    fontWeight: '700',
     marginBottom: 10,
   },
   stageBadges: {
@@ -1866,7 +1847,7 @@ const styles = StyleSheet.create({
   },
   weightBadgeText: {
     fontSize: 11,
-    fontFamily: FONT_FAMILY_SEMIBOLD,
+    fontWeight: '600',
   },
   aiBadge: {
     borderWidth: 1,
@@ -1876,7 +1857,7 @@ const styles = StyleSheet.create({
   },
   aiBadgeText: {
     fontSize: 11,
-    fontFamily: FONT_FAMILY_SEMIBOLD,
+    fontWeight: '600',
   },
   editPipelineBtn: {
     flexDirection: "row",
@@ -1891,7 +1872,7 @@ const styles = StyleSheet.create({
   },
   editPipelineBtnText: {
     fontSize: 13,
-    fontFamily: FONT_FAMILY_SEMIBOLD,
+    fontWeight: '600',
   },
   rowReverse: {
     flexDirection: "row-reverse",

@@ -14,7 +14,6 @@ import QuestionCard from '../components/apply/QuestionCard';
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../shared/context/I18nContext';
 import { useThemedAlert } from '../../../shared/context/ThemedAlertContext';
-import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../src/fonts';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system/legacy';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -443,24 +442,21 @@ function createStyles(c) { return StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: c.foreground,
-    marginBottom: 16,
-    fontFamily: FONT_FAMILY_BOLD,
-  },
+      marginBottom: 16,
+    },
   stepsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 8,
   },
-  stepLabel: {
-    fontSize: 12,
-    color: c['muted-foreground'],
-    fontFamily: FONT_FAMILY,
-  },
+    stepLabel: {
+      fontSize: 12,
+      color: c['muted-foreground'],
+    },
   stepLabelActive: {
     color: c.primary,
-    fontWeight: '600',
-    fontFamily: FONT_FAMILY_SEMIBOLD,
-  },
+      fontWeight: '600',
+    },
   progressBarBg: {
     height: 6,
     backgroundColor: c['surface-muted'],
@@ -484,16 +480,14 @@ function createStyles(c) { return StyleSheet.create({
   },
   cardTitle: {
     fontSize: 16,
-    fontWeight: '700',
-    color: c.foreground,
-    fontFamily: FONT_FAMILY_BOLD,
-  },
-  cardSubtitle: {
-    fontSize: 13,
-    color: c['muted-foreground'],
-    marginTop: -8,
-    fontFamily: FONT_FAMILY,
-  },
+      fontWeight: '700',
+      color: c.foreground,
+    },
+    cardSubtitle: {
+      fontSize: 13,
+      color: c['muted-foreground'],
+      marginTop: -8,
+    },
 
   // Form fields
   fieldGroup: {
@@ -501,10 +495,9 @@ function createStyles(c) { return StyleSheet.create({
   },
   label: {
     fontSize: 13,
-    fontWeight: '600',
-    color: c.foreground,
-    fontFamily: FONT_FAMILY_SEMIBOLD,
-  },
+      fontWeight: '600',
+      color: c.foreground,
+    },
   required: {
     color: c.destructive,
   },
@@ -516,17 +509,15 @@ function createStyles(c) { return StyleSheet.create({
     paddingVertical: 12,
     fontSize: 14,
     color: c.foreground,
-    backgroundColor: c['surface-muted'],
-    fontFamily: FONT_FAMILY,
-  },
+      backgroundColor: c['surface-muted'],
+    },
   inputError: {
     borderColor: c.destructive,
   },
-  errorText: {
-    fontSize: 12,
-    color: c.destructive,
-    fontFamily: FONT_FAMILY,
-  },
+    errorText: {
+      fontSize: 12,
+      color: c.destructive,
+    },
 
   // Upload
   uploadArea: {
@@ -546,17 +537,14 @@ function createStyles(c) { return StyleSheet.create({
     fontSize: 14,
     color: c['muted-foreground'],
     textAlign: 'center',
-    fontFamily: FONT_FAMILY,
   },
   uploadTextSelected: {
     color: c.primary,
     fontWeight: '500',
-    fontFamily: FONT_FAMILY_MEDIUM,
   },
   uploadSubtext: {
     fontSize: 12,
     color: c['muted-foreground'],
-    fontFamily: FONT_FAMILY,
   },
 
   // Questions
@@ -568,7 +556,6 @@ function createStyles(c) { return StyleSheet.create({
     color: c['muted-foreground'],
     textAlign: 'center',
     paddingVertical: 20,
-    fontFamily: FONT_FAMILY,
   },
 
   // Footer
@@ -590,7 +577,6 @@ function createStyles(c) { return StyleSheet.create({
     fontSize: 15,
     fontWeight: '500',
     color: c.foreground,
-    fontFamily: FONT_FAMILY_MEDIUM,
   },
   nextButton: {
     flex: 1,
@@ -611,7 +597,6 @@ function createStyles(c) { return StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     color: c['destructive-foreground'],
-    fontFamily: FONT_FAMILY_SEMIBOLD,
   },
   submitButton: {
     flex: 1,
@@ -633,9 +618,7 @@ function createStyles(c) { return StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     color: c['destructive-foreground'],
-    fontFamily: FONT_FAMILY_SEMIBOLD,
   },
-
   successOverlay: {
     flex: 1,
     backgroundColor: `${c.foreground}66`,
@@ -664,13 +647,12 @@ function createStyles(c) { return StyleSheet.create({
   },
   successTitle: {
     fontSize: 20,
-    fontFamily: FONT_FAMILY_BOLD,
+    fontWeight: '700',
     color: c.foreground,
     textAlign: 'center',
   },
   successMessage: {
     fontSize: 14,
-    fontFamily: FONT_FAMILY,
     color: c['muted-foreground'],
     textAlign: 'center',
     marginTop: 8,
@@ -686,6 +668,6 @@ function createStyles(c) { return StyleSheet.create({
   successButtonText: {
     color: c['destructive-foreground'],
     fontSize: 15,
-    fontFamily: FONT_FAMILY_SEMIBOLD,
+    fontWeight: '600',
   },
 }); }

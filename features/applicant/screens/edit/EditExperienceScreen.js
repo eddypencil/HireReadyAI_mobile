@@ -11,7 +11,7 @@ import { useTheme } from '../../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../../shared/context/I18nContext';
 import { addExperience, updateExperience } from '../../services/experience.service';
 import { Experience } from '../../models';
-import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../../src/fonts';
+
 
 function Field({ label, value, onChangeText, placeholder, multiline, optional, keyboardType, styles, c , t}) {
   return (
@@ -123,12 +123,11 @@ function createStyles(c) {
   scroll: { flex: 1, backgroundColor: c.surface },
   content: { padding: 20, gap: 16, paddingBottom: 40 },
   fieldGroup: { gap: 6 },
-  label: { fontFamily: FONT_FAMILY_SEMIBOLD, fontSize: 12, color: c.foreground, textTransform: 'uppercase', letterSpacing: 0.4 },
-  optional: { fontFamily: FONT_FAMILY, fontWeight: '400', color: c['muted-foreground'], textTransform: 'none' },
+  label: { fontWeight: '600', fontSize: 12, color: c.foreground, textTransform: 'uppercase', letterSpacing: 0.4 },
+  optional: { fontWeight: '400', color: c['muted-foreground'], textTransform: 'none' },
   input: {
     backgroundColor: c.card, borderWidth: 1, borderColor: c.border,
-    borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12,
-    fontFamily: FONT_FAMILY, fontSize: 14, color: c.foreground,
+    borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, fontSize: 14, color: c.foreground,
   },
   inputMulti: { minHeight: 120, paddingTop: 12 },
   saveBtn: {
@@ -137,6 +136,6 @@ function createStyles(c) {
     shadowColor: c.primary, shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
   },
-  saveBtnText: { fontFamily: FONT_FAMILY_BOLD, color: c.white, fontSize: 15 },
+  saveBtnText: { fontWeight: '700', color: c.white, fontSize: 15 },
   });
 }

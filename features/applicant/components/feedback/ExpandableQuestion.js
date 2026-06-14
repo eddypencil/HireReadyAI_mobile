@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../../shared/context/I18nContext';
-import { FONT_FAMILY, FONT_FAMILY_BOLD, FONT_FAMILY_SEMIBOLD } from '../../../../src/fonts';
+
 
 const TYPE_ICONS = {
   video: 'videocam-outline',
@@ -194,27 +194,27 @@ function createStyles(c) {
     iconBox: { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
     headerText: { flex: 1 },
     metaRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
-    typeLabel: { fontSize: 11, color: c['muted-foreground'], fontFamily: FONT_FAMILY_SEMIBOLD },
+    typeLabel: { fontSize: 11, color: c['muted-foreground'], fontWeight: '600' },
     langBadge: { backgroundColor: c.surface, borderRadius: 4, paddingHorizontal: 4, paddingVertical: 1 },
-    langText: { fontSize: 9, color: c['muted-foreground'], fontFamily: FONT_FAMILY_BOLD },
-    questionText: { fontSize: 13, color: c.foreground, lineHeight: 18, fontFamily: FONT_FAMILY },
+    langText: { fontSize: 9, color: c['muted-foreground'], fontWeight: '700' },
+    questionText: { fontSize: 13, color: c.foreground, lineHeight: 18 },
     rightCol: { alignItems: 'center', gap: 6 },
     scoreBadge: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 },
-    scoreText: { fontSize: 11, fontFamily: FONT_FAMILY_BOLD },
+    scoreText: { fontSize: 11, fontWeight: '700' },
     expandedContent: { paddingHorizontal: 16, paddingBottom: 16 },
     divider: { height: 1, backgroundColor: c.border, marginBottom: 14 },
     sectionLabel: {
       fontSize: 10, color: c['muted-foreground'],
-      letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 8, fontFamily: FONT_FAMILY_BOLD,
+      letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 8, fontWeight: '700',
     },
     answerBox: {
       backgroundColor: c.surface, borderRadius: 10,
       borderWidth: 1, borderColor: c.border, padding: 12,
     },
-    answerText: { fontSize: 13, color: c.foreground, lineHeight: 20, fontFamily: FONT_FAMILY },
+    answerText: { fontSize: 13, color: c.foreground, lineHeight: 20 },
     codeBox: { backgroundColor: '#1e2d3d', borderRadius: 10, padding: 12 },
-    codeText: { fontSize: 12, color: c.white, lineHeight: 20, fontFamily: FONT_FAMILY },
-    mutedText: { fontSize: 12, color: c['muted-foreground'], fontStyle: 'italic', fontFamily: FONT_FAMILY },
+    codeText: { fontSize: 12, color: c.white, lineHeight: 20 },
+    mutedText: { fontSize: 12, color: c['muted-foreground'], fontStyle: 'italic' },
     optionsContainer: { gap: 6, marginBottom: 8 },
     optionRow: {
       flexDirection: 'row', alignItems: 'center', gap: 10,
@@ -227,15 +227,15 @@ function createStyles(c) {
       backgroundColor: c.surface, alignItems: 'center', justifyContent: 'center',
     },
     optionLetterSelected: { backgroundColor: c.accent },
-    optionLetterText: { fontSize: 10, color: c['muted-foreground'], fontFamily: FONT_FAMILY_BOLD },
-    optionText: { fontSize: 13, color: c['muted-foreground'], flex: 1, fontFamily: FONT_FAMILY },
+    optionLetterText: { fontSize: 10, color: c['muted-foreground'], fontWeight: '700' },
+    optionText: { fontSize: 13, color: c['muted-foreground'], flex: 1 },
     aiFeedbackBox: {
       backgroundColor: c.surface, borderRadius: 10,
       borderWidth: 1, borderColor: c.border, padding: 12, marginTop: 12,
     },
     aiFeedbackHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 },
-    aiFeedbackLabel: { fontSize: 10, color: c.accent, letterSpacing: 0.8, fontFamily: FONT_FAMILY_BOLD },
-    aiFeedbackText: { fontSize: 13, color: c.foreground, lineHeight: 19, marginBottom: 8, fontFamily: FONT_FAMILY },
+    aiFeedbackLabel: { fontSize: 10, color: c.accent, letterSpacing: 0.8, fontWeight: '700' },
+    aiFeedbackText: { fontSize: 13, color: c.foreground, lineHeight: 19, marginBottom: 8 },
     feedbackSectionOuter: {
       flexDirection: 'row', marginTop: 10, borderRadius: 8, overflow: 'hidden',
       backgroundColor: c.surface,
@@ -246,9 +246,9 @@ function createStyles(c) {
       flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', gap: 4,
       paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6,
     },
-    feedbackTagText: { fontSize: 10, letterSpacing: 0.5, fontFamily: FONT_FAMILY_BOLD },
+    feedbackTagText: { fontSize: 10, letterSpacing: 0.5, fontWeight: '700' },
     bullet: { fontSize: 16, lineHeight: 18, marginTop: -1 },
     feedbackItem: { flexDirection: 'row', alignItems: 'flex-start', gap: 6, marginBottom: 2 },
-    feedbackItemText: { fontSize: 12, flex: 1, lineHeight: 17, color: c.foreground, fontFamily: FONT_FAMILY },
+    feedbackItemText: { fontSize: 12, flex: 1, lineHeight: 17, color: c.foreground },
   });
 }

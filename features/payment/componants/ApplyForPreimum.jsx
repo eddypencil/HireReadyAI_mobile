@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Crown } from "lucide-react-native";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
-import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from "../../../src/fonts";
 
 export default function PlanBillingCard({
   company,
@@ -89,13 +88,13 @@ function createStyles(c) {
     },
     title: {
       fontSize: 18,
-      fontFamily: FONT_FAMILY_BOLD,
+      fontWeight: '700',
       color: c.foreground,
       marginBottom: 2,
     },
     description: {
       fontSize: 11,
-      fontFamily: FONT_FAMILY,
+      
       color: c['muted-foreground'],
       lineHeight: 18,
     },
@@ -105,7 +104,7 @@ function createStyles(c) {
     },
     feature: {
       fontSize: 12,
-      fontFamily: FONT_FAMILY,
+      
       color: c['muted-foreground'],
     },
     premiumBadge: {
@@ -122,7 +121,7 @@ function createStyles(c) {
     premiumText: {
       color: c.emerald[700],
       fontSize: 12,
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
     },
     upgradeButton: {
       flexDirection: "row",
@@ -139,7 +138,7 @@ function createStyles(c) {
     upgradeText: {
       color: c.white,
       fontSize: 12,
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
     },
   });
 }

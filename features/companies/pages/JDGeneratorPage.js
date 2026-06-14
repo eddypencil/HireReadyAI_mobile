@@ -12,7 +12,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../src/fonts';
+
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
 import { SENIORITY_LEVEL } from "../../../shared/constants/enums";
@@ -330,7 +330,7 @@ function createStyles(c) {
     },
     pageTitle: {
       fontSize: 22,
-      fontFamily: FONT_FAMILY_BOLD,
+      fontWeight: '700',
       color: c.foreground,
       marginBottom: 20,
     },
@@ -349,14 +349,13 @@ function createStyles(c) {
     },
     label: {
       fontSize: 11,
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
       color: c.primary,
       textTransform: "uppercase",
       letterSpacing: 0.5,
       marginBottom: 2,
     },
     optionalTag: {
-      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
       textTransform: "none",
       letterSpacing: 0,
@@ -368,7 +367,6 @@ function createStyles(c) {
       paddingHorizontal: 14,
       paddingVertical: 11,
       fontSize: 13,
-      fontFamily: FONT_FAMILY,
       color: c.foreground,
       backgroundColor: c.card,
     },
@@ -391,16 +389,13 @@ function createStyles(c) {
     },
     selectFieldText: {
       fontSize: 13,
-      fontFamily: FONT_FAMILY,
       color: c.foreground,
     },
     selectFieldPlaceholder: {
-      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
     },
     selectArrow: {
       fontSize: 10,
-      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
     },
     modalOverlay: {
@@ -418,7 +413,7 @@ function createStyles(c) {
     },
     modalTitle: {
       fontSize: 16,
-      fontFamily: FONT_FAMILY_BOLD,
+      fontWeight: '700',
       color: c.foreground,
       marginBottom: 12,
     },
@@ -432,16 +427,14 @@ function createStyles(c) {
     },
     modalOptionText: {
       fontSize: 15,
-      fontFamily: FONT_FAMILY,
       color: c.foreground,
     },
     modalOptionTextSelected: {
       color: c.primary,
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
     },
     errorText: {
       fontSize: 11,
-      fontFamily: FONT_FAMILY,
       color: c.destructive,
       marginTop: 2,
     },
@@ -462,7 +455,6 @@ function createStyles(c) {
     },
     salarySep: {
       fontSize: 13,
-      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
     },
     textArea: {
@@ -472,7 +464,6 @@ function createStyles(c) {
       paddingHorizontal: 14,
       paddingVertical: 11,
       fontSize: 13,
-      fontFamily: FONT_FAMILY,
       color: c.foreground,
       backgroundColor: c.card,
       minHeight: 100,
@@ -488,7 +479,7 @@ function createStyles(c) {
     generateBtnText: {
       color: c['destructive-foreground'],
       fontSize: 15,
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
     },
   });
 }

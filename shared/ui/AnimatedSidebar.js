@@ -16,7 +16,6 @@ import { useTheme } from "../context/ThemeContext";
 import { useUser } from "../../features/auth/context/user.context";
 import { USER_ROLE } from "../constants/enums";
 import { spacing, borderRadius, fontSize, fontWeight } from "../../src/theme";
-import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from "../../src/fonts";
 import { useTranslation } from "../context/I18nContext";
 import LanguageSwitcher from "../i18n/LanguageSwitcher";
 
@@ -359,11 +358,11 @@ const styles = StyleSheet.create({
   },
   logoText: {
     fontSize: fontSize.xl,
-    fontFamily: FONT_FAMILY_BOLD,
+    fontWeight: '700',
   },
   wordmark: {
     fontSize: 17,
-    fontFamily: FONT_FAMILY_SEMIBOLD,
+    fontWeight: '600',
     letterSpacing: -0.3,
   },
   userChip: {
@@ -385,16 +384,15 @@ const styles = StyleSheet.create({
   },
   avatarText: {
     fontSize: 13,
-    fontFamily: FONT_FAMILY_SEMIBOLD,
+    fontWeight: '600',
   },
   userName: {
     fontSize: fontSize.sm,
-    fontFamily: FONT_FAMILY_SEMIBOLD,
+    fontWeight: '600',
   },
   userRole: {
     fontSize: fontSize.xs,
     textTransform: "capitalize",
-    fontFamily: FONT_FAMILY,
   },
   navScroll: {
     flex: 1,
@@ -415,7 +413,7 @@ const styles = StyleSheet.create({
   navLabel: {
     flex: 1,
     fontSize: fontSize.sm,
-    fontFamily: FONT_FAMILY_MEDIUM,
+    fontWeight: '500',
   },
   themeButton: {
     flexDirection: "row",
@@ -427,7 +425,7 @@ const styles = StyleSheet.create({
   },
   themeText: {
     fontSize: fontSize.sm,
-    fontFamily: FONT_FAMILY_MEDIUM,
+    fontWeight: '500',
   },
   logoutButton: {
     flexDirection: "row",
@@ -440,6 +438,6 @@ const styles = StyleSheet.create({
   },
   logoutText: {
     fontSize: fontSize.sm,
-    fontFamily: FONT_FAMILY_MEDIUM,
+    fontWeight: '500',
   },
 });

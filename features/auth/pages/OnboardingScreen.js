@@ -30,7 +30,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../shared/context/I18nContext';
-import { FONT_FAMILY, FONT_FAMILY_BOLD, FONT_FAMILY_EXTRABOLD, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD } from '../../../src/fonts';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width, height } = Dimensions.get('window');
@@ -272,12 +272,11 @@ const styles = StyleSheet.create({
   backArrow: {
     color: NAVY,
     fontSize: 32,
-    fontFamily: FONT_FAMILY,
     marginTop: -7, 
   },
   skipText: {
     fontSize: 15,
-    fontFamily: FONT_FAMILY_MEDIUM,
+    fontWeight: '500',
     color: NAVY,
     letterSpacing: 0.2,
   },
@@ -314,14 +313,12 @@ const styles = StyleSheet.create({
     marginTop: 50,
     marginBottom: 30,
     lineHeight: 32,
-    fontFamily: FONT_FAMILY_EXTRABOLD,
   },
   subtitle: {
     fontSize: 14,
     color: 'rgba(255,255,255,0.75)',
     lineHeight: 21,
     letterSpacing: 0.1,
-    fontFamily: FONT_FAMILY,
   },
 
   controlsRow: {
@@ -366,7 +363,6 @@ const styles = StyleSheet.create({
   nextArrow: {
     color: NAVY,
     fontSize: 32,
-    fontFamily: FONT_FAMILY,
     marginTop: -7,
     marginLeft: 3,
   },
@@ -384,6 +380,5 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
     letterSpacing: 0.3,
-    fontFamily: FONT_FAMILY_BOLD,
   },
 });

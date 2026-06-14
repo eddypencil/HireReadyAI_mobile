@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../shared/context/I18nContext';
 import { spacing, borderRadius, fontSize, fontWeight } from '../../../src/theme';
-import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD } from '../../../src/fonts';
+
 
 export default function JobSearch({ search, setSearch }) {
   const { theme } = useTheme();
@@ -13,9 +13,9 @@ export default function JobSearch({ search, setSearch }) {
   const s = {
     container: { backgroundColor: c.card, borderRadius: 16, borderWidth: 1, borderColor: c.border, padding: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
     inputRow: { flexDirection: 'row', alignItems: 'center', flex: 1, gap: 8 },
-    input: { fontFamily: FONT_FAMILY, flex: 1, fontSize: fontSize.sm, color: c.foreground, paddingVertical: 8 },
+    input: { flex: 1, fontSize: fontSize.sm, color: c.foreground, paddingVertical: 8 },
     button: { paddingHorizontal: 20, paddingVertical: 10, borderRadius: 12, backgroundColor: c.primary },
-    buttonText: { fontFamily: FONT_FAMILY_SEMIBOLD, color: c['destructive-foreground'], fontSize: fontSize.sm, fontWeight: fontWeight.semibold },
+    buttonText: { color: c['destructive-foreground'], fontSize: fontSize.sm, fontWeight: fontWeight.semibold },
   };
 
   return (

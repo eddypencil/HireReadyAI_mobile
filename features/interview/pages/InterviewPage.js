@@ -15,7 +15,6 @@ import TextQuestion from "../components/TextQuestion";
 import MultipleChoiceQuestion from "../components/MultipleChoiceQuestion";
 import CodeQuestion from "../components/CodeQuestion";
 import VideoQuestion from "../components/VideoQuestion";
-import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD, FONT_FAMILY_EXTRABOLD } from '../../../src/fonts';
 
 const PHASE = {
   INIT: "init",
@@ -189,13 +188,12 @@ function createStyles(c) {
     },
     desktopTitle: {
       fontSize: 20,
-      fontFamily: FONT_FAMILY_BOLD,
+      fontWeight: '700',
       color: c.foreground,
       textAlign: 'center',
     },
     desktopMessage: {
       fontSize: 14,
-      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
       textAlign: 'center',
       marginTop: 8,
@@ -212,7 +210,7 @@ function createStyles(c) {
     },
     desktopPrimaryBtnText: {
       fontSize: 15,
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
       color: c['destructive-foreground'],
     },
     desktopSecondaryBtn: {
@@ -226,7 +224,7 @@ function createStyles(c) {
     },
     desktopSecondaryBtnText: {
       fontSize: 15,
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
       color: c.foreground,
     },
   });

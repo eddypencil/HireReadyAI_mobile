@@ -14,11 +14,6 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../shared/context/ThemeContext';
-import {
-  FONT_FAMILY,
-  FONT_FAMILY_SEMIBOLD,
-  FONT_FAMILY_BOLD,
-} from '../../../src/fonts';
 import { useTranslation } from '../../../shared/context/I18nContext';
 import { useThemedAlert } from '../../../shared/context/ThemedAlertContext';
 import { supabase } from '../../../shared/services/supabase';
@@ -299,12 +294,11 @@ function createStyles(c) { return StyleSheet.create({
   },
   title: {
     fontSize: 17,
-    fontFamily: FONT_FAMILY_BOLD,
+    fontWeight: '700',
     color: c.foreground,
   },
   subtitle: {
     fontSize: 12,
-    fontFamily: FONT_FAMILY,
     color: c['muted-foreground'],
     marginTop: 2,
   },
@@ -330,7 +324,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   templateBtnText: {
     fontSize: 13,
-    fontFamily: FONT_FAMILY_SEMIBOLD,
+    fontWeight: '600',
     color: c.primary,
   },
   fieldGroup: {
@@ -338,7 +332,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   fieldLabel: {
     fontSize: 12,
-    fontFamily: FONT_FAMILY_SEMIBOLD,
+    fontWeight: '600',
     color: c['muted-foreground'],
     marginBottom: 6,
     textTransform: 'uppercase',
@@ -351,7 +345,6 @@ function createStyles(c) { return StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 14,
-    fontFamily: FONT_FAMILY,
     color: c.foreground,
     backgroundColor: c['surface-muted'],
   },
@@ -389,7 +382,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   cancelBtnText: {
     fontSize: 14,
-    fontFamily: FONT_FAMILY_SEMIBOLD,
+    fontWeight: '600',
     color: c['muted-foreground'],
   },
   sendBtn: {
@@ -407,7 +400,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   sendBtnText: {
     fontSize: 14,
-    fontFamily: FONT_FAMILY_SEMIBOLD,
+    fontWeight: '600',
     color: c['destructive-foreground'],
   },
 
@@ -441,13 +434,12 @@ function createStyles(c) { return StyleSheet.create({
   },
   successTitle: {
     fontSize: 20,
-    fontFamily: FONT_FAMILY_BOLD,
+    fontWeight: '700',
     color: c.foreground,
     textAlign: 'center',
   },
   successMessage: {
     fontSize: 14,
-    fontFamily: FONT_FAMILY,
     color: c['muted-foreground'],
     textAlign: 'center',
     marginTop: 8,
@@ -463,6 +455,6 @@ function createStyles(c) { return StyleSheet.create({
   successButtonText: {
     color: c['destructive-foreground'],
     fontSize: 15,
-    fontFamily: FONT_FAMILY_SEMIBOLD,
+    fontWeight: '600',
   },
 }); }

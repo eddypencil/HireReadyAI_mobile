@@ -4,7 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
 import AvatarModal from "./AvatarModal";
-import { FONT_FAMILY, FONT_FAMILY_BOLD, FONT_FAMILY_SEMIBOLD } from '../../../src/fonts';
+
 
 export default function ApplicantHeader({ fullName, profile_pic, email, phone, joinedDate, userId, onAvatarChange }) {
   const { theme } = useTheme();
@@ -60,8 +60,7 @@ export default function ApplicantHeader({ fullName, profile_pic, email, phone, j
                   }}>
                     <Text style={{
                       fontSize: 22,
-                      color: c['destructive-foreground'],
-                      fontFamily: FONT_FAMILY_BOLD,
+                      color: c['destructive-foreground'], fontWeight: '700',
                     }}>{initials}</Text>
                   </View>
                 )}
@@ -78,7 +77,7 @@ export default function ApplicantHeader({ fullName, profile_pic, email, phone, j
                   alignItems: "center",
                   justifyContent: "center",
                 }}>
-                  <Text style={{ fontSize: 9, color: c['destructive-foreground'], fontFamily: FONT_FAMILY }}>✎</Text>
+                  <Text style={{ fontSize: 9, color: c['destructive-foreground'] }}>?</Text>
                 </View>
               </View>
             </TouchableOpacity>
@@ -88,8 +87,7 @@ export default function ApplicantHeader({ fullName, profile_pic, email, phone, j
                 <Text style={{
                   fontSize: 22,
                   color: c['sidebar-foreground'],
-                  letterSpacing: -0.3,
-                  fontFamily: FONT_FAMILY_BOLD,
+                  letterSpacing: -0.3, fontWeight: '700',
                 }}>
                   {fullName || "Applicant"}
                 </Text>
@@ -104,8 +102,7 @@ export default function ApplicantHeader({ fullName, profile_pic, email, phone, j
                   fontSize: 11,
                   letterSpacing: 0.3,
                   textTransform: "uppercase",
-                  overflow: "hidden",
-                  fontFamily: FONT_FAMILY_SEMIBOLD,
+                  overflow: "hidden", fontWeight: '600',
                 }}>{t("applicant.applicant_badge")}</Text>
               </View>
 
@@ -113,13 +110,13 @@ export default function ApplicantHeader({ fullName, profile_pic, email, phone, j
                 {email && (
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                     <Ionicons name="mail-outline" size={13} color={c['sidebar-foreground']} />
-                    <Text style={{ fontSize: 13, color: c['sidebar-foreground'], fontFamily: FONT_FAMILY }}>{email}</Text>
+                    <Text style={{ fontSize: 13, color: c['sidebar-foreground'] }}>{email}</Text>
                   </View>
                 )}
                 {phone && (
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                     <Ionicons name="call-outline" size={13} color={c['sidebar-foreground']} />
-                    <Text style={{ fontSize: 13, color: c['sidebar-foreground'], fontFamily: FONT_FAMILY }}>{phone}</Text>
+                    <Text style={{ fontSize: 13, color: c['sidebar-foreground'] }}>{phone}</Text>
                   </View>
                 )}
               </View>

@@ -10,7 +10,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../../shared/context/I18nContext';
 import { fetchApplicantProfile, updateApplicantProfile } from '../../services/profile.service';
-import { FONT_FAMILY, FONT_FAMILY_BOLD } from '../../../../src/fonts';
+
 
 export default function EditBioScreen() {
   const { theme } = useTheme();
@@ -108,12 +108,11 @@ function createStyles(c) {
   content: { padding: 20, gap: 20, paddingBottom: 40 },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   fieldGroup: { gap: 6 },
-  label: { fontFamily: FONT_FAMILY_BOLD, fontSize: 13, color: c.foreground },
-  hint: { fontFamily: FONT_FAMILY, fontSize: 12, color: c['muted-foreground'], lineHeight: 17 },
+  label: { fontWeight: '700', fontSize: 13, color: c.foreground },
+  hint: { fontSize: 12, color: c['muted-foreground'], lineHeight: 17 },
   input: {
     backgroundColor: c.card, borderWidth: 1, borderColor: c.border,
-    borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12,
-    fontFamily: FONT_FAMILY, fontSize: 14, color: c.foreground,
+    borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, fontSize: 14, color: c.foreground,
   },
   inputMulti: { minHeight: 130, paddingTop: 12 },
   saveBtn: {
@@ -122,6 +121,6 @@ function createStyles(c) {
     shadowColor: c.primary, shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
   },
-  saveBtnText: { fontFamily: FONT_FAMILY_BOLD, color: c.white, fontSize: 15 },
+  saveBtnText: { fontWeight: '700', color: c.white, fontSize: 15 },
   });
 }

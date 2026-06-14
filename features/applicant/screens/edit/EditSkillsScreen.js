@@ -12,7 +12,7 @@ import { useTheme } from '../../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../../shared/context/I18nContext';
 import { addSkill, updateSkill } from '../../services/skills.service';
 import { Skill } from '../../models';
-import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../../src/fonts';
+
 
 const LEVELS = ['beginner', 'intermediate', 'advanced', 'expert'];
 
@@ -131,9 +131,9 @@ function createStyles(c) {
   scroll: { flex: 1, backgroundColor: c.surface },
   content: { padding: 20, gap: 20, paddingBottom: 40 },
   fieldGroup: { gap: 10 },
-  label: { fontFamily: FONT_FAMILY_SEMIBOLD, fontSize: 12, color: c.foreground, textTransform: 'uppercase', letterSpacing: 0.4 },
+  label: { fontWeight: '600', fontSize: 12, color: c.foreground, textTransform: 'uppercase', letterSpacing: 0.4 },
   input: {
-    fontFamily: FONT_FAMILY, backgroundColor: c.card, borderWidth: 1, borderColor: c.border,
+    backgroundColor: c.card, borderWidth: 1, borderColor: c.border,
     borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12,
     fontSize: 14, color: c.foreground,
   },
@@ -148,14 +148,14 @@ function createStyles(c) {
     width: 18, height: 18, borderRadius: 9,
     alignItems: 'center', justifyContent: 'center',
   },
-  levelCardLabel: { fontFamily: FONT_FAMILY_BOLD, fontSize: 14 },
-  levelCardDesc: { fontFamily: FONT_FAMILY, fontSize: 11, lineHeight: 16 },
+  levelCardLabel: { fontWeight: '700', fontSize: 14 },
+  levelCardDesc: { fontSize: 11, lineHeight: 16 },
   saveBtn: {
     backgroundColor: c.primary, borderRadius: 12, paddingVertical: 14,
     alignItems: 'center', marginTop: 4,
     shadowColor: c.primary, shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
   },
-  saveBtnText: { fontFamily: FONT_FAMILY_BOLD, color: c.white, fontSize: 15 },
+  saveBtnText: { fontWeight: '700', color: c.white, fontSize: 15 },
   });
 }

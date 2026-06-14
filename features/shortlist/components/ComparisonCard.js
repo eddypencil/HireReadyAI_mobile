@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../shared/context/I18nContext';
-import { FONT_FAMILY, FONT_FAMILY_BOLD, FONT_FAMILY_SEMIBOLD } from '../../../src/fonts';
 
 function getInitials(name) {
   if (!name) return 'NA';
@@ -87,7 +86,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   avatarText: {
     fontSize: 13,
-    fontFamily: FONT_FAMILY_BOLD,
+    fontWeight: '700',
     color: c['muted-foreground'],
   },
   headerInfo: {
@@ -95,12 +94,11 @@ function createStyles(c) { return StyleSheet.create({
   },
   name: {
     fontSize: 15,
-    fontFamily: FONT_FAMILY_SEMIBOLD,
+    fontWeight: '600',
     color: c.foreground,
   },
   composite: {
     fontSize: 11,
-    fontFamily: FONT_FAMILY,
     color: c['muted-foreground'],
     marginTop: 1,
   },
@@ -114,7 +112,6 @@ function createStyles(c) { return StyleSheet.create({
   },
   dimensionName: {
     fontSize: 13,
-    fontFamily: FONT_FAMILY,
     color: c['muted-foreground'],
     width: 100,
     marginRight: 8,
@@ -139,14 +136,13 @@ function createStyles(c) { return StyleSheet.create({
   },
   dimensionScore: {
     fontSize: 11,
-    fontFamily: FONT_FAMILY_SEMIBOLD,
+    fontWeight: '600',
     color: c.foreground,
     width: 22,
     textAlign: 'right',
   },
   emptyText: {
     fontSize: 12,
-    fontFamily: FONT_FAMILY,
     color: c['muted-foreground'],
     textAlign: 'center',
   },

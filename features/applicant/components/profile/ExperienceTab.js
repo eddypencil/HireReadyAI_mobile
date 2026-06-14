@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../../shared/context/I18nContext";
-import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_BOLD } from '../../../../src/fonts';
+
 
 function SectionHeader({ title, icon, onAdd, viewOnly }) {
   const { theme } = useTheme();
@@ -113,7 +113,7 @@ export default function ExperienceTab({ profile, viewOnly, onEdit, onDelete }) {
 
   return (
     <View style={styles.container}>
-      {/* ── Work Experience */}
+      {/* -- Work Experience */}
       <View style={styles.section}>
         <SectionHeader
           title={t("profile.work_experience")}
@@ -137,7 +137,7 @@ export default function ExperienceTab({ profile, viewOnly, onEdit, onDelete }) {
               title={item.title}
               subtitle={[item.company_name, item.industry]
                 .filter(Boolean)
-                .join(" · ")}
+                .join(" � ")}
               date={[item.from, item.to || t("profile.present")]
                 .filter(Boolean)
                 .join(" - ")}
@@ -150,7 +150,7 @@ export default function ExperienceTab({ profile, viewOnly, onEdit, onDelete }) {
         )}
       </View>
 
-      {/* ── Education */}
+      {/* -- Education */}
       <View style={styles.section}>
         <SectionHeader
           title={t("profile.education")}
@@ -182,7 +182,7 @@ export default function ExperienceTab({ profile, viewOnly, onEdit, onDelete }) {
                 item.grade ? `${t("profile.grade_prefix")}${item.grade}` : null,
               ]
                 .filter(Boolean)
-                .join(" · ")}
+                .join(" � ")}
               date={[item.start_year, item.end_year || t("profile.present")]
                 .filter(Boolean)
                 .join(" - ")}
@@ -195,7 +195,7 @@ export default function ExperienceTab({ profile, viewOnly, onEdit, onDelete }) {
         )}
       </View>
 
-      {/* ── Volunteering */}
+      {/* -- Volunteering */}
       <View style={styles.section}>
         <SectionHeader
           title={t("profile.volunteering")}
@@ -252,7 +252,7 @@ function createStyles(c) {
       borderBottomColor: c.border,
     },
     sectionHeaderLeft: { flexDirection: "row", alignItems: "center", gap: 8 },
-    sectionTitle: { fontSize: 15, color: c.foreground, fontFamily: FONT_FAMILY_BOLD },
+    sectionTitle: { fontSize: 15, color: c.foreground, fontWeight: '700' },
     addBtn: {
       width: 28,
       height: 28,
@@ -271,7 +271,6 @@ function createStyles(c) {
       fontSize: 13,
       color: c["muted-foreground"],
       fontStyle: "italic",
-      fontFamily: FONT_FAMILY,
     },
     itemCard: {
       flexDirection: "row",
@@ -290,20 +289,18 @@ function createStyles(c) {
       flexShrink: 0,
     },
     itemContent: { flex: 1, gap: 3 },
-    itemTitle: { fontSize: 14, color: c.foreground, fontFamily: FONT_FAMILY_BOLD },
+    itemTitle: { fontSize: 14, color: c.foreground, fontWeight: '700' },
     itemSubtitle: {
       fontSize: 13,
-      color: c["muted-foreground"],
-      fontFamily: FONT_FAMILY_MEDIUM,
+      color: c["muted-foreground"], fontWeight: '500',
     },
-    itemExtra: { fontSize: 12, color: c["muted-foreground"], fontFamily: FONT_FAMILY },
-    itemDate: { fontSize: 12, color: c["muted-foreground"], fontFamily: FONT_FAMILY },
+    itemExtra: { fontSize: 12, color: c["muted-foreground"] },
+    itemDate: { fontSize: 12, color: c["muted-foreground"] },
     itemDesc: {
       fontSize: 13,
       color: c.foreground,
       lineHeight: 19,
       marginTop: 4,
-      fontFamily: FONT_FAMILY,
     },
     itemActions: { gap: 8, flexShrink: 0 },
   });

@@ -12,12 +12,6 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../shared/context/ThemeContext";
-import {
-  FONT_FAMILY,
-  FONT_FAMILY_MEDIUM,
-  FONT_FAMILY_SEMIBOLD,
-  FONT_FAMILY_BOLD,
-} from "../../../src/fonts";
 import { useTranslation } from "../../../shared/context/I18nContext";
 import { useJobs } from "../../jobs/hooks/useJobs";
 import { useShortlistData } from "../hooks/useShortlistData";
@@ -350,12 +344,11 @@ function createStyles(c) {
     },
     pageTitle: {
       fontSize: 22,
-      fontFamily: FONT_FAMILY_BOLD,
+      fontWeight: '700',
       color: c.foreground,
     },
     pageSubtitle: {
       fontSize: 11,
-      fontFamily: FONT_FAMILY,
       color: c["muted-foreground"],
       marginTop: 2,
     },
@@ -375,7 +368,6 @@ function createStyles(c) {
     searchInput: {
       flex: 1,
       fontSize: 13,
-      fontFamily: FONT_FAMILY,
       color: c.foreground,
       paddingVertical: 8,
     },
@@ -400,7 +392,6 @@ function createStyles(c) {
     },
     jobSelectorText: {
       fontSize: 13,
-      fontFamily: FONT_FAMILY,
       color: c.foreground,
       flexShrink: 1,
     },
@@ -417,7 +408,6 @@ function createStyles(c) {
     },
     filtersBtnText: {
       fontSize: 12,
-      fontFamily: FONT_FAMILY,
       color: c["muted-foreground"],
     },
     sortRow: {
@@ -428,7 +418,6 @@ function createStyles(c) {
     },
     sortLabel: {
       fontSize: 11,
-      fontFamily: FONT_FAMILY,
       color: c["muted-foreground"],
       marginRight: 4,
     },
@@ -446,7 +435,7 @@ function createStyles(c) {
     },
     sortChipText: {
       fontSize: 11,
-      fontFamily: FONT_FAMILY_MEDIUM,
+      fontWeight: '500',
       color: c["muted-foreground"],
     },
     sortChipTextActive: {
@@ -476,7 +465,6 @@ function createStyles(c) {
     },
     emptyStateText: {
       fontSize: 13,
-      fontFamily: FONT_FAMILY,
       color: c["muted-foreground"],
     },
     modalBackdrop: {
@@ -502,7 +490,7 @@ function createStyles(c) {
     },
     jobPickerTitle: {
       fontSize: 16,
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
       color: c.foreground,
     },
     jobOption: {
@@ -519,17 +507,15 @@ function createStyles(c) {
     },
     jobOptionText: {
       fontSize: 14,
-      fontFamily: FONT_FAMILY,
       color: c.foreground,
     },
     jobOptionTextSelected: {
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
       color: c.foreground,
     },
     jobPickerEmpty: {
       padding: 20,
       textAlign: "center",
-      fontFamily: FONT_FAMILY,
       color: c["muted-foreground"],
       fontSize: 13,
     },

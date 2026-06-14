@@ -1,7 +1,7 @@
 // features/applicant/components/feedback/AppSelector.js
 import { ScrollView, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { useTheme } from '../../../../shared/context/ThemeContext';
-import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../../src/fonts';
+
 
 export default function AppSelector({ applications, selectedId, onSelect }) {
   const { theme } = useTheme();
@@ -70,13 +70,13 @@ function createStyles(c) {
     elevation: 4,
   },
   inner: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  title: { fontSize: 13, color: c.foreground, flexShrink: 1, fontFamily: FONT_FAMILY_SEMIBOLD },
-  titleSelected: { color: c.white, fontFamily: FONT_FAMILY_SEMIBOLD },
+  title: { fontSize: 13, color: c.foreground, flexShrink: 1, fontWeight: '600' },
+  titleSelected: { color: c.white, fontWeight: '600' },
   badge: { paddingHorizontal: 7, paddingVertical: 2, borderRadius: 5, flexShrink: 0 },
   badgeWhite: { backgroundColor: `${c.white}38` },
   badgeRed: { backgroundColor: c.red[100] },
   badgeGreen: { backgroundColor: c.emerald[100] },
-  badgeText: { fontSize: 10, letterSpacing: 0.3, fontFamily: FONT_FAMILY_BOLD },
+  badgeText: { fontSize: 10, letterSpacing: 0.3, fontWeight: '700' },
   textWhite: { color: c.white },
   textRed: { color: c.red[600] },
   textGreen: { color: c.emerald[600] },

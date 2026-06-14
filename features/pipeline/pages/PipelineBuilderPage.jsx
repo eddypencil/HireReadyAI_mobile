@@ -4,7 +4,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
-import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD } from "../../../src/fonts";
 import { usePipeline } from "../hooks/usePipeline";
 import PipelineBuilder from "../components/PipelineBuilder";
 
@@ -133,7 +132,7 @@ function createStyles(c) {
     },
     warningText: {
       fontSize: 13,
-      fontFamily: FONT_FAMILY_MEDIUM,
+      fontWeight: '500',
       color: c.foreground,
       flex: 1,
       lineHeight: 18,
@@ -157,7 +156,7 @@ function createStyles(c) {
     textRight: { textAlign: 'right' },
     topBarBackText: {
       fontSize: 13,
-      fontFamily: FONT_FAMILY,
+
       color: c['muted-foreground'],
     },
     topBarSeparator: {
@@ -165,12 +164,12 @@ function createStyles(c) {
     },
     topBarSeparatorText: {
       fontSize: 14,
-      fontFamily: FONT_FAMILY,
+
       color: c.border,
     },
     topBarTitle: {
       fontSize: 14,
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
       color: c.foreground,
       flex: 1,
       marginHorizontal: 4,
@@ -183,7 +182,7 @@ function createStyles(c) {
     },
     topBarSeniorityText: {
       fontSize: 11,
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
       color: c.foreground,
       textTransform: "capitalize",
     },
@@ -196,7 +195,7 @@ function createStyles(c) {
     },
     errorText: {
       fontSize: 14,
-      fontFamily: FONT_FAMILY,
+
       color: c.destructive,
       textAlign: "center",
     },
@@ -208,7 +207,7 @@ function createStyles(c) {
     },
     backLinkText: {
       fontSize: 13,
-      fontFamily: FONT_FAMILY_MEDIUM,
+      fontWeight: '500',
       color: c.primary,
     },
   });

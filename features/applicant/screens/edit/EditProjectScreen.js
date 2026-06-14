@@ -15,7 +15,7 @@ import { useTranslation } from '../../../../shared/context/I18nContext';
 import { addProject, updateProject } from '../../services/projects.service';
 import { Project } from '../../models';
 import { supabase } from '../../../../shared/services/supabase';
-import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../../src/fonts';
+
 
 function Field({ label, value, onChangeText, placeholder, multiline, optional, keyboardType, styles, c }) {
   const { t } = useTranslation();
@@ -42,7 +42,7 @@ function Field({ label, value, onChangeText, placeholder, multiline, optional, k
   );
 }
 
-// ── Upload using base64 to avoid Android "network request failed"
+// -- Upload using base64 to avoid Android "network request failed"
 async function uploadImage(profileId, fileUri) {
   const ext = fileUri.split('.').pop()?.split('?')[0] || 'jpg';
   const path = `${profileId}/projects/${Date.now()}.${ext}`;
@@ -240,18 +240,18 @@ function createStyles(c) {
   scroll: { flex: 1, backgroundColor: c.surface },
   content: { padding: 20, gap: 16, paddingBottom: 40 },
   fieldGroup: { gap: 6 },
-  label: { fontFamily: FONT_FAMILY_SEMIBOLD, fontSize: 12, color: c.foreground, textTransform: 'uppercase', letterSpacing: 0.4 },
-  optional: { fontFamily: FONT_FAMILY, fontWeight: '400', color: c['muted-foreground'], textTransform: 'none' },
+  label: { fontWeight: '600', fontSize: 12, color: c.foreground, textTransform: 'uppercase', letterSpacing: 0.4 },
+  optional: { fontWeight: '400', color: c['muted-foreground'], textTransform: 'none' },
   input: {
-    fontFamily: FONT_FAMILY, backgroundColor: c.card, borderWidth: 1, borderColor: c.border,
+    backgroundColor: c.card, borderWidth: 1, borderColor: c.border,
     borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12,
     fontSize: 14, color: c.foreground,
   },
   inputMulti: { minHeight: 120, paddingTop: 12 },
   divider: { height: 1, backgroundColor: c.border },
   mediaSectionHeader: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
-  mediaSectionTitle: { fontFamily: FONT_FAMILY_BOLD, fontSize: 15, color: c.foreground },
-  mediaSectionSubtitle: { fontFamily: FONT_FAMILY, fontSize: 12, color: c['muted-foreground'], marginTop: 2 },
+  mediaSectionTitle: { fontWeight: '700', fontSize: 15, color: c.foreground },
+  mediaSectionSubtitle: { fontSize: 12, color: c['muted-foreground'], marginTop: 2 },
   imagesGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   imageTile: { width: '47%', aspectRatio: 16 / 10, borderRadius: 12, overflow: 'hidden', position: 'relative' },
   imageTileImg: { width: '100%', height: '100%' },
@@ -263,13 +263,13 @@ function createStyles(c) {
     paddingVertical: 14, paddingHorizontal: 16,
     backgroundColor: `${c.accent}08`,
   },
-  addImageBtnText: { fontFamily: FONT_FAMILY_SEMIBOLD, fontSize: 14, color: c.accent },
+  addImageBtnText: { fontWeight: '600', fontSize: 14, color: c.accent },
   saveBtn: {
     backgroundColor: c.primary, borderRadius: 12, paddingVertical: 14,
     alignItems: 'center', marginTop: 4,
     shadowColor: c.primary, shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
   },
-  saveBtnText: { fontFamily: FONT_FAMILY_BOLD, color: c.white, fontSize: 15 },
+  saveBtnText: { fontWeight: '700', color: c.white, fontSize: 15 },
   });
 }

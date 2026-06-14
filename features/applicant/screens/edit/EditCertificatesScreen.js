@@ -15,9 +15,9 @@ import { useTranslation } from '../../../../shared/context/I18nContext';
 import { addCertificate, updateCertificate } from '../../services/certificates.service';
 import { Certificate } from '../../models';
 import { supabase } from '../../../../shared/services/supabase';
-import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../../src/fonts';
 
-// ── Upload to certificates bucket using base64
+
+// -- Upload to certificates bucket using base64
 async function uploadCertificateImage(userId, fileUri) {
   const ext = fileUri.split('.').pop()?.split('?')[0] || 'jpg';
   const path = `${userId}/${Date.now()}.${ext}`;
@@ -232,13 +232,13 @@ function createStyles(c) {
   scroll: { flex: 1, backgroundColor: c.surface },
   content: { padding: 20, gap: 16, paddingBottom: 40 },
   fieldGroup: { gap: 6 },
-  label: { fontSize: 12, color: c.foreground, textTransform: 'uppercase', letterSpacing: 0.4, fontFamily: FONT_FAMILY_SEMIBOLD },
-  optional: { fontFamily: FONT_FAMILY, fontWeight: '400', color: c['muted-foreground'], textTransform: 'none' },
-  input: { fontFamily: FONT_FAMILY, backgroundColor: c.card, borderWidth: 1, borderColor: c.border, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, fontSize: 14, color: c.foreground },
+  label: { fontSize: 12, color: c.foreground, textTransform: 'uppercase', letterSpacing: 0.4, fontWeight: '600' },
+  optional: { fontWeight: '400', color: c['muted-foreground'], textTransform: 'none' },
+  input: { backgroundColor: c.card, borderWidth: 1, borderColor: c.border, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, fontSize: 14, color: c.foreground },
   divider: { height: 1, backgroundColor: c.border },
   imageSectionHeader: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
-  imageSectionTitle: { fontFamily: FONT_FAMILY_BOLD, fontSize: 15, color: c.foreground },
-  imageSectionSubtitle: { fontFamily: FONT_FAMILY, fontSize: 12, color: c['muted-foreground'], marginTop: 2 },
+  imageSectionTitle: { fontWeight: '700', fontSize: 15, color: c.foreground },
+  imageSectionSubtitle: { fontSize: 12, color: c['muted-foreground'], marginTop: 2 },
   imagePreviewContainer: { gap: 10 },
   imagePreview: { width: '100%', height: 200, borderRadius: 14, borderWidth: 1, borderColor: c.border },
   removeImageBtn: {
@@ -246,7 +246,7 @@ function createStyles(c) {
     backgroundColor: '#ef4444', borderRadius: 10,
     paddingVertical: 10, paddingHorizontal: 16, alignSelf: 'flex-start',
   },
-  removeImageText: { color: c.white, fontSize: 13, fontFamily: FONT_FAMILY_SEMIBOLD },
+  removeImageText: { color: c.white, fontSize: 13, fontWeight: '600' },
   addImageBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
     borderWidth: 1.5, borderColor: `${c.accent}50`,
@@ -254,8 +254,8 @@ function createStyles(c) {
     paddingVertical: 16, paddingHorizontal: 16,
     backgroundColor: `${c.accent}08`,
   },
-  addImageBtnText: { fontFamily: FONT_FAMILY_SEMIBOLD, fontSize: 14, color: c.accent },
+  addImageBtnText: { fontWeight: '600', fontSize: 14, color: c.accent },
   saveBtn: { backgroundColor: c.primary, borderRadius: 12, paddingVertical: 14, alignItems: 'center', marginTop: 4, shadowColor: c.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 },
-  saveBtnText: { color: c.white, fontSize: 15, fontFamily: FONT_FAMILY_BOLD },
+  saveBtnText: { color: c.white, fontSize: 15, fontWeight: '700' },
   });
 }

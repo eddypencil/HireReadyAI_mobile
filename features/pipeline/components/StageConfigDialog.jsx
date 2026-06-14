@@ -3,7 +3,6 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal, ActivityInd
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "../../../shared/context/I18nContext";
 import { useTheme } from "../../../shared/context/ThemeContext";
-import { FONT_FAMILY, FONT_FAMILY_BOLD, FONT_FAMILY_SEMIBOLD } from "../../../src/fonts";
 
 const QUESTION_STAGE_TYPES = new Set([
   "hr_interview", "technical_interview",
@@ -254,12 +253,12 @@ function createStyles(c) {
       justifyContent: "center",
     },
     title: {
-      fontFamily: FONT_FAMILY_BOLD,
+      fontWeight: '700',
       fontSize: 14,
       color: c.foreground,
     },
     subtitle: {
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
       fontSize: 12,
       color: c["muted-foreground"],
       marginTop: 2,
@@ -282,7 +281,7 @@ function createStyles(c) {
       flex: 1,
     },
     label: {
-      fontFamily: FONT_FAMILY_BOLD,
+      fontWeight: '700',
       fontSize: 12,
       color: c["muted-foreground"],
       marginBottom: 6,
@@ -291,7 +290,7 @@ function createStyles(c) {
       color: c.rose[500],
     },
     input: {
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
       fontSize: 14,
       color: c.foreground,
       backgroundColor: c.secondary,
@@ -308,7 +307,7 @@ function createStyles(c) {
       borderColor: c.rose[400],
     },
     errorText: {
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
       fontSize: 11,
       color: c.rose[500],
       marginTop: 4,
@@ -327,7 +326,7 @@ function createStyles(c) {
       borderColor: c.primary + "33",
     },
     generatingText: {
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
       fontSize: 12,
       color: c.primary,
       flex: 1,
@@ -337,7 +336,7 @@ function createStyles(c) {
       borderColor: c.amber[200],
     },
     warningText: {
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
       fontSize: 12,
       color: c.amber[700],
       flex: 1,
@@ -362,7 +361,7 @@ function createStyles(c) {
       borderColor: c.border,
     },
     cancelBtnText: {
-      fontFamily: FONT_FAMILY_BOLD,
+      fontWeight: '700',
       fontSize: 14,
       color: c["muted-foreground"],
     },
@@ -371,7 +370,7 @@ function createStyles(c) {
       flexDirection: "row",
     },
     confirmBtnText: {
-      fontFamily: FONT_FAMILY_BOLD,
+      fontWeight: '700',
       fontSize: 14,
       color: "#fff",
     },

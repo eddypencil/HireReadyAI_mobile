@@ -7,11 +7,6 @@ import {
   StyleSheet,
 } from 'react-native';
 import { useTheme } from './ThemeContext';
-import {
-  FONT_FAMILY,
-  FONT_FAMILY_SEMIBOLD,
-  FONT_FAMILY_BOLD,
-} from '../../src/fonts';
 
 const ThemedAlertContext = createContext(null);
 
@@ -138,14 +133,13 @@ function createStyles(c) {
     },
     title: {
       fontSize: 18,
-      fontFamily: FONT_FAMILY_BOLD,
+      fontWeight: '700',
       color: c.foreground,
       textAlign: 'center',
       marginBottom: 8,
     },
     message: {
       fontSize: 14,
-      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
       textAlign: 'center',
       lineHeight: 20,
@@ -181,7 +175,7 @@ function createStyles(c) {
     },
     buttonText: {
       fontSize: 15,
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
       color: c['destructive-foreground'],
     },
     buttonTextCancel: {

@@ -4,8 +4,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import DimensionBar from './DimensionBar';
-import { FONT_FAMILY, FONT_FAMILY_BOLD, FONT_FAMILY_EXTRABOLD } from '../../../../src/fonts';
-
 function parseAIFeedback(stage) {
   if (!stage?.ai_feedback) return null;
   try { return JSON.parse(stage.ai_feedback); } catch { return null; }
@@ -162,8 +160,8 @@ function createStyles(c) {
     shadowColor: c.primary, shadowOpacity: 0.04, shadowRadius: 4, shadowOffset: { width: 0, height: 1 },
   },
   emptyCard: { alignItems: 'center', paddingVertical: 44, gap: 10 },
-  emptyTitle: { fontSize: 15, color: c.foreground, fontFamily: FONT_FAMILY_BOLD },
-  emptySubtitle: { fontSize: 13, color: c['muted-foreground'], fontFamily: FONT_FAMILY },
+  emptyTitle: { fontSize: 15, color: c.foreground, fontWeight: '700' },
+  emptySubtitle: { fontSize: 13, color: c['muted-foreground'] },
 
   hero: {
     borderRadius: 20, padding: 20, overflow: 'hidden',
@@ -180,10 +178,10 @@ function createStyles(c) {
   heroInner: { position: 'relative' },
   heroHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 },
   heroLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  heroTitle: { fontSize: 16, color: c.white, letterSpacing: -0.2, fontFamily: FONT_FAMILY_BOLD },
+  heroTitle: { fontSize: 16, color: c.white, letterSpacing: -0.2, fontWeight: '700' },
   recBadge: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: 999 },
-  recText: { fontSize: 10, letterSpacing: 0.8, fontFamily: FONT_FAMILY_EXTRABOLD },
-  heroFeedback: { fontSize: 14, color: `${c.white}EB`, lineHeight: 22, fontFamily: FONT_FAMILY },
+  recText: { fontSize: 10, letterSpacing: 0.8, fontWeight: '800' },
+  heroFeedback: { fontSize: 14, color: `${c.white}EB`, lineHeight: 22 },
 
   sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 14 },
   iconWrap: {
@@ -191,7 +189,7 @@ function createStyles(c) {
     backgroundColor: c['surface-muted'],
     alignItems: 'center', justifyContent: 'center',
   },
-  sectionTitle: { fontSize: 14, color: c.foreground, fontFamily: FONT_FAMILY_BOLD },
+  sectionTitle: { fontSize: 14, color: c.foreground, fontWeight: '700' },
   bars: { gap: 14 },
 
   strengthCard: { flexDirection: 'row', padding: 0, overflow: 'hidden', borderColor: `${c.success}30` },
@@ -201,9 +199,9 @@ function createStyles(c) {
   sectionInner: { flex: 1, padding: 18 },
   sectionIcon: { width: 28, height: 28, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 14 },
-  sectionLabel: { fontSize: 10, letterSpacing: 0.8, textTransform: 'uppercase', fontFamily: FONT_FAMILY_BOLD },
+  sectionLabel: { fontSize: 10, letterSpacing: 0.8, textTransform: 'uppercase', fontWeight: '700' },
   listRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 8 },
   bullet: { width: 6, height: 6, borderRadius: 3, marginTop: 7, flexShrink: 0 },
-  listText: { flex: 1, fontSize: 14, lineHeight: 21, color: c.foreground, fontFamily: FONT_FAMILY },
+  listText: { flex: 1, fontSize: 14, lineHeight: 21, color: c.foreground },
 });
 }

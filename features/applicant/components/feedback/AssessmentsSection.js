@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../../../../shared/context/ThemeContext';
-import { FONT_FAMILY, FONT_FAMILY_BOLD, FONT_FAMILY_SEMIBOLD } from '../../../../src/fonts';
+
 import StageSelector from './StageSelector';
 import ExpandableQuestion from './ExpandableQuestion';
 
@@ -142,14 +142,14 @@ function createStyles(c) {
     backgroundColor: 'rgba(255,255,255,0.06)',
   },
   heroRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative' },
-  heroTitle: { fontSize: 17, color: c.white, letterSpacing: -0.2, fontFamily: FONT_FAMILY_BOLD },
-  heroSub: { fontSize: 13, color: 'rgba(255,255,255,0.75)', marginTop: 3, fontFamily: FONT_FAMILY },
+  heroTitle: { fontSize: 17, color: c.white, letterSpacing: -0.2, fontWeight: '700' },
+  heroSub: { fontSize: 13, color: 'rgba(255,255,255,0.75)', marginTop: 3 },
   totalBadge: {
     backgroundColor: 'rgba(255,255,255,0.18)',
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.28)',
     paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999,
   },
-  totalText: { fontSize: 11, color: c.white, fontFamily: FONT_FAMILY_BOLD },
+  totalText: { fontSize: 11, color: c.white, fontWeight: '700' },
 
   card: {
     backgroundColor: c.card, borderRadius: 18,
@@ -157,8 +157,8 @@ function createStyles(c) {
     shadowColor: c.primary, shadowOpacity: 0.04, shadowRadius: 4, shadowOffset: { width: 0, height: 1 },
   },
   empty: { alignItems: 'center', padding: 40, gap: 10 },
-  emptyTitle: { fontSize: 15, color: c.foreground, fontFamily: FONT_FAMILY_BOLD },
-  emptySub: { fontSize: 13, color: c['muted-foreground'], textAlign: 'center', lineHeight: 19, fontFamily: FONT_FAMILY },
+  emptyTitle: { fontSize: 15, color: c.foreground, fontWeight: '700' },
+  emptySub: { fontSize: 13, color: c['muted-foreground'], textAlign: 'center', lineHeight: 19 },
 
   stageHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16 },
   stageLeft: { flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 },
@@ -168,12 +168,12 @@ function createStyles(c) {
     alignItems: 'center', justifyContent: 'center', flexShrink: 0,
   },
   stageInfo: { flex: 1 },
-  stageName: { fontSize: 14, color: c.foreground, fontFamily: FONT_FAMILY_BOLD },
-  stageType: { fontSize: 11, color: c['muted-foreground'], textTransform: 'capitalize', marginTop: 2, fontFamily: FONT_FAMILY },
+  stageName: { fontSize: 14, color: c.foreground, fontWeight: '700' },
+  stageType: { fontSize: 11, color: c['muted-foreground'], textTransform: 'capitalize', marginTop: 2 },
   stageRight: { alignItems: 'flex-end', gap: 4, flexShrink: 0 },
   stagScore: { paddingHorizontal: 9, paddingVertical: 4, borderRadius: 8 },
-  stagScoreText: { fontSize: 12, fontFamily: FONT_FAMILY_BOLD },
-  stageStatus: { fontSize: 11, fontFamily: FONT_FAMILY_SEMIBOLD },
+  stagScoreText: { fontSize: 12, fontWeight: '700' },
+  stageStatus: { fontSize: 11, fontWeight: '600' },
 
   evalGrid: {
     flexDirection: 'row',
@@ -181,8 +181,8 @@ function createStyles(c) {
     paddingVertical: 14, paddingHorizontal: 16,
   },
   evalCell: { flex: 1 },
-  evalLabel: { fontSize: 9, color: c['muted-foreground'], textTransform: 'uppercase', letterSpacing: 0.6, fontFamily: FONT_FAMILY_BOLD },
-  evalVal: { fontSize: 13, color: c.foreground, marginTop: 4, fontFamily: FONT_FAMILY_BOLD },
+  evalLabel: { fontSize: 9, color: c['muted-foreground'], textTransform: 'uppercase', letterSpacing: 0.6, fontWeight: '700' },
+  evalVal: { fontSize: 13, color: c.foreground, marginTop: 4, fontWeight: '700' },
   questions: { gap: 10 },
 });
 }

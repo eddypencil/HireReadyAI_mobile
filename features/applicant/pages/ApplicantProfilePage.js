@@ -9,7 +9,7 @@ import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/nativ
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../shared/context/I18nContext';
 import { useThemedAlert } from '../../../shared/context/ThemedAlertContext';
-import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD } from '../../../src/fonts';
+
 import { fetchApplicantProfile } from '../services/profile.service';
 import { deleteExperience } from '../services/experience.service';
 import { deleteEducation } from '../services/education.service';
@@ -45,7 +45,7 @@ const DELETE_SERVICES = {
   projects:     deleteProject,
 };
 
-// Awards don't have a service — delete manually
+// Awards don't have a service � delete manually
 async function deleteAward(userId, index) {
   const { data } = await supabase.from('profiles').select('awards').eq('id', userId).maybeSingle();
   const awards = data?.awards || [];
@@ -92,7 +92,7 @@ export default function ApplicantProfilePage() {
   const [activeTab, setActiveTab] = useState('about');
   const [avatarOpen, setAvatarOpen] = useState(false);
 
-  // ── Reload profile every time this screen comes into focus
+  // -- Reload profile every time this screen comes into focus
   // This handles the return from all edit screens automatically
   // without needing to pass onSave as a param
   const loadProfile = useCallback(async () => {
@@ -109,7 +109,7 @@ export default function ApplicantProfilePage() {
 
   useFocusEffect(useCallback(() => { loadProfile(); }, [loadProfile]));
 
-  // ── Delete by index
+  // -- Delete by index
   const handleDelete = (field, index) => {
     alert(t('profile.delete'), t('profile.delete_confirm'), [
       { text: t('profile.cancel'), style: 'cancel' },
@@ -132,11 +132,11 @@ export default function ApplicantProfilePage() {
     ]);
   };
 
-  // ── Navigate to edit screen WITHOUT onSave
+  // -- Navigate to edit screen WITHOUT onSave
   // useFocusEffect above reloads automatically on return
   const handleEdit = (section, item, itemIndex) => {
     const screenMap = {
-      // About tab — 3 separate focused screens
+      // About tab � 3 separate focused screens
       bio:          'EditBio',
       contact:      'EditContact',
       links:        'EditLinks',
@@ -152,7 +152,7 @@ export default function ApplicantProfilePage() {
     };
     const screen = screenMap[section];
     if (screen) {
-      // Don't pass onSave — useFocusEffect handles reload
+      // Don't pass onSave � useFocusEffect handles reload
       navigation.navigate(screen, { profileId, item, itemIndex });
     }
   };
@@ -243,12 +243,12 @@ function createStyles(c) {
     scroll: { flex: 1 },
     content: { padding: 16, gap: 14, paddingBottom: 40 },
     centered: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: c.background },
-    errorText: { fontFamily: FONT_FAMILY, fontSize: 14, color: c['muted-foreground'] },
+    errorText: { fontSize: 14, color: c['muted-foreground'] },
     tabBarScroll: { backgroundColor: c.card, borderRadius: 14, borderWidth: 1, borderColor: c.border },
     tabBarContent: { flexDirection: 'row', padding: 4, gap: 2 },
     tab: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 10 },
     tabActive: { backgroundColor: `${c.primary}12` },
-    tabLabel: { fontFamily: FONT_FAMILY_SEMIBOLD, fontSize: 13, color: c['muted-foreground'] },
-    tabLabelActive: { fontFamily: FONT_FAMILY, color: c.primary },
+    tabLabel: { fontWeight: '600', fontSize: 13, color: c['muted-foreground'] },
+    tabLabelActive: { color: c.primary },
   });
 }

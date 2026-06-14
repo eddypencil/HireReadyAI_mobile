@@ -3,8 +3,6 @@ import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import Svg, { Circle, G, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../shared/context/I18nContext';
-import { FONT_FAMILY, FONT_FAMILY_BOLD, FONT_FAMILY_MEDIUM } from '../../../src/fonts';
-
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CHART_WIDTH = SCREEN_WIDTH - 64;
 
@@ -19,7 +17,7 @@ function getSliceColor(status, fallbackIndex, c) {
   return labelColors[status] || fallbackColors[fallbackIndex % fallbackColors.length];
 }
 
-// ── Build donut slices
+// -- Build donut slices
 function buildDonutSlices(data, cx, cy, r, c) {
   const total = data.reduce((s, d) => s + d.value, 0);
   if (total === 0) return [];
@@ -38,7 +36,7 @@ function buildDonutSlices(data, cx, cy, r, c) {
   });
 }
 
-// ── Donut Chart — shows per-application status (not per-stage)
+// -- Donut Chart � shows per-application status (not per-stage)
 function DonutChart({ applications }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
@@ -50,7 +48,7 @@ function DonutChart({ applications }) {
   const outerR = SIZE * 0.42;
   const innerR = SIZE * 0.26;
 
-  // ── Count by application-level outcome
+  // -- Count by application-level outcome
   const statusMap = {};
   // REPLACE with this (mirrors StatsCards logic exactly):
   (applications || []).forEach(app => {
@@ -114,7 +112,6 @@ function DonutChart({ applications }) {
                 textAnchor="middle"
                 fontSize={22} fontWeight="700"
                 fill={c.foreground}
-                fontFamily={FONT_FAMILY}
               >
                 {total}
               </SvgText>
@@ -123,7 +120,6 @@ function DonutChart({ applications }) {
                 textAnchor="middle"
                 fontSize={10}
                 fill={c['muted-foreground']}
-                fontFamily={FONT_FAMILY}
               >
                 {t('applicant.charts.applications_label')}
               </SvgText>
@@ -147,7 +143,7 @@ function DonutChart({ applications }) {
   );
 }
 
-// ── Bar Chart — full width
+// -- Bar Chart � full width
 function BarChart({ applications }) {
   const { theme } = useTheme();
   const { t, language } = useTranslation();
@@ -209,7 +205,6 @@ function BarChart({ applications }) {
                   textAnchor="end"
                   fontSize={9}
                   fill={c['muted-foreground']}
-                  fontFamily={FONT_FAMILY}
                 >
                   {tick}
                 </SvgText>
@@ -237,7 +232,6 @@ function BarChart({ applications }) {
                   textAnchor="middle"
                   fontSize={9}
                   fill={c['muted-foreground']}
-                  fontFamily={FONT_FAMILY}
                 >
                   {shortLabel}
                 </SvgText>
@@ -282,15 +276,13 @@ function createStyles(c) {
     },
     chartTitle: {
       fontSize: 14,
-      color: c.foreground,
-      fontFamily: FONT_FAMILY_BOLD,
+      color: c.foreground, fontWeight: '700',
     },
     chartSubtitle: {
       fontSize: 11,
       color: c['muted-foreground'],
       marginTop: 2,
       marginBottom: 4,
-      fontFamily: FONT_FAMILY,
     },
     chartEmpty: {
       height: 100,
@@ -300,7 +292,6 @@ function createStyles(c) {
     chartEmptyText: {
       fontSize: 12,
       color: c['muted-foreground'],
-      fontFamily: FONT_FAMILY,
     },
     donutRow: {
       flexDirection: 'row',
@@ -325,14 +316,12 @@ function createStyles(c) {
     },
     legendText: {
       fontSize: 13,
-      color: c.foreground,
-      fontFamily: FONT_FAMILY_MEDIUM,
+      color: c.foreground, fontWeight: '500',
     },
     legendCount: {
       fontSize: 12,
       color: c['muted-foreground'],
       fontWeight: '400',
-      fontFamily: FONT_FAMILY,
     },
   });
 }

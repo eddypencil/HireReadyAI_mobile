@@ -1,13 +1,5 @@
 import { StyleSheet } from 'react-native';
-import {
-  FONT_FAMILY,
-  FONT_FAMILY_MEDIUM,
-  FONT_FAMILY_SEMIBOLD,
-  FONT_FAMILY_BOLD,
-  FONT_FAMILY_EXTRABOLD,
-} from './fonts';
 
-const fontFamily = FONT_FAMILY;
 
 export const lightColors = {
   background: '#ffffff',
@@ -227,7 +219,6 @@ export function createTheme(isDark = false) {
     fontWeight,
     letterSpacing,
     shadow,
-    fontFamily,
     typography: {
       h1: {
         fontSize: fontSize['3xl'],
@@ -235,7 +226,6 @@ export function createTheme(isDark = false) {
         fontWeight: fontWeight.extrabold,
         letterSpacing: letterSpacing.tight,
         color: c.foreground,
-        fontFamily: FONT_FAMILY_EXTRABOLD,
       },
       h2: {
         fontSize: fontSize['2xl'],
@@ -243,7 +233,6 @@ export function createTheme(isDark = false) {
         fontWeight: fontWeight.bold,
         letterSpacing: letterSpacing.tight,
         color: c.foreground,
-        fontFamily: FONT_FAMILY_BOLD,
       },
       h3: {
         fontSize: fontSize.xl,
@@ -251,58 +240,49 @@ export function createTheme(isDark = false) {
         fontWeight: fontWeight.bold,
         letterSpacing: letterSpacing.tight,
         color: c.foreground,
-        fontFamily: FONT_FAMILY_BOLD,
       },
       h4: {
         fontSize: fontSize.lg,
         lineHeight: 28,
         fontWeight: fontWeight.semibold,
         color: c.foreground,
-        fontFamily: FONT_FAMILY_SEMIBOLD,
       },
       h5: {
         fontSize: fontSize.base,
         lineHeight: 24,
         fontWeight: fontWeight.semibold,
         color: c.foreground,
-        fontFamily: FONT_FAMILY_SEMIBOLD,
       },
       h6: {
         fontSize: fontSize.sm,
         lineHeight: 20,
         fontWeight: fontWeight.bold,
         color: c.foreground,
-        fontFamily: FONT_FAMILY_BOLD,
       },
       body: {
         fontSize: fontSize.sm,
         lineHeight: 20,
         color: c.foreground,
-        fontFamily,
       },
       'body-secondary': {
         fontSize: fontSize.sm,
         lineHeight: 20,
         color: c['muted-foreground'],
-        fontFamily,
       },
       'body-large': {
         fontSize: fontSize.base,
         lineHeight: 24,
         color: c.foreground,
-        fontFamily,
       },
       caption: {
         fontSize: fontSize.xs,
         lineHeight: 16,
         color: c['muted-foreground'],
-        fontFamily,
       },
       label: {
         fontSize: fontSize.sm,
         fontWeight: fontWeight.medium,
         color: c.foreground,
-        fontFamily: FONT_FAMILY_MEDIUM,
       },
     },
   };

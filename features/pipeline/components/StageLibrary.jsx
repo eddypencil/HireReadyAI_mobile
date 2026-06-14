@@ -3,7 +3,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { STAGE_LIBRARY } from "../constants/stageLibrary";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
-import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from "../../../src/fonts";
 
 const ICON_MAP = {
   FileText: "document-text-outline",
@@ -78,14 +77,14 @@ function createStyles(c) {
     },
     headerLabel: {
       fontSize: 10,
-      fontFamily: FONT_FAMILY_BOLD,
+      fontWeight: '700',
       color: c['muted-foreground'],
       letterSpacing: 1,
       textTransform: "uppercase",
     },
     headerHint: {
       fontSize: 12,
-      fontFamily: FONT_FAMILY,
+
       color: c['muted-foreground'],
       marginTop: 2,
     },
@@ -119,12 +118,12 @@ function createStyles(c) {
     },
     label: {
       fontSize: 14,
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
       color: c.foreground,
     },
     subtitle: {
       fontSize: 12,
-      fontFamily: FONT_FAMILY,
+
       color: c['muted-foreground'],
       marginTop: 1,
     },
@@ -144,7 +143,7 @@ function createStyles(c) {
     },
     premiumBadge: {
       fontSize: 9,
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
       color: c.emerald[600],
       backgroundColor: c.emerald[100],
       paddingHorizontal: 5,

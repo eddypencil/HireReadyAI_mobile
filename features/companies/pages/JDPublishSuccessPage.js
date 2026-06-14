@@ -2,7 +2,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
-import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../src/fonts';
+
 
 export default function JDPublishSuccessPage({ route, navigation }) {
   const { theme } = useTheme();
@@ -71,19 +71,18 @@ function createStyles(c) {
     },
     title: {
       fontSize: 22,
-      fontFamily: FONT_FAMILY_BOLD,
+      fontWeight: '700',
       color: c.foreground,
       textAlign: "center",
     },
     subtitle: {
       fontSize: 14,
-      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
       textAlign: "center",
       lineHeight: 20,
     },
     jobTitle: {
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
       color: c.foreground,
     },
     actions: {
@@ -103,7 +102,7 @@ function createStyles(c) {
     primaryBtnText: {
       color: c.white,
       fontSize: 15,
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
     },
     secondaryBtn: {
       flexDirection: "row",
@@ -119,7 +118,7 @@ function createStyles(c) {
     secondaryBtnText: {
       color: c.primary,
       fontSize: 15,
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
     },
   });
 }

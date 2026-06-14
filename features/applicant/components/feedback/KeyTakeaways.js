@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../../shared/context/I18nContext';
-import { FONT_FAMILY, FONT_FAMILY_BOLD } from '../../../../src/fonts';
+
 
 function collectStrings(arrays) {
   const map = new Map();
@@ -95,15 +95,15 @@ function createStyles(c) {
     backgroundColor: c['surface-muted'],
     alignItems: 'center', justifyContent: 'center',
   },
-  heading: { fontSize: 14, color: c.foreground, letterSpacing: -0.1, fontFamily: FONT_FAMILY_BOLD },
+  heading: { fontSize: 14, color: c.foreground, letterSpacing: -0.1, fontWeight: '700' },
   body: { gap: 12 },
-  feedback: { fontSize: 14, color: c['muted-foreground'], lineHeight: 22, fontFamily: FONT_FAMILY },
+  feedback: { fontSize: 14, color: c['muted-foreground'], lineHeight: 22 },
   row: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
   icon: { marginTop: 1, flexShrink: 0 },
-  itemText: { flex: 1, fontSize: 14, color: c['muted-foreground'], lineHeight: 22, fontFamily: FONT_FAMILY },
-  sLabel: { color: c.emerald[600], fontFamily: FONT_FAMILY_BOLD },
-  wLabel: { color: c.red[600], fontFamily: FONT_FAMILY_BOLD },
-  gLabel: { color: c.amber[600], fontFamily: FONT_FAMILY_BOLD },
-  muted: { color: c['muted-foreground'], fontFamily: FONT_FAMILY },
+  itemText: { flex: 1, fontSize: 14, color: c['muted-foreground'], lineHeight: 22 },
+  sLabel: { color: c.emerald[600], fontWeight: '700' },
+  wLabel: { color: c.red[600], fontWeight: '700' },
+  gLabel: { color: c.amber[600], fontWeight: '700' },
+  muted: { color: c['muted-foreground'] },
 });
 }

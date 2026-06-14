@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../shared/context/I18nContext';
-import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../src/fonts';
 
 function getInitials(name) {
   if (!name) return 'NA';
@@ -173,7 +172,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   rankText: {
     fontSize: 14,
-    fontFamily: FONT_FAMILY_BOLD,
+    fontWeight: '700',
     color: c['destructive-foreground'],
   },
   cardBody: {
@@ -196,7 +195,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   avatarText: {
     fontSize: 12,
-    fontFamily: FONT_FAMILY_BOLD,
+    fontWeight: '700',
     color: c['muted-foreground'],
   },
   candidateInfo: {
@@ -204,12 +203,11 @@ function createStyles(c) { return StyleSheet.create({
   },
   candidateName: {
     fontSize: 14,
-    fontFamily: FONT_FAMILY_SEMIBOLD,
+    fontWeight: '600',
     color: c.foreground,
   },
   candidateHeadline: {
     fontSize: 11,
-    fontFamily: FONT_FAMILY,
     color: c['muted-foreground'],
     marginTop: 1,
   },
@@ -223,7 +221,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   scoreLabel: {
     fontSize: 11,
-    fontFamily: FONT_FAMILY_MEDIUM,
+    fontWeight: '500',
     color: c['muted-foreground'],
     width: 56,
   },
@@ -246,7 +244,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   progressScore: {
     fontSize: 12,
-    fontFamily: FONT_FAMILY_SEMIBOLD,
+    fontWeight: '600',
     color: c.foreground,
     width: 24,
     textAlign: 'right',
@@ -267,7 +265,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   compositeScore: {
     fontSize: 16,
-    fontFamily: FONT_FAMILY_BOLD,
+    fontWeight: '700',
   },
   teamVoteRow: {
     flexDirection: 'row',
@@ -303,7 +301,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   voteButtonText: {
     fontSize: 11,
-    fontFamily: FONT_FAMILY_SEMIBOLD,
+    fontWeight: '600',
     color: c.foreground,
   },
 }); }

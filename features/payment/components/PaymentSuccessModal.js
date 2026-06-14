@@ -3,7 +3,6 @@ import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import LottieView from "lottie-react-native";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
-import { FONT_FAMILY, FONT_FAMILY_BOLD } from "../../../src/fonts";
 
 export default function PaymentSuccessModal({ visible, onDismiss }) {
   const { theme } = useTheme();
@@ -65,14 +64,13 @@ function createStyles(c) {
     },
     title: {
       fontSize: 22,
-      fontFamily: FONT_FAMILY_BOLD,
+      fontWeight: '700',
       color: c.foreground,
       marginTop: 8,
       textAlign: "center",
     },
     message: {
       fontSize: 14,
-      fontFamily: FONT_FAMILY,
       color: c["muted-foreground"],
       textAlign: "center",
       marginTop: 8,
@@ -88,7 +86,7 @@ function createStyles(c) {
     buttonText: {
       color: c.white,
       fontSize: 16,
-      fontFamily: FONT_FAMILY_BOLD,
+      fontWeight: '700',
     },
   });
 }

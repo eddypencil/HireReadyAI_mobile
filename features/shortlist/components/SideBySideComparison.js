@@ -3,7 +3,6 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-nati
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../shared/context/I18nContext';
-import { FONT_FAMILY, FONT_FAMILY_BOLD, FONT_FAMILY_SEMIBOLD } from '../../../src/fonts';
 import ComparisonCard from './ComparisonCard';
 
 export default function SideBySideComparison({ selectedCandidates, onReorder }) {
@@ -113,7 +112,6 @@ function createStyles(c) { return StyleSheet.create({
   },
   emptyText: {
     fontSize: 13,
-    fontFamily: FONT_FAMILY,
     color: c['muted-foreground'],
     textAlign: 'center',
   },
@@ -122,13 +120,12 @@ function createStyles(c) { return StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontFamily: FONT_FAMILY_BOLD,
+    fontWeight: '700',
     color: c.foreground,
     marginBottom: 2,
   },
   subtitle: {
     fontSize: 13,
-    fontFamily: FONT_FAMILY,
     color: c['muted-foreground'],
   },
   scrollContent: {
@@ -159,7 +156,7 @@ function createStyles(c) { return StyleSheet.create({
   },
   reorderIndex: {
     fontSize: 13,
-    fontFamily: FONT_FAMILY_SEMIBOLD,
+    fontWeight: '600',
     color: c['muted-foreground'],
     minWidth: 16,
     textAlign: 'center',

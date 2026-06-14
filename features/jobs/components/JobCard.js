@@ -3,7 +3,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { fontSize, fontWeight } from '../../../src/theme';
-import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_BOLD } from '../../../src/fonts';
+
 
 function formatRelativeTime(dateString) {
   const now = new Date();
@@ -37,23 +37,23 @@ export default function JobCard({ job }) {
     leftSection: { flexDirection: 'row', alignItems: 'flex-start', flex: 1, minWidth: 0 },
     logo: { width: 48, height: 48, borderRadius: 12, borderWidth: 1, borderColor: c.border, resizeMode: 'contain', padding: 2 },
     logoPlaceholder: { width: 48, height: 48, borderRadius: 12, backgroundColor: c['surface-muted'], alignItems: 'center', justifyContent: 'center' },
-    logoText: { fontFamily: FONT_FAMILY_BOLD, fontSize: 18, fontWeight: '700', color: c.primary },
+    logoText: { fontSize: 18, fontWeight: '700', color: c.primary },
     info: { flex: 1, marginStart: 16, minWidth: 0 },
-    title: { fontFamily: FONT_FAMILY_BOLD, fontSize: 16, fontWeight: '700', color: c.foreground },
+    title: { fontSize: 16, fontWeight: '700', color: c.foreground },
     companyRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4, flexWrap: 'wrap' },
-    companyName: { fontFamily: FONT_FAMILY_MEDIUM, fontSize: fontSize.sm, color: c.accent, fontWeight: fontWeight.medium },
-    separator: { fontFamily: FONT_FAMILY, color: c['muted-foreground'], fontSize: 12 },
-    location: { fontFamily: FONT_FAMILY, fontSize: fontSize.sm, color: c['muted-foreground'] },
+    companyName: { fontSize: fontSize.sm, color: c.accent, fontWeight: fontWeight.medium },
+    separator: { color: c['muted-foreground'], fontSize: 12 },
+    location: { fontSize: fontSize.sm, color: c['muted-foreground'] },
     tags: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 8, gap: 6 },
     tag: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 999, backgroundColor: c['surface-muted'], borderWidth: 1, borderColor: c.border },
-    tagText: { fontFamily: FONT_FAMILY_MEDIUM, fontSize: 11, color: c.primary, fontWeight: '500' },
+    tagText: { fontSize: 11, color: c.primary, fontWeight: '500' },
     responsibilities: { marginTop: 10 },
     bulletRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 4 },
     bullet: { width: 6, height: 6, borderRadius: 3, backgroundColor: c['muted-foreground'], marginTop: 6, marginRight: 8 },
-    bulletText: { fontFamily: FONT_FAMILY, fontSize: 13, color: c.foreground, flex: 1 },
+    bulletText: { fontSize: 13, color: c.foreground, flex: 1 },
     rightSection: { alignItems: 'flex-end', marginLeft: 12 },
     bookmarkButton: { marginBottom: 8 },
-    dateText: { fontFamily: FONT_FAMILY, fontSize: 11, color: c['muted-foreground'] },
+    dateText: { fontSize: 11, color: c['muted-foreground'] },
   };
 
   return (

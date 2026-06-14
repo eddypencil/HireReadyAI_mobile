@@ -14,7 +14,7 @@ import { useTheme } from '../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../shared/context/I18nContext';
 import { useUser } from '../context/user.context';
 import LanguageSwitcher from '../../../shared/i18n/LanguageSwitcher';
-import { FONT_FAMILY, FONT_FAMILY_BOLD, FONT_FAMILY_EXTRABOLD, FONT_FAMILY_SEMIBOLD } from '../../../src/fonts';
+
 
 export default function LoginPage() {
   const { theme } = useTheme();
@@ -52,20 +52,20 @@ export default function LoginPage() {
     container: { flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24, paddingVertical: 48 },
     branding: { alignItems: 'center', marginBottom: 40 },
     logo: { width: 56, height: 56, borderRadius: 14, backgroundColor: c['sidebar-active'], alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
-    logoText: { fontSize: 24, fontFamily: FONT_FAMILY_EXTRABOLD, color: c['destructive-foreground'] },
-    appName: { fontSize: 28, fontFamily: FONT_FAMILY_BOLD, color: c['sidebar-foreground'], letterSpacing: -0.5 },
+    logoText: { fontSize: 24, fontWeight: '800', color: c['destructive-foreground'] },
+    appName: { fontSize: 28, fontWeight: '700', color: c['sidebar-foreground'], letterSpacing: -0.5 },
     aiHighlight: { color: c.accent },
-    headline: { fontSize: 26, fontFamily: FONT_FAMILY_BOLD, color: c['sidebar-foreground'], marginBottom: 4 },
-    subheading: { fontSize: 14, fontFamily: FONT_FAMILY, color: c.accent, marginBottom: 32 },
+    headline: { fontSize: 26, fontWeight: '700', color: c['sidebar-foreground'], marginBottom: 4 },
+    subheading: { fontSize: 14, color: c.accent, marginBottom: 32 },
     form: { gap: 16 },
     errorContainer: { backgroundColor: `${c.destructive}1a`, borderWidth: 1, borderColor: `${c.destructive}33`, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10 },
-    errorText: { fontSize: 13, fontFamily: FONT_FAMILY, color: c.destructive },
+    errorText: { fontSize: 13, color: c.destructive },
     button: { height: 48, backgroundColor: c.primary, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginTop: 4 },
     buttonDisabled: { opacity: 0.6 },
-    buttonText: { color: c['destructive-foreground'], fontSize: 15, fontFamily: FONT_FAMILY_SEMIBOLD },
+    buttonText: { color: c['destructive-foreground'], fontSize: 15, fontWeight: '600' },
     linkContainer: { alignItems: 'center', marginTop: 8, paddingVertical: 12 },
-    linkText: { fontSize: 13, fontFamily: FONT_FAMILY, color: c['muted-foreground'] },
-    linkHighlight: { color: c.accent, fontFamily: FONT_FAMILY_SEMIBOLD },
+    linkText: { fontSize: 13, color: c['muted-foreground'] },
+    linkHighlight: { color: c.accent, fontWeight: '600' },
     languageSwitcher: { position: 'absolute', top: 42, end: 22, zIndex: 10 },
   };
 

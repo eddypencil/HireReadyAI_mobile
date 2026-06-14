@@ -5,7 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import { APPLICATION_STAGE } from "../../../shared/constants/enums";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
-import { FONT_FAMILY, FONT_FAMILY_BOLD, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_MEDIUM, FONT_FAMILY_EXTRABOLD } from '../../../src/fonts';
+
 
 const stageColorMap = {
   [APPLICATION_STAGE.interview]: 'stage-interview',
@@ -92,8 +92,7 @@ function StagePill({ label, cfg }) {
       <Text style={{
         fontSize: 11,
         color: cfg.text,
-        letterSpacing: 0.1,
-        fontFamily: FONT_FAMILY_SEMIBOLD,
+        letterSpacing: 0.1, fontWeight: '600',
       }}>{label}</Text>
     </View>
   );
@@ -187,10 +186,10 @@ export default function InterviewList({ applications }) {
               <Ionicons name="pulse-outline" size={16} color={c.primary} />
             </View>
             <View>
-              <Text style={{ fontSize: 14, color: c.foreground, fontFamily: FONT_FAMILY_BOLD }}>
+              <Text style={{ fontSize: 14, color: c.foreground, fontWeight: '700' }}>
                 {t("applicant.status_management")}
               </Text>
-              <Text style={{ fontSize: 11, color: c['muted-foreground'], marginTop: 1, fontFamily: FONT_FAMILY }}>
+              <Text style={{ fontSize: 11, color: c['muted-foreground'], marginTop: 1 }}>
                 {t("applicant.track_interviews")}
               </Text>
             </View>
@@ -202,7 +201,7 @@ export default function InterviewList({ applications }) {
           padding: 36,
           alignItems: "center",
         }}>
-          <Text style={{ fontSize: 13, color: c['muted-foreground'], fontFamily: FONT_FAMILY }}>
+          <Text style={{ fontSize: 13, color: c['muted-foreground'] }}>
             {t("applicant.no_interviews")}
           </Text>
         </View>
@@ -218,7 +217,7 @@ export default function InterviewList({ applications }) {
       borderColor: c.border,
       overflow: "hidden",
     }}>
-      {/* ── Header + tabs ── */}
+      {/* -- Header + tabs -- */}
       <View style={{ padding: 20, paddingBottom: 0 }}>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 14 }}>
           <View style={{
@@ -232,10 +231,10 @@ export default function InterviewList({ applications }) {
             <Ionicons name="pulse-outline" size={16} color={c.primary} />
           </View>
           <View>
-            <Text style={{ fontSize: 14, color: c.foreground, fontFamily: FONT_FAMILY_BOLD }}>
+            <Text style={{ fontSize: 14, color: c.foreground, fontWeight: '700' }}>
               {t("applicant.status_management")}
             </Text>
-            <Text style={{ fontSize: 11, color: c['muted-foreground'], marginTop: 1, fontFamily: FONT_FAMILY }}>
+            <Text style={{ fontSize: 11, color: c['muted-foreground'], marginTop: 1 }}>
               {t("applicant.track_interviews")}
             </Text>
           </View>
@@ -270,8 +269,7 @@ export default function InterviewList({ applications }) {
               >
                 <Text style={{
                   fontSize: 11,
-                  color: isActive ? c.primary : c['muted-foreground'],
-                  fontFamily: FONT_FAMILY_BOLD,
+                  color: isActive ? c.primary : c['muted-foreground'], fontWeight: '700',
                 }}>
                   {tab.label}
                 </Text>
@@ -283,8 +281,7 @@ export default function InterviewList({ applications }) {
                 }}>
                   <Text style={{
                     fontSize: 11,
-                    color: isActive ? c['destructive-foreground'] : c['muted-foreground'],
-                    fontFamily: FONT_FAMILY_EXTRABOLD,
+                    color: isActive ? c['destructive-foreground'] : c['muted-foreground'], fontWeight: '800',
                   }}>
                     {tab.count}
                   </Text>
@@ -295,7 +292,7 @@ export default function InterviewList({ applications }) {
         </ScrollView>
       </View>
 
-      {/* ── Card list ── */}
+      {/* -- Card list -- */}
       <View style={{ padding: 20 }}>
         {filtered.length === 0 ? (
           <View style={{
@@ -307,7 +304,7 @@ export default function InterviewList({ applications }) {
             borderColor: c.border,
             borderStyle: "dashed",
           }}>
-            <Text style={{ fontSize: 12, color: c['muted-foreground'], fontFamily: FONT_FAMILY }}>
+            <Text style={{ fontSize: 12, color: c['muted-foreground'] }}>
               {t("applicant.no_records")}
             </Text>
           </View>
@@ -341,8 +338,8 @@ export default function InterviewList({ applications }) {
 
                 return (
                   <View key={app.id} style={{
-                    // ── Column layout so info always gets full width
-                    // and buttons sit cleanly below — no more letter wrapping
+                    // -- Column layout so info always gets full width
+                    // and buttons sit cleanly below � no more letter wrapping
                     flexDirection: "column",
                     gap: 10,
                     backgroundColor: isActive ? c['surface-muted'] : c.card,
@@ -352,7 +349,7 @@ export default function InterviewList({ applications }) {
                     padding: 13,
                   }}>
 
-                    {/* ── Info section — full width ── */}
+                    {/* -- Info section � full width -- */}
                     <View>
                       <View style={{
                         flexDirection: "row",
@@ -363,8 +360,7 @@ export default function InterviewList({ applications }) {
                       }}>
                         <Text style={{
                           fontSize: 13,
-                          color: c.foreground,
-                          fontFamily: FONT_FAMILY_BOLD,
+                          color: c.foreground, fontWeight: '700',
                           flexShrink: 1,
                         }}>
                           {job?.title || t("applicant.unknown_position")}
@@ -375,8 +371,7 @@ export default function InterviewList({ applications }) {
                       <Text style={{
                         fontSize: 12,
                         color: c['muted-foreground'],
-                        marginBottom: 5,
-                        fontFamily: FONT_FAMILY_MEDIUM,
+                        marginBottom: 5, fontWeight: '500',
                       }}>
                         {company?.name || t("applicant.unknown_company")}
                       </Text>
@@ -409,14 +404,13 @@ export default function InterviewList({ applications }) {
                         <Text style={{
                           fontSize: 11,
                           color: c['muted-foreground'],
-                          fontFamily: FONT_FAMILY,
                         }}>
                           {t("applicant.applied")} {formatDate(app.applied_at)}
                         </Text>
                       </View>
                     </View>
 
-                    {/* ── Buttons row — below info, each button flex: 1 ── */}
+                    {/* -- Buttons row � below info, each button flex: 1 -- */}
                     {showButtons && (
                       <View style={{
                         flexDirection: "row",
@@ -440,8 +434,7 @@ export default function InterviewList({ applications }) {
                           >
                             <Ionicons name="play" size={10} color={c['destructive-foreground']} />
                             <Text style={{
-                              fontSize: 11,
-                              fontFamily: FONT_FAMILY_BOLD,
+                              fontSize: 11, fontWeight: '700',
                               color: c['destructive-foreground'],
                             }}>
                               Start {stageStatus?.label ?? "Interview"}
@@ -467,8 +460,7 @@ export default function InterviewList({ applications }) {
                             <Ionicons name="document-outline" size={10} color={c.primary} />
                             <Text style={{
                               fontSize: 11,
-                              color: c.primary,
-                              fontFamily: FONT_FAMILY_BOLD,
+                              color: c.primary, fontWeight: '700',
                             }}>
                               {t("applicant.view_cv")}
                             </Text>

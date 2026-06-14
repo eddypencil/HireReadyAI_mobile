@@ -12,7 +12,7 @@ import { useTheme } from '../../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../../shared/context/I18nContext';
 import { addLanguage, updateLanguage } from '../../services/languages.service';
 import { Language } from '../../models';
-import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../../src/fonts';
+
 
 const LEVELS = ['basic', 'conversational', 'fluent', 'native'];
 
@@ -129,15 +129,15 @@ function createStyles(c) {
   scroll: { flex: 1, backgroundColor: c.surface },
   content: { padding: 20, gap: 20, paddingBottom: 40 },
   fieldGroup: { gap: 10 },
-  label: { fontFamily: FONT_FAMILY_SEMIBOLD, fontSize: 12, color: c.foreground, textTransform: 'uppercase', letterSpacing: 0.4 },
-  input: { fontFamily: FONT_FAMILY, backgroundColor: c.card, borderWidth: 1, borderColor: c.border, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, fontSize: 14, color: c.foreground },
+  label: { fontWeight: '600', fontSize: 12, color: c.foreground, textTransform: 'uppercase', letterSpacing: 0.4 },
+  input: { backgroundColor: c.card, borderWidth: 1, borderColor: c.border, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, fontSize: 14, color: c.foreground },
   levelsContainer: { gap: 10 },
   levelCard: { borderWidth: 2, borderRadius: 14, padding: 14, backgroundColor: c.card },
   levelCardTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },
-  levelLabel: { fontSize: 14, fontFamily: FONT_FAMILY_BOLD },
+  levelLabel: { fontSize: 14, fontWeight: '700' },
   levelCheck: { width: 18, height: 18, borderRadius: 9, alignItems: 'center', justifyContent: 'center' },
-  levelDesc: { fontSize: 12, lineHeight: 17, fontFamily: FONT_FAMILY },
+  levelDesc: { fontSize: 12, lineHeight: 17 },
   saveBtn: { backgroundColor: c.primary, borderRadius: 12, paddingVertical: 14, alignItems: 'center', marginTop: 4, shadowColor: c.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 },
-  saveBtnText: { fontFamily: FONT_FAMILY_BOLD, color: c.white, fontSize: 15 },
+  saveBtnText: { fontWeight: '700', color: c.white, fontSize: 15 },
   });
 }

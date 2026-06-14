@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../../shared/context/I18nContext';
-import { FONT_FAMILY, FONT_FAMILY_BOLD, FONT_FAMILY_SEMIBOLD } from '../../../../src/fonts';
+
 import ScoreRing from './ScoreRing';
 
 function getInitials(name = '') {
@@ -136,27 +136,27 @@ function createStyles(c) {
     borderWidth: 1, borderColor: `${c.white}40`,
     alignItems: 'center', justifyContent: 'center',
   },
-  avatarText: { fontSize: 19, color: c.white, letterSpacing: 0.5, fontFamily: FONT_FAMILY_BOLD },
+  avatarText: { fontSize: 19, color: c.white, letterSpacing: 0.5, fontWeight: '700' },
   info: { flex: 1 },
   nameRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
-  name: { fontSize: 18, color: c.white, flexShrink: 1, letterSpacing: -0.2, fontFamily: FONT_FAMILY_BOLD },
+  name: { fontSize: 18, color: c.white, flexShrink: 1, letterSpacing: -0.2, fontWeight: '700' },
   rejectedBadge: {
     backgroundColor: `${c.destructive}2E`,
     borderWidth: 1, borderColor: `${c.destructive}59`,
     paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6,
   },
-  rejectedText: { fontSize: 10, color: c.red[100], letterSpacing: 0.5, fontFamily: FONT_FAMILY_BOLD },
+  rejectedText: { fontSize: 10, color: c.red[100], letterSpacing: 0.5, fontWeight: '700' },
   hiredBadge: {
     backgroundColor: `${c.success}33`,
     borderWidth: 1, borderColor: `${c.success}66`,
     paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6,
   },
-  hiredText: { fontSize: 10, color: c.emerald[200], letterSpacing: 0.5, fontFamily: FONT_FAMILY_BOLD },
-  headline: { fontSize: 12, color: `${c.white}BF`, marginTop: 4, lineHeight: 17, fontFamily: FONT_FAMILY },
+  hiredText: { fontSize: 10, color: c.emerald[200], letterSpacing: 0.5, fontWeight: '700' },
+  headline: { fontSize: 12, color: `${c.white}BF`, marginTop: 4, lineHeight: 17 },
   metaList: { marginTop: 8, gap: 4 },
   metaItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
-  metaText: { fontSize: 12, color: `${c.white}BF`, flex: 1, fontFamily: FONT_FAMILY },
-  metaBold: { color: c.white, fontFamily: FONT_FAMILY_SEMIBOLD },
+  metaText: { fontSize: 12, color: `${c.white}BF`, flex: 1 },
+  metaBold: { color: c.white, fontWeight: '600' },
 
   scoreCard: {
     marginTop: 18,
@@ -174,8 +174,8 @@ function createStyles(c) {
   scoreLabel: {
     fontSize: 10,
     color: `${c.white}B3`,
-    textTransform: 'uppercase', letterSpacing: 1.4, fontFamily: FONT_FAMILY_BOLD,
+    textTransform: 'uppercase', letterSpacing: 1.4, fontWeight: '700',
   },
-  scoreSub: { fontSize: 13, color: c.white, marginTop: 4, lineHeight: 18, fontFamily: FONT_FAMILY },
+  scoreSub: { fontSize: 13, color: c.white, marginTop: 4, lineHeight: 18 },
 });
 }

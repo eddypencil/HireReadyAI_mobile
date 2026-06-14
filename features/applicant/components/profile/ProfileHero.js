@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../../shared/context/I18nContext';
-import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD, FONT_FAMILY_EXTRABOLD } from '../../../../src/fonts';
+
 
 export default function ProfileHero({ profile, viewOnly, onEditAvatar, onViewApplications }) {
   const { theme } = useTheme();
@@ -85,7 +85,7 @@ export default function ProfileHero({ profile, viewOnly, onEditAvatar, onViewApp
         )}
       </View>
 
-      {/* Links â€” LinkedIn only */}
+      {/* Links — LinkedIn only */}
       {/* {profile?.linkedin_url && (
         <View style={styles.linksRow}>
           <View style={styles.linkBadge}>
@@ -113,7 +113,7 @@ function createStyles(c) {
     borderWidth: 3, borderColor: 'rgba(255,255,255,0.3)',
     alignItems: 'center', justifyContent: 'center',
   },
-  avatarInitials: { fontSize: 28, color: c.white, fontFamily: FONT_FAMILY_BOLD },
+  avatarInitials: { fontSize: 28, color: c.white, fontWeight: '700' },
   avatarEdit: {
     position: 'absolute', bottom: 2, right: 2,
     width: 24, height: 24, borderRadius: 12,
@@ -127,14 +127,14 @@ function createStyles(c) {
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.25)',
     borderRadius: 20, paddingHorizontal: 14, paddingVertical: 8,
   },
-  appsBtnText: { fontSize: 12, color: c.white, fontFamily: FONT_FAMILY_SEMIBOLD },
+  appsBtnText: { fontSize: 12, color: c.white, fontWeight: '600' },
   nameSection: { gap: 4 },
-  name: { fontSize: 24, color: c.white, letterSpacing: -0.3, fontFamily: FONT_FAMILY_EXTRABOLD },
-  headline: { fontSize: 14, color: 'rgba(255,255,255,0.8)', lineHeight: 20, fontFamily: FONT_FAMILY },
-  headlinePlaceholder: { fontSize: 14, color: 'rgba(255,255,255,0.4)', fontStyle: 'italic', fontFamily: FONT_FAMILY },
+  name: { fontSize: 24, color: c.white, letterSpacing: -0.3, fontWeight: '800' },
+  headline: { fontSize: 14, color: 'rgba(255,255,255,0.8)', lineHeight: 20 },
+  headlinePlaceholder: { fontSize: 14, color: 'rgba(255,255,255,0.4)', fontStyle: 'italic' },
   metaRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 14 },
   metaItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
-  metaText: { fontSize: 12, color: 'rgba(255,255,255,0.7)', fontFamily: FONT_FAMILY },
+  metaText: { fontSize: 12, color: 'rgba(255,255,255,0.7)' },
   bubble1: {
     position: 'absolute', top: -50, right: -50,
     width: 180, height: 180, borderRadius: 90,
@@ -152,6 +152,6 @@ function createStyles(c) {
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.2)',
     borderRadius: 20, paddingHorizontal: 10, paddingVertical: 5,
   },
-  linkText: { fontSize: 11, color: 'rgba(255,255,255,0.85)', fontFamily: FONT_FAMILY_MEDIUM },
+  linkText: { fontSize: 11, color: 'rgba(255,255,255,0.85)', fontWeight: '500' },
   });
 }

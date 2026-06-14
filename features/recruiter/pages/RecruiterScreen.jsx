@@ -12,7 +12,6 @@ import { useDashboardData } from "../hooks/useDashboardData";
 import { useCompany } from "../../companies/pages/CompanyLayout";
 import { useNavigation } from "@react-navigation/native";
 import { Card } from "../../../shared/ui/Card";
-import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD, FONT_FAMILY_EXTRABOLD } from "../../../src/fonts";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
 
@@ -417,7 +416,7 @@ function createStyles(c, KPI_CARD_WIDTH) {
     },
     sectionTitle: {
       fontSize: 18,
-      fontFamily: FONT_FAMILY_BOLD,
+      fontWeight: '700',
       marginBottom: 14,
       marginTop: 4,
     },
@@ -463,12 +462,12 @@ function createStyles(c, KPI_CARD_WIDTH) {
     },
     errorTitle: {
       fontSize: 18,
-      fontFamily: FONT_FAMILY_BOLD,
+      fontWeight: '700',
       marginBottom: 6,
     },
     errorDesc: {
       fontSize: 14,
-      fontFamily: FONT_FAMILY,
+
       marginBottom: 20,
     },
     /* Header */
@@ -501,16 +500,16 @@ function createStyles(c, KPI_CARD_WIDTH) {
     },
     welcomeText: {
       fontSize: 14,
-      fontFamily: FONT_FAMILY,
+
       marginBottom: 2,
     },
     companyName: {
       fontSize: 28,
-      fontFamily: FONT_FAMILY_EXTRABOLD,
+      fontWeight: '800',
     },
     roleText: {
       fontSize: 14,
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
       marginTop: 2,
     },
 
@@ -537,11 +536,11 @@ function createStyles(c, KPI_CARD_WIDTH) {
     },
     kpiValue: {
       fontSize: 26,
-      fontFamily: FONT_FAMILY_EXTRABOLD,
+      fontWeight: '800',
     },
     kpiLabel: {
       fontSize: 12,
-      fontFamily: FONT_FAMILY_MEDIUM,
+      fontWeight: '500',
       marginTop: 2,
     },
 
@@ -566,11 +565,11 @@ function createStyles(c, KPI_CARD_WIDTH) {
     },
     pipelineLabel: {
       fontSize: 13,
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
     },
     pipelineCount: {
       fontSize: 14,
-      fontFamily: FONT_FAMILY_BOLD,
+      fontWeight: '700',
     },
     pipelineTrack: {
       height: 8,
@@ -609,12 +608,12 @@ function createStyles(c, KPI_CARD_WIDTH) {
     },
     trendDay: {
       fontSize: 10,
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
       marginTop: 6,
     },
     trendCount: {
       fontSize: 11,
-      fontFamily: FONT_FAMILY_BOLD,
+      fontWeight: '700',
       marginTop: 2,
     },
 
@@ -637,7 +636,7 @@ function createStyles(c, KPI_CARD_WIDTH) {
     },
     topJobRankText: {
       fontSize: 12,
-      fontFamily: FONT_FAMILY_BOLD,
+      fontWeight: '700',
     },
     topJobInfo: {
       flex: 1,
@@ -645,7 +644,7 @@ function createStyles(c, KPI_CARD_WIDTH) {
     },
     topJobName: {
       fontSize: 13,
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
     },
     topJobTrack: {
       height: 6,
@@ -658,7 +657,7 @@ function createStyles(c, KPI_CARD_WIDTH) {
     },
     topJobCount: {
       fontSize: 14,
-      fontFamily: FONT_FAMILY_BOLD,
+      fontWeight: '700',
       minWidth: 28,
       textAlign: "right",
     },
@@ -686,7 +685,7 @@ function createStyles(c, KPI_CARD_WIDTH) {
     },
     quickActionLabel: {
       fontSize: 12,
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
       textAlign: "center",
     },
     rowReverse: {

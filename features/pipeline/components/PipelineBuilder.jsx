@@ -23,7 +23,6 @@ const AI_STAGE_TYPES = new Set([
   "assessment", "assessment_test", "coding_test",
 ]);
 import { useCompany } from "../../companies/pages/CompanyLayout";
-import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from "../../../src/fonts";
 
 export default function PipelineBuilder({
   job,
@@ -268,7 +267,7 @@ function createStyles(c, bottomSheetHeight, isRtl) {
     },
     libraryBtnText: {
       fontSize: 12,
-      fontFamily: FONT_FAMILY_MEDIUM,
+      fontWeight: '500',
       color: c['muted-foreground'],
     },
     bottomSheetOverlay: {
@@ -316,13 +315,13 @@ function createStyles(c, bottomSheetHeight, isRtl) {
     },
     jobTitle: {
       fontSize: 20,
-      fontFamily: FONT_FAMILY_BOLD,
+      fontWeight: '700',
       color: c.foreground,
       marginBottom: 2,
     },
     canvasHint: {
       fontSize: 12,
-      fontFamily: FONT_FAMILY,
+
       color: c['muted-foreground'],
     },
     emptyState: {
@@ -347,13 +346,13 @@ function createStyles(c, bottomSheetHeight, isRtl) {
     },
     emptyTitle: {
       fontSize: 14,
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
       color: c['muted-foreground'],
       marginBottom: 4,
     },
     emptyHint: {
       fontSize: 12,
-      fontFamily: FONT_FAMILY,
+
       color: c['muted-foreground'],
       textAlign: "center",
     },
@@ -395,14 +394,14 @@ function createStyles(c, bottomSheetHeight, isRtl) {
     },
     drawerHeaderLabel: {
       fontSize: 10,
-      fontFamily: FONT_FAMILY_BOLD,
+      fontWeight: '700',
       color: c['muted-foreground'],
       letterSpacing: 1,
       textTransform: "uppercase",
     },
     detailsHeaderTitle: {
       fontSize: 14,
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
       color: c.foreground,
       flex: 1,
       marginRight: isRtl ? 0 : 8,

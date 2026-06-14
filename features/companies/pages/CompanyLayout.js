@@ -22,7 +22,7 @@ import { MEMBERSHIP_PERMISSION } from "../../../shared/constants/enums";
 import NoCompanyView from "./NoCompanyView";
 import PendingApprovalPage from "./PendingApprovalPage";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD, FONT_FAMILY_EXTRABOLD } from '../../../src/fonts';
+
 
 const CompanyContext = createContext(null);
 
@@ -202,19 +202,19 @@ function createStyles(c) {
     container: { flex: 1, backgroundColor: c.gray[50] },
     content: { padding: 20 },
     centered: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: c.white },
-    loadingText: { marginTop: 8, fontSize: 13, fontFamily: FONT_FAMILY, color: c.gray[500] },
-    errorText: { color: c.red[500], fontSize: 14, fontFamily: FONT_FAMILY, textAlign: "center" },
+    loadingText: { marginTop: 8, fontSize: 13, color: c.gray[500] },
+    errorText: { color: c.red[500], fontSize: 14, textAlign: "center" },
     header: { marginBottom: 24 },
-    welcome: { fontSize: 14, fontFamily: FONT_FAMILY, color: c.gray[500] },
-    companyName: { fontSize: 26, fontFamily: FONT_FAMILY_BOLD, color: c.foreground, marginTop: 2 },
+    welcome: { fontSize: 14, color: c.gray[500] },
+    companyName: { fontSize: 26, fontWeight: '700', color: c.foreground, marginTop: 2 },
     statsRow: { flexDirection: "row", gap: 12, marginBottom: 28 },
     statCard: { flex: 1, backgroundColor: c.white, borderRadius: 14, padding: 18, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4, elevation: 2 },
-    statNumber: { fontSize: 28, fontFamily: FONT_FAMILY_EXTRABOLD, color: c.primary },
-    statLabel: { fontSize: 12, fontFamily: FONT_FAMILY, color: c.gray[500], marginTop: 2 },
-    sectionTitle: { fontSize: 13, fontFamily: FONT_FAMILY_BOLD, color: c.gray[600], textTransform: "uppercase", letterSpacing: 1, marginBottom: 12 },
+    statNumber: { fontSize: 28, fontWeight: '800', color: c.primary },
+    statLabel: { fontSize: 12, color: c.gray[500], marginTop: 2 },
+    sectionTitle: { fontSize: 13, fontWeight: '700', color: c.gray[600], textTransform: "uppercase", letterSpacing: 1, marginBottom: 12 },
     navCard: { flexDirection: "row", alignItems: "center", backgroundColor: c.white, borderRadius: 12, padding: 16, marginBottom: 10, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 3, elevation: 1 },
     navIconWrap: { width: 40, height: 40, borderRadius: 10, backgroundColor: c.surface, justifyContent: "center", alignItems: "center" },
     navTextWrap: { flex: 1, marginLeft: 14 },
-    navLabel: { fontSize: 15, fontFamily: FONT_FAMILY_SEMIBOLD, color: c.gray[900] },
+    navLabel: { fontSize: 15, fontWeight: '600', color: c.gray[900] },
   });
 }

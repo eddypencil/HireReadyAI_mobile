@@ -18,7 +18,6 @@ import { useTheme } from '../../../shared/context/ThemeContext';
 import { useUser } from '../../auth/context/user.context';
 import { spacing } from '../../../src/theme';
 import { useTranslation } from '../../../shared/context/I18nContext';
-import { FONT_FAMILY, FONT_FAMILY_BOLD, FONT_FAMILY_EXTRABOLD } from '../../../src/fonts';
 import { supabase } from '../../../shared/services/supabase';
 import { USER_ROLE } from '../../../shared/constants/enums';
 
@@ -241,19 +240,18 @@ const styles = StyleSheet.create({
     },
     badge: {
         fontSize: 11,
-        fontFamily: FONT_FAMILY_EXTRABOLD,
+        fontWeight: '800',
         letterSpacing: 2,
         marginBottom: 6,
     },
     title: {
         fontSize: 24,
-        fontFamily: FONT_FAMILY_EXTRABOLD,
+        fontWeight: '800',
         marginBottom: 6,
     },
     subtitle: {
         fontSize: 13,
         lineHeight: 18,
-        fontFamily: FONT_FAMILY,
     },
     card: {
         borderWidth: 1,
@@ -263,7 +261,7 @@ const styles = StyleSheet.create({
     },
     label: {
         fontSize: 12,
-        fontFamily: FONT_FAMILY_BOLD,
+        fontWeight: '700',
         marginTop: 10,
         marginBottom: 6,
     },
@@ -272,7 +270,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: 10,
         fontSize: 14,
-        fontFamily: FONT_FAMILY,
     },
     textarea: {
         minHeight: 110,
@@ -288,24 +285,22 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         color: '#fff',
-        fontFamily: FONT_FAMILY_BOLD,
+        fontWeight: '700',
         marginLeft: 6,
     },
     error: {
         marginTop: 10,
         color: 'red',
         fontSize: 12,
-        fontFamily: FONT_FAMILY,
     },
     success: {
         marginTop: 10,
         color: 'green',
         fontSize: 12,
-        fontFamily: FONT_FAMILY,
     },
     sectionTitle: {
         fontSize: 14,
-        fontFamily: FONT_FAMILY_EXTRABOLD,
+        fontWeight: '800',
         marginBottom: 10,
     },
     infoRow: {

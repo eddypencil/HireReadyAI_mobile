@@ -15,7 +15,7 @@ import { useTranslation } from '../../../shared/context/I18nContext';
 import LanguageSwitcher from '../../../shared/i18n/LanguageSwitcher';
 import { USER_ROLE } from '../../../shared/constants/enums';
 import { useUser } from '../context/user.context';
-import { FONT_FAMILY, FONT_FAMILY_BOLD, FONT_FAMILY_EXTRABOLD, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD } from '../../../src/fonts';
+
 
 const ROLES = [
   { labelKey: 'sign_up.applicant', value: USER_ROLE.applicant },
@@ -79,25 +79,25 @@ export default function RegisterPage() {
     container: { flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24, paddingVertical: 48 },
     branding: { alignItems: 'center', marginBottom: 32 },
     logo: { width: 56, height: 56, borderRadius: 14, backgroundColor: c['sidebar-active'], alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
-    logoText: { fontSize: 24, fontFamily: FONT_FAMILY_EXTRABOLD, color: c['destructive-foreground'] },
-    appName: { fontSize: 28, fontFamily: FONT_FAMILY_BOLD, color: c['sidebar-foreground'], letterSpacing: -0.5 },
+    logoText: { fontSize: 24, fontWeight: '800', color: c['destructive-foreground'] },
+    appName: { fontSize: 28, fontWeight: '700', color: c['sidebar-foreground'], letterSpacing: -0.5 },
     aiHighlight: { color: c.accent },
-    headline: { fontSize: 26, fontFamily: FONT_FAMILY_BOLD, color: c['sidebar-foreground'], marginBottom: 4 },
-    subheading: { fontSize: 14, fontFamily: FONT_FAMILY, color: c.accent, marginBottom: 24 },
+    headline: { fontSize: 26, fontWeight: '700', color: c['sidebar-foreground'], marginBottom: 4 },
+    subheading: { fontSize: 14, color: c.accent, marginBottom: 24 },
     roleToggle: { flexDirection: 'row', gap: 8, padding: 4, borderRadius: 12, backgroundColor: c.card, borderWidth: 1, borderColor: c.border, marginBottom: 24 },
     roleOption: { flex: 1, paddingVertical: 10, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
     roleOptionActive: { backgroundColor: c.primary },
-    roleText: { fontSize: 14, fontFamily: FONT_FAMILY_MEDIUM, color: c['muted-foreground'] },
-    roleTextActive: { color: c['destructive-foreground'], fontFamily: FONT_FAMILY_SEMIBOLD },
+    roleText: { fontSize: 14, fontWeight: '500', color: c['muted-foreground'] },
+    roleTextActive: { color: c['destructive-foreground'], fontWeight: '600' },
     form: { gap: 16 },
     errorContainer: { backgroundColor: `${c.destructive}1a`, borderWidth: 1, borderColor: `${c.destructive}33`, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10 },
-    errorText: { fontSize: 13, fontFamily: FONT_FAMILY, color: c.destructive },
+    errorText: { fontSize: 13, color: c.destructive },
     button: { height: 48, backgroundColor: c.primary, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginTop: 4 },
     buttonDisabled: { opacity: 0.6 },
-    buttonText: { color: c['destructive-foreground'], fontSize: 15, fontFamily: FONT_FAMILY_SEMIBOLD },
+    buttonText: { color: c['destructive-foreground'], fontSize: 15, fontWeight: '600' },
     linkContainer: { alignItems: 'center', marginTop: 8, paddingVertical: 12 },
-    linkText: { fontSize: 13, fontFamily: FONT_FAMILY, color: c['muted-foreground'] },
-    linkHighlight: { color: c.accent, fontFamily: FONT_FAMILY_SEMIBOLD },
+    linkText: { fontSize: 13, color: c['muted-foreground'] },
+    linkHighlight: { color: c.accent, fontWeight: '600' },
     languageSwitcher: { position: 'absolute', top: 42, end: 22, zIndex: 10 },
   };
 

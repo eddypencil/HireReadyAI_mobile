@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native'
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../../shared/context/I18nContext';
-import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../../src/fonts';
+
 
 function SectionCard({ title, icon, onEdit, viewOnly, children, empty, emptyText, styles }) {
   const { theme } = useTheme();
@@ -94,7 +94,7 @@ export default function AboutTab({ profile, viewOnly, onEdit }) {
         </View>
       </SectionCard>
 
-      {/* Links â€” LinkedIn only */}
+      {/* Links — LinkedIn only */}
       <SectionCard styles={styles}
         title={t('profile.links')}
         icon="link-outline"
@@ -129,16 +129,16 @@ function createStyles(c) {
   card: { backgroundColor: c.card, borderRadius: 16, borderWidth: 1, borderColor: c.border, padding: 18, gap: 12 },
   cardHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   cardHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  cardTitle: { fontSize: 15, color: c.foreground, fontFamily: FONT_FAMILY_BOLD },
+  cardTitle: { fontSize: 15, color: c.foreground, fontWeight: '700' },
   editBtn: { padding: 4 },
-  emptyText: { fontSize: 13, color: c['muted-foreground'], fontStyle: 'italic', lineHeight: 20, fontFamily: FONT_FAMILY },
-  headline: { fontSize: 14, color: c.foreground, marginBottom: 4, fontFamily: FONT_FAMILY_SEMIBOLD },
-  bioText: { fontSize: 14, color: c.foreground, lineHeight: 22, fontFamily: FONT_FAMILY },
+  emptyText: { fontSize: 13, color: c['muted-foreground'], fontStyle: 'italic', lineHeight: 20 },
+  headline: { fontSize: 14, color: c.foreground, marginBottom: 4, fontWeight: '600' },
+  bioText: { fontSize: 14, color: c.foreground, lineHeight: 22 },
   list: { gap: 12 },
   listItem: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   listIcon: { width: 34, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
-  listLabel: { fontSize: 11, color: c['muted-foreground'], fontFamily: FONT_FAMILY_MEDIUM },
-  listValue: { fontSize: 13, color: c.foreground, marginTop: 1, fontFamily: FONT_FAMILY_MEDIUM },
+  listLabel: { fontSize: 11, color: c['muted-foreground'], fontWeight: '500' },
+  listValue: { fontSize: 13, color: c.foreground, marginTop: 1, fontWeight: '500' },
   link: { color: c.accent },
   });
 }

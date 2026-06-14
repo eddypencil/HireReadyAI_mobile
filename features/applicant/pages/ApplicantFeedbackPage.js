@@ -25,9 +25,9 @@ import {
 } from "../../recruiter/services/candidateProfile.service";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
-import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../src/fonts';
 
-// ── Sub-components
+
+// -- Sub-components
 import AppSelector from "../components/feedback/AppSelector";
 import ApplicationTimeline from "../components/feedback/ApplicationTimeline";
 import KeyTakeaways from "../components/feedback/KeyTakeaways";
@@ -57,7 +57,7 @@ const INTERVIEW_STAGE_TYPES = [
   "assessment",
 ];
 
-// ── Segmented Tab bar (gradient active state, no black)
+// -- Segmented Tab bar (gradient active state, no black)
 function TabBar({ active, onSelect }) {
   const { theme } = useTheme();
   const c = theme.colors;
@@ -101,9 +101,9 @@ function TabBar({ active, onSelect }) {
   );
 }
 
-// ══════════════════════════════════════════════════════════
+// ----------------------------------------------------------
 // MAIN PAGE
-// ══════════════════════════════════════════════════════════
+// ----------------------------------------------------------
 export default function ApplicantFeedbackPage() {
   const { theme } = useTheme();
   const c = theme.colors;
@@ -123,7 +123,7 @@ export default function ApplicantFeedbackPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(0);
 
-  // ── Fetch applications list
+  // -- Fetch applications list
   useEffect(() => {
     if (!user?.id) return;
     setLoading(true);
@@ -152,7 +152,7 @@ export default function ApplicantFeedbackPage() {
       });
   }, [user?.id]);
 
-  // ── Fetch selected application detail
+  // -- Fetch selected application detail
   useEffect(() => {
     if (!selectedId) {
       setSelectedApp(null);
@@ -200,7 +200,7 @@ export default function ApplicantFeedbackPage() {
     });
   }, [selectedId]);
 
-  // ── Reset to Overview when app changes
+  // -- Reset to Overview when app changes
   useEffect(() => {
     setActiveTab(0);
   }, [selectedId]);
@@ -219,7 +219,7 @@ export default function ApplicantFeedbackPage() {
   );
   const cvFeedback = parseAIFeedback(cvStage);
 
-  // ── Loading
+  // -- Loading
   if (loading) {
     return (
       <View style={styles.centered}>
@@ -231,7 +231,7 @@ export default function ApplicantFeedbackPage() {
     );
   }
 
-  // ── Empty state
+  // -- Empty state
   if (applications.length === 0) {
     return (
       <View style={styles.centered}>
@@ -289,7 +289,7 @@ export default function ApplicantFeedbackPage() {
           {/* Tab bar */}
           <TabBar active={activeTab} onSelect={setActiveTab} />
 
-          {/* ── TAB 0: Overview */}
+          {/* -- TAB 0: Overview */}
           {activeTab === 0 && (
             <ScrollView
               style={styles.tabScroll}
@@ -320,7 +320,7 @@ export default function ApplicantFeedbackPage() {
             </ScrollView>
           )}
 
-          {/* ── TAB 1: CV Review */}
+          {/* -- TAB 1: CV Review */}
           {activeTab === 1 && (
             <ScrollView
               style={styles.tabScroll}
@@ -348,7 +348,7 @@ export default function ApplicantFeedbackPage() {
             </ScrollView>
           )}
 
-          {/* ── TAB 2: Assessments */}
+          {/* -- TAB 2: Assessments */}
           {activeTab === 2 && (
             <ScrollView
               style={styles.tabScroll}
@@ -412,8 +412,8 @@ function createStyles(c) {
       shadowRadius: 8,
       elevation: 4,
     },
-    label: { fontFamily: FONT_FAMILY_SEMIBOLD, fontSize: 13, color: c["muted-foreground"] },
-    labelActive: { fontFamily: FONT_FAMILY_BOLD, fontSize: 13, color: c.white },
+    label: { fontWeight: '600', fontSize: 13, color: c["muted-foreground"] },
+    labelActive: { fontWeight: '700', fontSize: 13, color: c.white },
   });
 
   const styles = StyleSheet.create({
@@ -437,7 +437,7 @@ function createStyles(c) {
       backgroundColor: c.background,
       padding: 24,
     },
-    loadingText: { fontFamily: FONT_FAMILY, fontSize: 14, color: c["muted-foreground"], marginTop: 10 },
+    loadingText: { fontSize: 14, color: c["muted-foreground"], marginTop: 10 },
 
     emptyCard: {
       backgroundColor: c.card,
@@ -461,14 +461,12 @@ function createStyles(c) {
       alignItems: "center",
       justifyContent: "center",
     },
-    emptyTitle: {
-      fontFamily: FONT_FAMILY_BOLD,
+    emptyTitle: { fontWeight: '700',
       fontSize: 16,
       color: c.foreground,
       textAlign: "center",
     },
     emptySubtitle: {
-      fontFamily: FONT_FAMILY,
       fontSize: 13,
       color: c["muted-foreground"],
       textAlign: "center",
@@ -486,17 +484,15 @@ function createStyles(c) {
       elevation: 4,
       marginTop: 6,
     },
-    emptyBtnText: {
-      fontFamily: FONT_FAMILY_BOLD,
+    emptyBtnText: { fontWeight: '700',
       color: c.white,
       fontSize: 14,
       letterSpacing: 0.2,
     },
 
     emptyTab: { alignItems: "center", paddingVertical: 60, gap: 10 },
-    emptyTabTitle: { fontFamily: FONT_FAMILY_BOLD, fontSize: 15, color: c.foreground },
+    emptyTabTitle: { fontWeight: '700', fontSize: 15, color: c.foreground },
     emptyTabSubtitle: {
-      fontFamily: FONT_FAMILY,
       fontSize: 13,
       color: c["muted-foreground"],
       textAlign: "center",

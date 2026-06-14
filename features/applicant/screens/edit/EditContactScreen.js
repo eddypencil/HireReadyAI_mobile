@@ -11,7 +11,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../../shared/context/I18nContext';
 import { fetchApplicantProfile, updateApplicantProfile } from '../../services/profile.service';
-import { FONT_FAMILY, FONT_FAMILY_BOLD } from '../../../../src/fonts';
+
 
 export default function EditContactScreen() {
   const { theme } = useTheme();
@@ -116,9 +116,9 @@ function createStyles(c) {
   fieldGroup: { gap: 8 },
   labelRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   labelIcon: { width: 30, height: 30, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
-  label: { fontFamily: FONT_FAMILY_BOLD, fontSize: 13, color: c.foreground },
+  label: { fontWeight: '700', fontSize: 13, color: c.foreground },
   input: {
-    fontFamily: FONT_FAMILY, backgroundColor: c.card, borderWidth: 1, borderColor: c.border,
+    backgroundColor: c.card, borderWidth: 1, borderColor: c.border,
     borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12,
     fontSize: 14, color: c.foreground,
   },
@@ -128,6 +128,6 @@ function createStyles(c) {
     shadowColor: c.primary, shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
   },
-  saveBtnText: { fontFamily: FONT_FAMILY_BOLD, color: c.white, fontSize: 15 },
+  saveBtnText: { fontWeight: '700', color: c.white, fontSize: 15 },
   });
 }

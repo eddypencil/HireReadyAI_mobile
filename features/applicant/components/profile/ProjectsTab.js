@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Linking } 
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../../shared/context/I18nContext';
-import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../../src/fonts';
+
 
 function ProjectMedia({ images, onAdd, viewOnly }) {
   const { theme } = useTheme();
@@ -74,7 +74,7 @@ function ProjectCard({ item, index, onEdit, onDelete, viewOnly, onAddMedia }) {
         </View>
       )}
 
-      {/* url — from Project model, can be GitHub, live link, or video */}
+      {/* url � from Project model, can be GitHub, live link, or video */}
       {item.url ? (
         <TouchableOpacity
           style={styles.projectLink}
@@ -105,7 +105,7 @@ export default function ProjectsTab({ profile, viewOnly, onEdit, onDelete, onAdd
 
   return (
     <View style={styles.container}>
-      {/* ── White card wrapping header + content, matching Work Experience style */}
+      {/* -- White card wrapping header + content, matching Work Experience style */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <View style={styles.sectionHeaderLeft}>
@@ -166,7 +166,7 @@ function createStyles(c) {
   return StyleSheet.create({
   container: { gap: 14 },
 
-  // ── Same card style as Work Experience / Education sections
+  // -- Same card style as Work Experience / Education sections
   section: {
     backgroundColor: c.card, borderRadius: 16,
     borderWidth: 1, borderColor: c.border, overflow: 'hidden',
@@ -176,7 +176,7 @@ function createStyles(c) {
     padding: 18, borderBottomWidth: 1, borderBottomColor: c.border,
   },
   sectionHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  sectionTitle: { fontSize: 15, color: c.foreground, fontFamily: FONT_FAMILY_BOLD },
+  sectionTitle: { fontSize: 15, color: c.foreground, fontWeight: '700' },
   addBtn: {
     width: 28, height: 28, borderRadius: 14,
     backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center',
@@ -189,19 +189,19 @@ function createStyles(c) {
     backgroundColor: c.surface,
     alignItems: 'center', justifyContent: 'center', marginBottom: 4,
   },
-  emptyTitle: { fontSize: 15, color: c.foreground, textAlign: 'center', fontFamily: FONT_FAMILY_BOLD },
+  emptyTitle: { fontSize: 15, color: c.foreground, textAlign: 'center', fontWeight: '700' },
   emptySubtitle: {
     fontSize: 13, color: c['muted-foreground'],
-    textAlign: 'center', lineHeight: 19, maxWidth: 240, fontFamily: FONT_FAMILY,
+    textAlign: 'center', lineHeight: 19, maxWidth: 240,
   },
   emptyAddBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
     backgroundColor: c.primary, borderRadius: 20,
     paddingHorizontal: 20, paddingVertical: 10, marginTop: 6,
   },
-  emptyAddBtnText: { color: c.white, fontSize: 13, fontFamily: FONT_FAMILY_SEMIBOLD },
+  emptyAddBtnText: { color: c.white, fontSize: 13, fontWeight: '600' },
 
-  // Project card — sits inside the section, separated by top border
+  // Project card � sits inside the section, separated by top border
   projectCard: {
     borderTopWidth: 1, borderTopColor: c.border,
     backgroundColor: c.card, overflow: 'hidden',
@@ -216,11 +216,11 @@ function createStyles(c) {
     backgroundColor: `${c.primary}12`,
     alignItems: 'center', justifyContent: 'center', flexShrink: 0,
   },
-  projectName: { fontSize: 15, color: c.foreground, flex: 1, fontFamily: FONT_FAMILY_BOLD },
+  projectName: { fontSize: 15, color: c.foreground, flex: 1, fontWeight: '700' },
   projectActions: { flexDirection: 'row', gap: 12, flexShrink: 0 },
   projectDesc: {
     fontSize: 13, color: c.foreground, lineHeight: 20,
-    paddingHorizontal: 16, paddingBottom: 12, fontFamily: FONT_FAMILY,
+    paddingHorizontal: 16, paddingBottom: 12,
   },
   techRow: {
     flexDirection: 'row', flexWrap: 'wrap', gap: 6,
@@ -231,7 +231,7 @@ function createStyles(c) {
     borderWidth: 1, borderColor: `${c.accent}30`,
     borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4,
   },
-  techText: { fontSize: 11, color: c.accent, fontFamily: FONT_FAMILY_SEMIBOLD },
+  techText: { fontSize: 11, color: c.accent, fontWeight: '600' },
   projectLink: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
     marginHorizontal: 16, marginBottom: 12,
@@ -239,7 +239,7 @@ function createStyles(c) {
     borderWidth: 1, borderColor: `${c.accent}25`,
     borderRadius: 8, paddingHorizontal: 10, paddingVertical: 7,
   },
-  projectLinkText: { flex: 1, fontSize: 12, color: c.accent, fontFamily: FONT_FAMILY },
+  projectLinkText: { flex: 1, fontSize: 12, color: c.accent },
   gallerySection: { borderTopWidth: 1, borderTopColor: c.border },
   gallery: { padding: 12, gap: 8 },
   mediaTile: {
@@ -252,11 +252,11 @@ function createStyles(c) {
     alignItems: 'center', justifyContent: 'center', gap: 4,
     borderStyle: 'dashed', backgroundColor: c.card,
   },
-  addTileText: { fontSize: 11, color: c['muted-foreground'], fontFamily: FONT_FAMILY },
+  addTileText: { fontSize: 11, color: c['muted-foreground'] },
   addMediaBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
     borderTopWidth: 1, borderTopColor: c.border, padding: 14,
   },
-  addMediaText: { fontSize: 13, color: c['muted-foreground'], fontStyle: 'italic', fontFamily: FONT_FAMILY },
+  addMediaText: { fontSize: 13, color: c['muted-foreground'], fontStyle: 'italic' },
   });
 }

@@ -11,7 +11,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { fetchCompanyById, fetchJobsByCompanyId } from "../services/companies.service";
-import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../src/fonts';
+
 
 export default function PublicCompanyProfile({ route }) {
   const { theme } = useTheme();
@@ -204,7 +204,6 @@ function createStyles(c) {
     loadingText: {
       marginTop: 8,
       fontSize: 13,
-      fontFamily: FONT_FAMILY,
       color: c.gray[500],
     },
     errorBox: {
@@ -218,13 +217,12 @@ function createStyles(c) {
     },
     errorText: {
       fontSize: 14,
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
       color: c.red[700],
       marginBottom: 4,
     },
     errorDetail: {
       fontSize: 12,
-      fontFamily: FONT_FAMILY,
       color: c.red[600],
       textAlign: "center",
     },
@@ -260,7 +258,7 @@ function createStyles(c) {
     },
     logoText: {
       fontSize: 22,
-      fontFamily: FONT_FAMILY_BOLD,
+      fontWeight: '700',
       color: c.primary,
     },
     headerInfo: {
@@ -270,7 +268,7 @@ function createStyles(c) {
     },
     companyName: {
       fontSize: 22,
-      fontFamily: FONT_FAMILY_BOLD,
+      fontWeight: '700',
       color: c.foreground,
       marginBottom: 4,
     },
@@ -283,7 +281,7 @@ function createStyles(c) {
     },
     industryText: {
       fontSize: 11,
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
       color: c.primary,
     },
     detailsCard: {
@@ -297,7 +295,7 @@ function createStyles(c) {
     },
     sectionTitle: {
       fontSize: 13,
-      fontFamily: FONT_FAMILY_BOLD,
+      fontWeight: '700',
       color: c.foreground,
       marginBottom: 12,
     },
@@ -309,7 +307,6 @@ function createStyles(c) {
     },
     detailText: {
       fontSize: 14,
-      fontFamily: FONT_FAMILY,
       color: c.gray[600],
     },
     linkRow: {
@@ -320,13 +317,11 @@ function createStyles(c) {
     },
     linkText: {
       fontSize: 14,
-      fontFamily: FONT_FAMILY,
       color: c['muted-foreground'],
       flex: 1,
     },
     bodyText: {
       fontSize: 14,
-      fontFamily: FONT_FAMILY,
       color: c.gray[600],
       lineHeight: 22,
     },
@@ -340,13 +335,12 @@ function createStyles(c) {
     },
     jobTitle: {
       fontSize: 15,
-      fontFamily: FONT_FAMILY_SEMIBOLD,
+      fontWeight: '600',
       color: c.foreground,
       marginBottom: 4,
     },
     jobMeta: {
       fontSize: 12,
-      fontFamily: FONT_FAMILY,
       color: c.gray[500],
     },
   });
