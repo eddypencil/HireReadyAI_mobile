@@ -82,12 +82,16 @@ export default function ShortlistsPage() {
     );
     if (!entry) return;
 
-    const candidateEmail = entry.applications.profiles?.email || "";
+    // Get email from answers.info.email (already fetched) 
+    const candidateEmail =
+      entry.applications.answers?.info?.email ||
+      entry.applications.profiles?.email ||
+      '';
 
     setOfferCandidate({ ...entry, _candidateEmail: candidateEmail });
-    setOfferAction("offer");
+    setOfferAction('offer');
     setIsPanelOpen(false);
-    setShowOfferModal(true);
+    setTimeout(() => setShowOfferModal(true), 300); // fixes the overlap bug too
   };
 
   const handleOfferSuccess = () => {
