@@ -236,6 +236,7 @@ export default function CodeQuestion({ question, onAnswer }) {
               onKeyPress={handleKeyDown}
               multiline
               textAlignVertical="top"
+              contextMenuHidden={true} 
               autoCapitalize="none"
               autoCorrect={false}
               spellCheck={false}
@@ -306,13 +307,13 @@ export default function CodeQuestion({ question, onAnswer }) {
                   <View style={s.metricBox}>
                     <Text style={s.metricLabel}>Time</Text>
                     <Text style={s.metricValue}>
-                      {consoleOutput.executionTime != null ? `${consoleOutput.executionTime}ms` : "—"}
+                      {consoleOutput.executionTime != null ? `${consoleOutput.executionTime}ms` : "-"}
                     </Text>
                   </View>
                   <View style={s.metricBox}>
                     <Text style={s.metricLabel}>Memory</Text>
                     <Text style={s.metricValue}>
-                      {consoleOutput.memoryUsage != null ? `${(consoleOutput.memoryUsage / 1024).toFixed(2)} KB` : "—"}
+                      {consoleOutput.memoryUsage != null ? `${(consoleOutput.memoryUsage / 1024).toFixed(2)} KB` : "-"}
                     </Text>
                   </View>
                 </View>

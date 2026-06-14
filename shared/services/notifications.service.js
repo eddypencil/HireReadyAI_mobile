@@ -37,7 +37,7 @@ const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 export async function registerAndSavePushToken(userId) {
   console.log("[Notifications] registerAndSavePushToken called for user:", userId);
   if (!userId) {
-    console.log("[Notifications] Skipping — no userId provided");
+    console.log("[Notifications] Skipping - no userId provided");
     return;
   }
 

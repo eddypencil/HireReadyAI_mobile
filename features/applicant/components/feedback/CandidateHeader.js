@@ -98,7 +98,7 @@ export default function CandidateHeader({ app, percentile, percentileTag }) {
           <Text style={styles.scoreLabel}>{t('applicant.feedback.composite_score')}</Text>
           {percentileTag ? (
             <Text style={styles.scoreSub}>
-              {percentileTag.label} — {t('applicant.feedback.top_performers')}
+              {percentileTag.label} - {t('applicant.feedback.top_performers')}
             </Text>
           ) : (
             <Text style={styles.scoreSub}>

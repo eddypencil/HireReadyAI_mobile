@@ -118,7 +118,7 @@ function QuestionCard({ question, index, total, onChange, onRemove }) {
         style={styles.questionInput}
         value={question.question}
         onChangeText={(t) => onChange("question", t)}
-        placeholder={t("companies.write_question_placeholder")}
+        placeholder="Write your question here..."
         placeholderTextColor={c['muted-foreground']}
         multiline
         textAlignVertical="top"

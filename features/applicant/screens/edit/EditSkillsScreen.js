@@ -2,9 +2,10 @@
 import { useState } from 'react';
 import {
   View, Text, TextInput, StyleSheet, ScrollView,
-  TouchableOpacity, ActivityIndicator, Alert,
+  TouchableOpacity, ActivityIndicator,
   KeyboardAvoidingView, Platform,
 } from 'react-native';
+import { useThemedAlert } from '../../../../shared/context/ThemedAlertContext';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../../shared/context/ThemeContext';
@@ -25,6 +26,7 @@ const LEVEL_CONFIG = {
 export default function EditSkillsScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { alert } = useThemedAlert();
   const c = theme.colors;
   const styles = createStyles(c);
   const navigation = useNavigation();
@@ -37,7 +39,7 @@ export default function EditSkillsScreen() {
   const [level, setLevel] = useState(item?.level || 'intermediate');
 
   const handleSave = async () => {
-    if (!name.trim()) { Alert.alert(t("profile.error_title"), t("profile.edit.error_skill_name")); return; }
+    if (!name.trim()) { alert(t("profile.error_title"), t("profile.edit.error_skill_name")); return; }
 
     setSaving(true);
     try {
@@ -52,7 +54,7 @@ export default function EditSkillsScreen() {
       onSave?.();
       navigation.goBack();
     } catch {
-      Alert.alert(t("profile.error_title"), t("profile.edit.error_save"));
+      alert(t("profile.error_title"), t("profile.edit.error_save"));
     } finally {
       setSaving(false);
     }
@@ -69,7 +71,7 @@ export default function EditSkillsScreen() {
             style={styles.input}
             value={name}
             onChangeText={setName}
-            placeholder={t("profile.edit.skill_placeholder")}
+            placeholder="e.g. React Native"
             placeholderTextColor={c['muted-foreground']}
             autoCapitalize="words"
             autoCorrect={false}

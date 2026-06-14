@@ -117,6 +117,10 @@ export default function InterviewList({ applications }) {
       (s) => s.stage_id === currentStageId,
     );
 
+    if (appStage?.status === "abandoned") {
+      return { status: "completed", label: "Abandoned" };
+    }
+
     const hasScore = appStage?.score != null;
 
     if (!hasScore) {
@@ -336,101 +340,97 @@ export default function InterviewList({ applications }) {
 
               return (
                 <View key={app.id} style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  flexWrap: "wrap",
-                  gap: 12,
+                  flexDirection: "column",
+                  gap: 8,
                   backgroundColor: isActive ? c['surface-muted'] : c.card,
                   borderWidth: 1,
                   borderColor: isActive ? c['stage-applied'] : c.border,
                   borderRadius: 10,
                   padding: 13,
                 }}>
-                  <View style={{ flex: 1, minWidth: 0 }}>
-                    <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 4 }}>
-                      <Text style={{
-                        fontSize: 13,
-                        color: c.foreground,
-                        fontFamily: FONT_FAMILY_BOLD,
-                      }}>
-                        {job?.title || t("applicant.unknown_position")}
-                      </Text>
-                      <StagePill label={displayLabel} cfg={cfg} />
-                    </View>
-                    <Text style={{
-                      fontSize: 12,
-                      color: c['muted-foreground'],
-                      marginBottom: 5,
-                      fontFamily: FONT_FAMILY_MEDIUM,
-                    }}>
-                      {company?.name || t("applicant.unknown_company")}
-                    </Text>
-                    <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                      <Text style={{
-                        backgroundColor: c['surface-muted'],
-                        borderWidth: 1,
-                        borderColor: c.border,
-                        borderRadius: 6,
-                        paddingHorizontal: 8,
-                        paddingVertical: 2,
-                        fontSize: 10,
-                        fontFamily: FONT_FAMILY_SEMIBOLD,
-                        color: c['muted-foreground'],
-                        fontFamily: "monospace",
-                      }}>
-                        {t("applicant.id")}: {app.candidate_profile_id?.substring(0, 8)}
-                      </Text>
-                      <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: c['stage-applied'] }} />
-                      <Text style={{ fontSize: 11, color: c['muted-foreground'], fontFamily: FONT_FAMILY }}>
-                        {t("applicant.applied")} {formatDate(app.applied_at)}
-                      </Text>
-                    </View>
-                  </View>
-
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                    {isActive && (
-                      <TouchableOpacity
-                        onPress={() => navigation.navigate("Interview", { applicationId: app.id })}
-                        style={{
-                          flexDirection: "row",
-                          alignItems: "center",
-                          gap: 5,
-                          backgroundColor: c.primary,
-                          borderRadius: 8,
-                          paddingHorizontal: 13,
-                          paddingVertical: 7,
-                        }}
-                      >
-                        <Ionicons name="play" size={10} color={c['destructive-foreground']} />
-                        <Text style={{ fontSize: 11, fontFamily: FONT_FAMILY_BOLD, color: c['destructive-foreground'] }}>
-                          Start {stageStatus?.label ?? "Interview"}
-                        </Text>
-                      </TouchableOpacity>
-                    )}
-                    {app.cv_file_url && (
-                      <TouchableOpacity
-                        onPress={() => Linking.openURL(app.cv_file_url)}
-                        style={{
-                          flexDirection: "row",
-                          alignItems: "center",
-                          gap: 5,
-                          borderWidth: 1,
-                          borderColor: c.border,
-                          borderRadius: 8,
-                          paddingHorizontal: 13,
-                          paddingVertical: 7,
-                        }}
-                      >
-                        <Ionicons name="document-outline" size={10} color={c.primary} />
-                        <Text style={{
-                          fontSize: 11,
-                          color: c.primary,
-                          fontFamily: FONT_FAMILY_BOLD,
-                        }}>{t("applicant.view_cv")}</Text>
-                      </TouchableOpacity>
-                    )}
+                    <Text style={{
+                      flex: 1,
+                      fontSize: 13,
+                      color: c.foreground,
+                      fontFamily: FONT_FAMILY_BOLD,
+                    }} numberOfLines={1} ellipsizeMode="tail">
+                      {job?.title || t("applicant.unknown_position")}
+                    </Text>
+                    <StagePill label={displayLabel} cfg={cfg} />
                   </View>
+                  <Text style={{
+                    fontSize: 12,
+                    color: c['muted-foreground'],
+                    fontFamily: FONT_FAMILY_MEDIUM,
+                  }} numberOfLines={1} ellipsizeMode="tail">
+                    {company?.name || t("applicant.unknown_company")}
+                  </Text>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                    <Text style={{
+                      backgroundColor: c['surface-muted'],
+                      borderWidth: 1,
+                      borderColor: c.border,
+                      borderRadius: 6,
+                      paddingHorizontal: 8,
+                      paddingVertical: 2,
+                      fontSize: 10,
+                      fontFamily: FONT_FAMILY_SEMIBOLD,
+                      color: c['muted-foreground'],
+                      fontFamily: "monospace",
+                    }}>
+                      {t("applicant.id")}: {app.candidate_profile_id?.substring(0, 8)}
+                    </Text>
+                    <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: c['stage-applied'] }} />
+                    <Text style={{ fontSize: 11, color: c['muted-foreground'], fontFamily: FONT_FAMILY }}>
+                      {t("applicant.applied")} {formatDate(app.applied_at)}
+                    </Text>
+                  </View>
+                  {(isActive || app.cv_file_url) && (
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginTop: 4 }}>
+                      {isActive && (
+                        <TouchableOpacity
+                          onPress={() => navigation.navigate("Interview", { applicationId: app.id })}
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: 5,
+                            backgroundColor: c.primary,
+                            borderRadius: 8,
+                            paddingHorizontal: 13,
+                            paddingVertical: 7,
+                          }}
+                        >
+                          <Ionicons name="play" size={10} color={c['destructive-foreground']} />
+                          <Text style={{ fontSize: 11, fontFamily: FONT_FAMILY_BOLD, color: c['destructive-foreground'] }}>
+                            {t("interview_page.start")} {stageStatus?.label ?? t("interview_page.interview")}
+                          </Text>
+                        </TouchableOpacity>
+                      )}
+                      {app.cv_file_url && (
+                        <TouchableOpacity
+                          onPress={() => Linking.openURL(app.cv_file_url)}
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: 5,
+                            borderWidth: 1,
+                            borderColor: c.border,
+                            borderRadius: 8,
+                            paddingHorizontal: 13,
+                            paddingVertical: 7,
+                          }}
+                        >
+                          <Ionicons name="document-outline" size={10} color={c.primary} />
+                          <Text style={{
+                            fontSize: 11,
+                            color: c.primary,
+                            fontFamily: FONT_FAMILY_BOLD,
+                          }}>{t("applicant.view_cv")}</Text>
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                  )}
                 </View>
               );
             })}

@@ -136,7 +136,7 @@ export default function ResetPasswordPage() {
               <Text style={s.label}>{t('reset_password.new_password')}</Text>
               <TextInput
                 style={s.input}
-                placeholder={t('reset_password.password_placeholder')}
+                placeholder="Min 8 characters"
                 placeholderTextColor={c['muted-foreground']}
                 value={newPassword}
                 onChangeText={setNewPassword}
@@ -149,7 +149,7 @@ export default function ResetPasswordPage() {
               <Text style={s.label}>{t('reset_password.confirm_password')}</Text>
               <TextInput
                 style={s.input}
-                placeholder={t('reset_password.confirm_placeholder')}
+                placeholder="Repeat your new password"
                 placeholderTextColor={c['muted-foreground']}
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}

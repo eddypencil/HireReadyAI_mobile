@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, TouchableOpacity,
-  TextInput, ActivityIndicator, Alert, KeyboardAvoidingView, Platform,
+      TextInput, ActivityIndicator, KeyboardAvoidingView, Platform, Modal, useWindowDimensions,
 } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -13,6 +13,7 @@ import { supabase } from '../../../shared/services/supabase';
 import QuestionCard from '../components/apply/QuestionCard';
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../shared/context/I18nContext';
+import { useThemedAlert } from '../../../shared/context/ThemedAlertContext';
 import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from '../../../src/fonts';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system/legacy';
@@ -21,8 +22,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export default function ApplyJobPage() {
   const { theme } = useTheme();
   const { t, language } = useTranslation();
+  const { alert } = useThemedAlert();
   const c = theme.colors;
   const insets = useSafeAreaInsets();
+  const { width: screenWidth } = useWindowDimensions();
   const styles = createStyles(c);
   const route = useRoute();
   const navigation = useNavigation();
@@ -35,6 +38,7 @@ export default function ApplyJobPage() {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const [errors, setErrors] = useState({});
   const [resumeFile, setResumeFile] = useState(null);
   const [form, setForm] = useState({
@@ -125,7 +129,7 @@ export default function ApplyJobPage() {
       clearFieldError('resume');
     }
   } catch (err) {
-    Alert.alert(t("applications.error"), t("applications.error_document_picker"));
+    alert(t("applications.error"), t("applications.error_document_picker"));
   }
 };
 
@@ -172,7 +176,7 @@ export default function ApplyJobPage() {
         .maybeSingle();
 
       if (existing) {
-        Alert.alert(t("applications.already_applied_title"), t("applications.already_applied_message"));
+        alert(t("applications.already_applied_title"), t("applications.already_applied_message"));
         return;
       }
 
@@ -219,14 +223,10 @@ export default function ApplyJobPage() {
       console.log("[triggerCvReview] cvText length:", cvText.trim().length, "preview:", cvText.trim().slice(0, 200));
       triggerCvReview(application.id, cvText.trim());
 
-      Alert.alert(
-        t("applications.application_submitted"),
-        t("applications.success_message"),
-        [{ text: t("applications.ok"), onPress: () => navigation.navigate('Main', { screen: 'JobsTab' }) }]
-      );
+      setShowSuccess(true);
     } catch (err) {
       console.error('Submit error:', err);
-      Alert.alert(t("applications.error"), t("applications.submit_error"));
+      alert(t("applications.error"), t("applications.submit_error"));
     } finally {
       setSubmitting(false);
     }
@@ -267,7 +267,7 @@ export default function ApplyJobPage() {
                 style={[styles.input, errors.fullName && styles.inputError]}
                 value={form.fullName}
                 onChangeText={v => { setForm(p => ({ ...p, fullName: v })); clearFieldError('fullName'); }}
-                placeholder={t("applications.full_name_placeholder")}
+                placeholder="Your full name"
                 placeholderTextColor={c['muted-foreground']}
               />
               {errors.fullName && <Text style={styles.errorText}>{errors.fullName}</Text>}
@@ -279,7 +279,7 @@ export default function ApplyJobPage() {
                 style={[styles.input, errors.email && styles.inputError]}
                 value={form.email}
                 onChangeText={v => { setForm(p => ({ ...p, email: v })); clearFieldError('email'); }}
-                placeholder={t("applications.email_placeholder")}
+                placeholder="your@email.com"
                 placeholderTextColor={c['muted-foreground']}
                 keyboardType="email-address"
                 autoCapitalize="none"
@@ -293,7 +293,7 @@ export default function ApplyJobPage() {
                 style={[styles.input, errors.phone && styles.inputError]}
                 value={form.phone}
                 onChangeText={v => { setForm(p => ({ ...p, phone: v })); clearFieldError('phone'); }}
-                placeholder={t("applications.phone_placeholder")}
+                placeholder="+20 100 000 0000"
                 placeholderTextColor={c['muted-foreground']}
                 keyboardType="phone-pad"
               />
@@ -396,6 +396,25 @@ export default function ApplyJobPage() {
         </View>
 
       </ScrollView>
+
+      <Modal visible={showSuccess} transparent animationType="fade" statusBarTranslucent>
+        <View style={styles.successOverlay}>
+          <View style={[styles.successModal, { width: Math.min(screenWidth * 0.85, 400) }]}>
+            <View style={styles.successIconWrap}>
+              <Ionicons name="checkmark-circle" size={56} color={c.success} />
+            </View>
+            <Text style={styles.successTitle}>{t("applications.application_submitted")}</Text>
+            <Text style={styles.successMessage}>{t("applications.success_message")}</Text>
+            <TouchableOpacity
+              style={styles.successButton}
+              onPress={() => navigation.navigate('Main', { screen: 'JobsTab' })}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.successButtonText}>{t("applications.ok")}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   );
 }
@@ -614,6 +633,59 @@ function createStyles(c) { return StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     color: c['destructive-foreground'],
+    fontFamily: FONT_FAMILY_SEMIBOLD,
+  },
+
+  successOverlay: {
+    flex: 1,
+    backgroundColor: `${c.foreground}66`,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  successModal: {
+    backgroundColor: c.card,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: c.border,
+    paddingVertical: 32,
+    paddingHorizontal: 28,
+    alignItems: 'center',
+    width: '85%',
+    maxWidth: 400,
+  },
+  successIconWrap: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: `${c.success}15`,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  successTitle: {
+    fontSize: 20,
+    fontFamily: FONT_FAMILY_BOLD,
+    color: c.foreground,
+    textAlign: 'center',
+  },
+  successMessage: {
+    fontSize: 14,
+    fontFamily: FONT_FAMILY,
+    color: c['muted-foreground'],
+    textAlign: 'center',
+    marginTop: 8,
+    lineHeight: 20,
+  },
+  successButton: {
+    backgroundColor: c.primary,
+    paddingHorizontal: 40,
+    paddingVertical: 12,
+    borderRadius: 12,
+    marginTop: 24,
+  },
+  successButtonText: {
+    color: c['destructive-foreground'],
+    fontSize: 15,
     fontFamily: FONT_FAMILY_SEMIBOLD,
   },
 }); }

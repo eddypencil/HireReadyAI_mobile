@@ -2,9 +2,10 @@
 import { useState } from 'react';
 import {
   View, Text, TextInput, StyleSheet, ScrollView,
-  TouchableOpacity, ActivityIndicator, Alert,
+  TouchableOpacity, ActivityIndicator,
   KeyboardAvoidingView, Platform,
 } from 'react-native';
+import { useThemedAlert } from '../../../../shared/context/ThemedAlertContext';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../../shared/context/I18nContext';
@@ -38,6 +39,7 @@ function Field({ label, value, onChangeText, placeholder, multiline, optional, k
 export default function EditExperienceScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { alert } = useThemedAlert();
   const c = theme.colors;
   const styles = createStyles(c);
   const navigation = useNavigation();
@@ -62,9 +64,9 @@ export default function EditExperienceScreen() {
   const set = k => v => setForm(p => ({ ...p, [k]: v }));
 
   const handleSave = async () => {
-    if (!form.title.trim()) { Alert.alert(t("profile.error_title"), t("profile.edit.error_job_title")); return; }
-    if (!form.companyName.trim()) { Alert.alert(t("profile.error_title"), t("profile.edit.error_company_name")); return; }
-    if (!form.from.trim()) { Alert.alert(t("profile.error_title"), t("profile.edit.error_start_date")); return; }
+    if (!form.title.trim()) { alert(t("profile.error_title"), t("profile.edit.error_job_title")); return; }
+    if (!form.companyName.trim()) { alert(t("profile.error_title"), t("profile.edit.error_company_name")); return; }
+    if (!form.from.trim()) { alert(t("profile.error_title"), t("profile.edit.error_start_date")); return; }
 
     setSaving(true);
     try {
@@ -86,7 +88,7 @@ export default function EditExperienceScreen() {
       onSave?.();
       navigation.goBack();
     } catch {
-      Alert.alert(t("profile.error_title"), t("profile.edit.error_save"));
+      alert(t("profile.error_title"), t("profile.edit.error_save"));
     } finally {
       setSaving(false);
     }
@@ -96,12 +98,12 @@ export default function EditExperienceScreen() {
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
 
-        <Field label={t("profile.edit.job_title")} value={form.title} onChangeText={set('title')} placeholder={t("profile.edit.job_title_placeholder")} styles={styles} c={c} t={t} />
-        <Field label={t("profile.edit.company_name")} value={form.companyName} onChangeText={set('companyName')} placeholder={t("profile.edit.company_name_placeholder")} styles={styles} c={c} t={t}/>
-        <Field label={t("profile.edit.industry")} value={form.industry} onChangeText={set('industry')} placeholder={t("profile.edit.industry_placeholder")} optional styles={styles} c={c} t={t}/>
-        <Field label={t("profile.edit.from")} value={form.from} onChangeText={set('from')} placeholder={t("profile.edit.from_placeholder")} styles={styles} c={c} t={t} />
-        <Field label={t("profile.edit.to")} value={form.to} onChangeText={set('to')} placeholder={t("profile.edit.to_placeholder")} optional styles={styles} c={c} t={t}/>
-        <Field label={t("profile.edit.description")} value={form.description} onChangeText={set('description')} placeholder={t("profile.edit.description_placeholder")} multiline optional styles={styles} c={c}  t={t} />
+        <Field label={t("profile.edit.job_title")} value={form.title} onChangeText={set('title')} placeholder="e.g. Frontend Developer" styles={styles} c={c} t={t} />
+        <Field label={t("profile.edit.company_name")} value={form.companyName} onChangeText={set('companyName')} placeholder="e.g. Vodafone Egypt" styles={styles} c={c} t={t}/>
+        <Field label={t("profile.edit.industry")} value={form.industry} onChangeText={set('industry')} placeholder="e.g. Telecommunications" optional styles={styles} c={c} t={t}/>
+        <Field label={t("profile.edit.from")} value={form.from} onChangeText={set('from')} placeholder="YYYY-MM  e.g. 2023-06" styles={styles} c={c} t={t} />
+        <Field label={t("profile.edit.to")} value={form.to} onChangeText={set('to')} placeholder="YYYY-MM  or 'Present'" optional styles={styles} c={c} t={t}/>
+        <Field label={t("profile.edit.description")} value={form.description} onChangeText={set('description')} placeholder="Describe your responsibilities and achievements..." multiline optional styles={styles} c={c}  t={t} />
 
         <TouchableOpacity
           style={[styles.saveBtn, saving && { opacity: 0.6 }]}

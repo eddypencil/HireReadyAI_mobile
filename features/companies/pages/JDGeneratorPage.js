@@ -115,13 +115,13 @@ export default function JDGeneratorPage() {
     value: v,
   }));
   const jobTypeOptions = [
-    { label: t("companies.full_time"), value: "full_time" },
-    { label: t("companies.part_time"), value: "part_time" },
+    { label: "Full Time", value: "full_time" },
+    { label: "Part Time", value: "part_time" },
   ];
   const workLocationOptions = [
-    { label: t("companies.on_site"), value: "on_site" },
-    { label: t("companies.remote"), value: "remote" },
-    { label: t("companies.hybrid"), value: "hybrid" },
+    { label: "On-site", value: "on_site" },
+    { label: "Remote", value: "remote" },
+    { label: "Hybrid", value: "hybrid" },
   ];
 
   function validate() {
@@ -177,7 +177,7 @@ export default function JDGeneratorPage() {
                 setTitle(t);
                 setErrors((p) => ({ ...p, title: "" }));
               }}
-              placeholder={t("companies.job_title_placeholder")}
+              placeholder="e.g. Senior Software Engineer"
               placeholderTextColor={c['muted-foreground']}
             />
             {errors.title && (
@@ -196,7 +196,7 @@ export default function JDGeneratorPage() {
                   setSeniority(v);
                   setErrors((p) => ({ ...p, seniority: "" }));
                 }}
-                placeholder={t("companies.select_seniority")}
+                placeholder="Select seniority"
                 error={errors.seniority}
               />
             </View>
@@ -210,7 +210,7 @@ export default function JDGeneratorPage() {
                   setJobType(v);
                   setErrors((p) => ({ ...p, jobType: "" }));
                 }}
-                placeholder={t("companies.select_type")}
+                placeholder="Select type"
                 error={errors.jobType}
               />
             </View>
@@ -226,7 +226,7 @@ export default function JDGeneratorPage() {
                 setWorkLocation(v);
                 setErrors((p) => ({ ...p, workLocation: "" }));
               }}
-              placeholder={t("companies.select_work_type")}
+              placeholder="Select work type"
               error={errors.workLocation}
             />
           </View>
@@ -240,7 +240,7 @@ export default function JDGeneratorPage() {
                 setExperienceYears(t);
                 setErrors((p) => ({ ...p, experienceYears: "" }));
               }}
-              placeholder={t("companies.experience_placeholder")}
+              placeholder="e.g. 3+ years"
               placeholderTextColor={c['muted-foreground']}
             />
             {errors.experienceYears && (
@@ -257,7 +257,7 @@ export default function JDGeneratorPage() {
               style={inputClass}
               value={requiredSkills}
               onChangeText={setRequiredSkills}
-              placeholder={t("companies.required_skills")}
+              placeholder="Required Skills & Tools"
               placeholderTextColor={c['muted-foreground']}
             />
           </View>
@@ -272,16 +272,16 @@ export default function JDGeneratorPage() {
                 style={[inputClass, styles.salaryInput]}
                 value={salaryMin}
                 onChangeText={setSalaryMin}
-                placeholder={t("companies.min")}
+                placeholder="Min"
                 placeholderTextColor={c['muted-foreground']}
                 keyboardType="numeric"
               />
-              <Text style={styles.salarySep}>{t("companies.to")}</Text>
+              <Text style={styles.salarySep}>to</Text>
               <TextInput
                 style={[inputClass, styles.salaryInput]}
                 value={salaryMax}
                 onChangeText={setSalaryMax}
-                placeholder={t("companies.max")}
+                placeholder="Max"
                 placeholderTextColor={c['muted-foreground']}
                 keyboardType="numeric"
               />
@@ -297,7 +297,7 @@ export default function JDGeneratorPage() {
               style={styles.textArea}
               value={keyNotes}
               onChangeText={setKeyNotes}
-              placeholder={t("companies.notes_placeholder")}
+              placeholder="Any additional notes about the role..."
               placeholderTextColor={c['muted-foreground']}
               multiline
               numberOfLines={5}

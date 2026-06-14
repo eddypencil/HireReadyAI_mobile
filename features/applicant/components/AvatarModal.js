@@ -1,17 +1,19 @@
 // features/applicant/components/AvatarModal.js
 import { useState } from "react";
-import { View, Text, TouchableOpacity, Modal, Alert } from "react-native";
+import { View, Text, TouchableOpacity, Modal } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from 'expo-file-system';
 import { decode } from 'base64-arraybuffer';
 import { supabase } from "../../../shared/services/supabase";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
+import { useThemedAlert } from '../../../shared/context/ThemedAlertContext';
 import { FONT_FAMILY_BOLD, FONT_FAMILY_SEMIBOLD } from '../../../src/fonts';
 
 export default function AvatarModal({ open, onClose, userId, currentUrl, onUpdated, onDeleted }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { alert } = useThemedAlert();
   const c = theme.colors;
   const [uploading, setUploading] = useState(false);
 
@@ -19,7 +21,7 @@ export default function AvatarModal({ open, onClose, userId, currentUrl, onUpdat
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
-        Alert.alert(t("applicant.permission_needed"), t("applicant.permission_message"));
+        alert(t("applicant.permission_needed"), t("applicant.permission_message"));
         return;
       }
 
@@ -72,7 +74,7 @@ export default function AvatarModal({ open, onClose, userId, currentUrl, onUpdat
       onUpdated?.(urlData.publicUrl);
       onClose();
     } catch (err) {
-      Alert.alert(t("applicant.error_title"), t("applicant.update_error"));
+      alert(t("applicant.error_title"), t("applicant.update_error"));
     } finally {
       setUploading(false);
     }
@@ -89,7 +91,7 @@ export default function AvatarModal({ open, onClose, userId, currentUrl, onUpdat
       onDeleted?.();
       onClose();
     } catch (err) {
-      Alert.alert(t("applicant.error_title"), t("applicant.remove_error"));
+      alert(t("applicant.error_title"), t("applicant.remove_error"));
     } finally {
       setUploading(false);
     }

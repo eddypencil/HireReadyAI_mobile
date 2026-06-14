@@ -8,13 +8,13 @@ import {
   Image,
   StyleSheet,
   ActivityIndicator,
-  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD, FONT_FAMILY_EXTRABOLD } from '../../../src/fonts';
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
+import { useThemedAlert } from '../../../shared/context/ThemedAlertContext';
 import { useCompany } from "./CompanyLayout";
 import { updateCompany } from "../services/companies.service";
 import { uploadLogo, uploadCover } from "../services/storage.service";
@@ -65,6 +65,7 @@ export default function CompanyProfile() {
   const { theme } = useTheme();
   const c = theme.colors;
   const { t, language } = useTranslation();
+  const { alert } = useThemedAlert();
   const styles = createStyles(c);
   const [memberName, setMemberName] = useState("");
   const [memberEmail, setMemberEmail] = useState("");
@@ -114,7 +115,7 @@ export default function CompanyProfile() {
         prev.map((m) => (m.id === membership.id ? updated : m)),
       );
     } catch (err) {
-      Alert.alert(t("companies.error_title"), err.message);
+      alert(t("companies.error_title"), err.message);
     }
   };
 
@@ -123,7 +124,7 @@ export default function CompanyProfile() {
       await removeMembership(membershipId);
       onMembersChange((prev) => prev.filter((m) => m.id !== membershipId));
     } catch (err) {
-      Alert.alert(t("companies.error_title"), err.message);
+      alert(t("companies.error_title"), err.message);
     }
   };
 
@@ -132,7 +133,7 @@ export default function CompanyProfile() {
       await removeMembership(membershipId);
       onMembersChange((prev) => prev.filter((m) => m.id !== membershipId));
     } catch (err) {
-      Alert.alert(t("companies.error_title"), err.message);
+      alert(t("companies.error_title"), err.message);
     }
   };
 
@@ -146,7 +147,7 @@ export default function CompanyProfile() {
         prev.map((m) => (m.id === membershipId ? updated : m)),
       );
     } catch (err) {
-      Alert.alert(t("companies.error_title"), err.message);
+      alert(t("companies.error_title"), err.message);
     }
   };
 
@@ -194,7 +195,7 @@ export default function CompanyProfile() {
       onCompanyUpdate(updated);
       setEditing(false);
     } catch (err) {
-      Alert.alert(t("companies.error_title"), err.message);
+      alert(t("companies.error_title"), err.message);
     }
   };
 
@@ -222,7 +223,7 @@ export default function CompanyProfile() {
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
-        Alert.alert(t("companies.permission_needed"), t("companies.logo_permission_message"));
+        alert(t("companies.permission_needed"), t("companies.logo_permission_message"));
         return;
       }
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -237,7 +238,7 @@ export default function CompanyProfile() {
       const updated = await updateCompany(company.id, { logo_url: url });
       onCompanyUpdate(updated);
     } catch (err) {
-      Alert.alert(t("companies.error_title"), err.message);
+      alert(t("companies.error_title"), err.message);
     } finally {
       setUploading(false);
     }
@@ -247,7 +248,7 @@ export default function CompanyProfile() {
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
-        Alert.alert(t("companies.permission_needed"), t("companies.cover_permission_message"));
+        alert(t("companies.permission_needed"), t("companies.cover_permission_message"));
         return;
       }
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -262,7 +263,7 @@ export default function CompanyProfile() {
       const updated = await updateCompany(company.id, { cover_url: url });
       onCompanyUpdate(updated);
     } catch (err) {
-      Alert.alert(t("companies.error_title"), err.message);
+      alert(t("companies.error_title"), err.message);
     } finally {
       setUploading(false);
     }

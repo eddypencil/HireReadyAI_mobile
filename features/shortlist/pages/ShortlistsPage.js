@@ -157,7 +157,7 @@ export default function ShortlistsPage() {
             />
             <TextInput
               style={styles.searchInput}
-              placeholder={t("shortlist.search_placeholder")}
+              placeholder="Search candidates..."
               placeholderTextColor={c["muted-foreground"]}
               value={search}
               onChangeText={setSearch}

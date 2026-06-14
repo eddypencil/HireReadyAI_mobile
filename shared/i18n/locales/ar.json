@@ -283,6 +283,21 @@
     "finished": {
       "title": "تمت المقابلة!",
       "back_to_application": "العودة إلى الطلبات"
+    },
+    "desktop_prompt": {
+      "title": "يوصى باستخدام الكمبيوتر",
+      "message": "للحصول على أفضل تجربة، نوصي بإجراء هذه المقابلة على كمبيوتر مكتبي. يمكنك الاستمرار على الهاتف إذا كنت تفضل ذلك.",
+      "continue": "متابعة",
+      "back": "رجوع"
+    },
+    "start": "ابدأ",
+    "interview": "مقابلة",
+    "leave_confirm": {
+      "title": "مغادرة المقابلة؟",
+      "message": "سيتم تقديم إجاباتك حتى الآن وستنتهي المقابلة. لن تتمكن من الاستئناف.",
+      "confirm": "مغادرة وإرسال",
+      "cancel": "البقاء",
+      "submitting": "جاري تقديم مقابلتك..."
     }
   },
   "errors": {
@@ -421,7 +436,7 @@
     "publish_jd": "نشر الوظيفة",
     "publish_success": "تم نشر الوظيفة بنجاح!",
     "generate_jd": "إنشاء وصف وظيفي بالذكاء الاصطناعي",
-    "generate_jd_title": "مولد الوصف الوظيفي بالذكاء الاصطناعي",
+    "generate_jd_title": "منشئ الوصف الوظيفي بالذكاء الاصطناعي",
     "generating": "جاري الإنشاء...",
     "generating_subtext": "الذكاء الاصطناعي يصوغ الوصف الوظيفي المثالي",
     "generation_failed": "فشل إنشاء الوصف الوظيفي. حاول مرة أخرى.",
@@ -440,7 +455,7 @@
     "recently": "مؤخراً",
     "hero_subtitle": "اعثر على أفضل المواهب لفريقك",
     "manage": "إدارة",
-    "jd_generator": "مولد الوصف الوظيفي",
+    "jd_generator": "منشئ الوصف الوظيفي",
     "employees_count": "الموظفين",
     "employees_placeholder": "مثال: 50-100",
     "active": "نشط",
@@ -495,7 +510,11 @@
     "short_answer": "إجابة قصيرة",
     "long_answer": "إجابة طويلة",
     "yes_no": "نعم / لا",
-    "write_question_placeholder": "اكتب سؤالك هنا..."
+    "write_question_placeholder": "اكتب سؤالك هنا...",
+    "add_screening_questions": "إضافة أسئلة الفحص",
+    "add_screening_subtitle": "أضف أسئلة سيجيب عليها المتقدمون عند التقديم. يمكنك القيام بذلك لاحقاً.",
+    "add_questions": "إضافة أسئلة",
+    "skip_publish": "تخطي والنشر"
   },
   "shortlist": {
     "title": "القوائم المختصرة",
@@ -602,8 +621,8 @@
     "post_job": "نشر وظيفة جديدة",
     "view_pipeline": "عرض خط الأنابيب",
     "review_shortlists": "مراجعة القوائم المختصرة",
-    "pipeline_summary": "ملخص خط الأنابيب",
-    "candidates_in_pipeline": "المرشحون في خط الأنابيب",
+    "pipeline_summary": "ملخص خط المسار التوظيفي",
+    "candidates_in_pipeline": "المرشحون في مسار التوظيف",
     "applied": "متقدم",
     "screened": "تم الفحص",
     "interviewed": "تمت المقابلة",
@@ -673,7 +692,7 @@
     "shortlist_advancement_title": "تقديم القائمة المختصرة",
     "evaluation_criteria": "معايير التقييم",
     "auto_generate": "توليد تلقائي",
-    "generating": "جاري التوليد...",
+    "generating": "جاري الانشاء...",
     "criteria_placeholder": "صف معايير تقديم المرشحين إلى القائمة المختصرة...",
     "min_score": "الحد الأدنى للدرجة",
     "ai_suggestion": "اقتراح الذكاء الاصطناعي",

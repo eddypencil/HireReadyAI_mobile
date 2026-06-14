@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Modal,
-  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -21,6 +20,7 @@ import {
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
 import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD, FONT_FAMILY_EXTRABOLD } from '../../../src/fonts';
+import { useThemedAlert } from '../../../shared/context/ThemedAlertContext';
 import AutoAdvanceModal from "../components/AutoAdvanceModal";
 import { supabase } from "../../../shared/services/supabase";
 
@@ -291,6 +291,7 @@ export default function PipelineCandidatesPage() {
   const navigation = useNavigation();
   const { company, jobs } = useCompany();
   const { t, language } = useTranslation();
+  const { alert } = useThemedAlert();
   const isRtl = language === 'ar';
 
   const [candidates, setCandidates] = useState([]);
@@ -401,7 +402,7 @@ export default function PipelineCandidatesPage() {
               : c,
           ),
         );
-        Alert.alert(t("recruiter.cannot_move"), error.message);
+        alert(t("recruiter.cannot_move"), error.message);
       } else {
         fetchData();
       }
@@ -414,14 +415,14 @@ export default function PipelineCandidatesPage() {
             : c,
         ),
       );
-      Alert.alert(t("recruiter.error"), err.message);
+      alert(t("recruiter.error"), err.message);
     } finally {
       setMoving(false);
     }
   };
   const handleAutoAdvanceComplete = (advancedCount) => {
     if (advancedCount > 0) {
-      Alert.alert(
+      alert(
         t("recruiter.auto_advance"),
         t("recruiter.auto_advanced", { count: advancedCount }),
       );
@@ -485,14 +486,14 @@ export default function PipelineCandidatesPage() {
     });
 
     if (eligible.length === 0) {
-      Alert.alert(
+      alert(
         t("recruiter.advance_all"),
         t("recruiter.no_eligible_candidates"),
       );
       return;
     }
 
-    Alert.alert(
+    alert(
       t("recruiter.advance_all"),
       t("recruiter.advance_all_confirm", {
         count: eligible.length,
@@ -511,11 +512,11 @@ export default function PipelineCandidatesPage() {
               );
               const errors = results.filter((r) => r?.error);
               if (errors.length > 0) {
-                Alert.alert(t("recruiter.error"), errors[0].error.message);
+                alert(t("recruiter.error"), errors[0].error.message);
               }
               fetchData();
             } catch (err) {
-              Alert.alert(t("recruiter.error"), err.message);
+              alert(t("recruiter.error"), err.message);
             } finally {
               setMoving(false);
             }

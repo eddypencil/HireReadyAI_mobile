@@ -71,6 +71,7 @@ export default function TextQuestion({ onAnswer }) {
           placeholderTextColor={c['muted-foreground']}
           multiline
           textAlignVertical="top"
+          contextMenuHidden={true} 
           style={s.input}
         />
       </View>

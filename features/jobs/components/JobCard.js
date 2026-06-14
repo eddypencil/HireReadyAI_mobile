@@ -134,13 +134,6 @@ export default function JobCard({ job }) {
         </View>
 
         <View style={s.rightSection}>
-          <TouchableOpacity
-            onPress={() => {}}
-            style={s.bookmarkButton}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          >
-            <Ionicons name="bookmark-outline" size={16} color={c['muted-foreground']} />
-          </TouchableOpacity>
           <Text style={s.dateText}>{formatRelativeTime(job.created_at)}</Text>
         </View>
       </View>

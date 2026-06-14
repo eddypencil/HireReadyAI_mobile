@@ -27,14 +27,14 @@ export default function ShortlistInsightsBar({ insightsSummary, selectedJobTitle
             {t("shortlist.up_votes")} <Text style={styles.bold}>{up}</Text>
           </Text>
         </View>
-        <Text style={styles.separator}>—</Text>
+        <Text style={styles.separator}>-</Text>
         <View style={styles.statItem}>
           <Ionicons name="remove" size={14} color={c['muted-foreground']} />
           <Text style={[styles.statText, { color: c['muted-foreground'] }]}>
             {t("shortlist.neutral_votes")} <Text style={styles.bold}>{neutral}</Text>
           </Text>
         </View>
-        <Text style={styles.separator}>—</Text>
+        <Text style={styles.separator}>-</Text>
         <View style={styles.statItem}>
           <Ionicons name="thumbs-down" size={14} color={c.destructive} />
           <Text style={[styles.statText, { color: c.destructive }]}>

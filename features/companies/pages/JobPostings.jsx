@@ -8,7 +8,6 @@ import {
   FlatList,
   Modal,
   ActivityIndicator,
-  Alert,
   StyleSheet,
   Pressable,
   KeyboardAvoidingView,
@@ -20,6 +19,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD, FONT_FAMILY_EXTRABOLD } from '../../../src/fonts';
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
+import { useThemedAlert } from '../../../shared/context/ThemedAlertContext';
 import { Card } from "../../../shared/ui/Card";
 import { updateJobPosting } from "../services/companies.service";
 import { getPipeline } from "../../pipeline/services/pipeline.service";
@@ -137,6 +137,7 @@ export default function JobPostings() {
   const insets = useSafeAreaInsets();
   const { theme: appTheme, isDark } = useTheme();
   const { t, language } = useTranslation();
+  const { alert } = useThemedAlert();
   const isRtl = language === "ar";
   const c = appTheme.colors;
   const theme = {
@@ -292,7 +293,7 @@ export default function JobPostings() {
       setIsEditing(false);
     } catch (err) {
       console.error("Failed to update job:", err);
-      Alert.alert(t("companies.error_title"), t("companies.update_failed"));
+      alert(t("companies.error_title"), t("companies.update_failed"));
     } finally {
       setSaving(false);
     }
@@ -449,7 +450,6 @@ export default function JobPostings() {
                         borderColor: theme.border,
                         color: theme.foreground,
                       },
-                      isRtl && styles.textRight,
                     ]}
                     value={editForm.title}
                     onChangeText={(t) => setEditForm({ ...editForm, title: t })}
@@ -655,13 +655,12 @@ export default function JobPostings() {
                           borderColor: theme.border,
                           color: theme.foreground,
                         },
-                        isRtl && styles.textRight,
                       ]}
                       value={String(editForm.salary_min || "")}
                       onChangeText={(t) =>
                         setEditForm({ ...editForm, salary_min: t })
                       }
-                      placeholder={t("companies.min")}
+                      placeholder="Min"
                       placeholderTextColor={theme.muted}
                       keyboardType="numeric"
                       accessibilityLabel={t("companies.min_salary")}
@@ -677,13 +676,12 @@ export default function JobPostings() {
                           borderColor: theme.border,
                           color: theme.foreground,
                         },
-                        isRtl && styles.textRight,
                       ]}
                       value={String(editForm.salary_max || "")}
                       onChangeText={(t) =>
                         setEditForm({ ...editForm, salary_max: t })
                       }
-                      placeholder={t("companies.max")}
+                      placeholder="Max"
                       placeholderTextColor={theme.muted}
                       keyboardType="numeric"
                       accessibilityLabel={t("companies.max_salary")}
@@ -756,7 +754,6 @@ export default function JobPostings() {
                       borderColor: theme.border,
                       color: theme.mutedForeground,
                     },
-                    isRtl && styles.textRight,
                   ]}
                   value={editForm.description || ""}
                   onChangeText={(t) =>
@@ -818,7 +815,6 @@ export default function JobPostings() {
                             borderColor: theme.border,
                             color: theme.foreground,
                           },
-                          isRtl && styles.textRight,
                         ]}
                         value={resp}
                         onChangeText={(t) => {
@@ -842,7 +838,7 @@ export default function JobPostings() {
                       },
                       isRtl && styles.textRight,
                     ]}
-                    placeholder={t("companies.type_to_add")}
+                    placeholder="Type to add..."
                     placeholderTextColor={theme.muted}
                     onSubmitEditing={(e) =>
                       handleArrayInputSubmit(e, "responsibilities")
@@ -913,7 +909,6 @@ export default function JobPostings() {
                             borderColor: theme.border,
                             color: theme.foreground,
                           },
-                          isRtl && styles.textRight,
                         ]}
                         value={req}
                         onChangeText={(t) => {
@@ -934,7 +929,7 @@ export default function JobPostings() {
                       },
                       isRtl && styles.textRight,
                     ]}
-                    placeholder={t("companies.type_to_add")}
+                    placeholder="Type to add..."
                     placeholderTextColor={theme.muted}
                     onSubmitEditing={(e) =>
                       handleArrayInputSubmit(e, "requirements")
@@ -1026,9 +1021,8 @@ export default function JobPostings() {
                           borderColor: theme.border,
                           color: theme.mutedForeground,
                         },
-                        isRtl && styles.textRight,
-                      ]}
-                      placeholder={t("companies.add_skill_placeholder")}
+                    ]}
+                    placeholder="Type a skill and press Enter"
                       placeholderTextColor={theme.muted}
                       onSubmitEditing={(e) =>
                         handleArrayInputSubmit(e, "skills")
@@ -1258,8 +1252,8 @@ export default function JobPostings() {
           >
             <Ionicons name="search-outline" size={16} color={theme.muted} />
             <TextInput
-              style={[styles.searchInput, { color: theme.foreground }, isRtl && styles.textRight]}
-              placeholder={t("companies.search_jobs_placeholder")}
+              style={[styles.searchInput, { color: theme.foreground }]}
+              placeholder="Search jobs..."
               placeholderTextColor={theme.muted}
               value={searchQuery}
               onChangeText={setSearchQuery}

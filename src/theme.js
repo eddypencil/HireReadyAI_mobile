@@ -212,7 +212,7 @@ export function createTheme(isDark = false) {
   const colors = new Proxy(raw, {
     get(target, key) {
       if (key in target) return target[key];
-      console.warn(`[theme] Missing color token: "${String(key)}" — using fallback`);
+      console.warn(`[theme] Missing color token: "${String(key)}" - using fallback`);
       return FALLBACK_COLOR;
     },
   });

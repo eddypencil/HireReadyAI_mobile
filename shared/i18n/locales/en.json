@@ -283,6 +283,21 @@
     "finished": {
       "title": "Interview Complete!",
       "back_to_application": "Back to Applications"
+    },
+    "desktop_prompt": {
+      "title": "Desktop Recommended",
+      "message": "For the best experience, we recommend taking this interview on a desktop computer. You may continue on mobile if preferred.",
+      "continue": "Continue",
+      "back": "Back"
+    },
+    "start": "Start",
+    "interview": "Interview",
+    "leave_confirm": {
+      "title": "Leave interview?",
+      "message": "Your answers so far will be submitted and the interview will end. You won't be able to resume.",
+      "confirm": "Leave & Submit",
+      "cancel": "Stay",
+      "submitting": "Submitting your interview…"
     }
   },
   "errors": {
@@ -495,7 +510,11 @@
     "short_answer": "Short answer",
     "long_answer": "Long answer",
     "yes_no": "Yes / No",
-    "write_question_placeholder": "Write your question here..."
+    "write_question_placeholder": "Write your question here...",
+    "add_screening_questions": "Add Screening Questions",
+    "add_screening_subtitle": "Add questions applicants will answer when applying. You can also do this later.",
+    "add_questions": "Add Questions",
+    "skip_publish": "Skip & Publish"
   },
   "shortlist": {
     "title": "Shortlists",

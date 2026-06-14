@@ -6,13 +6,13 @@ import {
     TouchableOpacity,
     StyleSheet,
     ScrollView,
-    Alert,
     Linking,
     KeyboardAvoidingView,
     Platform,
     ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useThemedAlert } from '../../../shared/context/ThemedAlertContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useUser } from '../../auth/context/user.context';
@@ -28,6 +28,7 @@ export default function ContactUsScreen() {
     const { theme } = useTheme();
     const { profile } = useUser();
     const { t } = useTranslation();
+    const { alert } = useThemedAlert();
     const c = theme.colors;
 
     const [formData, setFormData] = useState({
@@ -55,7 +56,7 @@ export default function ContactUsScreen() {
 
     const handleSubmit = async () => {
         if (!formData.name || !formData.email || !formData.message) {
-            Alert.alert(
+            alert(
                 t('contact_us.title'),
                 t('contact_us.missing_fields')
             );
@@ -137,7 +138,7 @@ export default function ContactUsScreen() {
                         value={formData.name}
                         onChangeText={(v) => handleChange('name', v)}
                         style={[styles.input, { color: c.foreground, borderColor: c.border }]}
-                        placeholder={t('contact_us.name_placeholder')}
+                        placeholder="Your name"
                         placeholderTextColor={c['muted-foreground']}
                     />
 
@@ -148,7 +149,7 @@ export default function ContactUsScreen() {
                         value={formData.email}
                         onChangeText={(v) => handleChange('email', v)}
                         style={[styles.input, { color: c.foreground, borderColor: c.border }]}
-                        placeholder={t('contact_us.email_placeholder')}
+                        placeholder="you@company.com"
                         keyboardType="email-address"
                         placeholderTextColor={c['muted-foreground']}
                     />
@@ -160,7 +161,7 @@ export default function ContactUsScreen() {
                         value={formData.company}
                         onChangeText={(v) => handleChange('company', v)}
                         style={[styles.input, { color: c.foreground, borderColor: c.border }]}
-                        placeholder={t('contact_us.company_placeholder')}
+                        placeholder="Company name"
                         placeholderTextColor={c['muted-foreground']}
                     />
 
@@ -176,7 +177,7 @@ export default function ContactUsScreen() {
                             styles.textarea,
                             { color: c.foreground, borderColor: c.border },
                         ]}
-                        placeholder={t('contact_us.message_placeholder')}
+                        placeholder="Tell us about your request..."
                         placeholderTextColor={c['muted-foreground']}
                     />
 

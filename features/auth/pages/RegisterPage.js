@@ -142,7 +142,7 @@ export default function RegisterPage() {
             <FormField
               label={t('sign_up.full_name')}
               type="text"
-              placeholder={t('sign_up.name_placeholder')}
+              placeholder="Your full name"
               value={fullName}
               onChangeText={setFullName}
               required
@@ -151,7 +151,7 @@ export default function RegisterPage() {
             <FormField
               label={t('sign_up.email')}
               type="email"
-              placeholder={t('sign_up.email_placeholder')}
+              placeholder="you@gmail.com"
               value={email}
               onChangeText={setEmail}
               required
@@ -160,7 +160,7 @@ export default function RegisterPage() {
             <FormField
               label={t('sign_up.password')}
               type="password"
-              placeholder={t('sign_up.password_placeholder')}
+              placeholder="Min. 8 characters"
               value={password}
               onChangeText={setPassword}
               required
@@ -169,7 +169,7 @@ export default function RegisterPage() {
             <FormField
               label={t('sign_up.confirm_password')}
               type="password"
-              placeholder={t('sign_up.confirm_placeholder')}
+              placeholder="Repeat your password"
               value={confirmPassword}
               onChangeText={setConfirmPassword}
               required

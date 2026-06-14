@@ -44,7 +44,7 @@ export default function QuestionCard({ question, value, onChange, error }) {
           style={[styles.input, error && styles.inputError]}
           value={value || ''}
           onChangeText={onChange}
-          placeholder={t("applications.answer_here")}
+          placeholder="Answer here..."
           placeholderTextColor={c['muted-foreground']}
         />
       )}
@@ -54,7 +54,7 @@ export default function QuestionCard({ question, value, onChange, error }) {
           style={[styles.textarea, error && styles.inputError]}
           value={value || ''}
           onChangeText={onChange}
-          placeholder={t("applications.answer_here")}
+          placeholder="Answer here..."
           placeholderTextColor={c['muted-foreground']}
           multiline
           numberOfLines={4}

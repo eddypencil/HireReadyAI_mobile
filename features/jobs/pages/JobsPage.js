@@ -248,7 +248,7 @@ export default function JobsPage() {
                 style={s.salaryInput}
                 value={salaryMin}
                 onChangeText={setSalaryMin}
-                placeholder={t('jobs_page.min')}
+                placeholder="Min"
                 placeholderTextColor={c['muted-foreground']}
                 keyboardType="numeric"
               />
@@ -257,7 +257,7 @@ export default function JobsPage() {
                 style={s.salaryInput}
                 value={salaryMax}
                 onChangeText={setSalaryMax}
-                placeholder={t('jobs_page.max')}
+                placeholder="Max"
                 placeholderTextColor={c['muted-foreground']}
                 keyboardType="numeric"
               />

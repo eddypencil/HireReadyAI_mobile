@@ -2,9 +2,10 @@
 import { useState } from 'react';
 import {
   View, Text, TextInput, StyleSheet, ScrollView,
-  TouchableOpacity, ActivityIndicator, Alert,
+  TouchableOpacity, ActivityIndicator,
   KeyboardAvoidingView, Platform,
 } from 'react-native';
+import { useThemedAlert } from '../../../../shared/context/ThemedAlertContext';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../../shared/context/I18nContext';
@@ -40,6 +41,7 @@ function Field({ label, value, onChangeText, placeholder, multiline, optional, s
 export default function EditEducationScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { alert } = useThemedAlert();
   const c = theme.colors;
   const styles = createStyles(c);
   const navigation = useNavigation();
@@ -61,8 +63,8 @@ export default function EditEducationScreen() {
   const set = k => v => setForm(p => ({ ...p, [k]: v }));
 
   const handleSave = async () => {
-    if (!form.university.trim()) { Alert.alert(t("profile.error_title"), t("profile.edit.error_university")); return; }
-    if (!form.startYear.trim()) { Alert.alert(t("profile.error_title"), t("profile.edit.error_start_year")); return; }
+    if (!form.university.trim()) { alert(t("profile.error_title"), t("profile.edit.error_university")); return; }
+    if (!form.startYear.trim()) { alert(t("profile.error_title"), t("profile.edit.error_start_year")); return; }
 
     setSaving(true);
     try {
@@ -85,7 +87,7 @@ export default function EditEducationScreen() {
       onSave?.();
       navigation.goBack();
     } catch {
-      Alert.alert(t("profile.error_title"), t("profile.edit.error_save"));
+      alert(t("profile.error_title"), t("profile.edit.error_save"));
     } finally {
       setSaving(false);
     }
@@ -114,12 +116,12 @@ export default function EditEducationScreen() {
           </View>
         </View>
 
-        <Field label={t("profile.edit.university")} value={form.university} onChangeText={set('university')} placeholder={t("profile.edit.university_placeholder")} styles={styles} c={c} />
-        <Field label={t("profile.edit.faculty")} value={form.faculty} onChangeText={set('faculty')} placeholder={t("profile.edit.faculty_placeholder")} optional styles={styles} c={c} />
-        <Field label={t("profile.edit.major")} value={form.major} onChangeText={set('major')} placeholder={t("profile.edit.major_placeholder")} optional styles={styles} c={c} />
-        <Field label={t("profile.edit.start_year")} value={form.startYear} onChangeText={set('startYear')} placeholder={t("profile.edit.start_year_placeholder")} styles={styles} c={c} />
-        <Field label={t("profile.edit.end_year")} value={form.endYear} onChangeText={set('endYear')} placeholder={t("profile.edit.end_year_placeholder")} optional styles={styles} c={c} />
-        <Field label={t("profile.edit.grade")} value={form.grade} onChangeText={set('grade')} placeholder={t("profile.edit.grade_placeholder")} optional styles={styles} c={c} />
+        <Field label={t("profile.edit.university")} value={form.university} onChangeText={set('university')} placeholder="e.g. Cairo University" styles={styles} c={c} />
+        <Field label={t("profile.edit.faculty")} value={form.faculty} onChangeText={set('faculty')} placeholder="e.g. Faculty of Engineering" optional styles={styles} c={c} />
+        <Field label={t("profile.edit.major")} value={form.major} onChangeText={set('major')} placeholder="e.g. Systems & Biomedical Engineering" optional styles={styles} c={c} />
+        <Field label={t("profile.edit.start_year")} value={form.startYear} onChangeText={set('startYear')} placeholder="e.g. 2020" styles={styles} c={c} />
+        <Field label={t("profile.edit.end_year")} value={form.endYear} onChangeText={set('endYear')} placeholder="e.g. 2024  (leave blank if ongoing)" optional styles={styles} c={c} />
+        <Field label={t("profile.edit.grade")} value={form.grade} onChangeText={set('grade')} placeholder="e.g. 3.8 / 4.0 or Excellent" optional styles={styles} c={c} />
 
         <TouchableOpacity
           style={[styles.saveBtn, saving && { opacity: 0.6 }]}

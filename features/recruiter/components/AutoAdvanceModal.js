@@ -8,7 +8,6 @@ import {
   Modal,
   ScrollView,
   ActivityIndicator,
-  Alert,
   StyleSheet,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,6 +15,7 @@ import Slider from '@react-native-community/slider';
 import { FONT_FAMILY, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD, FONT_FAMILY_EXTRABOLD } from '../../../src/fonts';
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../shared/context/I18nContext';
+import { useThemedAlert } from '../../../shared/context/ThemedAlertContext';
 import { supabase } from '../../../shared/services/supabase';
 
 function createStyles(c) {
@@ -221,6 +221,7 @@ export default function AutoAdvanceModal({
   const { theme } = useTheme();
   const c = theme.colors;
   const { t } = useTranslation();
+  const { alert } = useThemedAlert();
   const styles = createStyles(c);
 
   const [criteria, setCriteria] = useState('');
@@ -245,7 +246,7 @@ export default function AutoAdvanceModal({
       setScoreReasoning(data.scoreReasoning || '');
       setMinScore(data.suggestedMinScore ?? 70);
     } catch (err) {
-      Alert.alert(t('recruiter.error'), err.message);
+      alert(t('recruiter.error'), err.message);
     } finally {
       setGenerating(false);
     }
@@ -253,12 +254,12 @@ export default function AutoAdvanceModal({
 
   const handleRunEvaluation = useCallback(async () => {
     if (!criteria.trim()) {
-      Alert.alert(t('recruiter.error'), t('recruiter.criteria_required'));
+      alert(t('recruiter.error'), t('recruiter.criteria_required'));
       return;
     }
     const appIds = (precedingStageCandidates || []).map(c => c.id);
     if (appIds.length === 0) {
-      Alert.alert(t('recruiter.error'), t('recruiter.no_candidates_to_evaluate'));
+      alert(t('recruiter.error'), t('recruiter.no_candidates_to_evaluate'));
       return;
     }
     setEvaluating(true);
@@ -282,7 +283,7 @@ export default function AutoAdvanceModal({
 
       setResults({ advanced, rejected, errors, total: resultsData.length });
     } catch (err) {
-      Alert.alert(t('recruiter.error'), err.message);
+      alert(t('recruiter.error'), err.message);
     } finally {
       setEvaluating(false);
     }
@@ -403,7 +404,7 @@ export default function AutoAdvanceModal({
                   style={[styles.textarea, generating && styles.textareaDisabled]}
                   value={criteria}
                   onChangeText={setCriteria}
-                  placeholder={t('recruiter.criteria_placeholder')}
+                  placeholder="Describe the criteria for shortlisting candidates..."
                   placeholderTextColor={c['muted-foreground']}
                   multiline
                   editable={!generating}
@@ -448,7 +449,7 @@ export default function AutoAdvanceModal({
               <View style={styles.section}>
                 <Text style={{ fontSize: 12, fontFamily: FONT_FAMILY, color: c['muted-foreground'] }}>
                   {t('recruiter.candidates_to_evaluate', { count: (precedingStageCandidates || []).length })}
-                  {!hasCandidates ? ` — ${t('recruiter.no_candidates_to_evaluate')}` : ''}
+                  {!hasCandidates ? ` - ${t('recruiter.no_candidates_to_evaluate')}` : ''}
                 </Text>
               </View>
             </ScrollView>
