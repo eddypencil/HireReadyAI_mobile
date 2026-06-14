@@ -34,6 +34,7 @@ import LoginPage from "../../features/auth/pages/LoginPage";
 import RegisterPage from "../../features/auth/pages/RegisterPage";
 import ForgotPasswordPage from "../../features/auth/pages/ForgotPasswordPage";
 import ResetPasswordPage from "../../features/auth/pages/ResetPasswordPage";
+import GoogleRoleSelectPage from "../../features/auth/pages/GoogleRoleSelectPage";
 import OnboardingScreen from "../../features/auth/pages/OnboardingScreen";
 import EditBioScreen from "../../features/applicant/screens/edit/EditBioScreen";
 import EditContactScreen from "../../features/applicant/screens/edit/EditContactScreen";
@@ -355,7 +356,7 @@ function MainScreens() {
 // ============================================================================
 
 function RootNavigator({ onboardingSeen }) {
-  const { session, loading } = useUser();
+  const { session, loading, needsRoleSelection } = useUser();
   const { theme } = useTheme();
   const { t } = useTranslation();
   const c = theme.colors;
@@ -411,12 +412,21 @@ function RootNavigator({ onboardingSeen }) {
     );
   }
 
+  if (needsRoleSelection) {
+    return (
+      <RootStack.Navigator screenOptions={{ headerShown: false }}>
+        <RootStack.Screen name="RoleSelect" component={GoogleRoleSelectPage} initialParams={{ user: session?.user }} />
+      </RootStack.Navigator>
+    );
+  }
+
   const navHeaderStyle = { backgroundColor: c.sidebar };
 
   return (
     <View style={{ flex: 1 }}>
       <RootStack.Navigator screenOptions={{ headerShown: false }}>
         <RootStack.Screen name="Main" component={MainScreens} />
+        <RootStack.Screen name="GoogleRoleSelect" component={GoogleRoleSelectPage} />
         <RootStack.Screen
           name="JobDetails"
           component={JobDetailsPage}

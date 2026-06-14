@@ -1,4 +1,29 @@
 import { supabase } from "../../../shared/services/supabase";
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+
+export const configureGoogleSignIn = () => {
+  const clientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
+  console.log('[GoogleSignIn] EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID:', clientId);
+  GoogleSignin.configure({
+    webClientId: clientId,
+  });
+};
+
+export const signInWithGoogle = async () => {
+  await GoogleSignin.hasPlayServices();
+  console.log('[GoogleSignIn] hasPlayServices OK');
+  const googleUser = await GoogleSignin.signIn();
+  console.log('[GoogleSignIn] signIn response:', JSON.stringify(googleUser, null, 2));
+  const idToken = googleUser?.idToken || googleUser?.data?.idToken || googleUser?.user?.idToken;
+  if (!idToken) throw new Error('No idToken returned from Google');
+  console.log('[GoogleSignIn] idToken found, signing in to Supabase...');
+  const { data, error } = await supabase.auth.signInWithIdToken({
+    provider: 'google',
+    token: idToken,
+  });
+  if (error) throw error;
+  return data.user;
+};
 
 export const signIn = async (email, password) => {
   const { data, error } = await supabase.auth.signInWithPassword({
@@ -36,6 +61,7 @@ export const makeProfile = async (userId, userProfile) => {
 };
 
 export const signOut = async () => {
+  try { await GoogleSignin.signOut(); } catch {}
   const { error } = await supabase.auth.signOut();
   if (error) throw error;
 };

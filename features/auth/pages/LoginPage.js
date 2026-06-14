@@ -21,7 +21,7 @@ export default function LoginPage() {
   const { t } = useTranslation();
   const c = theme.colors;
   const navigation = useNavigation();
-  const { signInUser } = useUser();
+  const { signInUser, signInWithGoogleUser } = useUser();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -42,6 +42,18 @@ export default function LoginPage() {
       await signInUser(email.trim(), password);
     } catch (err) {
       setError(err.message || t('sign_in.invalid_credentials'));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleGoogleSignIn() {
+    setError(null);
+    setLoading(true);
+    try {
+      await signInWithGoogleUser(navigation);
+    } catch (err) {
+      setError(err.message || 'Google sign-in failed');
     } finally {
       setLoading(false);
     }
@@ -145,6 +157,21 @@ export default function LoginPage() {
                 {t('sign_in.no_account')}{' '}
                 <Text style={s.linkHighlight}>{t('sign_in.create_one')}</Text>
               </Text>
+            </TouchableOpacity>
+
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
+              <View style={{ flex: 1, height: 1, backgroundColor: c.border }} />
+              <Text style={{ marginHorizontal: 12, fontSize: 12, color: c['muted-foreground'] }}>{t('sign_in.or')}</Text>
+              <View style={{ flex: 1, height: 1, backgroundColor: c.border }} />
+            </View>
+
+            <TouchableOpacity
+              style={[s.button, { backgroundColor: c.card, borderWidth: 1, borderColor: c.border }, loading && s.buttonDisabled]}
+              onPress={handleGoogleSignIn}
+              disabled={loading}
+              activeOpacity={0.8}
+            >
+              <Text style={[s.buttonText, { color: c['sidebar-foreground'] }]}>Continue with Google</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>

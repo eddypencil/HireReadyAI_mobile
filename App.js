@@ -6,7 +6,10 @@ import { ThemeProvider } from './shared/context/ThemeContext';
 import { I18nProvider } from './shared/context/I18nContext';
 import { SidebarProvider } from './shared/context/SidebarContext';
 import { ThemedAlertProvider } from './shared/context/ThemedAlertContext';
+import { configureGoogleSignIn } from './features/auth/services/auth.service';
 import AppNavigator from './src/navigation/AppNavigator';
+
+configureGoogleSignIn();
 
 export default function App() {
   return (

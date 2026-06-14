@@ -1,26 +1,36 @@
 {
   "project_info": {
-    "project_number": "445218019236",
-    "project_id": "hirereadyai-a16b9",
-    "storage_bucket": "hirereadyai-a16b9.firebasestorage.app"
+    "project_number": "1032743179517",
+    "project_id": "hirereadyai-499410",
+    "storage_bucket": "hirereadyai-499410.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:445218019236:android:a42e47ad4bdd513beb1331",
+        "mobilesdk_app_id": "1:1032743179517:android:c1cbb653804d2041d75a94",
         "android_client_info": {
           "package_name": "com.hirereadyai.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1032743179517-46et5gg0ou8oa0p18l4n39kegdbj94ht.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyAswY3FIJN6qO5kyO_uw87nSAPSco69-k8"
+          "current_key": "AIzaSyCsIcijRvrOSWpFiEC12VxQdNUsRuzQHEA"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1032743179517-46et5gg0ou8oa0p18l4n39kegdbj94ht.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

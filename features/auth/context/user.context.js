@@ -1,6 +1,6 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useRef } from "react";
 import { supabase } from "../../../shared/services/supabase";
-import { getProfile, signUp, signIn, signOut, makeProfile } from "../services/auth.service";
+import { getProfile, signUp, signIn, signOut, makeProfile, signInWithGoogle } from "../services/auth.service";
 import { USER_ROLE } from "../../../shared/constants/enums";
 import { registerAndSavePushToken } from "../../../shared/services/notifications.service";
 
@@ -17,16 +17,20 @@ export function UserProvider({ children }) {
   const [profile, setProfile] = useState(null);
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [needsRoleSelection, setNeedsRoleSelection] = useState(false);
+  const pendingRoleSelectionRef = useRef(false);
 
   const fetchAndSetProfile = async (userId) => {
     try {
       const data = await getProfile(userId);
       if (data) {
         setProfile(toProfileModel(data));
-        // Register/refresh the Expo push token each time the profile loads
+        setNeedsRoleSelection(false);
         registerAndSavePushToken(userId);
+        return;
       }
     } catch {}
+    if (userId) setNeedsRoleSelection(true);
   };
 
   useEffect(() => {
@@ -40,10 +44,15 @@ export function UserProvider({ children }) {
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (event, session) => {
         setSession(session);
         if (session?.user) {
           setLoading(false);
+          if (pendingRoleSelectionRef.current) return;
+          if (event === 'INITIAL_SESSION') {
+            setTimeout(() => fetchAndSetProfile(session.user.id), 0);
+            return;
+          }
           const meta = session.user.user_metadata || {};
           setProfile({
             id: session.user.id,
@@ -110,9 +119,29 @@ export function UserProvider({ children }) {
     setSession(null);
   };
 
+  const signInWithGoogleUser = async (navigate) => {
+    pendingRoleSelectionRef.current = true;
+    const user = await signInWithGoogle();
+    const existing = await getProfile(user.id);
+    if (existing) {
+      pendingRoleSelectionRef.current = false;
+      await fetchAndSetProfile(user.id);
+      if (navigate) navigate.replace('Main');
+      return;
+    }
+    setNeedsRoleSelection(true);
+    if (navigate) navigate.replace('GoogleRoleSelect', { user });
+  };
+
+  const completeRoleSelection = async (userId, navigate) => {
+    pendingRoleSelectionRef.current = false;
+    await fetchAndSetProfile(userId);
+    if (navigate) navigate.replace('Main');
+  };
+
   return (
     <UserContext.Provider
-      value={{ profile, session, user: session?.user, loading, signUpUser, signInUser, signOutUser, setProfile }}
+      value={{ profile, session, user: session?.user, loading, needsRoleSelection, signUpUser, signInUser, signOutUser, signInWithGoogleUser, completeRoleSelection, setProfile }}
     >
       {children}
     </UserContext.Provider>
