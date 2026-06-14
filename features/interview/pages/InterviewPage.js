@@ -236,7 +236,7 @@ export default function InterviewPage({ route, navigation }) {
       }
 
       setCurrentQuestion(result.question);
-      setMaxTime(result.question?.maxTime ?? null);
+      setMaxTime(result.question?.maxTime ?? 180);
       setQuestionNumber(result.question?.orderIndex ?? currentAnsweredCount + 1);
       setPhase(PHASE.ANSWERING);
     } catch (err) {
@@ -260,7 +260,7 @@ export default function InterviewPage({ route, navigation }) {
         }
 
         setApplicationStage(stage);
-        const mq = stage.recruitment_stages.evaluation_criteria?.max_questions ?? 8;
+        const mq = stage.recruitment_stages?.num_questions ?? 8;
         setMaxQuestions(mq);
 
         const existingQuestions = await fetchStageQuestions(stage.id);
@@ -291,10 +291,10 @@ export default function InterviewPage({ route, navigation }) {
             type: unanswered.question_type,
             options: unanswered.generation_context?.options ?? null,
             language: unanswered.generation_context?.language ?? null,
-            maxTime: unanswered.generation_context?.max_time ?? null,
+            maxTime: unanswered.generation_context?.max_time ?? 180,
             orderIndex: unanswered.order_index,
           });
-          setMaxTime(unanswered.generation_context?.max_time ?? null);
+          setMaxTime(unanswered.generation_context?.max_time ?? 180);
           setQuestionNumber(unanswered.order_index ?? answered.length + 1);
           setPhase(PHASE.ANSWERING);
         } else {

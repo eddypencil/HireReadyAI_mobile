@@ -20,7 +20,7 @@ const ICON_MAP = {
 
 const PREMIUM_STAGES = ["assessment_test", "coding_test", "background_check"];
 
-export default function StageLibrary({ onAddStage, isPremium }) {
+export default function StageLibrary({ onRequestAddStage, isPremium }) {
   const { theme } = useTheme();
   const { t, language } = useTranslation();
   const isRtl = language === 'ar';
@@ -41,7 +41,7 @@ export default function StageLibrary({ onAddStage, isPremium }) {
           return (
             <TouchableOpacity
               key={item.key}
-              onPress={() => !isLocked && onAddStage(item)}
+              onPress={() => !isLocked && onRequestAddStage(item)}
               style={[styles.stageButton, isRtl && styles.rowReverse, isLocked && styles.stageButtonLocked]}
               activeOpacity={isLocked ? 1 : 0.7}
               disabled={isLocked}

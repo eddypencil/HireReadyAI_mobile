@@ -149,3 +149,15 @@ export const reorderStages = async (stages) => {
 
   if (phase2Error) throw phase2Error;
 };
+
+// Generate AI evaluation criteria for a newly created recruitment stage
+export const generateEvaluationCriteria = async (recruitmentStageId) => {
+  const { data, error } = await supabase.functions.invoke(
+    "generate-evaluation-criteria",
+    { body: { recruitmentStageId } },
+  );
+  if (error) throw error;
+  if (data?.error) throw new Error(data.error);
+  return data.evaluation_criteria;
+};
+

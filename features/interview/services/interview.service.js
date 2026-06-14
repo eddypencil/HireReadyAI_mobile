@@ -72,7 +72,7 @@ export const fetchStageQuestions = async (applicationStageId) => {
 };
 
 export const generateNextQuestion = async (applicationStageId, previousAnswer = null) => {
-  const { data, error } = await supabase.functions.invoke("generate-question", {
+  const { data, error } = await supabase.functions.invoke("generate-question-v2", {
     body: { applicationStageId, previousAnswer },
   });
 

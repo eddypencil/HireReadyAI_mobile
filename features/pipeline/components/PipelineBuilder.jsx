@@ -14,7 +14,14 @@ import { useTheme } from "../../../shared/context/ThemeContext";
 import StageLibrary from "./StageLibrary";
 import StageCard from "./StageCard";
 import StageDetailsPanel from "./StageDetailsPanel";
+import StageConfigDialog from "./StageConfigDialog";
+import { generateEvaluationCriteria } from "../services/pipeline.service";
 import { useTranslation } from "../../../shared/context/I18nContext";
+
+const AI_STAGE_TYPES = new Set([
+  "hr_interview", "technical_interview",
+  "assessment", "assessment_test", "coding_test",
+]);
 import { useCompany } from "../../companies/pages/CompanyLayout";
 import { FONT_FAMILY, FONT_FAMILY_MEDIUM, FONT_FAMILY_SEMIBOLD, FONT_FAMILY_BOLD } from "../../../src/fonts";
 
@@ -38,13 +45,43 @@ export default function PipelineBuilder({
   const [selectedStageId, setSelectedStageId] = useState(null);
   const [libraryOpen, setLibraryOpen] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [pendingLibraryItem, setPendingLibraryItem] = useState(null);
 
   const selectedStage = stages.find((s) => s.id === selectedStageId) || null;
 
-  const handleAddFromLibrary = useCallback(
-    async (libraryItem) => {
-      await onAddStage(libraryItem);
-      setLibraryOpen(false);
+  const handleRequestAddStage = useCallback(
+    (libraryItem) => {
+      if (AI_STAGE_TYPES.has(libraryItem.key)) {
+        setPendingLibraryItem(libraryItem);
+        setLibraryOpen(false);
+      } else {
+        onAddStage(libraryItem);
+        setLibraryOpen(false);
+      }
+    },
+    [onAddStage]
+  );
+
+  const handleDialogConfirm = useCallback(
+    async (libraryItem, extraFields, setCriteriaState) => {
+      const created = await onAddStage(libraryItem, extraFields);
+      if (!created) {
+        setPendingLibraryItem(null);
+        return;
+      }
+      
+      if (AI_STAGE_TYPES.has(libraryItem.key)) {
+        setCriteriaState("generating");
+        try {
+          await generateEvaluationCriteria(created.id);
+          setCriteriaState("idle");
+        } catch (err) {
+          console.error("Criteria generation failed:", err);
+          setCriteriaState("warning");
+          await new Promise(r => setTimeout(r, 2500));
+        }
+      }
+      setPendingLibraryItem(null);
     },
     [onAddStage]
   );
@@ -154,7 +191,7 @@ export default function PipelineBuilder({
                 <Ionicons name="close-outline" size={22} color={c['muted-foreground']} />
               </TouchableOpacity>
             </View>
-            <StageLibrary onAddStage={handleAddFromLibrary} isPremium={company?.is_premium} />
+            <StageLibrary onRequestAddStage={handleRequestAddStage} isPremium={company?.is_premium} />
           </View>
         </View>
       </Modal>
@@ -191,6 +228,13 @@ export default function PipelineBuilder({
           </View>
         </View>
       </Modal>
+
+      <StageConfigDialog
+        visible={!!pendingLibraryItem}
+        libraryItem={pendingLibraryItem}
+        onConfirm={handleDialogConfirm}
+        onCancel={() => setPendingLibraryItem(null)}
+      />
     </View>
   );
 }
