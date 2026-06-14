@@ -32,7 +32,7 @@ function buildDonutSlices(data, cx, cy, r, c) {
     const y2 = cy + r * Math.sin(angle + slice);
     const large = slice > Math.PI ? 1 : 0;
     const path = `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} Z`;
-    const color = getSliceColor(item.label, i, c);
+    const color = getSliceColor(item.status, i, c);
     angle += slice;
     return { path, color, status: item.status, label: item.label, value: item.value };
   });
@@ -52,13 +52,21 @@ function DonutChart({ applications }) {
 
   // ── Count by application-level outcome
   const statusMap = {};
+  // REPLACE with this (mirrors StatsCards logic exactly):
   (applications || []).forEach(app => {
     let status;
-    if (app.is_rejected || app.current_stage === 'rejected') {
+    const stages = app.application_stages;
+    const isRejected =
+      app.is_rejected ||
+      app.current_stage === 'rejected' ||
+      (Array.isArray(stages) && stages.some(s => s.status === 'rejected'));
+    const isOffer =
+      app.current_recruitment_stage?.stage_type === 'offer' ||
+      app.current_stage === 'hired';
+
+    if (isRejected) {
       status = 'rejected';
-    } else if (app.current_stage === 'hired') {
-      status = 'hired';
-    } else if (app.current_stage === 'offer') {
+    } else if (isOffer) {
       status = 'offer';
     } else {
       status = 'in_progress';
@@ -78,7 +86,7 @@ function DonutChart({ applications }) {
   const slices = data.length === 1
     ? []
     : buildDonutSlices(data, cx, cy, outerR, c);
-  const singleColor = data.length === 1 ? getSliceColor(data[0]?.label, 0, c) : null;
+  const singleColor = data.length === 1 ? getSliceColor(data[0]?.status, 0, c) : null;
 
   return (
     <View style={styles.chartCard}>

@@ -76,6 +76,7 @@ export default function ShortlistDetailPanel({
     { value: 'neutral', label: t('shortlist.vote_neutral_pill'), icon: 'remove', activeBg: c['muted-foreground'], inactiveBg: c.border, inactiveText: c['muted-foreground'] },
     { value: 'down', label: t('shortlist.vote_down_pill'), icon: 'thumbs-down', activeBg: c.destructive, inactiveBg: c.border, inactiveText: c['muted-foreground'] },
   ], [t]);
+
   const [noteBody, setNoteBody] = useState('');
   const [visibleToTeam, setVisibleToTeam] = useState(true);
   const [showRejectInput, setShowRejectInput] = useState(false);
@@ -93,7 +94,15 @@ export default function ShortlistDetailPanel({
     ai_confidence,
     is_rejected,
     rejection_reason,
+    application_stages = [],
   } = app;
+
+  // ── Check if an offer has already been sent for this application
+  const offerAlreadySent = application_stages.some(
+    (s) =>
+      s.recruitment_stages?.stage_type === 'offer' &&
+      (s.status === 'in_progress' || s.status === 'passed')
+  );
 
   useEffect(() => {
     if (showRejectInput && !rejectReason && ai_rationale) {
@@ -233,7 +242,7 @@ export default function ShortlistDetailPanel({
           {votes.map((v, i) => (
             <View key={v.id || i} style={[styles.voterItem, isRtl && styles.rowReverse]}>
               <View style={styles.voterInfo}>
-                <View style={[styles.voterListItemAvatar, { backgroundColor: getAvatarColor(v.profiles?.full_name) }]}> 
+                <View style={[styles.voterListItemAvatar, { backgroundColor: getAvatarColor(v.profiles?.full_name) }]}>
                   <Text style={styles.voterListItemAvatarText}>{getInitials(v.profiles?.full_name)}</Text>
                 </View>
                 <View>
@@ -342,6 +351,7 @@ export default function ShortlistDetailPanel({
     </>
   );
 
+  // ── Actions footer — shows "Offer Sent" disabled button if already advanced
   const actionsContent = !is_rejected ? (
     showRejectInput ? (
       <View style={styles.rejectInputSection}>
@@ -371,14 +381,24 @@ export default function ShortlistDetailPanel({
       </View>
     ) : (
       <View style={[styles.actionRow, isRtl && styles.rowReverse]}>
-        <TouchableOpacity
-          onPress={() => onAdvanceToOffer(app.id)}
-          style={styles.advanceBtn}
-          activeOpacity={0.8}
-        >
-          <Ionicons name="chevron-up" size={16} color={c['destructive-foreground']} />
-          <Text style={styles.advanceBtnText}>{t("shortlist.advance_to_offer")}</Text>
-        </TouchableOpacity>
+        {offerAlreadySent ? (
+          // ── Disabled "Offer Sent" button — prevents sending twice
+          <View style={[styles.advanceBtn, styles.advanceBtnSent]}>
+            <Ionicons name="checkmark-circle" size={16} color={c.success} />
+            <Text style={[styles.advanceBtnText, { color: c.success }]}>
+              Offer Sent
+            </Text>
+          </View>
+        ) : (
+          <TouchableOpacity
+            onPress={() => onAdvanceToOffer(app.id)}
+            style={styles.advanceBtn}
+            activeOpacity={0.8}
+          >
+            <Ionicons name="chevron-up" size={16} color={c['destructive-foreground']} />
+            <Text style={styles.advanceBtnText}>{t("shortlist.advance_to_offer")}</Text>
+          </TouchableOpacity>
+        )}
         <TouchableOpacity
           onPress={() => setShowRejectInput(true)}
           style={styles.rejectBtn}
@@ -553,10 +573,6 @@ function createStyles(c) { return StyleSheet.create({
   currentVoteText: {
     fontSize: 13,
     fontFamily: FONT_FAMILY_MEDIUM,
-  },
-  currentVoteBold: {
-    fontFamily: FONT_FAMILY_BOLD,
-    textTransform: 'capitalize',
   },
   noVoteText: {
     fontSize: 12,
@@ -809,6 +825,14 @@ function createStyles(c) { return StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 6,
     elevation: 3,
+  },
+  // ── Disabled state for "Offer Sent" — green tint, no shadow, not pressable
+  advanceBtnSent: {
+    backgroundColor: `${c.success}15`,
+    borderWidth: 1,
+    borderColor: `${c.success}40`,
+    shadowOpacity: 0,
+    elevation: 0,
   },
   advanceBtnText: {
     fontSize: 14,

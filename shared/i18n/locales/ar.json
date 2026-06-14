@@ -792,6 +792,7 @@
     "message": "الرسالة",
     "name_placeholder": "اسمك",
     "email_placeholder": "you@company.com",
+    "email_placeholder_personal": "you@gmail.com",
     "company_placeholder": "اسم الشركة",
     "message_placeholder": "اكتب رسالتك...",
     "send": "إرسال",

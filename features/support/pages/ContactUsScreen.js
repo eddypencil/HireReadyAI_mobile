@@ -19,9 +19,11 @@ import { useUser } from '../../auth/context/user.context';
 import { spacing } from '../../../src/theme';
 import { useTranslation } from '../../../shared/context/I18nContext';
 import { FONT_FAMILY, FONT_FAMILY_BOLD, FONT_FAMILY_EXTRABOLD } from '../../../src/fonts';
+import { supabase } from '../../../shared/services/supabase';
+import { USER_ROLE } from '../../../shared/constants/enums';
 
-const SUPPORT_EMAIL = 'support@hireready.ai';
-const SUPPORT_PHONE = '+201234567899';
+const SUPPORT_EMAIL = 'hirereadyaiplatform@gmail.com';
+const SUPPORT_PHONE = '+20 10 13767382';
 
 export default function ContactUsScreen() {
     const insets = useSafeAreaInsets();
@@ -30,8 +32,11 @@ export default function ContactUsScreen() {
     const { t } = useTranslation();
     const c = theme.colors;
 
+    
+    const isApplicant = profile?.role === USER_ROLE.applicant;
+
     const [formData, setFormData] = useState({
-        name: profile?.name || '',
+        name: profile?.full_name || '',
         email: profile?.email || '',
         company: '',
         message: '',
@@ -66,31 +71,24 @@ export default function ContactUsScreen() {
         setError(null);
 
         try {
-            const body =
-                `Name: ${formData.name}\n` +
-                `Email: ${formData.email}\n` +
-                `Company: ${formData.company}\n\n` +
-                `${formData.message}`;
+            const { error: fnError } = await supabase.functions.invoke('send-contact-email', {
+                body: {
+                    name: formData.name,
+                    email: formData.email,
+                    company: isApplicant ? '' : formData.company,
+                    message: formData.message,
+                },
+            });
 
-            const url =
-                `mailto:${SUPPORT_EMAIL}` +
-                `?subject=${encodeURIComponent('Contact Message')}` +
-                `&body=${encodeURIComponent(body)}`;
-
-            const canOpen = await Linking.canOpenURL(url);
-            if (!canOpen) throw new Error('No email app found');
-
-            await Linking.openURL(url);
+            if (fnError) throw new Error(fnError.message);
 
             setSubmitted(true);
-
             setFormData({
-                name: profile?.name || '',
+                name: profile?.full_name || '',
                 email: profile?.email || '',
                 company: '',
                 message: '',
             });
-
             setTimeout(() => setSubmitted(false), 4000);
         } catch (err) {
             setError(err.message || t('errors.something_wrong'));
@@ -102,7 +100,8 @@ export default function ContactUsScreen() {
     return (
         <KeyboardAvoidingView
             style={{ flex: 1, backgroundColor: c.background }}
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
+            keyboardVerticalOffset={Platform.OS === 'android' ? 30 : 0}
         >
             <ScrollView
                 contentContainerStyle={[
@@ -112,17 +111,14 @@ export default function ContactUsScreen() {
                 keyboardShouldPersistTaps="handled"
                 showsVerticalScrollIndicator={false}
             >
-
                 {/* HEADER */}
                 <View style={styles.header}>
                     <Text style={[styles.badge, { color: c.primary }]}>
                         {t('contact_us.badge')}
                     </Text>
-
                     <Text style={[styles.title, { color: c.foreground }]}>
                         {t('contact_us.title')}
                     </Text>
-
                     <Text style={[styles.subtitle, { color: c['muted-foreground'] }]}>
                         {t('contact_us.subtitle')}
                     </Text>
@@ -153,16 +149,21 @@ export default function ContactUsScreen() {
                         placeholderTextColor={c['muted-foreground']}
                     />
 
-                    <Text style={[styles.label, { color: c.foreground }]}>
-                        {t('contact_us.company')}
-                    </Text>
-                    <TextInput
-                        value={formData.company}
-                        onChangeText={(v) => handleChange('company', v)}
-                        style={[styles.input, { color: c.foreground, borderColor: c.border }]}
-                        placeholder={t('contact_us.company_placeholder')}
-                        placeholderTextColor={c['muted-foreground']}
-                    />
+                    
+                    {!isApplicant && (
+                        <>
+                            <Text style={[styles.label, { color: c.foreground }]}>
+                                {t('contact_us.company')}
+                            </Text>
+                            <TextInput
+                                value={formData.company}
+                                onChangeText={(v) => handleChange('company', v)}
+                                style={[styles.input, { color: c.foreground, borderColor: c.border }]}
+                                placeholder={isApplicant ? t('contact_us.email_placeholder_personal') : t('contact_us.email_placeholder')}
+                                placeholderTextColor={c['muted-foreground']}
+                            />
+                        </>
+                    )}
 
                     <Text style={[styles.label, { color: c.foreground }]}>
                         {t('contact_us.message')}
@@ -196,7 +197,6 @@ export default function ContactUsScreen() {
                         ) : (
                             <Ionicons name="send" color="#fff" size={16} />
                         )}
-
                         <Text style={styles.buttonText}>
                             {isSubmitting
                                 ? t('contact_us.sending')
@@ -212,34 +212,20 @@ export default function ContactUsScreen() {
                     )}
                 </View>
 
-
+                
                 <View style={[styles.card, { backgroundColor: c.card, borderColor: c.border }]}>
                     <Text style={[styles.sectionTitle, { color: c.foreground }]}>
                         {t('contact_us.contact_info')}
                     </Text>
-
                     <TouchableOpacity style={styles.infoRow} onPress={handleEmail}>
                         <Ionicons name="mail" size={18} color={c.primary} />
-                        <Text style={{ color: c.foreground }}>
-                            {SUPPORT_EMAIL}
-                        </Text>
+                        <Text style={{ color: c.foreground }}>{SUPPORT_EMAIL}</Text>
                     </TouchableOpacity>
-
                     <TouchableOpacity style={styles.infoRow} onPress={handleCall}>
                         <Ionicons name="call" size={18} color={c.primary} />
-                        <Text style={{ color: c.foreground }}>
-                            {SUPPORT_PHONE}
-                        </Text>
+                        <Text style={{ color: c.foreground }}>{SUPPORT_PHONE}</Text>
                     </TouchableOpacity>
-
-                    <View style={styles.infoRow}>
-                        <Ionicons name="location" size={18} color={c.primary} />
-                        <Text style={{ color: c.foreground }}>
-                            Smart Village, Cairo
-                        </Text>
-                    </View>
                 </View>
-
             </ScrollView>
         </KeyboardAvoidingView>
     );

@@ -791,6 +791,7 @@
     "message": "Message",
     "name_placeholder": "Your name",
     "email_placeholder": "you@company.com",
+    "email_placeholder_personal": "you@gmail.com",
     "company_placeholder": "Company name",
     "message_placeholder": "Tell us about your request...",
     "send": "Send message",
