@@ -72,14 +72,6 @@ export default function StageCard({
         </Text>
       </View>
 
-      {stage.weight != null && (
-        <View style={styles.weightBadge}>
-          <Text style={styles.weightText}>
-            {t("pipeline.weight_label", { pct: Math.round(stage.weight * 100) })}
-          </Text>
-        </View>
-      )}
-
       {!stage.is_locked && (
         <TouchableOpacity
           onPress={(e) => { e.stopPropagation(); onDelete(stage.id); }}
@@ -137,17 +129,6 @@ function createStyles(c) {
       color: c['muted-foreground'],
       marginTop: 2,
       textTransform: "capitalize",
-    },
-    weightBadge: {
-      backgroundColor: c.border,
-      borderRadius: 6,
-      paddingHorizontal: 8,
-      paddingVertical: 3,
-    },
-    weightText: {
-      fontSize: 11,
-      fontWeight: '500',
-      color: c['muted-foreground'],
     },
     deleteBtn: {
       padding: 6,

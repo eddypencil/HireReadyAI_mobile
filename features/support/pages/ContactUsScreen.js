@@ -189,7 +189,7 @@ export default function ContactUsScreen() {
                         style={[
                             styles.button,
                             {
-                                backgroundColor: c.foreground,
+                                backgroundColor: c.primary,
                                 opacity: isSubmitting ? 0.6 : 1,
                             },
                         ]}
@@ -206,9 +206,9 @@ export default function ContactUsScreen() {
                         </Text>
                     </TouchableOpacity>
 
-                    {error && <Text style={styles.error}>{error}</Text>}
+                    {error && <Text style={[styles.error, { color: c.destructive }]}>{error}</Text>}
                     {submitted && (
-                        <Text style={styles.success}>
+                        <Text style={[styles.success, { color: c.success }]}>
                             {t('contact_us.success')}
                         </Text>
                     )}
@@ -296,12 +296,10 @@ const styles = StyleSheet.create({
     },
     error: {
         marginTop: 10,
-        color: 'red',
         fontSize: 12,
     },
     success: {
         marginTop: 10,
-        color: 'green',
         fontSize: 12,
     },
     sectionTitle: {

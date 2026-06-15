@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal, ActivityIndicator, ScrollView } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal, ActivityIndicator, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "../../../shared/context/I18nContext";
 import { useTheme } from "../../../shared/context/ThemeContext";
@@ -81,11 +81,18 @@ export default function StageConfigDialog({ visible, libraryItem, onConfirm, onC
     <Modal
       visible={visible}
       transparent
-      animationType="fade"
+      animationType="slide"
       onRequestClose={onCancel}
     >
       <View style={styles.overlay}>
-        <View style={styles.dialog}>
+        <KeyboardAvoidingView
+          style={styles.dialog}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
+          <View style={styles.handleWrap}>
+            <View style={styles.handle} />
+          </View>
+
           {/* Header */}
           <View style={[styles.header, isRtl && styles.rowReverse]}>
             <View style={[styles.headerLeft, isRtl && styles.rowReverse]}>
@@ -103,7 +110,7 @@ export default function StageConfigDialog({ visible, libraryItem, onConfirm, onC
           </View>
 
           {/* Body */}
-          <ScrollView style={styles.body} showsVerticalScrollIndicator={false}>
+          <ScrollView style={styles.body} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
             {/* Name */}
             <View style={styles.field}>
               <Text style={[styles.label, isRtl && styles.textRight]}>
@@ -139,9 +146,9 @@ export default function StageConfigDialog({ visible, libraryItem, onConfirm, onC
               {errors.description && <Text style={[styles.errorText, isRtl && styles.textRight]}>{errors.description}</Text>}
             </View>
 
-            {/* Questions & Pass Score Row */}
-            <View style={[styles.row, isRtl && styles.rowReverse]}>
-              {needsQuestions && (
+            {/* Questions & Pass Score */}
+            {needsQuestions ? (
+              <View style={[styles.row, isRtl && styles.rowReverse]}>
                 <View style={styles.halfField}>
                   <Text style={[styles.label, isRtl && styles.textRight]}>
                     {t("stage_config_dialog.fields.num_questions")}
@@ -157,9 +164,23 @@ export default function StageConfigDialog({ visible, libraryItem, onConfirm, onC
                   />
                   {errors.num_questions && <Text style={[styles.errorText, isRtl && styles.textRight]}>{errors.num_questions}</Text>}
                 </View>
-              )}
-              
-              <View style={needsQuestions ? styles.halfField : styles.field}>
+                <View style={styles.halfField}>
+                  <Text style={[styles.label, isRtl && styles.textRight]}>
+                    {t("stage_config_dialog.fields.pass_score")}
+                  </Text>
+                  <TextInput
+                    style={[styles.input, isRtl && styles.textRight, errors.pass_score && styles.inputError]}
+                    value={form.pass_score}
+                    onChangeText={(val) => setForm(f => ({ ...f, pass_score: val }))}
+                    keyboardType="numeric"
+                    placeholder="70"
+                    placeholderTextColor={c.border}
+                  />
+                  {errors.pass_score && <Text style={[styles.errorText, isRtl && styles.textRight]}>{errors.pass_score}</Text>}
+                </View>
+              </View>
+            ) : (
+              <View style={styles.field}>
                 <Text style={[styles.label, isRtl && styles.textRight]}>
                   {t("stage_config_dialog.fields.pass_score")}
                 </Text>
@@ -173,7 +194,7 @@ export default function StageConfigDialog({ visible, libraryItem, onConfirm, onC
                 />
                 {errors.pass_score && <Text style={[styles.errorText, isRtl && styles.textRight]}>{errors.pass_score}</Text>}
               </View>
-            </View>
+            )}
 
             {/* Generation States */}
             {criteriaState === "generating" && (
@@ -211,7 +232,7 @@ export default function StageConfigDialog({ visible, libraryItem, onConfirm, onC
               </Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </View>
     </Modal>
   );
@@ -222,14 +243,25 @@ function createStyles(c) {
     overlay: {
       flex: 1,
       backgroundColor: "rgba(0,0,0,0.5)",
-      justifyContent: "center",
-      padding: 20,
+      justifyContent: "flex-end",
     },
     dialog: {
       backgroundColor: c.background,
-      borderRadius: 16,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      maxHeight: "85%",
       overflow: "hidden",
-      maxHeight: "90%",
+    },
+    handleWrap: {
+      alignItems: "center",
+      paddingTop: 10,
+      paddingBottom: 4,
+    },
+    handle: {
+      width: 36,
+      height: 4,
+      borderRadius: 2,
+      backgroundColor: c.border,
     },
     header: {
       flexDirection: "row",
@@ -268,6 +300,7 @@ function createStyles(c) {
     },
     body: {
       padding: 16,
+      paddingBottom: 8,
     },
     field: {
       marginBottom: 16,
@@ -287,7 +320,7 @@ function createStyles(c) {
       marginBottom: 6,
     },
     asterisk: {
-      color: c.rose[500],
+      color: c.red[500],
     },
     input: {
       fontWeight: '600',
@@ -304,12 +337,12 @@ function createStyles(c) {
       height: 80,
     },
     inputError: {
-      borderColor: c.rose[400],
+      borderColor: c.red[400],
     },
     errorText: {
       fontWeight: '600',
       fontSize: 11,
-      color: c.rose[500],
+      color: c.red[500],
       marginTop: 4,
     },
     stateBox: {
