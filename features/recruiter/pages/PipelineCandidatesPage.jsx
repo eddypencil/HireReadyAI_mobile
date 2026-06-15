@@ -19,7 +19,7 @@ import {
 } from "../services/candidatesPipline.service";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
-import { useThemedAlert } from '../../../shared/context/ThemedAlertContext';
+import { useThemedAlert } from "../../../shared/context/ThemedAlertContext";
 import AutoAdvanceModal from "../components/AutoAdvanceModal";
 import { supabase } from "../../../shared/services/supabase";
 
@@ -75,7 +75,7 @@ function createStyles(c) {
     jobSelectorText: {
       flex: 1,
       fontSize: 15,
-      fontWeight: '600',
+      fontWeight: "600",
       color: c["destructive-foreground"],
     },
     autoAdvanceBtn: {
@@ -98,14 +98,13 @@ function createStyles(c) {
     },
     infoText: {
       fontSize: 13,
-      fontWeight: '600',
+      fontWeight: "600",
       color: c.primary,
       flex: 1,
     },
     infoHint: {
       fontSize: 11,
       color: c["muted-foreground"],
-
     },
     boardScroll: { flex: 1 },
     board: {
@@ -116,9 +115,9 @@ function createStyles(c) {
       alignItems: "flex-start",
     },
 
-    rowReverse: { flexDirection: 'row-reverse' },
-    textRight: { textAlign: 'right' },
-    column: { width: 240, maxHeight: '100%' },
+    rowReverse: { flexDirection: "row-reverse" },
+    textRight: { textAlign: "right" },
+    column: { width: 240, maxHeight: "100%" },
 
     columnHeader: {
       flexDirection: "row",
@@ -127,7 +126,7 @@ function createStyles(c) {
       paddingHorizontal: 4,
     },
     stageDot: { width: 10, height: 10, borderRadius: 5, marginRight: 8 },
-    columnTitle: { fontSize: 14, fontWeight: '700', flex: 1 },
+    columnTitle: { fontSize: 14, fontWeight: "700", flex: 1 },
     countBadge: {
       backgroundColor: c["surface-muted"],
       borderRadius: 10,
@@ -136,7 +135,7 @@ function createStyles(c) {
       borderWidth: 1,
       borderColor: c.border,
     },
-    countText: { fontSize: 12, fontWeight: '700', color: c.primary },
+    countText: { fontSize: 12, fontWeight: "700", color: c.primary },
     columnBody: { maxHeight: 500 },
     emptyColumn: {
       borderWidth: 2,
@@ -171,17 +170,17 @@ function createStyles(c) {
     avatarText: {
       color: c["destructive-foreground"],
       fontSize: 12,
-      fontWeight: '700',
+      fontWeight: "700",
     },
     candidateInfo: { flex: 1 },
-    candidateName: { fontSize: 13, fontWeight: '700', color: c.foreground },
+    candidateName: { fontSize: 13, fontWeight: "700", color: c.foreground },
     candidateRole: { fontSize: 11, color: c["muted-foreground"], marginTop: 1 },
     scoreBadge: {
       borderRadius: 8,
       paddingHorizontal: 8,
       paddingVertical: 4,
     },
-    scoreText: { fontSize: 12, fontWeight: '800' },
+    scoreText: { fontSize: 12, fontWeight: "800" },
     rightActions: {
       flexDirection: "row",
       alignItems: "center",
@@ -216,7 +215,7 @@ function createStyles(c) {
       borderBottomWidth: 1,
       borderBottomColor: c.border,
     },
-    modalTitle: { fontSize: 17, fontWeight: '700', color: c.foreground },
+    modalTitle: { fontSize: 17, fontWeight: "700", color: c.foreground },
     jobOption: {
       flexDirection: "row",
       alignItems: "center",
@@ -228,14 +227,13 @@ function createStyles(c) {
     },
     jobOptionActive: { backgroundColor: c.primary + "08" },
     jobOptionInfo: { flex: 1 },
-    jobOptionTitle: { fontSize: 15, fontWeight: '600', color: c.foreground },
+    jobOptionTitle: { fontSize: 15, fontWeight: "600", color: c.foreground },
     jobOptionDept: { fontSize: 12, color: c["muted-foreground"], marginTop: 2 },
     emptyJobsText: {
       textAlign: "center",
       padding: 30,
       color: c["muted-foreground"],
       fontSize: 14,
-
     },
     moveModal: {
       backgroundColor: c.card,
@@ -250,7 +248,6 @@ function createStyles(c) {
       paddingHorizontal: 20,
       paddingTop: 12,
       paddingBottom: 8,
-
     },
     moveOption: {
       flexDirection: "row",
@@ -265,7 +262,7 @@ function createStyles(c) {
     moveOptionText: {
       flex: 1,
       fontSize: 15,
-      fontWeight: '500',
+      fontWeight: "500",
       color: c.foreground,
     },
     advanceAllBtn: {
@@ -279,7 +276,7 @@ function createStyles(c) {
       borderWidth: 1,
       borderColor: c.primary + "33",
     },
-    advanceAllBtnText: { fontSize: 11, fontWeight: '700', color: c.primary },
+    advanceAllBtnText: { fontSize: 11, fontWeight: "700", color: c.primary },
   });
 }
 
@@ -291,7 +288,7 @@ export default function PipelineCandidatesPage() {
   const { company, jobs } = useCompany();
   const { t, language } = useTranslation();
   const { alert } = useThemedAlert();
-  const isRtl = language === 'ar';
+  const isRtl = language === "ar";
 
   const [candidates, setCandidates] = useState([]);
   const [stages, setStages] = useState([]);
@@ -321,12 +318,12 @@ export default function PipelineCandidatesPage() {
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "applications" },
-        () => fetchData()
+        () => fetchData(),
       )
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "applications" },
-        () => fetchData()
+        () => fetchData(),
       )
       .subscribe();
 
@@ -379,8 +376,65 @@ export default function PipelineCandidatesPage() {
     navigation.navigate("CandidateProfile", { applicationId: candidate.id });
   };
 
-  const handleAdvanceOneStage = async (candidate, nextStageId) => {
+  const handleAdvanceOneStage = async (
+    candidate,
+    nextStageId,
+    currentStageId,
+  ) => {
     if (moving) return;
+
+    const currentStage = stages.find((s) => s.id === currentStageId);
+    const nextStage = stages.find((s) => s.id === nextStageId);
+    const shortlistStage = stages.find((s) => s.stage_type === "shortlist");
+
+    const isCvReview = currentStage?.stage_type === "cv_review";
+    const minScore = currentStage?.min_score ?? 0;
+
+    let score;
+    if (isCvReview) {
+      score = candidate.cv_score ?? candidate.composite_score ?? null;
+    } else {
+      const stageData = candidate.application_stages?.find(
+        (as) =>
+          as.recruitment_stages?.id === currentStageId ||
+          as.stage_id === currentStageId,
+      );
+      score =
+        stageData?.score ??
+        stageData?.application_stage_evaluations?.[0]?.ai_score ??
+        null;
+    }
+
+    const meetsScore = score != null && Number(score) >= minScore;
+
+    const isToShortlist = shortlistStage && nextStage?.id === shortlistStage.id;
+
+    if (isToShortlist) {
+      if (!meetsScore) {
+        Alert.alert(
+          t("recruiter.cannot_move"),
+          t("recruiter.score_below_minimum", {
+            score: score != null ? Math.round(Number(score)) : "-",
+            minScore,
+          }),
+        );
+        return;
+      }
+      setShowAutoAdvanceModal(true);
+      return;
+    }
+
+    if (!meetsScore) {
+      Alert.alert(
+        t("recruiter.cannot_move"),
+        t("recruiter.score_below_minimum", {
+          score: score != null ? Math.round(Number(score)) : "-",
+          minScore,
+        }),
+      );
+      return;
+    }
+
     setMoving(true);
 
     // Optimistically update local state so the candidate doesn't vanish
@@ -397,7 +451,7 @@ export default function PipelineCandidatesPage() {
         setCandidates((prev) =>
           prev.map((c) =>
             c.id === candidate.id
-              ? { ...c, current_stage_id: candidate.current_stage_id }
+              ? { ...c, current_stage_id: currentStageId }
               : c,
           ),
         );
@@ -410,7 +464,7 @@ export default function PipelineCandidatesPage() {
       setCandidates((prev) =>
         prev.map((c) =>
           c.id === candidate.id
-            ? { ...c, current_stage_id: candidate.current_stage_id }
+            ? { ...c, current_stage_id: currentStageId }
             : c,
         ),
       );
@@ -419,6 +473,7 @@ export default function PipelineCandidatesPage() {
       setMoving(false);
     }
   };
+
   const handleAutoAdvanceComplete = (advancedCount) => {
     if (advancedCount > 0) {
       alert(
@@ -445,16 +500,6 @@ export default function PipelineCandidatesPage() {
       shortlistStage && nextStage.id === shortlistStage.id;
 
     const currentStageCheck = stages.find((s) => s.id === stageId);
-
-    // AutoAdvanceModal is only for non-cv_review stages before shortlist
-    if (isBeforeShortlist && currentStageCheck?.stage_type !== "cv_review") {
-      setShowAutoAdvanceModal(true);
-      return;
-    }
-
-    // Skip locked check for cv_review — it's always locked by design but must be actionable
-    if (nextStage.is_locked && currentStageCheck?.stage_type !== "cv_review")
-      return;
 
     const stageCandidates = candidatesByStage[stageId] || [];
 
@@ -483,12 +528,29 @@ export default function PipelineCandidatesPage() {
 
       return score != null && Number(score) >= minScore;
     });
+    // If the next stage is the shortlist stage, route through the AutoAdvanceModal
+    // instead of moving directly — but only if at least one candidate in this
+    // stage meets the min score requirement.
+    if (isBeforeShortlist) {
+      if (eligible.length === 0) {
+        Alert.alert(
+          t("recruiter.cannot_move"),
+          t("recruiter.advance_all_score_too_low", {
+            minScore: currentStage?.min_score ?? 0,
+          }),
+        );
+        return;
+      }
+      setShowAutoAdvanceModal(true);
+      return;
+    }
+
+    // Skip locked check for cv_review — it's always locked by design but must be actionable
+    if (nextStage.is_locked && currentStageCheck?.stage_type !== "cv_review")
+      return;
 
     if (eligible.length === 0) {
-      alert(
-        t("recruiter.advance_all"),
-        t("recruiter.no_eligible_candidates"),
-      );
+      alert(t("recruiter.advance_all"), t("recruiter.no_eligible_candidates"));
       return;
     }
 
@@ -538,11 +600,19 @@ export default function PipelineCandidatesPage() {
 
   const styles = createStyles(c);
 
-  function CandidateCard({ candidate, stageColor, onTap, onAdvance }) {
+  function CandidateCard({
+    candidate,
+    stageColor,
+    stageType,
+    onTap,
+    onAdvance,
+  }) {
     const app = candidate;
     const name = app.profiles?.full_name || t("recruiter.unknown");
     const score = app.composite_score;
     const initials = getInitials(name);
+
+    const isOfferStage = stageType === "offer";
 
     const scoreColor =
       score >= 80 ? c.success : score >= 60 ? c.warning : c["muted-foreground"];
@@ -553,16 +623,33 @@ export default function PipelineCandidatesPage() {
           ? `${c.warning}1a`
           : c["surface-muted"];
 
-    const advanceIcon = isRtl ? 'chevron-back' : 'chevron-forward';
+    const advanceIcon = isRtl ? "chevron-back" : "chevron-forward";
 
     return (
       <TouchableOpacity
-        style={[styles.candidateCard, isRtl && { flexDirection: 'row-reverse' }]}
+        style={[
+          styles.candidateCard,
+          isRtl && { flexDirection: "row-reverse" },
+        ]}
         activeOpacity={0.8}
         onPress={() => onTap(app)}
       >
-        <View style={[styles.candidateTop, isRtl && { flexDirection: 'row-reverse' }]}>
-          <View style={[styles.avatar, { backgroundColor: stageColor, marginRight: isRtl ? 0 : 10, marginLeft: isRtl ? 10 : 0 }]}> 
+        <View
+          style={[
+            styles.candidateTop,
+            isRtl && { flexDirection: "row-reverse" },
+          ]}
+        >
+          <View
+            style={[
+              styles.avatar,
+              {
+                backgroundColor: stageColor,
+                marginRight: isRtl ? 0 : 10,
+                marginLeft: isRtl ? 10 : 0,
+              },
+            ]}
+          >
             <Text style={styles.avatarText}>{initials}</Text>
           </View>
           <View style={styles.candidateInfo}>
@@ -574,14 +661,33 @@ export default function PipelineCandidatesPage() {
             </Text>
           </View>
         </View>
-        <View style={[styles.rightActions, isRtl && { flexDirection: 'row-reverse' }]}>
-          {score != null && (
-            <View style={[styles.scoreBadge, { backgroundColor: scoreBg }]}> 
-              <Text style={[styles.scoreText, { color: scoreColor }]}>{Math.round(score)}</Text>
+        <View
+          style={[
+            styles.rightActions,
+            isRtl && { flexDirection: "row-reverse" },
+          ]}
+        >
+          {isOfferStage ? (
+            <View
+              style={[styles.scoreBadge, { backgroundColor: `${c.success}1a` }]}
+            >
+              <Ionicons name="checkmark-circle" size={16} color={c.success} />
             </View>
+          ) : (
+            score != null && (
+              <View style={[styles.scoreBadge, { backgroundColor: scoreBg }]}>
+                <Text style={[styles.scoreText, { color: scoreColor }]}>
+                  {Math.round(score)}
+                </Text>
+              </View>
+            )
           )}
           {onAdvance && (
-            <TouchableOpacity onPress={onAdvance} style={styles.advanceArrow} disabled={moving}>
+            <TouchableOpacity
+              onPress={onAdvance}
+              style={styles.advanceArrow}
+              disabled={moving}
+            >
               <Ionicons name={advanceIcon} size={18} color={c.primary} />
             </TouchableOpacity>
           )}
@@ -611,9 +717,19 @@ export default function PipelineCandidatesPage() {
     <View style={[styles.container, { backgroundColor: c.background }]}>
       {/* Job Selector Header */}
       <View style={[styles.headerBar, { paddingTop: insets.top + 12 }]}>
-        <TouchableOpacity style={styles.jobSelector} onPress={() => setShowJobPicker(true)}>
-          <Ionicons name="briefcase-outline" size={18} color={c['destructive-foreground']} />
-          <Text style={[styles.jobSelectorText, isRtl && styles.textRight]} numberOfLines={1}>
+        <TouchableOpacity
+          style={styles.jobSelector}
+          onPress={() => setShowJobPicker(true)}
+        >
+          <Ionicons
+            name="briefcase-outline"
+            size={18}
+            color={c["destructive-foreground"]}
+          />
+          <Text
+            style={[styles.jobSelectorText, isRtl && styles.textRight]}
+            numberOfLines={1}
+          >
             {selectedJob?.title || t("recruiter.select_job")}
           </Text>
           <Ionicons
@@ -644,7 +760,11 @@ export default function PipelineCandidatesPage() {
       </View>
 
       {/* Kanban Board */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.boardScroll}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.boardScroll}
+      >
         <View style={[styles.board, isRtl && styles.rowReverse]}>
           {sortedStages.map((stage, stageIndex) => {
             const nextStage = sortedStages[stageIndex + 1];
@@ -663,10 +783,21 @@ export default function PipelineCandidatesPage() {
                   <View
                     style={[
                       styles.stageDot,
-                      { backgroundColor: stageColor, marginRight: isRtl ? 0 : 8, marginLeft: isRtl ? 8 : 0 },
+                      {
+                        backgroundColor: stageColor,
+                        marginRight: isRtl ? 0 : 8,
+                        marginLeft: isRtl ? 8 : 0,
+                      },
                     ]}
                   />
-                  <Text style={[styles.columnTitle, { color: c.foreground }, isRtl && styles.textRight]} numberOfLines={1}>
+                  <Text
+                    style={[
+                      styles.columnTitle,
+                      { color: c.foreground },
+                      isRtl && styles.textRight,
+                    ]}
+                    numberOfLines={1}
+                  >
                     {stage.name}
                   </Text>
                   <View style={styles.countBadge}>
@@ -711,13 +842,18 @@ export default function PipelineCandidatesPage() {
                         key={candidate.id}
                         candidate={candidate}
                         stageColor={stageColor}
+                        stageType={stage.stage_type}
                         onTap={handleCandidateTap}
                         onAdvance={
                           nextStage &&
                           (!nextStage.is_locked ||
                             stage.stage_type === "cv_review")
                             ? () =>
-                                handleAdvanceOneStage(candidate, nextStage.id)
+                                handleAdvanceOneStage(
+                                  candidate,
+                                  nextStage.id,
+                                  stage.id,
+                                )
                             : null
                         }
                       />
