@@ -1,9 +1,4 @@
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "../../../shared/context/ThemeContext";
@@ -20,7 +15,6 @@ export default function PendingApprovalPage({ companyName }) {
   async function handleSignOut() {
     try {
       await signOut();
-      navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
     } catch {}
   }
 
@@ -33,30 +27,32 @@ export default function PendingApprovalPage({ companyName }) {
           </View>
           <Text style={styles.logoText}>HireReadyAI</Text>
         </View>
-        <TouchableOpacity onPress={handleSignOut} style={styles.signOutBtn} activeOpacity={0.7}>
-          <Ionicons name="log-out-outline" size={16} color={c['muted-foreground']} />
-          <Text style={styles.signOutText}>{t('companies.sign_out')}</Text>
-        </TouchableOpacity>
       </View>
 
       <View style={styles.body}>
         <View style={styles.iconCircle}>
           <Ionicons name="time-outline" size={36} color={c.warning} />
         </View>
-        <Text style={styles.title}>{t('pending_approval.title')}</Text>
+        <Text style={styles.title}>{t("pending_approval.title")}</Text>
         <Text style={styles.subtitle}>
-          {t('pending_approval.subtitle', { company: companyName || t('pending_approval.company_fallback') })}
+          {t("pending_approval.subtitle", {
+            company: companyName || t("pending_approval.company_fallback"),
+          })}
         </Text>
-        <Text style={styles.hint}>
-          {t('pending_approval.contact_hr')}
-        </Text>
+        <Text style={styles.hint}>{t("pending_approval.contact_hr")}</Text>
         <TouchableOpacity
-          onPress={() => navigation.reset({ index: 0, routes: [{ name: 'Login' }] })}
+          onPress={handleSignOut}
           style={styles.backBtn}
           activeOpacity={0.8}
         >
-          <Ionicons name="arrow-back" size={16} color={c['destructive-foreground']} />
-          <Text style={styles.backBtnText}>{t('pending_approval.back_to_home')}</Text>
+          <Ionicons
+            name="arrow-back"
+            size={16}
+            color={c["destructive-foreground"]}
+          />
+          <Text style={styles.backBtnText}>
+            {t("pending_approval.back_to_home")}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -93,7 +89,7 @@ function createStyles(c) {
     },
     logoText: {
       fontSize: 18,
-      fontWeight: '700',
+      fontWeight: "700",
       color: c.foreground,
     },
     signOutBtn: {
@@ -109,8 +105,8 @@ function createStyles(c) {
     },
     signOutText: {
       fontSize: 12,
-      fontWeight: '500',
-      color: c['muted-foreground'],
+      fontWeight: "500",
+      color: c["muted-foreground"],
     },
     body: {
       flex: 1,
@@ -129,19 +125,19 @@ function createStyles(c) {
     },
     title: {
       fontSize: 22,
-      fontWeight: '700',
+      fontWeight: "700",
       color: c.foreground,
       marginBottom: 8,
     },
     subtitle: {
       fontSize: 14,
-      color: c['muted-foreground'],
+      color: c["muted-foreground"],
       textAlign: "center",
       marginBottom: 4,
     },
     hint: {
       fontSize: 12,
-      color: c['muted-foreground'],
+      color: c["muted-foreground"],
       opacity: 0.7,
       textAlign: "center",
       marginBottom: 28,
@@ -156,9 +152,9 @@ function createStyles(c) {
       borderRadius: 10,
     },
     backBtnText: {
-      color: c['destructive-foreground'],
+      color: c["destructive-foreground"],
       fontSize: 13,
-      fontWeight: '600',
+      fontWeight: "600",
     },
   });
 }

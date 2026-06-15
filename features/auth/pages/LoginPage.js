@@ -52,7 +52,7 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
     try {
-      await signInWithGoogleUser(navigation);
+      await signInWithGoogleUser();
     } catch (err) {
       setError(err.message || 'Google sign-in failed');
     } finally {

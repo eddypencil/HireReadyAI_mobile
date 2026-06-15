@@ -119,24 +119,21 @@ export function UserProvider({ children }) {
     setSession(null);
   };
 
-  const signInWithGoogleUser = async (navigate) => {
+  const signInWithGoogleUser = async () => {
     pendingRoleSelectionRef.current = true;
     const user = await signInWithGoogle();
     const existing = await getProfile(user.id);
     if (existing) {
       pendingRoleSelectionRef.current = false;
       await fetchAndSetProfile(user.id);
-      if (navigate) navigate.replace('Main');
       return;
     }
     setNeedsRoleSelection(true);
-    if (navigate) navigate.replace('GoogleRoleSelect', { user });
   };
 
-  const completeRoleSelection = async (userId, navigate) => {
+  const completeRoleSelection = async (userId) => {
     pendingRoleSelectionRef.current = false;
     await fetchAndSetProfile(userId);
-    if (navigate) navigate.replace('Main');
   };
 
   return (
