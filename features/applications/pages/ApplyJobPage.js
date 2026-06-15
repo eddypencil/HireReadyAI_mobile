@@ -397,7 +397,7 @@ export default function ApplyJobPage() {
 
       </ScrollView>
 
-      <Modal visible={showSuccess} transparent animationType="fade" statusBarTranslucent>
+      <Modal visible={showSuccess} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setShowSuccess(false)}>
         <View style={styles.successOverlay}>
           <View style={[styles.successModal, { width: Math.min(screenWidth * 0.85, 400) }]}>
             <View style={styles.successIconWrap}>
@@ -407,7 +407,7 @@ export default function ApplyJobPage() {
             <Text style={styles.successMessage}>{t("applications.success_message")}</Text>
             <TouchableOpacity
               style={styles.successButton}
-              onPress={() => navigation.navigate('Main', { screen: 'JobsTab' })}
+              onPress={() => { setShowSuccess(false); navigation.navigate('Main', { screen: 'JobsTab' }); }}
               activeOpacity={0.85}
             >
               <Text style={styles.successButtonText}>{t("applications.ok")}</Text>
