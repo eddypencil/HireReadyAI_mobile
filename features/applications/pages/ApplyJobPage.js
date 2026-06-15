@@ -234,7 +234,8 @@ export default function ApplyJobPage() {
   return (
     <KeyboardAvoidingView
       style={styles.flex}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
+      keyboardVerticalOffset={Platform.OS === 'android' ? 80 : 0}
     >
       <ScrollView style={styles.screen} contentContainerStyle={[styles.contentContainer, { paddingTop: insets.top + 16 }]}>
 

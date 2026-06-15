@@ -150,6 +150,8 @@ export default function ContactUsScreen() {
                     />
 
                     
+
+                    
                     {!isApplicant && (
                         <>
                             <Text style={[styles.label, { color: c.foreground }]}>
@@ -225,6 +227,10 @@ export default function ContactUsScreen() {
                         <Ionicons name="call" size={18} color={c.primary} />
                         <Text style={{ color: c.foreground }}>{SUPPORT_PHONE}</Text>
                     </TouchableOpacity>
+                    <View style={styles.infoRow}>
+                        <Ionicons name="location" size={18} color={c.primary} />
+                        <Text style={{ color: c.foreground }}>Smart Village, Cairo, Egypt</Text>
+                    </View>
                 </View>
             </ScrollView>
         </KeyboardAvoidingView>

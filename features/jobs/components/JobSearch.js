@@ -26,7 +26,7 @@ export default function JobSearch({ search, setSearch }) {
           style={s.input}
           value={search}
           onChangeText={setSearch}
-          placeholder="Search jobs by title or department..."
+          placeholder="Search jobs by title"
           placeholderTextColor={c['muted-foreground']}
         />
       </View>
