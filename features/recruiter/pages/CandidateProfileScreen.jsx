@@ -17,6 +17,12 @@ import {
 } from "../services/candidateProfile.service";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
+import { useUser } from "../../auth/context/user.context";
+import { supabase } from "../../../shared/services/supabase";
+import {
+  rejectApplication,
+  unrejectApplication,
+} from "../../shortlist/services/shortlist.service";
 
 function getInitials(name = "") {
   return (
@@ -410,6 +416,31 @@ function createStyles(c) {
     noCvText: { fontSize: 15, fontWeight: '600', marginTop: 8 },
     noCvSubtext: { fontSize: 12, marginTop: 4 },
 
+    actionDivider: { borderTopWidth: 1, marginVertical: 14 },
+
+    rejectBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 6,
+      borderWidth: 1.5,
+      borderRadius: 10,
+      paddingVertical: 10,
+    },
+    rejectBtnText: { fontSize: 14, fontWeight: '700' },
+
+    unrejectBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 6,
+      borderRadius: 10,
+      paddingVertical: 10,
+    },
+    unrejectBtnText: { fontSize: 14, fontWeight: '700', color: "#fff" },
+
+    actionError: { fontSize: 12, marginTop: 6, textAlign: "center" },
+
     viewProfileBtn: {
       flexDirection: "row",
       alignItems: "center",
@@ -435,11 +466,14 @@ export default function CandidateProfileScreen() {
   const { applicationId } = route.params || {};
   const { t, language } = useTranslation();
   const isRtl = language === "ar";
+  const { profile: recruiterProfile, user } = useUser();
 
   const [profile, setProfile] = useState(null);
   const [percentile, setPercentile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [actionError, setActionError] = useState("");
 
   const styles = createStyles(c);
 
@@ -523,6 +557,15 @@ export default function CandidateProfileScreen() {
   );
   const cvFeedback = parseAIFeedback(cvStage);
 
+  const stagesWithEvals = stages.filter((s) => {
+    const raw = s.application_stage_evaluations;
+    const d = Array.isArray(raw) ? raw[0] : raw;
+    return d?.reasoning || d?.recommendation;
+  });
+  const lastEvalStage = stagesWithEvals[stagesWithEvals.length - 1] || stages[0];
+  const evalsRaw = lastEvalStage?.application_stage_evaluations;
+  const currentEval = Array.isArray(evalsRaw) ? evalsRaw[0] : evalsRaw;
+
   const scoredStages = stages.filter((s) => s.score != null);
   const computedComposite =
     scoredStages.length > 0
@@ -545,6 +588,59 @@ export default function CandidateProfileScreen() {
       "ai_screening",
     ].includes(s.recruitment_stages?.stage_type),
   );
+
+  const handleReject = async () => {
+    setActionLoading(true);
+    setActionError("");
+    try {
+      const candidateEmail = app.answers?.info?.email;
+      const fromEmail = user?.email;
+      if (candidateEmail && fromEmail) {
+        const { error: fnError } = await supabase.functions.invoke(
+          "send-offer-email",
+          {
+            body: {
+              to: candidateEmail,
+              fromName: recruiterProfile?.full_name || "Hiring Team",
+              fromEmail,
+              subject: `Update on Your Application - ${app.job_postings?.title || "Our Company"}`,
+              body:
+                `Dear ${candidate.full_name || "Candidate"},\n\n` +
+                `Thank you for your interest in joining ${app.job_postings?.title || "our company"} and for taking the time to go through our hiring process.\n\n` +
+                `After careful consideration, we have decided to move forward with other candidates whose qualifications more closely match the requirements of the role.\n` +
+                (currentEval?.reasoning ? `\nFeedback: ${currentEval.reasoning}\n` : "") +
+                `\nWe appreciate your effort and wish you the very best in your future endeavors.\n\n` +
+                `Sincerely,\n${recruiterProfile?.full_name || "The Hiring Team"}`,
+              applicationId,
+              jobId: app.job_id,
+              action: "reject",
+            },
+          },
+        );
+        if (fnError) console.warn("[Rejection email] edge function error:", fnError);
+      }
+
+      await rejectApplication(applicationId, currentEval?.reasoning || "");
+      setProfile((prev) => ({ ...prev, is_rejected: true }));
+    } catch (err) {
+      setActionError(err.message || "Failed to reject candidate");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleUnreject = async () => {
+    setActionLoading(true);
+    setActionError("");
+    try {
+      await unrejectApplication(applicationId);
+      setProfile((prev) => ({ ...prev, is_rejected: false }));
+    } catch (err) {
+      setActionError(err.message || "Failed to un-reject candidate");
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
   return (
     <ScrollView
@@ -776,6 +872,48 @@ export default function CandidateProfileScreen() {
           >
             {cvFeedback.feedback}
           </Text>
+
+          {/* Reject / Unreject */}
+          <View style={[styles.actionDivider, { borderTopColor: `${c.accent}30` }]} />
+          {app.is_rejected ? (
+            <TouchableOpacity
+              style={[styles.unrejectBtn, { backgroundColor: c.success }]}
+              onPress={handleUnreject}
+              disabled={actionLoading}
+              activeOpacity={0.85}
+            >
+              {actionLoading ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                <Ionicons name="checkmark-circle" size={16} color="#fff" />
+              )}
+              <Text style={styles.unrejectBtnText}>
+                {actionLoading ? "Unrejecting..." : "Unreject"}
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={[styles.rejectBtn, { borderColor: c.destructive }]}
+              onPress={handleReject}
+              disabled={actionLoading}
+              activeOpacity={0.7}
+            >
+              {actionLoading ? (
+                <ActivityIndicator size="small" color={c.destructive} />
+              ) : (
+                <Ionicons name="close-circle" size={16} color={c.destructive} />
+              )}
+              <Text style={[styles.rejectBtnText, { color: c.destructive }]}>
+                {actionLoading ? "Rejecting..." : "Reject"}
+              </Text>
+            </TouchableOpacity>
+          )}
+          {actionError ? (
+            <Text style={[styles.actionError, { color: c.destructive }]}>
+              {actionError}
+            </Text>
+          ) : null}
+          <View style={[styles.actionDivider, { borderTopColor: `${c.accent}30` }]} />
 
           {/* Dimension Scores */}
           {cvFeedback.dimension_scores && (
