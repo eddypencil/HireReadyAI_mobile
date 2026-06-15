@@ -3,7 +3,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../../shared/context/I18nContext';
 
-
 function SectionCard({ title, icon, onEdit, viewOnly, children, empty, emptyText, styles }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
@@ -37,11 +36,14 @@ export default function AboutTab({ profile, viewOnly, onEdit }) {
   const { t } = useTranslation();
   const c = theme.colors;
   const styles = createStyles(c);
+
   const handleLink = (url) => {
     if (!url) return;
     const full = url.startsWith('http') ? url : `https://${url}`;
     Linking.openURL(full).catch(() => {});
   };
+
+  const hasContact = !!(profile?.phone || profile?.location || profile?.email);
 
   return (
     <View style={styles.container}>
@@ -65,14 +67,15 @@ export default function AboutTab({ profile, viewOnly, onEdit }) {
         icon="call-outline"
         onEdit={() => onEdit('contact')}
         viewOnly={viewOnly}
-        empty={!profile?.phone && !profile?.location}
+        empty={!hasContact}
         emptyText={t('profile.add_contact')}
       >
         <View style={styles.list}>
           {profile?.phone && (
             <View style={styles.listItem}>
-              <View style={[styles.listIcon, { backgroundColor: `${c.accent}18` }]}>
-                <Ionicons name="call-outline" size={14} color={c.accent} />
+              {/* Phone — purple tint */}
+              <View style={[styles.listIcon, { backgroundColor: '#ede9fe' }]}>
+                <Ionicons name="call-outline" size={14} color="#7c3aed" />
               </View>
               <View>
                 <Text style={styles.listLabel}>{t('profile.phone')}</Text>
@@ -80,10 +83,29 @@ export default function AboutTab({ profile, viewOnly, onEdit }) {
               </View>
             </View>
           )}
+          {profile?.email && (
+            <TouchableOpacity
+              style={styles.listItem}
+              onPress={() => Linking.openURL(`mailto:${profile.email}`).catch(() => {})}
+              activeOpacity={0.75}
+            >
+              {/* Email — green tint */}
+              <View style={[styles.listIcon, { backgroundColor: '#dcfce7' }]}>
+                <Ionicons name="mail-outline" size={14} color="#16a34a" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.listLabel}>Email</Text>
+                <Text style={styles.listValue} numberOfLines={1}>
+                  {profile.email}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          )}
           {profile?.location && (
             <View style={styles.listItem}>
-              <View style={[styles.listIcon, { backgroundColor: `${c.primary}18` }]}>
-                <Ionicons name="location-outline" size={14} color={c.primary} />
+              {/* Location — pink/rose tint */}
+              <View style={[styles.listIcon, { backgroundColor: '#ffe4e6' }]}>
+                <Ionicons name="location-outline" size={14} color="#e11d48" />
               </View>
               <View>
                 <Text style={styles.listLabel}>{t('profile.location')}</Text>
@@ -94,7 +116,7 @@ export default function AboutTab({ profile, viewOnly, onEdit }) {
         </View>
       </SectionCard>
 
-      {/* Links � LinkedIn only */}
+      {/* Links */}
       <SectionCard styles={styles}
         title={t('profile.links')}
         icon="link-outline"
@@ -106,8 +128,9 @@ export default function AboutTab({ profile, viewOnly, onEdit }) {
         <View style={styles.list}>
           {profile?.linkedin_url && (
             <TouchableOpacity style={styles.listItem} onPress={() => handleLink(profile.linkedin_url)} activeOpacity={0.75}>
-              <View style={[styles.listIcon, { backgroundColor: `${c.accent}18` }]}>
-                <Ionicons name="logo-linkedin" size={14} color={c.accent} />
+              {/* LinkedIn — blue tint */}
+              <View style={[styles.listIcon, { backgroundColor: '#dbeafe' }]}>
+                <Ionicons name="logo-linkedin" size={14} color="#1d4ed8" />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.listLabel}>{t('profile.linkedin')}</Text>
@@ -125,20 +148,20 @@ export default function AboutTab({ profile, viewOnly, onEdit }) {
 
 function createStyles(c) {
   return StyleSheet.create({
-  container: { gap: 14 },
-  card: { backgroundColor: c.card, borderRadius: 16, borderWidth: 1, borderColor: c.border, padding: 18, gap: 12 },
-  cardHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  cardHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  cardTitle: { fontSize: 15, color: c.foreground, fontWeight: '700' },
-  editBtn: { padding: 4 },
-  emptyText: { fontSize: 13, color: c['muted-foreground'], fontStyle: 'italic', lineHeight: 20 },
-  headline: { fontSize: 14, color: c.foreground, marginBottom: 4, fontWeight: '600' },
-  bioText: { fontSize: 14, color: c.foreground, lineHeight: 22 },
-  list: { gap: 12 },
-  listItem: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  listIcon: { width: 34, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
-  listLabel: { fontSize: 11, color: c['muted-foreground'], fontWeight: '500' },
-  listValue: { fontSize: 13, color: c.foreground, marginTop: 1, fontWeight: '500' },
-  link: { color: c.accent },
+    container: { gap: 14 },
+    card: { backgroundColor: c.card, borderRadius: 16, borderWidth: 1, borderColor: c.border, padding: 18, gap: 12 },
+    cardHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+    cardHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+    cardTitle: { fontSize: 15, color: c.foreground, fontWeight: '700' },
+    editBtn: { padding: 4 },
+    emptyText: { fontSize: 13, color: c['muted-foreground'], fontStyle: 'italic', lineHeight: 20 },
+    headline: { fontSize: 14, color: c.foreground, marginBottom: 4, fontWeight: '600' },
+    bioText: { fontSize: 14, color: c.foreground, lineHeight: 22 },
+    list: { gap: 12 },
+    listItem: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+    listIcon: { width: 34, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+    listLabel: { fontSize: 11, color: c['muted-foreground'], fontWeight: '500' },
+    listValue: { fontSize: 13, color: c.foreground, marginTop: 1, fontWeight: '500' },
+    link: { color: c.accent },
   });
 }

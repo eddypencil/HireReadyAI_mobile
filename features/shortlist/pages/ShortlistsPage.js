@@ -70,13 +70,17 @@ export default function ShortlistsPage() {
   const [offerAction, setOfferAction] = useState("offer");
   const [offerCandidate, setOfferCandidate] = useState(null);
 
+  // ── Recruiter identity — passed to ShortlistDetailPanel for emails
+  const recruiterName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "";
+  const recruiterEmail = user?.email || "";
+  const companyName = company?.name || "";
+
   const handleAdvance = async (applicationId) => {
     const entry = sortedEntries.find(
       (e) => e.applications.id === applicationId,
     );
     if (!entry) return;
 
-    // Get email from answers.info.email (already fetched) 
     const candidateEmail =
       entry.applications.answers?.info?.email ||
       entry.applications.profiles?.email ||
@@ -85,7 +89,12 @@ export default function ShortlistsPage() {
     setOfferCandidate({ ...entry, _candidateEmail: candidateEmail });
     setOfferAction('offer');
     setIsPanelOpen(false);
-    setTimeout(() => setShowOfferModal(true), 300); // fixes the overlap bug too
+    setTimeout(() => setShowOfferModal(true), 300);
+  };
+
+  
+  const handleReject = async (applicationId, reason) => {
+    await rejectApplication(applicationId, reason);
   };
 
   const handleOfferSuccess = () => {
@@ -128,7 +137,7 @@ export default function ShortlistsPage() {
       <View style={styles.header}>
         <View style={styles.headerTop}>
           <View>
-            <View style={{ display:"flex",flexDirection:"row",gap:25 }}>
+            <View style={{ display: "flex", flexDirection: "row", gap: 25 }}>
               <Text style={styles.pageTitle}>{t("shortlist.title")}</Text>
               <TouchableOpacity
                 style={styles.jobSelector}
@@ -224,10 +233,14 @@ export default function ShortlistsPage() {
             notesLoading={notesLoading}
             onClose={() => setIsPanelOpen(false)}
             onCastVote={castVote}
-            onReject={rejectApplication}
+            onReject={handleReject}
             onAdvanceToOffer={handleAdvance}
             onPostNote={postNote}
             isOverlay={true}
+            // ── Pass recruiter identity so the rejection email has correct sender info
+            recruiterName={recruiterName}
+            recruiterEmail={recruiterEmail}
+            companyName={companyName}
           />
         )}
       </View>
@@ -306,14 +319,12 @@ export default function ShortlistsPage() {
             offerCandidate.applications.profiles?.email ||
             ""
           }
-          recruiterName={
-            user?.user_metadata?.full_name || user?.email?.split("@")[0] || ""
-          }
-          recruiterEmail={user?.email || ""}
+          recruiterName={recruiterName}
+          recruiterEmail={recruiterEmail}
           applicationId={offerCandidate.applications.id}
           jobId={selectedJobId}
           jobTitle={selectedJob?.title || ""}
-          companyName={company?.name || ""}
+          companyName={companyName}
           action={offerAction}
           onSuccess={handleOfferSuccess}
         />
@@ -394,21 +405,6 @@ function createStyles(c) {
       fontSize: 13,
       color: c.foreground,
       flexShrink: 1,
-    },
-    filtersBtn: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 5,
-      borderWidth: 1,
-      borderColor: c.border,
-      borderRadius: 8,
-      paddingHorizontal: 10,
-      paddingVertical: 7,
-      backgroundColor: c.card,
-    },
-    filtersBtnText: {
-      fontSize: 12,
-      color: c["muted-foreground"],
     },
     sortRow: {
       flexDirection: "row",

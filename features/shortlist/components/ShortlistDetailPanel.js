@@ -96,7 +96,7 @@ export default function ShortlistDetailPanel({
     application_stages = [],
   } = app;
 
-  // ── Check if an offer has already been sent for this application
+  
   const offerAlreadySent = application_stages.some(
     (s) =>
       s.recruitment_stages?.stage_type === 'offer' &&
@@ -126,12 +126,54 @@ export default function ShortlistDetailPanel({
     setPostingNote(false);
   };
 
+
   const handleReject = async () => {
     setRejecting(true);
-    await onReject(app.id, rejectReason.trim());
-    setRejecting(false);
-    setShowRejectInput(false);
+    try {
+      
+      const candidateEmail = app.answers?.info?.email;
+      
+      if (candidateEmail) {
+        const rejectionSubject = `Update on Your Application - ${companyName || 'Our Company'}`;
+        const rejectionBody = `Dear ${candidate?.full_name || 'Candidate'},
+
+        Thank you for your interest in joining ${companyName || 'our company'} and for taking the time to go through our hiring process.
+
+        After careful consideration, we have decided to move forward with other candidates whose qualifications more closely match the requirements of the role.
+        ${rejectReason ? `\nFeedback: ${rejectReason}` : ''}
+        We appreciate your effort and wish you the very best in your future endeavors.
+
+        Sincerely,
+        ${recruiterName || 'The Hiring Team'}`;
+
+        
+        supabase.functions.invoke('send-offer-email', {
+          body: {
+            to: candidateEmail,
+            fromName: recruiterName || 'Hiring Team',
+            fromEmail: recruiterEmail || '',
+            subject: rejectionSubject,
+            body: rejectionBody,
+            applicationId: app.id,
+            jobId: app.job_id,
+            action: 'reject',
+          },
+        }).catch(err => console.warn('Rejection email failed:', err));
+      }
+
+      await onReject(app.id, rejectReason.trim());
+      setShowRejectInput(false);
+    } finally {
+      setRejecting(false);
+    }
   };
+
+  // const handleReject = async () => {
+  //   setRejecting(true);
+  //   await onReject(app.id, rejectReason.trim());
+  //   setRejecting(false);
+  //   setShowRejectInput(false);
+  // };
 
   const scoreBadgeBg = composite_score >= 80 ? `${c.success}1a` : composite_score >= 65 ? `${c.warning}1a` : c['surface-muted'];
   const scoreBadgeText = composite_score >= 80 ? c.success : composite_score >= 65 ? c.warning : c['muted-foreground'];
