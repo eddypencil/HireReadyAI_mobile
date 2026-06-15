@@ -14,21 +14,20 @@ export default function AppSelector({ applications, selectedId, onSelect }) {
         const job = app.job_postings;
         const sel = app.id === selectedId;
         const isRejected = app.current_stage === 'rejected' || app.is_rejected === true;
+        const isOffer = app.current_stage === 'offer' || app.current_recruitment_stage?.stage_type === 'offer';
+
+        const badgeLabel = isRejected ? 'Rejected' : isOffer ? 'Offer' : 'Hired';
+        const badgeStyle = isRejected ? (sel ? styles.badgeWhite : styles.badgeRed) : isOffer ? (sel ? styles.badgeWhite : styles.badgeAmber) : (sel ? styles.badgeWhite : styles.badgeGreen);
+        const textStyle = isRejected ? (sel ? styles.textWhite : styles.textRed) : isOffer ? (sel ? styles.textWhite : styles.textAmber) : (sel ? styles.textWhite : styles.textGreen);
 
         const inner = (
           <View style={styles.inner}>
             <Text style={[styles.title, sel && styles.titleSelected]} numberOfLines={1}>
               {job?.title || 'Unknown'}
             </Text>
-            <View style={[
-              styles.badge,
-              isRejected ? (sel ? styles.badgeWhite : styles.badgeRed) : (sel ? styles.badgeWhite : styles.badgeGreen),
-            ]}>
-              <Text style={[
-                styles.badgeText,
-                isRejected ? (sel ? styles.textWhite : styles.textRed) : (sel ? styles.textWhite : styles.textGreen),
-              ]}>
-                {isRejected ? 'Rejected' : 'Hired'}
+            <View style={[styles.badge, badgeStyle]}>
+              <Text style={[styles.badgeText, textStyle]}>
+                {badgeLabel}
               </Text>
             </View>
           </View>
@@ -76,9 +75,11 @@ function createStyles(c) {
   badgeWhite: { backgroundColor: `${c.white}38` },
   badgeRed: { backgroundColor: c.red[100] },
   badgeGreen: { backgroundColor: c.emerald[100] },
+  badgeAmber: { backgroundColor: c.amber[100] },
   badgeText: { fontSize: 10, letterSpacing: 0.3, fontWeight: '700' },
   textWhite: { color: c.white },
   textRed: { color: c.red[600] },
   textGreen: { color: c.emerald[600] },
+  textAmber: { color: c.amber[600] },
 });
 }

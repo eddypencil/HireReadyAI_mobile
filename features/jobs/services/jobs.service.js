@@ -44,12 +44,20 @@ export const fetchJobById = async (jobId) => {
 };
 
 export const fetchSimilarJobs = async (jobId, seniorityLevel, jobType) => {
-  const { data, error } = await supabase
+  const conditions = [];
+  if (seniorityLevel) conditions.push(`seniority_level.eq.${seniorityLevel}`);
+  if (jobType) conditions.push(`job_type.eq.${jobType}`);
+
+  let query = supabase
     .from("job_postings")
     .select(`*, companies(id, name, logo_url, location)`)
-    .neq("id", jobId)
-    .or(`seniority_level.eq.${seniorityLevel},job_type.eq.${jobType}`)
-    .limit(4);
+    .neq("id", jobId);
+
+  if (conditions.length > 0) {
+    query = query.or(conditions.join(","));
+  }
+
+  const { data, error } = await query.limit(4);
   if (error) throw error;
   return data;
 };

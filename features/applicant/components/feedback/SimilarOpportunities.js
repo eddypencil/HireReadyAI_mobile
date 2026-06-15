@@ -38,7 +38,7 @@ export default function SimilarOpportunities({ jobId, seniorityLevel, jobType })
           <TouchableOpacity
             key={job.id}
             style={[styles.row, isLast && styles.rowLast]}
-            onPress={() => navigation.navigate('JobDetails', { jobId: job.id })}
+            onPress={() => navigation.navigate('JobDetails', { id: job.id })}
             activeOpacity={0.75}
           >
             <View style={styles.logo}>

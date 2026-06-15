@@ -64,6 +64,11 @@ export default function CandidateHeader({ app, percentile, percentileTag }) {
                 <Text style={styles.hiredText}>{t('applicant.feedback.hired_badge')}</Text>
               </View>
             )}
+            {!isRejected && (app?.current_stage === 'offer' || app?.current_recruitment_stage?.stage_type === 'offer') && (
+              <View style={styles.offerBadge}>
+                <Text style={styles.offerText}>{t('applicant.feedback.offer_badge')}</Text>
+              </View>
+            )}
           </View>
 
           {candidate.headline && (
@@ -152,6 +157,12 @@ function createStyles(c) {
     paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6,
   },
   hiredText: { fontSize: 10, color: c.emerald[200], letterSpacing: 0.5, fontWeight: '700' },
+  offerBadge: {
+    backgroundColor: `${c.warning}33`,
+    borderWidth: 1, borderColor: `${c.warning}66`,
+    paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6,
+  },
+  offerText: { fontSize: 10, color: c.amber[200], letterSpacing: 0.5, fontWeight: '700' },
   headline: { fontSize: 12, color: `${c.white}BF`, marginTop: 4, lineHeight: 17 },
   metaList: { marginTop: 8, gap: 4 },
   metaItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },

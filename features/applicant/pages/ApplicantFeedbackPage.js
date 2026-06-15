@@ -131,6 +131,7 @@ export default function ApplicantFeedbackPage() {
       .from("applications")
       .select(
         `id, current_stage, is_rejected, applied_at,
+        current_recruitment_stage:recruitment_stages!current_stage_id ( stage_type ),
         job_postings ( id, title, seniority_level, job_type, companies ( id, name, location ) )`,
       )
       .eq("candidate_profile_id", user.id)
@@ -141,7 +142,8 @@ export default function ApplicantFeedbackPage() {
             (a) =>
               a.current_stage === "rejected" ||
               a.is_rejected === true ||
-              a.current_stage === "hired",
+              a.current_stage === "hired" ||
+              a.current_recruitment_stage?.stage_type === "offer",
           );
           setApplications(filtered);
           if (initialAppId && filtered.some((a) => a.id === initialAppId))

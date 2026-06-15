@@ -134,7 +134,7 @@ export default function InterviewList({ applications }) {
   };
 
   const interviewProcesses = applications?.filter((app) => {
-    return getStageStatus(app) !== null;
+    return getStageStatus(app) !== null || app.current_recruitment_stage?.stage_type === APPLICATION_STAGE.offer;
   }) || [];
 
   const countAll = interviewProcesses.length;
@@ -145,7 +145,12 @@ export default function InterviewList({ applications }) {
     (app) => getStageStatus(app)?.status === "completed",
   ).length;
   const countRejected = interviewProcesses.filter(
-    (app) => app.current_stage === APPLICATION_STAGE.rejected,
+    (app) =>
+      app.is_rejected || app.current_stage === APPLICATION_STAGE.rejected,
+  ).length;
+  const countOffer = interviewProcesses.filter(
+    (app) =>
+      app.current_recruitment_stage?.stage_type === APPLICATION_STAGE.offer,
   ).length;
 
   const filtered = interviewProcesses.filter((app) => {
@@ -154,6 +159,7 @@ export default function InterviewList({ applications }) {
     if (activeTab === "active") return ss?.status === "in_progress";
     if (activeTab === "completed") return ss?.status === "completed";
     if (activeTab === "rejected") return app.current_stage === APPLICATION_STAGE.rejected;
+    if (activeTab === "offer") return app.current_recruitment_stage?.stage_type === APPLICATION_STAGE.offer;
     return true;
   });
 
@@ -162,6 +168,7 @@ export default function InterviewList({ applications }) {
     { key: "active", label: t("applicant.active"), count: countActive },
     { key: "completed", label: t("applicant.completed"), count: countCompleted },
     { key: "rejected", label: t("applicant.rejected"), count: countRejected },
+    { key: "offer", label: t("applicant.offer"), count: countOffer },
   ];
 
   if (interviewProcesses.length === 0) {
@@ -327,6 +334,9 @@ export default function InterviewList({ applications }) {
                   const tokenKey = stageColorMap[stageStatus.stageType] || 'stage-final';
                   cfg = stageStyle(c[tokenKey]);
                   displayLabel = stageStatus.label;
+                } else if (app.current_recruitment_stage?.stage_type === APPLICATION_STAGE.offer) {
+                  cfg = stageStyle(c.success);
+                  displayLabel = t("applicant.stages.offer");
                 } else {
                   const stageVal = app.current_stage;
                   displayLabel = stageLabelMap[stageVal] || defaultLabel;
@@ -334,12 +344,13 @@ export default function InterviewList({ applications }) {
                   cfg = stageStyle(c[tokenKey]);
                 }
 
-                const showButtons = isActive || !!app.cv_file_url;
+                const isOffer = app.current_recruitment_stage?.stage_type === APPLICATION_STAGE.offer;
+                const showButtons = isActive || !!app.cv_file_url || isOffer;
 
                 return (
                   <View key={app.id} style={{
                     // -- Column layout so info always gets full width
-                    // and buttons sit cleanly below — no more letter wrapping
+                    // and buttons sit cleanly below ï¿½ no more letter wrapping
                     flexDirection: "column",
                     gap: 10,
                     backgroundColor: isActive ? c['surface-muted'] : c.card,
@@ -349,7 +360,7 @@ export default function InterviewList({ applications }) {
                     padding: 13,
                   }}>
 
-                    {/* -- Info section — full width -- */}
+                    {/* -- Info section ï¿½ full width -- */}
                     <View>
                       <View style={{
                         flexDirection: "row",
@@ -410,7 +421,7 @@ export default function InterviewList({ applications }) {
                       </View>
                     </View>
 
-                    {/* -- Buttons row — below info, each button flex: 1 -- */}
+                    {/* -- Buttons row ï¿½ below info, each button flex: 1 -- */}
                     {showButtons && (
                       <View style={{
                         flexDirection: "row",
@@ -438,6 +449,30 @@ export default function InterviewList({ applications }) {
                               color: c['destructive-foreground'],
                             }}>
                               Start {stageStatus?.label ?? "Interview"}
+                            </Text>
+                          </TouchableOpacity>
+                        )}
+                        {isOffer && (
+                          <TouchableOpacity
+                            onPress={() => navigation.navigate("ApplicantFeedback", { appId: app.id })}
+                            style={{
+                              flex: 1,
+                              flexDirection: "row",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              gap: 5,
+                              backgroundColor: c.success,
+                              borderRadius: 8,
+                              paddingHorizontal: 13,
+                              paddingVertical: 8,
+                            }}
+                          >
+                            <Ionicons name="document-text-outline" size={10} color={c['destructive-foreground']} />
+                            <Text style={{
+                              fontSize: 11,
+                              color: c['destructive-foreground'], fontWeight: '700',
+                            }}>
+                              {t("applicant.show_feedback")}
                             </Text>
                           </TouchableOpacity>
                         )}
