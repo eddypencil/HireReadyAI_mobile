@@ -14,6 +14,7 @@ import { useTheme } from '../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../shared/context/I18nContext';
 import { useUser } from '../context/user.context';
 import LanguageSwitcher from '../../../shared/i18n/LanguageSwitcher';
+import SocialButton from '../../../shared/ui/SocialButton';
 
 
 export default function LoginPage() {
@@ -165,14 +166,12 @@ export default function LoginPage() {
               <View style={{ flex: 1, height: 1, backgroundColor: c.border }} />
             </View>
 
-            <TouchableOpacity
-              style={[s.button, { backgroundColor: c.card, borderWidth: 1, borderColor: c.border }, loading && s.buttonDisabled]}
-              onPress={handleGoogleSignIn}
+            <SocialButton
+              provider="google"
+              onClick={handleGoogleSignIn}
+              loading={loading}
               disabled={loading}
-              activeOpacity={0.8}
-            >
-              <Text style={[s.buttonText, { color: c['sidebar-foreground'] }]}>Continue with Google</Text>
-            </TouchableOpacity>
+            />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

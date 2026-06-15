@@ -27,6 +27,8 @@
     "sign_in": "تسجيل الدخول",
     "no_account": "ليس لديك حساب؟",
     "create_one": "إنشاء حساب",
+    "or": "أو",
+    "continue_google": "المتابعة عبر Google",
     "fill_fields": "يرجى ملء جميع الحقول.",
     "invalid_credentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة."
   },
@@ -884,6 +886,22 @@
     "complete": "تمت الإجابة على جميع الأسئلة. شكراً لك!"
   },
 
+  "google_role_select": {
+    "title": "خطوة أخيرة",
+    "subtitle": "كيف ستستخدم HireReadyAI؟",
+    "role_applicant": "مقدم طلب",
+    "role_recruiter": "مسؤول توظيف",
+    "desc_applicant": "تصفح وتقدم للوظائف",
+    "desc_recruiter": "انشر الوظائف وأدر المرشحين",
+    "get_started": "ابدأ الآن"
+  },
+  "pending_approval": {
+    "title": "قيد الانتظار",
+    "subtitle": "طلب انضمامك إلى {{company}} قيد المراجعة.",
+    "contact_hr": "يرجى التواصل مع مدير الموارد البشرية للحصول على الوصول.",
+    "back_to_home": "العودة إلى الصفحة الرئيسية",
+    "company_fallback": "الشركة"
+  },
   "contact_us": {
     "badge": "تواصل معنا",
     "title": "تواصل مع الدعم",

@@ -27,6 +27,8 @@
     "sign_in": "Sign In",
     "no_account": "Don't have an account?",
     "create_one": "Create one",
+    "or": "or",
+    "continue_google": "Continue with Google",
     "fill_fields": "Please fill in all fields.",
     "invalid_credentials": "Invalid email or password. Please try again."
   },
@@ -883,6 +885,22 @@
     "complete": "All questions answered. Thank you!"
   },
 
+  "google_role_select": {
+    "title": "One last step",
+    "subtitle": "How will you be using HireReadyAI?",
+    "role_applicant": "Applicant",
+    "role_recruiter": "Recruiter",
+    "desc_applicant": "Browse and apply for jobs",
+    "desc_recruiter": "Post jobs and manage candidates",
+    "get_started": "Get Started"
+  },
+  "pending_approval": {
+    "title": "Pending Approval",
+    "subtitle": "Your request to join {{company}} is awaiting approval.",
+    "contact_hr": "Please contact your HR manager for access.",
+    "back_to_home": "Back to Home",
+    "company_fallback": "the company"
+  },
   "contact_us": {
     "badge": "Contact us",
     "title": "Get in touch",

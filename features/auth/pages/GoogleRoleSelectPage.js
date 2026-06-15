@@ -13,11 +13,6 @@ import { useTranslation } from '../../../shared/context/I18nContext';
 import { useUser } from '../../../features/auth/context/user.context';
 import { USER_ROLE } from '../../../shared/constants/enums';
 
-const ROLES = [
-  { label: 'Applicant', value: USER_ROLE.applicant, desc: 'Browse and apply for jobs' },
-  { label: 'Recruiter', value: USER_ROLE.recruiter, desc: 'Post jobs and manage candidates' },
-];
-
 export default function GoogleRoleSelectPage({ route }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
@@ -25,6 +20,11 @@ export default function GoogleRoleSelectPage({ route }) {
   const navigation = useNavigation();
   const { completeRoleSelection } = useUser();
   const user = route?.params?.user;
+
+  const ROLES = [
+    { label: t('google_role_select.role_applicant'), value: USER_ROLE.applicant, desc: t('google_role_select.desc_applicant') },
+    { label: t('google_role_select.role_recruiter'), value: USER_ROLE.recruiter, desc: t('google_role_select.desc_recruiter') },
+  ];
 
   const [role, setRole] = useState(USER_ROLE.applicant);
   const [loading, setLoading] = useState(false);
@@ -56,7 +56,7 @@ export default function GoogleRoleSelectPage({ route }) {
     container: { flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24, paddingVertical: 48, backgroundColor: c.sidebar },
     headline: { fontSize: 26, fontWeight: '700', color: c['sidebar-foreground'], textAlign: 'center', marginBottom: 4 },
     subheading: { fontSize: 14, color: c.accent, textAlign: 'center', marginBottom: 32 },
-    card: { padding: 16, borderRadius: 12, borderWidth: 2, marginBottom: 12 },
+    card: { padding: 16, borderRadius: 12, borderWidth: 2, marginBottom: 12, ...theme.shadow.sm },
     cardActive: { borderColor: c.accent, backgroundColor: c.card },
     cardInactive: { borderColor: c.border, backgroundColor: c.background },
     cardLabel: { fontSize: 15, fontWeight: '600', marginBottom: 2 },
@@ -70,8 +70,8 @@ export default function GoogleRoleSelectPage({ route }) {
 
   return (
     <ScrollView contentContainerStyle={s.container} keyboardShouldPersistTaps="handled">
-      <Text style={s.headline}>One last step</Text>
-      <Text style={s.subheading}>How will you be using HireReadyAI?</Text>
+      <Text style={s.headline}>{t('google_role_select.title')}</Text>
+      <Text style={s.subheading}>{t('google_role_select.subtitle')}</Text>
 
       {ROLES.map(({ label, value, desc }) => (
         <TouchableOpacity
@@ -102,7 +102,7 @@ export default function GoogleRoleSelectPage({ route }) {
         {loading ? (
           <ActivityIndicator color={c['destructive-foreground']} size="small" />
         ) : (
-          <Text style={s.buttonText}>Get Started</Text>
+          <Text style={s.buttonText}>{t('google_role_select.get_started')}</Text>
         )}
       </TouchableOpacity>
     </ScrollView>

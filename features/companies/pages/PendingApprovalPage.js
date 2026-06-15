@@ -5,33 +5,59 @@ import {
   StyleSheet,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "../../../shared/context/ThemeContext";
-
+import { useTranslation } from "../../../shared/context/I18nContext";
+import { signOut } from "../../../features/auth/services/auth.service";
 
 export default function PendingApprovalPage({ companyName }) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const c = theme.colors;
+  const navigation = useNavigation();
   const styles = createStyles(c);
+
+  async function handleSignOut() {
+    try {
+      await signOut();
+      navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
+    } catch {}
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <View style={styles.logoWrap}>
-          <Ionicons name="time-outline" size={18} color={c.white} />
+        <View style={styles.headerLeft}>
+          <View style={styles.logoWrap}>
+            <Ionicons name="time-outline" size={18} color={c.white} />
+          </View>
+          <Text style={styles.logoText}>HireReadyAI</Text>
         </View>
-        <Text style={styles.logoText}>HireReadyAI</Text>
+        <TouchableOpacity onPress={handleSignOut} style={styles.signOutBtn} activeOpacity={0.7}>
+          <Ionicons name="log-out-outline" size={16} color={c['muted-foreground']} />
+          <Text style={styles.signOutText}>{t('companies.sign_out')}</Text>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.body}>
         <View style={styles.iconCircle}>
-          <Ionicons name="time-outline" size={36} color={c.amber[500]} />
+          <Ionicons name="time-outline" size={36} color={c.warning} />
         </View>
-        <Text style={styles.title}>Pending Approval</Text>
+        <Text style={styles.title}>{t('pending_approval.title')}</Text>
         <Text style={styles.subtitle}>
-          Your membership request for {companyName || "the company"} is under review.
+          {t('pending_approval.subtitle', { company: companyName || t('pending_approval.company_fallback') })}
         </Text>
         <Text style={styles.hint}>
-          Please wait for an HR Manager to approve your request.
+          {t('pending_approval.contact_hr')}
         </Text>
+        <TouchableOpacity
+          onPress={() => navigation.reset({ index: 0, routes: [{ name: 'Login' }] })}
+          style={styles.backBtn}
+          activeOpacity={0.8}
+        >
+          <Ionicons name="arrow-back" size={16} color={c['destructive-foreground']} />
+          <Text style={styles.backBtnText}>{t('pending_approval.back_to_home')}</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -41,16 +67,21 @@ function createStyles(c) {
   return StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: c.white,
+      backgroundColor: c.background,
     },
     header: {
       flexDirection: "row",
       alignItems: "center",
-      gap: 10,
+      justifyContent: "space-between",
       paddingHorizontal: 20,
       paddingVertical: 14,
       borderBottomWidth: 1,
-      borderBottomColor: c.gray[100],
+      borderBottomColor: c.border,
+    },
+    headerLeft: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
     },
     logoWrap: {
       width: 28,
@@ -65,6 +96,22 @@ function createStyles(c) {
       fontWeight: '700',
       color: c.foreground,
     },
+    signOutBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: c.border,
+      backgroundColor: c.background,
+    },
+    signOutText: {
+      fontSize: 12,
+      fontWeight: '500',
+      color: c['muted-foreground'],
+    },
     body: {
       flex: 1,
       alignItems: "center",
@@ -75,7 +122,7 @@ function createStyles(c) {
       width: 64,
       height: 64,
       borderRadius: 32,
-      backgroundColor: c.amber[50],
+      backgroundColor: `${c.warning}1a`,
       alignItems: "center",
       justifyContent: "center",
       marginBottom: 20,
@@ -88,14 +135,30 @@ function createStyles(c) {
     },
     subtitle: {
       fontSize: 14,
-      color: c.gray[600],
+      color: c['muted-foreground'],
       textAlign: "center",
       marginBottom: 4,
     },
     hint: {
       fontSize: 12,
-      color: c.gray[400],
+      color: c['muted-foreground'],
+      opacity: 0.7,
       textAlign: "center",
+      marginBottom: 28,
+    },
+    backBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      paddingHorizontal: 20,
+      paddingVertical: 10,
+      backgroundColor: c.primary,
+      borderRadius: 10,
+    },
+    backBtnText: {
+      color: c['destructive-foreground'],
+      fontSize: 13,
+      fontWeight: '600',
     },
   });
 }
