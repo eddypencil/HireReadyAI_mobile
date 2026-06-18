@@ -1,21 +1,39 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { useState } from "react";
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
+import { useUser } from "../../auth/context/user.context";
+import { removeCompanyMember } from "../../../features/admin/services/admin.service";
 import { signOut } from "../../../features/auth/services/auth.service";
 
-export default function PendingApprovalPage({ companyName }) {
+export default function PendingApprovalPage({ companyName, companyId }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const c = theme.colors;
+  const { profile } = useUser();
   const navigation = useNavigation();
   const styles = createStyles(c);
+  const [dismissing, setDismissing] = useState(false);
 
   async function handleSignOut() {
     try {
       await signOut();
     } catch {}
+  }
+
+  async function handleDismiss() {
+    if (!profile?.id || !companyId) return;
+    setDismissing(true);
+    try {
+      await removeCompanyMember(profile.id, companyId);
+      navigation.reset({ index: 0, routes: [{ name: "Main" }] });
+    } catch (err) {
+      console.warn("Dismiss failed:", err);
+    } finally {
+      setDismissing(false);
+    }
   }
 
   return (
@@ -40,20 +58,37 @@ export default function PendingApprovalPage({ companyName }) {
           })}
         </Text>
         <Text style={styles.hint}>{t("pending_approval.contact_hr")}</Text>
-        <TouchableOpacity
-          onPress={handleSignOut}
-          style={styles.backBtn}
-          activeOpacity={0.8}
-        >
-          <Ionicons
-            name="arrow-back"
-            size={16}
-            color={c["destructive-foreground"]}
-          />
-          <Text style={styles.backBtnText}>
-            {t("pending_approval.back_to_home")}
-          </Text>
-        </TouchableOpacity>
+        <View style={{ flexDirection: "column", alignItems: "center", gap: 12 }}>
+          <TouchableOpacity
+            onPress={handleSignOut}
+            style={styles.backBtn}
+            activeOpacity={0.8}
+          >
+            <Ionicons
+              name="arrow-back"
+              size={16}
+              color={c["destructive-foreground"]}
+            />
+            <Text style={styles.backBtnText}>
+              {t("pending_approval.back_to_home")}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleDismiss}
+            disabled={dismissing}
+            style={styles.dismissBtn}
+            activeOpacity={0.8}
+          >
+            {dismissing ? (
+              <ActivityIndicator size="small" color={c.destructive} />
+            ) : (
+              <Ionicons name="close-circle-outline" size={16} color={c.destructive} />
+            )}
+            <Text style={styles.dismissBtnText}>
+              Dismiss Request
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -153,6 +188,20 @@ function createStyles(c) {
     },
     backBtnText: {
       color: c["destructive-foreground"],
+      fontSize: 13,
+      fontWeight: "600",
+    },
+    dismissBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      paddingHorizontal: 20,
+      paddingVertical: 10,
+      backgroundColor: `${c.destructive}12`,
+      borderRadius: 10,
+    },
+    dismissBtnText: {
+      color: c.destructive,
       fontSize: 13,
       fontWeight: "600",
     },

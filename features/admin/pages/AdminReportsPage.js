@@ -7,6 +7,7 @@ import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
 import { getReports, resolveReport } from "../services/admin.service";
 import ReportResolveDialog from "../components/ReportResolveDialog";
+import { supabase } from "../../../shared/services/supabase";
 
 const severityColors = {
   low: { colorKey: "muted-foreground", bgOpacity: "10" },
@@ -32,6 +33,14 @@ export default function AdminReportsPage() {
   const [showResolve, setShowResolve] = useState(false);
 
   useEffect(() => { loadReports(); }, []);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("admin-reports-rt")
+      .on("postgres_changes", { event: "*", schema: "public", table: "reports" }, () => { loadReports(); })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, []);
 
   async function loadReports() {
     try {

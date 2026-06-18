@@ -12,6 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
 import { useUser } from "../../auth/context/user.context";
+import { supabase } from "../../../shared/services/supabase";
 import {
   fetchCompanyByProfileId,
   fetchJobsByCompanyId,
@@ -21,6 +22,7 @@ import { addMembership } from "../services/memberships.service";
 import { MEMBERSHIP_PERMISSION } from "../../../shared/constants/enums";
 import NoCompanyView from "./NoCompanyView";
 import PendingApprovalPage from "./PendingApprovalPage";
+import CompanySuspendedPage from "./CompanySuspendedPage";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 
@@ -73,6 +75,28 @@ export function CompanyProvider({ children }) {
     fetchCompanyData();
   }, [fetchCompanyData]);
 
+  useEffect(() => {
+    if (!company?.id) return;
+    const channel = supabase
+      .channel(`company-status-provider-${company.id}`)
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "companies", filter: `id=eq.${company.id}` }, (payload) => {
+        setCompany((prev) => (prev ? { ...prev, ...payload.new } : prev));
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [company?.id]);
+
+  useEffect(() => {
+    if (!profile?.id) return;
+    const channel = supabase
+      .channel(`membership-${profile.id}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "company_memberships", filter: `profile_id=eq.${profile.id}` }, () => {
+        fetchCompanyData();
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [profile?.id]);
+
   const handleInviteMember = useCallback(async () => {
     if (!company?.id || !profile?.id) return;
     try {
@@ -109,7 +133,11 @@ export function CompanyProvider({ children }) {
   }
 
   if (permission === MEMBERSHIP_PERMISSION.pending) {
-    return <PendingApprovalPage companyName={company?.name} />;
+    return <PendingApprovalPage companyName={company?.name} companyId={company?.id} />;
+  }
+
+  if (company?.account_status === "banned") {
+    return <CompanySuspendedPage company={company} membershipPermission={permission} onLeave={fetchCompanyData} />;
   }
 
   return (

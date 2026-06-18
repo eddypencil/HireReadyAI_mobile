@@ -432,6 +432,20 @@ function RootNavigator({ onboardingSeen }) {
   }, [companyData?.id]);
 
   useEffect(() => {
+    if (!profile?.id || !isCompanyUser) return;
+    const channel = supabase
+      .channel(`navigator-membership-${profile.id}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "company_memberships", filter: `profile_id=eq.${profile.id}` }, () => {
+        fetchCompanyByProfileId(profile.id).then(({ company, permission }) => {
+          setCompanyData(company);
+          setMembershipPermission(permission);
+        }).catch(() => {});
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [profile?.id, isCompanyUser]);
+
+  useEffect(() => {
     const handleDeepLink = async (url) => {
       if (!url) return;
       if (url.includes("premium/success")) {

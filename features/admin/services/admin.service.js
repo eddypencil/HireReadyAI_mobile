@@ -31,6 +31,35 @@ async function notifyAdmins(title, body, data = {}) {
   }
 }
 
+async function notifyAdminsAll(title, message, data = {}) {
+  const { data: admins } = await supabase
+    .from("profiles")
+    .select("id, email, expo_push_token, full_name")
+    .eq("role", "admin");
+  if (!admins?.length) return;
+
+  const seenPushTokens = new Set();
+  for (const a of admins) {
+    // In-app
+    createInAppNotification({ userId: a.id, title, message, type: "admin_action" });
+    // Email
+    if (a.email) {
+      supabase.functions.invoke("send-admin-notification", {
+        body: {
+          to: a.email,
+          subject: title,
+          body: `Dear ${a.full_name || "Admin"},\n\n${message}`,
+        },
+      }).catch(() => {});
+    }
+    // Push
+    if (a.expo_push_token && !seenPushTokens.has(a.expo_push_token)) {
+      seenPushTokens.add(a.expo_push_token);
+      sendPushNotification({ token: a.expo_push_token, title, body: message, data });
+    }
+  }
+}
+
 export const getUserCountsByRole = async () => {
   const { data, error } = await supabase
     .from("profiles")
@@ -441,7 +470,7 @@ export const sendAppealMessage = async ({ entityType, entityId, senderId, messag
       }
     }
   } else {
-    await notifyAdmins(
+    notifyAdminsAll(
       "New Appeal Message",
       `A user sent a new appeal message: "${message.slice(0, 120)}"`,
       { type: "appeal", entityType, entityId }
@@ -462,7 +491,11 @@ export const submitAppeal = async ({ entityType, entityId, senderId, message }) 
   ]);
   if (msgError) throw msgError;
 
-  await notifyAdmins("New Appeal Submitted", `A new appeal has been submitted.`, { type: "appeal", entityType, entityId });
+  notifyAdminsAll(
+    "New Appeal Submitted",
+    `A new appeal has been submitted.`,
+    { type: "appeal", entityType, entityId }
+  );
 };
 
 export const resolveAppeal = async ({ entityType, entityId, adminId, approved, adminNote }) => {
@@ -651,13 +684,21 @@ export const processExpiredDeadlines = async () => {
     .lt("closing_deadline", now);
 
   if (expiredCompanies?.length) {
-    const expiredIds = expiredCompanies.map((c) => c.id);
-    await supabase
-      .from("companies")
-      .update({ account_status: "banned", banned_at: now })
-      .in("id", expiredIds);
-    for (const cId of expiredIds) {
-      await closeCompanyJobs(cId);
+    for (const c of expiredCompanies) {
+      const { data: actions } = await supabase
+        .from("company_actions")
+        .select("applied_by")
+        .eq("company_id", c.id)
+        .eq("action_type", "closing_warning")
+        .order("created_at", { ascending: false })
+        .limit(1);
+      const adminId = actions?.[0]?.applied_by || null;
+      await applyCompanyAction({
+        companyId: c.id,
+        actionType: "ban",
+        reason: "Closure deadline expired",
+        adminId,
+      }).catch((err) => console.error("Failed to auto-ban company:", err));
     }
   }
 };
@@ -669,6 +710,33 @@ export const fetchCompanyByProfileId = async (profileId) => {
     .eq("profile_id", profileId)
     .maybeSingle();
   return { company: membership?.company || null, permission: membership?.recruiter_permissions || null };
+};
+
+export const removeCompanyMember = async (profileId, companyId) => {
+  const { error } = await supabase
+    .from("company_memberships")
+    .delete()
+    .eq("profile_id", profileId)
+    .eq("company_id", companyId);
+  if (error) throw error;
+};
+
+export const getResolvedAppeals = async () => {
+  const { data: users, error: userErr } = await supabase
+    .from("profiles")
+    .select("id, full_name, email, role, appeal_message, appeal_status, appeal_deadline, banned_at, suspension_reason")
+    .in("appeal_status", ["approved", "rejected"])
+    .order("banned_at", { ascending: false });
+  if (userErr) throw userErr;
+
+  const { data: companies, error: compErr } = await supabase
+    .from("companies")
+    .select("id, name, appeal_message, appeal_status, closing_deadline, banned_at, suspension_reason")
+    .in("appeal_status", ["approved", "rejected"])
+    .order("banned_at", { ascending: false });
+  if (compErr) throw compErr;
+
+  return { users: users || [], companies: companies || [] };
 };
 
 export const getQuestionWithAnswer = async (questionId) => {
@@ -729,6 +797,12 @@ export const submitReport = async ({ reporterId, reportType, targetId, targetDet
       message: `[Report Type: ${reportType}]\n[Target ID: ${targetId}]\n[Subject: ${subject}]\n\n${description}`,
     },
   });
+
+  notifyAdminsAll(
+    "New Report Submitted",
+    `${reporter?.full_name || "A user"} reported a ${reportType}: "${subject}"`,
+    { type: "report", reportType, targetId }
+  );
 
   return data;
 };

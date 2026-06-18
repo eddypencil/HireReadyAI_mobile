@@ -4,6 +4,7 @@ import {
 } from "react-native";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { getAllCompaniesWithStats, applyCompanyAction } from "../services/admin.service";
+import { supabase } from "../../../shared/services/supabase";
 import CompanyActionDialog from "../components/CompanyActionDialog";
 
 const statusLabel = (s) => {
@@ -31,6 +32,14 @@ export default function AdminCompaniesPage() {
   const [actionType, setActionType] = useState("");
 
   useEffect(() => { loadCompanies(); }, []);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("admin-companies-rt")
+      .on("postgres_changes", { event: "*", schema: "public", table: "companies" }, () => { loadCompanies(); })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, []);
 
   async function loadCompanies() {
     try {
