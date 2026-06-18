@@ -17,7 +17,12 @@
     "search_jobs": "Search jobs by title or department...",
     "apply_job": "Apply for Job",
     "interview": "Interview",
-    "job_details": "Job Details"
+    "job_details": "Job Details",
+    "admin_dashboard": "Dashboard",
+    "reports": "Reports",
+    "companies": "Companies",
+    "appeals": "Appeals",
+    "technical_issues": "Technical Issues"
   },
   "sign_in": {
     "welcome_back": "Welcome back",

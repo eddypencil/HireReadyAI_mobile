@@ -23,6 +23,7 @@ import {
   rejectApplication,
   unrejectApplication,
 } from "../../shortlist/services/shortlist.service";
+import ReportButton from "../../admin/components/ReportButton";
 
 function getInitials(name = "") {
   return (
@@ -715,6 +716,14 @@ export default function CandidateProfileScreen() {
                   </Text>
                 </View>
               )}
+              <View style={{ marginLeft: "auto" }}>
+                <ReportButton
+                  reportType="user"
+                  targetId={candidate.id}
+                  targetDetails={{ full_name: candidate.full_name }}
+                  variant="icon"
+                />
+              </View>
             </View>
             {candidate.headline && (
               <Text
@@ -787,9 +796,9 @@ export default function CandidateProfileScreen() {
                 <Text style={[styles.percentileText, { color: c.warning }]}>
                   {percentileTag.label}
                 </Text>
-              </View>
-            )}
-          </View>
+            </View>
+          )}
+            </View>
         </View>
         <TouchableOpacity
           style={[

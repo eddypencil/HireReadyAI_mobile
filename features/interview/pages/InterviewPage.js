@@ -15,6 +15,7 @@ import TextQuestion from "../components/TextQuestion";
 import MultipleChoiceQuestion from "../components/MultipleChoiceQuestion";
 import CodeQuestion from "../components/CodeQuestion";
 import VideoQuestion from "../components/VideoQuestion";
+import ReportButton from "../../admin/components/ReportButton";
 
 const PHASE = {
   INIT: "init",
@@ -289,6 +290,7 @@ export default function InterviewPage({ route, navigation }) {
   const [showDesktopPrompt, setShowDesktopPrompt] = useState(true);
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
+  const [showReportMenu, setShowReportMenu] = useState(false);
   const generatingRef = useRef(false);
   const phaseRef = useRef(phase);
   const currentQuestionRef = useRef(currentQuestion);
@@ -510,6 +512,36 @@ export default function InterviewPage({ route, navigation }) {
             <View style={s.stageBadge}>
               <Text style={s.stageBadgeText}>{stageLabel}</Text>
             </View>
+            <TouchableOpacity onPress={() => setShowReportMenu(true)} style={{ padding: 4, marginLeft: 4 }}>
+              <Ionicons name="flag-outline" size={16} color={c["muted-foreground"]} />
+            </TouchableOpacity>
+            {showReportMenu && (
+              <View style={{ position: "absolute", top: 40, right: 0, backgroundColor: c.card, borderRadius: 12, borderWidth: 1, borderColor: c.border, padding: 6, zIndex: 100, shadowColor: "#000", shadowOpacity: 0.15, shadowRadius: 8, elevation: 8 }}>
+                <TouchableOpacity onPress={() => setShowReportMenu(false)} style={{ alignSelf: "flex-end", padding: 2 }}>
+                  <Text style={{ fontSize: 10, color: c["muted-foreground"], lineHeight: 11 }}>X</Text>
+                </TouchableOpacity>
+                {applicationStage && (
+                  <View style={{ marginBottom: 4 }}>
+                    <ReportButton
+                      reportType="interview"
+                      targetId={applicationStage.id}
+                      targetDetails={{ stage_name: stage?.name }}
+                      variant="text"
+                      label="Report this Interview"
+                    />
+                  </View>
+                )}
+                {currentQuestion && (
+                  <ReportButton
+                    reportType="question"
+                    targetId={currentQuestion.id}
+                    targetDetails={{ question_text: currentQuestion.text }}
+                    variant="text"
+                    label="Report this Question"
+                  />
+                )}
+              </View>
+            )}
           </View>
         </View>
 

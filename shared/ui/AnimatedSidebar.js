@@ -21,7 +21,7 @@ import LanguageSwitcher from "../i18n/LanguageSwitcher";
 
 const SIDEBAR_WIDTH = 280;
 
-export default function AnimatedSidebar() {
+export default function AnimatedSidebar({ companyData, membershipPermission }) {
   const { alert } = useThemedAlert();
   const { isOpen, close } = useSidebar();
   const { theme, toggleTheme, isDark } = useTheme();
@@ -30,6 +30,16 @@ export default function AnimatedSidebar() {
   const navigation = useNavigation();
   const { profile, signOutUser } = useUser();
   const isApplicant = profile?.role === USER_ROLE.applicant;
+  const isAdmin = profile?.role === USER_ROLE.admin;
+  const showClosureWarning = companyData?.account_status === "closing_warning" && membershipPermission === "hr_manager";
+
+  const adminLinks = [
+    { name: "AdminDashboard", label: "nav.admin_dashboard", icon: "shield", screen: "AdminDashboard" },
+    { name: "AdminReports", label: "nav.reports", icon: "flag", screen: "AdminReports" },
+    { name: "AdminCompanies", label: "nav.companies", icon: "business", screen: "AdminCompanies" },
+    { name: "AdminAppeals", label: "nav.appeals", icon: "chatbox", screen: "AdminAppeals" },
+    { name: "AdminTechnicalIssues", label: "nav.technical_issues", icon: "bug", screen: "AdminTechnicalIssues" },
+  ];
 
   const applicantLinks = [
     {
@@ -109,7 +119,7 @@ export default function AnimatedSidebar() {
     },
   ];
 
-  const links = isApplicant ? applicantLinks : recruiterLinks;
+  const links = isAdmin ? adminLinks : (isApplicant ? applicantLinks : recruiterLinks);
 
   const slideAnim = useRef(new Animated.Value(-SIDEBAR_WIDTH)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -262,12 +272,17 @@ export default function AnimatedSidebar() {
                 style={styles.navItem}
                 activeOpacity={0.7}
               >
-                <Ionicons
-                  name={link.icon}
-                  size={18}
-                  color={`${c["destructive-foreground"]}b3`}
-                  style={styles.navIcon}
-                />
+                <View style={{ position: "relative" }}>
+                  <Ionicons
+                    name={link.icon}
+                    size={18}
+                    color={`${c["destructive-foreground"]}b3`}
+                    style={styles.navIcon}
+                  />
+                  {showClosureWarning && link.icon === "business" && (
+                    <View style={{ position: "absolute", top: -2, right: -2, width: 8, height: 8, borderRadius: 4, backgroundColor: c.warning }} />
+                  )}
+                </View>
                 <Text
                   style={[
                     styles.navLabel,
@@ -278,6 +293,33 @@ export default function AnimatedSidebar() {
                 </Text>
               </TouchableOpacity>
             ))}
+            {showClosureWarning && (
+              <View style={[styles.warningBanner, { backgroundColor: `${c.warning}18`, borderTopColor: `${c["destructive-foreground"]}14`, marginTop: spacing[3] }]}>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <View style={{ width: 22, height: 22, borderRadius: 11, backgroundColor: `${c.warning}22`, justifyContent: "center", alignItems: "center" }}>
+                    <Text style={{ fontSize: 11, fontWeight: "700", color: c.warning }}>!</Text>
+                  </View>
+                  <Text style={{ flex: 1, fontSize: 11, color: c["muted-foreground"], lineHeight: 15 }}>
+                    <Text style={{ fontWeight: "600", color: c.foreground }}>{companyData.name}</Text> closing{" "}
+                    <Text style={{ fontWeight: "600", color: c.warning }}>
+                      {companyData.closing_deadline ? new Date(companyData.closing_deadline).toLocaleDateString() : "soon"}
+                    </Text>
+                    {companyData.suspension_reason ? <Text>{` — ${companyData.suspension_reason}`}</Text> : null}
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("ContactSupport", {
+                    companyId: companyData.id,
+                    companyName: companyData.name,
+                    suspensionReason: companyData.suspension_reason,
+                    closingDeadline: companyData.closing_deadline,
+                  })}
+                  style={{ marginTop: 8, paddingVertical: 6, paddingHorizontal: 12, borderRadius: 8, backgroundColor: c.primary, alignSelf: "flex-end" }}
+                >
+                  <Text style={{ fontSize: 11, fontWeight: "600", color: "#fff" }}>Contact Support</Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </ScrollView>
 
           <TouchableOpacity
@@ -426,6 +468,12 @@ const styles = StyleSheet.create({
   themeText: {
     fontSize: fontSize.sm,
     fontWeight: '500',
+  },
+  warningBanner: {
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[2.5],
+    borderTopWidth: 1,
+    marginTop: spacing[1],
   },
   logoutButton: {
     flexDirection: "row",

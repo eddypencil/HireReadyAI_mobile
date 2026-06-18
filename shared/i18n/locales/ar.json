@@ -17,7 +17,12 @@
     "search_jobs": "ابحث عن وظائف حسب العنوان أو القسم...",
     "apply_job": "التقدم لوظيفة",
     "interview": "المقابلة",
-    "job_details": "تفاصيل الوظيفة"
+    "job_details": "تفاصيل الوظيفة",
+    "admin_dashboard": "لوحة التحكم",
+    "reports": "التقارير",
+    "companies": "الشركات",
+    "appeals": "الاستئنافات",
+    "technical_issues": "مشكلات تقنية"
   },
   "sign_in": {
     "welcome_back": "مرحبًا بعودتك",

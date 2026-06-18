@@ -11,6 +11,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { fetchCompanyById, fetchJobsByCompanyId } from "../services/companies.service";
+import ReportButton from "../../admin/components/ReportButton";
 
 
 export default function PublicCompanyProfile({ route }) {
@@ -84,6 +85,14 @@ export default function PublicCompanyProfile({ route }) {
               <Text style={styles.industryText}>{company.industry}</Text>
             </View>
           )}
+        </View>
+        <View style={{ marginLeft: "auto", alignSelf: "center" }}>
+          <ReportButton
+            reportType="company"
+            targetId={company.id}
+            targetDetails={{ name: company.name }}
+            variant="icon"
+          />
         </View>
       </View>
 

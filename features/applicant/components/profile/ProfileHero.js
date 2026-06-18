@@ -3,6 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../../shared/context/I18nContext';
+import ReportButton from '../../../admin/components/ReportButton';
 
 
 export default function ProfileHero({ profile, viewOnly, onEditAvatar, onViewApplications }) {
@@ -85,7 +86,18 @@ export default function ProfileHero({ profile, viewOnly, onEditAvatar, onViewApp
         )}
       </View>
 
-      {/* Links — LinkedIn only */}
+      {!viewOnly && (
+        <View style={{ alignItems: "flex-end", marginTop: 4 }}>
+          <ReportButton
+            reportType="user"
+            targetId={profile?.id}
+            targetDetails={{ full_name: profile?.full_name }}
+            variant="icon"
+          />
+        </View>
+      )}
+
+      {/* Links ï¿½ LinkedIn only */}
       {/* {profile?.linkedin_url && (
         <View style={styles.linksRow}>
           <View style={styles.linkBadge}>
