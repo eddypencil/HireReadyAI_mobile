@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -54,11 +54,14 @@ function PickerDropdown({ options, selected, onSelect, placeholder, disabled, c,
       <Modal
         visible={visible}
         transparent
-        animationType="fade"
+        animationType="slide"
         onRequestClose={() => setVisible(false)}
       >
-        <Pressable style={styles.modalOverlay} onPress={() => setVisible(false)}>
-            <Pressable style={styles.modalContent} onPress={() => {}}>
+        <Pressable style={styles.bottomSheetOverlay} onPress={() => setVisible(false)}>
+          <Pressable style={styles.bottomSheetContent} onPress={() => {}}>
+            <View style={styles.bottomSheetHandleWrap}>
+              <View style={styles.bottomSheetHandle} />
+            </View>
             <Text style={[styles.modalTitle, isRtl && styles.textRight]}>{placeholder}</Text>
             <FlatList
               data={options}
@@ -74,14 +77,19 @@ function PickerDropdown({ options, selected, onSelect, placeholder, disabled, c,
                     setVisible(false);
                   }}
                 >
-                  <Text
-                    style={[
-                      styles.modalOptionText,
-                      selected === item.value && styles.modalOptionTextSelected,
-                    ]}
-                  >
-                    {item.label}
-                  </Text>
+                  <View style={[styles.modalOptionLabel, isRtl && styles.rowReverse]}>
+                    <Text
+                      style={[
+                        styles.modalOptionText,
+                        selected === item.value && styles.modalOptionTextSelected,
+                      ]}
+                    >
+                      {item.label}
+                    </Text>
+                    {item.isPremium && (
+                      <Ionicons name="crown" size={14} color="#FFD700" />
+                    )}
+                  </View>
                   {selected === item.value && (
                     <Ionicons name="checkmark" size={18} color={c.primary} />
                   )}
@@ -96,7 +104,7 @@ function PickerDropdown({ options, selected, onSelect, placeholder, disabled, c,
 }
 
 
-export default function StageDetailsPanel({ stage, stages, onUpdate }) {
+export default function StageDetailsPanel({ stage, onUpdate }) {
   const { theme } = useTheme();
   const { t, language } = useTranslation();
   const isRtl = language === 'ar';
@@ -136,18 +144,6 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
     }
   }, [stage?.id]);
 
-  const totalOtherWeights = useMemo(() => {
-    return (stages || [])
-      .filter((s) => s.id !== stage?.id)
-      .reduce((sum, s) => sum + (parseFloat(s.weight) || 0), 0);
-  }, [stages, stage?.id]);
-
-  const maxAllowedWeight = useMemo(() => {
-    return Math.max(0, Math.round((1 - totalOtherWeights) * 100) / 100);
-  }, [totalOtherWeights]);
-
-  const weightPct = Math.round((form.weight ?? 0) * 100);
-
   if (!stage) {
     return (
       <View style={styles.emptyContainer}>
@@ -167,11 +163,6 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
     setForm(updated);
     setHasChanges(true);
   };
-
-  const handleWeightChange = useCallback((value) => {
-    setForm((prev) => ({ ...prev, weight: parseFloat(value) }));
-    setHasChanges(true);
-  }, []);
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -310,18 +301,6 @@ export default function StageDetailsPanel({ stage, stages, onUpdate }) {
               c={c}
               styles={styles}
               isRtl={isRtl}
-            />
-          </View>
-
-          <View style={styles.fieldGroup}>
-            <View style={[styles.weightHeader, isRtl && styles.rowReverse]}>
-              <Text style={[styles.fieldLabel, isRtl && styles.textRight]}>{t("pipeline.weight")}</Text>
-              <Text style={styles.weightValue}>{weightPct}%</Text>
-            </View>
-            <WeightSlider
-              value={form.weight ?? 0}
-              maxValue={maxAllowedWeight}
-              onChange={handleWeightChange}
             />
           </View>
 
@@ -660,18 +639,28 @@ function createStyles(c, isRtl) {
       flex: 1,
       color: c.foreground,
     },
-    modalOverlay: {
+    bottomSheetOverlay: {
       flex: 1,
       backgroundColor: `${c.foreground}80`,
-      justifyContent: "center",
-      alignItems: "center",
+      justifyContent: "flex-end",
     },
-    modalContent: {
-      width: "80%",
-      maxHeight: "60%",
+    bottomSheetContent: {
       backgroundColor: c.card,
-      borderRadius: 16,
-      padding: 20,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      paddingHorizontal: 20,
+      paddingBottom: 32,
+      maxHeight: "65%",
+    },
+    bottomSheetHandleWrap: {
+      alignItems: "center",
+      paddingVertical: 10,
+    },
+    bottomSheetHandle: {
+      width: 36,
+      height: 4,
+      borderRadius: 2,
+      backgroundColor: c.border,
     },
     modalTitle: {
       fontSize: 16,
@@ -689,6 +678,12 @@ function createStyles(c, isRtl) {
     },
     modalOptionSelected: {
       backgroundColor: c['surface-muted'],
+    },
+    modalOptionLabel: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      flex: 1,
     },
     modalOptionText: {
       fontSize: 15,
@@ -781,8 +776,8 @@ function createStyles(c, isRtl) {
       borderColor: c.emerald[200] || "#a7f3d0",
     },
     weightTotalBoxInvalid: {
-      backgroundColor: c.rose[50] || "#fff1f2",
-      borderColor: c.rose[200] || "#fecdd3",
+      backgroundColor: c.red[50] || "#fef2f2",
+      borderColor: c.red[200] || "#fecaca",
     },
     weightTotalText: {
       fontSize: 12,
@@ -792,7 +787,7 @@ function createStyles(c, isRtl) {
       color: c.emerald[700] || "#047857",
     },
     weightTotalTextInvalid: {
-      color: c.rose[700] || "#be123c",
+      color: c.red[700] || "#b91c1c",
     },
     weightTotalValue: {
       fontSize: 12,
@@ -982,7 +977,7 @@ function createStyles(c, isRtl) {
     criteriaError: {
       fontSize: 12,
       fontWeight: '600',
-      color: c.rose[500],
+      color: c.red[500],
     },
 
     advancedSection: {

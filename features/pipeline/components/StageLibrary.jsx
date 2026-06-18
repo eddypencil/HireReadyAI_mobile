@@ -12,7 +12,7 @@ const ICON_MAP = {
   Video: "videocam-outline",
   Cpu: "hardware-chip-outline",
   Users: "people-outline",
-  UserCheck: "person-check-outline",
+  UserCheck: "person-outline",
   ShieldCheck: "shield-checkmark-outline",
   Award: "trophy-outline",
 };

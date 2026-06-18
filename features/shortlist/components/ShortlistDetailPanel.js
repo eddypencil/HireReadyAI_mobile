@@ -371,7 +371,7 @@ export default function ShortlistDetailPanel({
               size={16}
               color={c['muted-foreground']}
             />
-            <Ionicons name="person-check-outline" size={13} color={c['muted-foreground']} />
+            <Ionicons name="person-outline" size={13} color={c['muted-foreground']} />
             <Text style={styles.visibilityText}>{t("shortlist.visible_to_team")}</Text>
           </TouchableOpacity>
           <View style={styles.noteActionBtns}>
