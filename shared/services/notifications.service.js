@@ -96,6 +96,13 @@ export async function registerAndSavePushToken(userId) {
 
     console.log("[Notifications] Expo push token obtained:", token);
 
+    // Clear stale token from any other profile that had it (signed out on this device)
+    await supabase
+      .from("profiles")
+      .update({ expo_push_token: null })
+      .eq("expo_push_token", token)
+      .neq("id", userId);
+
     // Save token to profiles table
     console.log("[Notifications] Saving token to profiles table in Supabase...");
     const { data, error } = await supabase

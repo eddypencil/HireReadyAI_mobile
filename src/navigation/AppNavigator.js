@@ -69,7 +69,17 @@ import PipelineBuilderPage from "../../features/pipeline/pages/PipelineBuilderPa
 import InterviewPage from "../../features/interview/pages/InterviewPage";
 import ApplyJobPage from "../../features/applications/pages/ApplyJobPage";
 import ContactUsScreen from "../../features/support/pages/ContactUsScreen";
+import PublicCompanyProfile from "../../features/companies/pages/PublicCompanyProfile";
 
+import AdminDashboardPage from "../../features/admin/pages/AdminDashboardPage";
+import AdminCompaniesPage from "../../features/admin/pages/AdminCompaniesPage";
+import AdminAppealsPage from "../../features/admin/pages/AdminAppealsPage";
+import AdminReportsPage from "../../features/admin/pages/AdminReportsPage";
+import AdminTechnicalIssuesPage from "../../features/admin/pages/AdminTechnicalIssuesPage";
+import AccountSuspendedPage from "../../features/auth/pages/AccountSuspendedPage";
+import ContactSupportPage from "../../features/support/pages/ContactSupportPage";
+import { fetchCompanyByProfileId, processExpiredDeadlines } from "../../features/admin/services/admin.service";
+import { supabase } from "../../shared/services/supabase";
 
 const AuthStack = createNativeStackNavigator();
 const RootStack = createNativeStackNavigator();
@@ -108,6 +118,13 @@ function Header({ title, routeName }) {
     PipelinesPage: 'nav.pipeline',
     PipelineBuilder: 'nav.pipeline',
     ContactUs: 'contact_us.badge',
+    AdminDashboard: 'nav.admin_dashboard',
+    AdminReports: 'nav.reports',
+    AdminCompanies: 'nav.companies',
+    AdminAppeals: 'nav.appeals',
+    AdminTechnicalIssues: 'nav.technical_issues',
+    ApplicantProfile: 'nav.my_profile',
+    PublicCompanyProfile: 'nav.company_profile',
   };
 
   const displayTitle = keyMap[routeName] ? t(keyMap[routeName]) : title;
@@ -163,6 +180,13 @@ function getScreenTitle(routeName) {
     CandidateProfile: "Candidate Profile",
     CandidateAssessments: "Assessments & Interviews",
     ContactUs: "Contact Us",
+    AdminDashboard: "Dashboard",
+    AdminReports: "Reports",
+    AdminCompanies: "Companies",
+    AdminAppeals: "Appeals",
+    AdminTechnicalIssues: "Technical Issues",
+    ApplicantProfile: "User Profile",
+    PublicCompanyProfile: "Company Profile",
   };
   return titles[routeName] || routeName;
 }
@@ -189,6 +213,25 @@ function MainScreens() {
   }
 
   const isApplicant = profile?.role === USER_ROLE.applicant;
+  const isAdmin = profile?.role === USER_ROLE.admin;
+
+  if (isAdmin) {
+    return (
+      <InnerStack.Navigator
+        screenOptions={({ route }) => ({
+          header: () => <Header title={getScreenTitle(route.name)} routeName={route.name} />,
+        })}
+      >
+        <InnerStack.Screen name="AdminDashboard" component={AdminDashboardPage} />
+        <InnerStack.Screen name="AdminReports" component={AdminReportsPage} />
+        <InnerStack.Screen name="AdminCompanies" component={AdminCompaniesPage} />
+        <InnerStack.Screen name="AdminAppeals" component={AdminAppealsPage} />
+        <InnerStack.Screen name="AdminTechnicalIssues" component={AdminTechnicalIssuesPage} />
+        <InnerStack.Screen name="ApplicantProfile" component={ApplicantProfilePage} />
+        <InnerStack.Screen name="PublicCompanyProfile" component={PublicCompanyProfile} />
+      </InnerStack.Navigator>
+    );
+  }
 
   if (isApplicant) {
     return (
@@ -356,58 +399,80 @@ function MainScreens() {
 // ============================================================================
 
 function RootNavigator({ onboardingSeen }) {
-  const { session, loading, needsRoleSelection } = useUser();
+  const { session, loading, needsRoleSelection, profile } = useUser();
   const { theme } = useTheme();
   const { t } = useTranslation();
   const c = theme.colors;
   const navigation = useNavigation();
 
+  const [companyData, setCompanyData] = useState(null);
+  const [membershipPermission, setMembershipPermission] = useState(null);
+
+  const isCompanyUser = profile?.role === USER_ROLE.recruiter || profile?.role === USER_ROLE.hrManager;
+
+  useEffect(() => { processExpiredDeadlines().catch(() => {}); }, []);
+
+  useEffect(() => {
+    if (!profile?.id || !isCompanyUser) return;
+    fetchCompanyByProfileId(profile.id).then(({ company, permission }) => {
+      setCompanyData(company);
+      setMembershipPermission(permission);
+    }).catch(() => {});
+  }, [profile?.id, isCompanyUser]);
+
+  useEffect(() => {
+    if (!companyData?.id) return;
+    const channel = supabase
+      .channel(`company-status-${companyData.id}-${Date.now()}`)
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "companies", filter: `id=eq.${companyData.id}` }, (payload) => {
+        setCompanyData((prev) => (prev ? { ...prev, ...payload.new } : prev));
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [companyData?.id]);
+
+  useEffect(() => {
+    if (!profile?.id || !isCompanyUser) return;
+    const channel = supabase
+      .channel(`navigator-membership-${profile.id}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "company_memberships", filter: `profile_id=eq.${profile.id}` }, () => {
+        fetchCompanyByProfileId(profile.id).then(({ company, permission }) => {
+          setCompanyData(company);
+          setMembershipPermission(permission);
+        }).catch(() => {});
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [profile?.id, isCompanyUser]);
+
   useEffect(() => {
     const handleDeepLink = async (url) => {
       if (!url) return;
-
       if (url.includes("premium/success")) {
         console.log("Payment success, redirecting to CompanyProfile");
-        if (navigation) {
-          navigation.navigate('Main', { screen: 'CompanyProfile' });
-        }
+        if (navigation) navigation.navigate('Main', { screen: 'CompanyProfile' });
       }
-
       if (url.includes("premium/cancel")) {
         console.log("Payment cancelled");
       }
     };
-
     Linking.getInitialURL().then(handleDeepLink);
-
-    const subscription = Linking.addEventListener("url", (event) => {
-      handleDeepLink(event.url);
-    });
-
+    const subscription = Linking.addEventListener("url", (event) => { handleDeepLink(event.url); });
     return () => subscription.remove();
   }, [navigation]);
+
   if (loading || onboardingSeen === null) {
     return (
-      <View
-        style={[styles.loadingContainer, { backgroundColor: c.background }]}
-      >
+      <View style={[styles.loadingContainer, { backgroundColor: c.background }]}>
         <ActivityIndicator size="large" color={c.primary} />
       </View>
     );
   }
-  
 
   if (!session) {
     return (
       <RootStack.Navigator screenOptions={{ headerShown: false }}>
-        {/* {!onboardingSeen && (
-          <RootStack.Screen name="Onboarding" component={OnboardingScreen} />
-        )} */}
-        <RootStack.Screen
-          name="Auth"
-          component={AuthNavigator}
-          options={{ animation: "fade_from_bottom" }}
-        />
+        <RootStack.Screen name="Auth" component={AuthNavigator} options={{ animation: "fade_from_bottom" }} />
       </RootStack.Navigator>
     );
   }
@@ -420,51 +485,35 @@ function RootNavigator({ onboardingSeen }) {
     );
   }
 
+  const showSuspended = profile && (profile.account_status === "banned" || profile.account_status === "frozen");
+
+  if (showSuspended) {
+    return (
+      <View style={{ flex: 1 }}>
+        <RootStack.Navigator screenOptions={{ headerShown: false }}>
+          <RootStack.Screen name="Suspended" component={AccountSuspendedPage} />
+        </RootStack.Navigator>
+        <AnimatedSidebar companyData={companyData} membershipPermission={membershipPermission} />
+      </View>
+    );
+  }
+
   const navHeaderStyle = { backgroundColor: c.sidebar };
 
   return (
-    <View style={{ flex: 1 }}>
-      <RootStack.Navigator screenOptions={{ headerShown: false }}>
-        <RootStack.Screen name="Main" component={MainScreens} />
-        <RootStack.Screen name="GoogleRoleSelect" component={GoogleRoleSelectPage} />
-        <RootStack.Screen
-          name="JobDetails"
-          component={JobDetailsPage}
-          options={{
-            headerShown: true,
+          <View style={{ flex: 1 }}>
+      <View style={{ flex: 1 }}>
+        <RootStack.Navigator screenOptions={{ headerShown: false }}>
+          <RootStack.Screen name="Main" component={MainScreens} />
+          <RootStack.Screen name="GoogleRoleSelect" component={GoogleRoleSelectPage} />
+          <RootStack.Screen name="JobDetails" component={JobDetailsPage} options={{ headerShown: true, headerTitle: t('nav.job_details'), headerTitleStyle: { fontWeight: '600' }, headerStyle: navHeaderStyle, headerTintColor: c["sidebar-foreground"] }} />
+          <RootStack.Screen name="Apply" component={ApplyJobPage} options={{ headerShown: true, headerTitle: t('nav.apply_job'), headerTitleStyle: { fontWeight: '600' }, headerStyle: navHeaderStyle, headerTintColor: c["sidebar-foreground"] }} />
+          <RootStack.Screen name="Interview" component={InterviewPage} options={{ headerShown: true, headerTitle: t('nav.interview'), headerTitleStyle: { fontWeight: '600' }, headerStyle: navHeaderStyle, headerTintColor: c["sidebar-foreground"] }} />
+          <RootStack.Screen name="ContactSupport" component={ContactSupportPage} options={{ headerShown: false }} />
+        </RootStack.Navigator>
+      </View>
 
-            headerTitle: t('nav.job_details'),
-            headerTitleStyle: { fontWeight: '600' },
-            headerStyle: navHeaderStyle,
-            headerTintColor: c["sidebar-foreground"],
-          }}
-        />
-        <RootStack.Screen
-          name="Apply"
-          component={ApplyJobPage}
-          options={{
-            headerShown: true,
-
-            headerTitle: t('nav.apply_job'),
-            headerTitleStyle: { fontWeight: '600' },
-            headerStyle: navHeaderStyle,
-            headerTintColor: c["sidebar-foreground"],
-          }}
-        />
-        <RootStack.Screen
-          name="Interview"
-          component={InterviewPage}
-          options={{
-            headerShown: true,
-
-            headerTitle: t('nav.interview'),
-            headerTitleStyle: { fontWeight: '600' },
-            headerStyle: navHeaderStyle,
-            headerTintColor: c["sidebar-foreground"],
-          }}
-        />
-      </RootStack.Navigator>
-      <AnimatedSidebar />
+      <AnimatedSidebar companyData={companyData} membershipPermission={membershipPermission} />
     </View>
   );
 }

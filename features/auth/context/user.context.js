@@ -19,6 +19,7 @@ export function UserProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [needsRoleSelection, setNeedsRoleSelection] = useState(false);
   const pendingRoleSelectionRef = useRef(false);
+  const profileChannelRef = useRef(null);
 
   const fetchAndSetProfile = async (userId) => {
     try {
@@ -71,6 +72,28 @@ export function UserProvider({ children }) {
     return () => subscription?.unsubscribe();
   }, []);
 
+  useEffect(() => {
+    if (!session?.user?.id) return;
+    if (profileChannelRef.current) supabase.removeChannel(profileChannelRef.current);
+    profileChannelRef.current = supabase
+      .channel(`profile-changes-${session.user.id}`)
+      .on("postgres_changes", {
+        event: "UPDATE",
+        schema: "public",
+        table: "profiles",
+        filter: `id=eq.${session.user.id}`,
+      }, (payload) => {
+        setProfile(toProfileModel(payload.new));
+      })
+      .subscribe();
+    return () => {
+      if (profileChannelRef.current) {
+        supabase.removeChannel(profileChannelRef.current);
+        profileChannelRef.current = null;
+      }
+    };
+  }, [session?.user?.id]);
+
   const signUpUser = async (email, password, userProfile) => {
     setLoading(true);
     try {
@@ -114,6 +137,9 @@ export function UserProvider({ children }) {
   };
 
   const signOutUser = async () => {
+    if (session?.user?.id) {
+      await supabase.from("profiles").update({ expo_push_token: null }).eq("id", session.user.id);
+    }
     await signOut();
     setProfile(null);
     setSession(null);

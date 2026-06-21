@@ -14,6 +14,7 @@ import { getCandidateProfile, getCandidateStageQuestions } from '../services/can
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../shared/context/I18nContext';
 import { Video, ResizeMode } from 'expo-av';
+import ReportButton from "../../admin/components/ReportButton";
 
 const STAGE_ICONS = {
   hr_interview: 'chatbubbles',
@@ -220,6 +221,14 @@ export default function CandidateAssessmentsScreen() {
                   color: answerData.score >= 80 ? c.success : answerData.score >= 60 ? c.primary : c.destructive,
                 }]}>{Math.round(answerData.score)}</Text>
               </View>
+            )}
+            {question && (
+              <ReportButton
+                reportType="question"
+                targetId={question.id}
+                targetDetails={{ question_text: question.question_text }}
+                variant="icon"
+              />
             )}
             <Ionicons name={expanded ? 'chevron-up' : 'chevron-down'} size={16} color={c['muted-foreground']} />
           </View>
