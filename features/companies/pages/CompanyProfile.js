@@ -220,6 +220,10 @@ export default function CompanyProfile() {
   };
 
   const handlePickLogo = async () => {
+    if (!isHrManager) {
+      alert(t("companies.error_title"), "Only an HR manager can change the company logo.");
+      return;
+    }
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
@@ -245,6 +249,10 @@ export default function CompanyProfile() {
   };
 
   const handlePickCover = async () => {
+    if (!isHrManager) {
+      alert(t("companies.error_title"), "Only an HR manager can change the company cover photo.");
+      return;
+    }
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
