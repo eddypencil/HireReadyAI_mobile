@@ -87,14 +87,17 @@ function createStyles(c) {
       alignItems: "center",
     },
     infoBar: {
-      flexDirection: "row",
-      alignItems: "center",
       paddingHorizontal: 16,
       paddingVertical: 10,
-      gap: 6,
+      gap: 4,
       backgroundColor: c.card,
       borderBottomWidth: 1,
       borderBottomColor: c.border,
+    },
+    infoBarRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
     },
     infoText: {
       fontSize: 13,
@@ -752,10 +755,12 @@ export default function PipelineCandidatesPage() {
 
       {/* Pipeline Info */}
       <View style={styles.infoBar}>
-        <Ionicons name="git-network-outline" size={16} color={c.primary} />
-        <Text style={styles.infoText}>
-          {t("recruiter.candidates_in_pipeline", { count: candidates.length })}
-        </Text>
+        <View style={styles.infoBarRow}>
+          <Ionicons name="git-network-outline" size={16} color={c.primary} />
+          <Text style={styles.infoText}>
+            {t("recruiter.candidates_in_pipeline", { count: candidates.length })}
+          </Text>
+        </View>
         <Text style={styles.infoHint}>{t("recruiter.advance_hint")}</Text>
       </View>
 
