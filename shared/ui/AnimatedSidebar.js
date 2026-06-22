@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Animated,
   ScrollView,
+  Image,
 } from "react-native";
 import { useThemedAlert } from "../context/ThemedAlertContext";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -230,16 +231,20 @@ export default function AnimatedSidebar({ companyData, membershipPermission }) {
               },
             ]}
           >
-            <View style={[styles.avatar, { backgroundColor: `${c.accent}33` }]}>
-              <Text style={[styles.avatarText, { color: c.accent }]}>
-                {profile?.full_name
-                  ?.split(" ")
-                  .map((n) => n[0])
-                  .join("")
-                  .toUpperCase()
-                  .slice(0, 2) || "?"}
-              </Text>
-            </View>
+            {profile?.profile_pic ? (
+              <Image source={{ uri: profile.profile_pic }} style={styles.avatarImage} />
+            ) : (
+              <View style={[styles.avatar, { backgroundColor: `${c.accent}33` }]}>
+                <Text style={[styles.avatarText, { color: c.accent }]}>
+                  {profile?.full_name
+                    ?.split(" ")
+                    .map((n) => n[0])
+                    .join("")
+                    .toUpperCase()
+                    .slice(0, 2) || "?"}
+                </Text>
+              </View>
+            )}
             <View style={{ flex: 1 }}>
               <Text
                 style={[
@@ -423,6 +428,11 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     justifyContent: "center",
     alignItems: "center",
+  },
+  avatarImage: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
   },
   avatarText: {
     fontSize: 13,
