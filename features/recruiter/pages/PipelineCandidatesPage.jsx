@@ -388,55 +388,6 @@ export default function PipelineCandidatesPage() {
 
     const currentStage = stages.find((s) => s.id === currentStageId);
     const nextStage = stages.find((s) => s.id === nextStageId);
-    const shortlistStage = stages.find((s) => s.stage_type === "shortlist");
-
-    const isCvReview = currentStage?.stage_type === "cv_review";
-    const minScore = currentStage?.min_score ?? 0;
-
-    let score;
-    if (isCvReview) {
-      score = candidate.cv_score ?? candidate.composite_score ?? null;
-    } else {
-      const stageData = candidate.application_stages?.find(
-        (as) =>
-          as.recruitment_stages?.id === currentStageId ||
-          as.stage_id === currentStageId,
-      );
-      score =
-        stageData?.score ??
-        stageData?.application_stage_evaluations?.[0]?.ai_score ??
-        null;
-    }
-
-    const meetsScore = score != null && Number(score) >= minScore;
-
-    const isToShortlist = shortlistStage && nextStage?.id === shortlistStage.id;
-
-    if (isToShortlist) {
-      if (!meetsScore) {
-        Alert.alert(
-          t("recruiter.cannot_move"),
-          t("recruiter.score_below_minimum", {
-            score: score != null ? Math.round(Number(score)) : "-",
-            minScore,
-          }),
-        );
-        return;
-      }
-      setShowAutoAdvanceModal(true);
-      return;
-    }
-
-    if (!meetsScore) {
-      Alert.alert(
-        t("recruiter.cannot_move"),
-        t("recruiter.score_below_minimum", {
-          score: score != null ? Math.round(Number(score)) : "-",
-          minScore,
-        }),
-      );
-      return;
-    }
 
     setMoving(true);
 
