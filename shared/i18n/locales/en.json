@@ -127,6 +127,8 @@
     "salary_confidential": "Salary: Confidential",
     "apply_now": "Apply Now",
     "applied": "Applied",
+    "closed": "Closed",
+    "closed_message": "This job posting is no longer accepting applications",
     "about_role": "About this role",
     "qualifications": "Qualifications",
     "responsibilities": "Responsibilities",
@@ -873,7 +875,8 @@
     "error": "Error",
     "error_document_picker": "Failed to pick document. Please try again.",
     "already_applied_title": "Already Applied",
-    "already_applied_message": "You have already applied for this position."
+    "already_applied_message": "You have already applied for this position.",
+    "job_closed": "This job is no longer accepting applications"
   },
   "interview": {
     "loading": "Loading interview questions...",

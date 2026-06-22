@@ -31,8 +31,10 @@ export default function JobCard({ job }) {
   const navigation = useNavigation();
   const company = job.companies;
 
+  const isClosed = job.closed_at && Date.parse(job.closed_at) < Date.now();
+
   const s = {
-    card: { backgroundColor: c.card, borderRadius: 16, borderWidth: 1, borderColor: c.border, padding: 16, marginBottom: 12 },
+    card: { backgroundColor: c.card, borderRadius: 16, borderWidth: 1, borderColor: c.border, padding: 16, marginBottom: 12, opacity: isClosed ? 0.6 : 1 },
     innerRow: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
     leftSection: { flexDirection: 'row', alignItems: 'flex-start', flex: 1, minWidth: 0 },
     logo: { width: 48, height: 48, borderRadius: 12, borderWidth: 1, borderColor: c.border, resizeMode: 'contain', padding: 2 },
@@ -54,6 +56,8 @@ export default function JobCard({ job }) {
     rightSection: { alignItems: 'flex-end', marginLeft: 12 },
     bookmarkButton: { marginBottom: 8 },
     dateText: { fontSize: 11, color: c['muted-foreground'] },
+    closedBadge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4, backgroundColor: `${c.destructive}15`, borderWidth: 1, borderColor: `${c.destructive}30`, marginBottom: 6 },
+    closedBadgeText: { fontSize: 10, fontWeight: '700', color: c.destructive, letterSpacing: 0.5 },
   };
 
   return (
@@ -134,6 +138,11 @@ export default function JobCard({ job }) {
         </View>
 
         <View style={s.rightSection}>
+          {isClosed && (
+            <View style={s.closedBadge}>
+              <Text style={s.closedBadgeText}>CLOSED</Text>
+            </View>
+          )}
           <Text style={s.dateText}>{formatRelativeTime(job.created_at)}</Text>
         </View>
       </View>

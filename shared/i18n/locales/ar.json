@@ -127,6 +127,8 @@
     "salary_confidential": "الراتب: سري",
     "apply_now": "تقدم الآن",
     "applied": "تم التقديم",
+    "closed": "مغلقة",
+    "closed_message": "هذه الوظيفة لم تعد تقبل الطلبات",
     "about_role": "حول هذا الدور",
     "qualifications": "المؤهلات",
     "responsibilities": "المسؤوليات",
@@ -874,7 +876,8 @@
     "error": "خطأ",
     "error_document_picker": "فشل اختيار المستند. حاول مرة أخرى.",
     "already_applied_title": "تم التقديم مسبقاً",
-    "already_applied_message": "لقد تقدمت لهذه الوظيفة بالفعل."
+    "already_applied_message": "لقد تقدمت لهذه الوظيفة بالفعل.",
+    "job_closed": "هذه الوظيفة لم تعد تقبل الطلبات"
   },
   "interview": {
     "loading": "جاري تحميل أسئلة المقابلة...",
