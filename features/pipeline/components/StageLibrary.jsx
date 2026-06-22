@@ -36,7 +36,9 @@ export default function StageLibrary({ onRequestAddStage, isPremium }) {
       <ScrollView style={styles.list} showsVerticalScrollIndicator={false}>
         {STAGE_LIBRARY.map((item) => {
           const iconName = ICON_MAP[item.icon] || "document-text-outline";
-          const isLocked = !isPremium && PREMIUM_STAGES.includes(item.key);
+          const isComingSoon = item.comingSoon;
+          const isPremiumLocked = !isPremium && PREMIUM_STAGES.includes(item.key);
+          const isLocked = isComingSoon || isPremiumLocked;
           return (
             <TouchableOpacity
               key={item.key}
@@ -46,12 +48,17 @@ export default function StageLibrary({ onRequestAddStage, isPremium }) {
               disabled={isLocked}
             >
               <View style={[styles.iconWrap, isRtl && styles.iconWrapRtl]}>
-                <Ionicons name={isLocked ? "lock-closed-outline" : iconName} size={18} color={isLocked ? c.border : c.primary} />
+                <Ionicons
+                  name={isComingSoon ? "time-outline" : isPremiumLocked ? "lock-closed-outline" : iconName}
+                  size={18}
+                  color={isLocked ? c.border : c.primary}
+                />
               </View>
               <View style={[styles.textWrap, isRtl && styles.textRight]}>
                 <View style={styles.labelRow}>
                   <Text style={[styles.label, isRtl && styles.textRight, isLocked && styles.labelLocked]} numberOfLines={1}>{item.label}</Text>
-                  {isLocked && <Text style={styles.premiumBadge}>{t("companies.premium_badge")}</Text>}
+                  {isComingSoon && <Text style={styles.comingSoonBadge}>{t("pipeline.coming_soon")}</Text>}
+                  {isPremiumLocked && <Text style={styles.premiumBadge}>{t("companies.premium_badge")}</Text>}
                 </View>
                 <Text style={[styles.subtitle, isRtl && styles.textRight, isLocked && styles.subtitleLocked]} numberOfLines={1}>{item.subtitle}</Text>
               </View>
@@ -146,6 +153,18 @@ function createStyles(c) {
       fontWeight: '600',
       color: c.emerald[600],
       backgroundColor: c.emerald[100],
+      paddingHorizontal: 5,
+      paddingVertical: 1,
+      borderRadius: 4,
+      overflow: "hidden",
+      textTransform: "uppercase",
+      letterSpacing: 0.3,
+    },
+    comingSoonBadge: {
+      fontSize: 9,
+      fontWeight: '600',
+      color: c.amber[600],
+      backgroundColor: c.amber[100],
       paddingHorizontal: 5,
       paddingVertical: 1,
       borderRadius: 4,

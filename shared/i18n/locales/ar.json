@@ -789,7 +789,8 @@
     "ai_evaluation": "تقييم ذكي",
     "manual_review": "مراجعة يدوية",
     "auto_advance": "تقديم تلقائي",
-    "auto_reject": "رفض تلقائي"
+    "auto_reject": "رفض تلقائي",
+    "coming_soon": "قريباً"
   },
   "stage_details": {
     "evaluation_criteria": {

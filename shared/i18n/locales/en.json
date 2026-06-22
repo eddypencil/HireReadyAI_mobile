@@ -788,7 +788,8 @@
     "ai_evaluation": "AI Evaluation",
     "manual_review": "Manual Review",
     "auto_advance": "Auto-Advance",
-    "auto_reject": "Auto-Reject"
+    "auto_reject": "Auto-Reject",
+    "coming_soon": "Coming Soon"
   },
   "stage_details": {
     "evaluation_criteria": {
