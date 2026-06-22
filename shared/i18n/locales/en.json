@@ -749,7 +749,8 @@
     "did_not_meet_threshold": "Did Not Meet Threshold",
     "criteria_required": "Please enter evaluation criteria or auto-generate them.",
     "no_candidates_to_evaluate": "No candidates in the stage before shortlist to evaluate.",
-    "candidates_to_evaluate": "{{count}} candidate(s) will be evaluated"
+    "candidates_to_evaluate": "{{count}} candidate(s) will be evaluated",
+    "errors": "Errors"
   },
   "pipeline": {
     "pipelines": "Pipelines",
