@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useUser } from '../../auth/context/user.context';
 import { fetchQuestionsByJobId, createApplication } from '../services/application.service';
 import { triggerCvReview } from '../services/cv-review.service';
+import { fetchJobById } from '../../jobs/services/jobs.service';
 import { supabase } from '../../../shared/services/supabase';
 import QuestionCard from '../components/apply/QuestionCard';
 import { useTheme } from '../../../shared/context/ThemeContext';
@@ -34,6 +35,8 @@ export default function ApplyJobPage() {
   const STEPS = [t("applications.step_info"), t("applications.step_resume"), t("applications.step_questions")];
 
   const [step, setStep] = useState(0);
+  const [job, setJob] = useState(null);
+  const [jobLoading, setJobLoading] = useState(true);
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -48,6 +51,22 @@ export default function ApplyJobPage() {
   });
 
   const progress = ((step + 1) / STEPS.length) * 100;
+
+  // Load job to check if closed
+  useEffect(() => {
+    if (!jobId) return;
+    const load = async () => {
+      try {
+        const data = await fetchJobById(jobId);
+        setJob(data);
+      } catch (err) {
+        console.error('Error loading job:', err);
+      } finally {
+        setJobLoading(false);
+      }
+    };
+    load();
+  }, [jobId]);
 
   // Load questions
   useEffect(() => {
@@ -154,6 +173,12 @@ export default function ApplyJobPage() {
   };
 
   const handleSubmit = async () => {
+    const jobIsClosed = job?.closed_at && Date.parse(job.closed_at) < Date.now();
+    if (jobIsClosed) {
+      navigation.goBack();
+      return;
+    }
+
     // Validate questions
     const newErrors = {};
     questions.forEach(q => {
@@ -230,6 +255,45 @@ export default function ApplyJobPage() {
       setSubmitting(false);
     }
   };
+
+  const isClosed = job?.closed_at && Date.parse(job.closed_at) < Date.now();
+
+  if (jobLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: c['surface-muted'] }}>
+        <ActivityIndicator size="large" color={c.primary} />
+      </View>
+    );
+  }
+
+  if (!job) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: c['surface-muted'], padding: 24 }}>
+        <Text style={{ fontSize: 15, color: c['muted-foreground'], marginBottom: 16 }}>{t('job_details.not_found')}</Text>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={{ paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10, backgroundColor: c.primary }}>
+          <Text style={{ color: c['destructive-foreground'], fontWeight: '600', fontSize: 14 }}>{t('applications.back')}</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  if (isClosed) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: c['surface-muted'], padding: 24 }}>
+        <View style={{ width: 72, height: 72, borderRadius: 36, backgroundColor: `${c.destructive}15`, justifyContent: 'center', alignItems: 'center', marginBottom: 16 }}>
+          <Ionicons name="briefcase" size={32} color={c.destructive} />
+        </View>
+        <Text style={{ fontSize: 18, fontWeight: '700', color: c.foreground, marginBottom: 8 }}>{t('job_details.closed')}</Text>
+        <Text style={{ fontSize: 14, color: c['muted-foreground'], textAlign: 'center', marginBottom: 24 }}>{t('applications.job_closed')}</Text>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Main', { screen: 'JobsTab' })}
+          style={{ paddingHorizontal: 24, paddingVertical: 12, borderRadius: 12, backgroundColor: c.primary }}
+        >
+          <Text style={{ color: c['destructive-foreground'], fontWeight: '600', fontSize: 15 }}>{t('jobs_page.title')}</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   return (
     <KeyboardAvoidingView

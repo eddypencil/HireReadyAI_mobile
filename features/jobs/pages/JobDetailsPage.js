@@ -138,6 +138,7 @@ export default function JobDetailsPage() {
   }
 
   const company = job.companies;
+  const isClosed = job.closed_at && Date.parse(job.closed_at) < Date.now();
 
   return (
     <ScrollView style={[s.screen, { paddingTop: insets.top }]} contentContainerStyle={s.contentContainer}>
@@ -196,17 +197,25 @@ export default function JobDetailsPage() {
           </View>
         )}
 
+        {isClosed && (
+          <View style={{ backgroundColor: `${c.destructive}12`, borderRadius: 10, borderWidth: 1, borderColor: `${c.destructive}25`, padding: 12, marginBottom: 12 }}>
+            <Text style={{ fontSize: 12, color: c.destructive, fontWeight: '600' }}>
+              {t('job_details.closed_message')}
+            </Text>
+          </View>
+        )}
+
         <View style={s.actions}>
           <TouchableOpacity
-            style={[s.applyButton, hasApplied && s.applyButtonDisabled]}
-            activeOpacity={hasApplied ? 1 : 0.8}
+            style={[s.applyButton, (hasApplied || isClosed) && s.applyButtonDisabled]}
+            activeOpacity={hasApplied || isClosed ? 1 : 0.8}
             onPress={() => {
-              if (hasApplied) return;
+              if (hasApplied || isClosed) return;
               navigation.navigate('Apply', { jobId: job.id });
             }}
           >
             <Text style={s.applyButtonText}>
-              {hasApplied ? t('job_details.applied') : t('job_details.apply_now')}
+              {isClosed ? t('job_details.closed') : hasApplied ? t('job_details.applied') : t('job_details.apply_now')}
             </Text>
           </TouchableOpacity>
         </View>
