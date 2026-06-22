@@ -43,8 +43,6 @@ export default function NoCompanyView({ onCompanyJoined }) {
   const [error, setError] = useState(null);
   const [joining, setJoining] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
-  const [showingPricing, setShowingPricing] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState(null);
   const [newCompany, setNewCompany] = useState({
     name: "",
     industry: "",
@@ -150,80 +148,11 @@ export default function NoCompanyView({ onCompanyJoined }) {
           </View>
         )}
 
-        {/* ===== PRICING STEP ===== */}
-        {showingPricing && !selectedPlan && (
-          <View>
-            <TouchableOpacity onPress={() => setShowingPricing(false)} style={styles.backRow}>
-              <Ionicons name="arrow-back" size={18} color={c['muted-foreground']} />
-              <Text style={styles.backText}>{t("companies.back")}</Text>
-            </TouchableOpacity>
-            <View style={styles.hero}>
-              <View style={styles.heroIcon}>
-                <Ionicons name="rocket" size={28} color={c.primary} />
-              </View>
-              <Text style={styles.heroTitle}>{t("companies.choose_plan")}</Text>
-              <Text style={styles.heroSubtitle}>{t("companies.choose_plan_subtitle")}</Text>
-            </View>
-
-            {/* Free Plan */}
-            <View style={styles.planCard}>
-              <View style={styles.planIconWrap}>
-                <Ionicons name="rocket-outline" size={22} color={c.primary} />
-              </View>
-              <Text style={styles.planName}>{t("companies.plan_free")}</Text>
-              <View style={styles.planPriceRow}>
-                <Text style={styles.planPrice}>{t("companies.plan_free_price")}</Text>
-                <Text style={styles.planPeriod}>{t("companies.plan_free_period")}</Text>
-              </View>
-              <View style={styles.planFeatures}>
-                {t("companies.plan_free_features").split("|").map((f, i) => (
-                  <View key={i} style={styles.featureRow}>
-                    <Ionicons name="checkmark-circle" size={18} color={c.success} />
-                    <Text style={styles.featureText}>{f}</Text>
-                  </View>
-                ))}
-              </View>
-              <TouchableOpacity
-                style={styles.selectPlanBtn}
-                onPress={() => { setSelectedPlan("free"); setIsCreating(true); }}
-              >
-                <Text style={styles.selectPlanBtnText}>{t("companies.get_started_free")}</Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Premium Plan */}
-            <View style={[styles.planCard, styles.planCardPremium]}>
-              <View style={styles.premiumBadge}>
-                <Text style={styles.premiumBadgeText}>{t("companies.coming_soon")}</Text>
-              </View>
-              <View style={[styles.planIconWrap, { backgroundColor: c.accent + '18' }]}>
-                <Ionicons name="diamond" size={22} color={c.accent} />
-              </View>
-              <Text style={styles.planName}>{t("companies.plan_premium")}</Text>
-              <View style={styles.planPriceRow}>
-                <Text style={styles.planPrice}>{t("companies.plan_premium_price")}</Text>
-                <Text style={styles.planPeriod}>{t("companies.plan_premium_period")}</Text>
-              </View>
-              <View style={styles.planFeatures}>
-                {t("companies.plan_premium_features").split("|").map((f, i) => (
-                  <View key={i} style={styles.featureRow}>
-                    <Ionicons name="checkmark-circle" size={18} color={c.success} />
-                    <Text style={styles.featureText}>{f}</Text>
-                  </View>
-                ))}
-              </View>
-              <TouchableOpacity style={styles.comingSoonBtn} disabled>
-                <Text style={styles.comingSoonBtnText}>{t("companies.coming_soon")}</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
-
         {/* ===== CREATE COMPANY FORM ===== */}
-        {isCreating && selectedPlan === "free" && (
+        {isCreating && (
           <View style={styles.formCard}>
             <View style={styles.formHeader}>
-              <TouchableOpacity onPress={() => { setIsCreating(false); setSelectedPlan(null); setShowingPricing(true); }}>
+              <TouchableOpacity onPress={() => { setIsCreating(false); }}>
                 <Ionicons name="arrow-back" size={20} color={c['muted-foreground']} />
               </TouchableOpacity>
               <Text style={styles.formTitle}>{t("companies.create_company_title")}</Text>
@@ -359,7 +288,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
               <View style={styles.formActions}>
                 <TouchableOpacity
                   style={styles.cancelBtn}
-                  onPress={() => { setIsCreating(false); setSelectedPlan(null); }}
+                  onPress={() => { setIsCreating(false); }}
                 >
                   <Text style={styles.cancelBtnText}>{t("companies.cancel")}</Text>
                 </TouchableOpacity>
@@ -380,7 +309,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
         )}
 
         {/* ===== MAIN VIEW ===== */}
-        {!showingPricing && !isCreating && (
+        {!isCreating && (
           <>
             {/* Hero Section */}
             <View style={styles.hero}>
@@ -392,7 +321,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
               {companies.length > 0 && (
                 <TouchableOpacity
                   style={styles.createNewBtn}
-                  onPress={() => setShowingPricing(true)}
+                  onPress={() => setIsCreating(true)}
                 >
                   <Ionicons name="add-circle" size={18} color={c.white} />
                   <Text style={styles.createNewBtnText}>{t("companies.create_new")}</Text>
@@ -410,7 +339,7 @@ export default function NoCompanyView({ onCompanyJoined }) {
                 <Text style={styles.emptyDesc}>{t("companies.hero_subtitle")}</Text>
                 <TouchableOpacity
                   style={styles.createNewBtn}
-                  onPress={() => setShowingPricing(true)}
+                  onPress={() => setIsCreating(true)}
                 >
                   <Ionicons name="add-circle" size={18} color={c.white} />
                   <Text style={styles.createNewBtnText}>{t("companies.create_a_company")}</Text>
@@ -556,15 +485,6 @@ function createStyles(c) {
       shadowRadius: 8,
       elevation: 6,
     },
-    heroIcon: {
-      width: 56,
-      height: 56,
-      borderRadius: 16,
-      backgroundColor: c.primary + '15',
-      alignItems: "center",
-      justifyContent: "center",
-      marginBottom: 16,
-    },
     heroTitle: {
       fontSize: 26,
       fontWeight: '700',
@@ -709,113 +629,6 @@ function createStyles(c) {
     },
     joinBtnText: {
       color: c.white,
-      fontSize: 14,
-      fontWeight: '600',
-    },
-
-    /* Back */
-    backRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 6,
-      marginBottom: 16,
-    },
-    backText: {
-      fontSize: 14,
-      color: c['muted-foreground'],
-    },
-
-    /* Pricing Cards */
-    planCard: {
-      backgroundColor: c.card,
-      borderRadius: 14,
-      borderWidth: 1,
-      borderColor: c.border,
-      padding: 24,
-      marginBottom: 12,
-    },
-    planCardPremium: {
-      borderColor: c.accent,
-      position: "relative",
-      overflow: "hidden",
-    },
-    premiumBadge: {
-      position: "absolute",
-      top: 12,
-      right: 12,
-      backgroundColor: c.accent,
-      borderRadius: 12,
-      paddingHorizontal: 10,
-      paddingVertical: 3,
-    },
-    premiumBadgeText: {
-      fontSize: 10,
-      fontWeight: '700',
-      color: c.white,
-    },
-    planIconWrap: {
-      width: 44,
-      height: 44,
-      borderRadius: 12,
-      backgroundColor: c.primary + '15',
-      alignItems: "center",
-      justifyContent: "center",
-      marginBottom: 12,
-    },
-    planName: {
-      fontSize: 18,
-      fontWeight: '700',
-      color: c.foreground,
-      marginBottom: 4,
-    },
-    planPriceRow: {
-      flexDirection: "row",
-      alignItems: "baseline",
-      gap: 4,
-      marginBottom: 20,
-    },
-    planPrice: {
-      fontSize: 30,
-      fontWeight: '800',
-      color: c.foreground,
-    },
-    planPeriod: {
-      fontSize: 13,
-      color: c['muted-foreground'],
-    },
-    planFeatures: {
-      gap: 10,
-      marginBottom: 24,
-    },
-    featureRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 8,
-    },
-    featureText: {
-      fontSize: 13,
-      color: c['muted-foreground'],
-      flex: 1,
-    },
-    selectPlanBtn: {
-      backgroundColor: c.primary,
-      paddingVertical: 13,
-      borderRadius: 10,
-      alignItems: "center",
-    },
-    selectPlanBtnText: {
-      color: c.white,
-      fontSize: 15,
-      fontWeight: '600',
-    },
-    comingSoonBtn: {
-      backgroundColor: c.border,
-      paddingVertical: 13,
-      borderRadius: 10,
-      alignItems: "center",
-    },
-    comingSoonBtnText: {
-      color: c['muted-foreground'],
       fontSize: 14,
       fontWeight: '600',
     },

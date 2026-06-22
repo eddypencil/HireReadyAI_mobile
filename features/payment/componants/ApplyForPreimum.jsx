@@ -31,8 +31,6 @@ export default function PlanBillingCard({
             <View style={styles.features}>
               <Text style={[styles.feature, { textAlign: isRTL ? "right" : "left" }]}>• {t("companies.feature_assessment")}</Text>
               <Text style={[styles.feature, { textAlign: isRTL ? "right" : "left" }]}>• {t("companies.feature_coding")}</Text>
-              <Text style={[styles.feature, { textAlign: isRTL ? "right" : "left" }]}>• {t("companies.feature_video")}</Text>
-              <Text style={[styles.feature, { textAlign: isRTL ? "right" : "left" }]}>• {t("companies.feature_background")}</Text>
             </View>
           )}
         </View>

@@ -5,6 +5,7 @@ export const STAGE_LIBRARY = [
     subtitle: "Resume parsing & match",
     icon: "FileText",
     isPremium: false,
+    comingSoon: true,
   },
   {
     key: "ai_screening",
@@ -12,6 +13,7 @@ export const STAGE_LIBRARY = [
     subtitle: "AI shortlist & scoring",
     icon: "Sparkles",
     isPremium: false,
+    comingSoon: true,
   },
   {
     key: "assessment_test",
@@ -33,6 +35,7 @@ export const STAGE_LIBRARY = [
     subtitle: "Async video questions",
     icon: "Video",
     isPremium: false,
+    comingSoon: true,
   },
   {
     key: "technical_interview",
@@ -54,6 +57,7 @@ export const STAGE_LIBRARY = [
     subtitle: "Final approval call",
     icon: "UserCheck",
     isPremium: false,
+    comingSoon: true,
   },
   {
     key: "background_check",
@@ -61,6 +65,7 @@ export const STAGE_LIBRARY = [
     subtitle: "Verify credentials",
     icon: "ShieldCheck",
     isPremium: true,
+    comingSoon: true,
   },
   {
     key: "offer",
@@ -68,11 +73,14 @@ export const STAGE_LIBRARY = [
     subtitle: "Send & track offer letter",
     icon: "Award",
     isPremium: false,
+    comingSoon: true,
   },
 ];
 
-export const STAGE_TYPE_OPTIONS = STAGE_LIBRARY.map((s) => ({
-  value: s.key,
-  label: s.label,
-  isPremium: s.isPremium,
-}));
+export const STAGE_TYPE_OPTIONS = STAGE_LIBRARY
+  .filter((s) => !s.comingSoon)
+  .map((s) => ({
+    value: s.key,
+    label: s.label,
+    isPremium: s.isPremium,
+  }));

@@ -33,9 +33,10 @@
     "no_account": "ليس لديك حساب؟",
     "create_one": "إنشاء حساب",
     "or": "أو",
-    "continue_google": "المتابعة عبر Google",
     "fill_fields": "يرجى ملء جميع الحقول.",
-    "invalid_credentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة."
+    "invalid_credentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+    "continue_google": "المتابعة عبر Google",
+    "google_sign_in_failed": "فشل تسجيل الدخول عبر Google. حاول مرة أخرى."
   },
   "sign_up": {
     "title": "إنشاء حساب",
@@ -57,6 +58,15 @@
     "email_placeholder": "you@gmail.com",
     "password_placeholder": "8 أحرف على الأقل",
     "confirm_placeholder": "أعد كتابة كلمة المرور"
+  },
+  "google_role_select": {
+    "title": "اختر دورك",
+    "subtitle": "حدد الدور الذي يناسب حسابك",
+    "role_applicant": "مقدم طلب",
+    "desc_applicant": "تقدم للوظائف وتابع طلباتك.",
+    "role_recruiter": "مسؤول توظيف",
+    "desc_recruiter": "انشر الوظائف وأدر المرشحين.",
+    "get_started": "ابدأ"
   },
   "forgot_password": {
     "title": "نسيت كلمة المرور؟",
@@ -401,7 +411,7 @@
     "hybrid": "هجين",
     "location_selector": "الموقع",
     "salary_range": "نطاق الراتب",
-    "salary_range_display": "نطاق الراتب",
+    "salary_range_display": "{{min}} – {{max}} EGP",
     "salary_label": "الراتب",
     "salary_confidential": "سري",
     "min_salary": "أدنى راتب",
@@ -753,7 +763,8 @@
     "criteria_required": "يرجى إدخال معايير التقييم أو توليدها تلقائياً.",
     "no_candidates_to_evaluate": "لا يوجد مرشحون في المرحلة التي تسبق القائمة المختصرة للتقييم.",
     "candidates_to_evaluate": "سيتم تقييم {{count}} مرشح(ين)",
-    "na": "غير متاح"
+    "na": "غير متاح",
+    "errors": "أخطاء"
   },
   "pipeline": {
     "pipelines": "خطوط الأنابيب",
@@ -792,7 +803,8 @@
     "ai_evaluation": "تقييم ذكي",
     "manual_review": "مراجعة يدوية",
     "auto_advance": "تقديم تلقائي",
-    "auto_reject": "رفض تلقائي"
+    "auto_reject": "رفض تلقائي",
+    "coming_soon": "قريباً"
   },
   "stage_details": {
     "evaluation_criteria": {
@@ -894,15 +906,6 @@
     "complete": "تمت الإجابة على جميع الأسئلة. شكراً لك!"
   },
 
-  "google_role_select": {
-    "title": "خطوة أخيرة",
-    "subtitle": "كيف ستستخدم HireReadyAI؟",
-    "role_applicant": "مقدم طلب",
-    "role_recruiter": "مسؤول توظيف",
-    "desc_applicant": "تصفح وتقدم للوظائف",
-    "desc_recruiter": "انشر الوظائف وأدر المرشحين",
-    "get_started": "ابدأ الآن"
-  },
   "pending_approval": {
     "title": "قيد الانتظار",
     "subtitle": "طلب انضمامك إلى {{company}} قيد المراجعة.",

@@ -22,6 +22,8 @@ import {
   ActivityIndicator,
   Modal,
   FlatList,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -240,10 +242,12 @@ export default function ApplicationQuestionsPage({ route, navigation }) {
 
   return (
     <View style={styles.root}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
       >
         {/* ── Page header info */}
         <View style={styles.headerCard}>
@@ -298,6 +302,7 @@ export default function ApplicationQuestionsPage({ route, navigation }) {
           </View>
         )}
       </ScrollView>
+      </KeyboardAvoidingView>
 
       {/* ── Sticky bottom publish bar */}
       <View style={styles.bottomBar}>

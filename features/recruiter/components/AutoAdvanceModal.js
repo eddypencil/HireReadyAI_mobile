@@ -9,6 +9,8 @@ import {
   ScrollView,
   ActivityIndicator,
   StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
@@ -371,7 +373,7 @@ export default function AutoAdvanceModal({
         </View>
       ) : (
         <View style={styles.overlay}>
-          <View style={styles.container}>
+          <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
             <View style={styles.header}>
               <Text style={styles.headerTitle}>{t('recruiter.shortlist_advancement_title')}</Text>
               <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
@@ -379,7 +381,7 @@ export default function AutoAdvanceModal({
               </TouchableOpacity>
             </View>
 
-            <ScrollView style={styles.body}>
+            <ScrollView style={styles.body} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
               {/* Criteria Section */}
               <View style={styles.section}>
                 <View style={styles.labelRow}>
@@ -403,7 +405,7 @@ export default function AutoAdvanceModal({
                   style={[styles.textarea, generating && styles.textareaDisabled]}
                   value={criteria}
                   onChangeText={setCriteria}
-                  placeholder="Describe the criteria for shortlisting candidates..."
+                   placeholder={t('recruiter.criteria_placeholder')}
                   placeholderTextColor={c['muted-foreground']}
                   multiline
                   editable={!generating}
@@ -416,6 +418,7 @@ export default function AutoAdvanceModal({
                 <Text style={styles.label}>{t('recruiter.min_score')}</Text>
                 <View style={styles.scoreRow}>
                   <Text style={styles.scoreValue}>{minScore}</Text>
+                  <View onStartShouldSetResponder={() => true} onResponderTerminationRequest={() => false}>
                   <Slider
                     style={styles.slider}
                     minimumValue={50}
@@ -427,6 +430,7 @@ export default function AutoAdvanceModal({
                     maximumTrackTintColor={c.border}
                     thumbTintColor={c.primary}
                   />
+                  </View>
                 </View>
                 <View style={styles.sliderLabels}>
                   <Text style={styles.sliderLabel}>50</Text>
@@ -467,7 +471,7 @@ export default function AutoAdvanceModal({
                 <Text style={styles.runBtnText}>{t('recruiter.run_evaluation')}</Text>
               </TouchableOpacity>
             </View>
-          </View>
+          </KeyboardAvoidingView>
         </View>
       )}
     </Modal>

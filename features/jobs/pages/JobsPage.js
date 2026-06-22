@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
   View, Text, FlatList, ActivityIndicator,
-  TouchableOpacity, Modal, ScrollView, TextInput,
+  TouchableOpacity, Modal, ScrollView, TextInput, KeyboardAvoidingView, Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -226,7 +226,8 @@ export default function JobsPage() {
             </TouchableOpacity>
           </View>
 
-          <ScrollView showsVerticalScrollIndicator={false} style={s.sheetScroll}>
+          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+          <ScrollView showsVerticalScrollIndicator={false} style={s.sheetScroll} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
             <Text style={s.filterSectionTitle}>{t('jobs_page.date_posted')}</Text>
             <View style={s.chipRow}>
               {DATE_OPTIONS.map(opt => (
@@ -310,6 +311,7 @@ export default function JobsPage() {
 
             <View style={{ height: 20 }} />
           </ScrollView>
+          </KeyboardAvoidingView>
 
           <TouchableOpacity
             style={s.applyFiltersButton}

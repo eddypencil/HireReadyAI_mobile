@@ -14,7 +14,10 @@ export const signInWithGoogle = async () => {
   console.log('[GoogleSignIn] hasPlayServices OK');
   const googleUser = await GoogleSignin.signIn();
   console.log('[GoogleSignIn] signIn response:', JSON.stringify(googleUser, null, 2));
-  const idToken = googleUser?.idToken || googleUser?.data?.idToken || googleUser?.user?.idToken;
+  const idToken =
+    googleUser?.idToken ||
+    googleUser?.data?.idToken ||
+    googleUser?.user?.idToken;
   if (!idToken) throw new Error('No idToken returned from Google');
   console.log('[GoogleSignIn] idToken found, signing in to Supabase...');
   const { data, error } = await supabase.auth.signInWithIdToken({
@@ -61,7 +64,6 @@ export const makeProfile = async (userId, userProfile) => {
 };
 
 export const signOut = async () => {
-  try { await GoogleSignin.signOut(); } catch {}
   const { error } = await supabase.auth.signOut();
   if (error) throw error;
 };

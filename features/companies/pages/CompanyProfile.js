@@ -8,6 +8,8 @@ import {
   Image,
   StyleSheet,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
@@ -220,6 +222,10 @@ export default function CompanyProfile() {
   };
 
   const handlePickLogo = async () => {
+    if (!isHrManager) {
+      alert(t("companies.error_title"), "Only an HR manager can change the company logo.");
+      return;
+    }
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
@@ -245,6 +251,10 @@ export default function CompanyProfile() {
   };
 
   const handlePickCover = async () => {
+    if (!isHrManager) {
+      alert(t("companies.error_title"), "Only an HR manager can change the company cover photo.");
+      return;
+    }
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
@@ -329,7 +339,8 @@ const handleUpgrade = async () => {
   const hasCover = !!company?.cover_url;
   return (
     <>
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
       {/* Cover Image */}
       <View style={styles.coverWrap}>
         {uploading ? (
@@ -633,6 +644,7 @@ const handleUpgrade = async () => {
         </View>
       </View>
     </ScrollView>
+      </KeyboardAvoidingView>
       <PaymentSuccessModal
         visible={successVisible}
         onDismiss={() => setSuccessVisible(false)}

@@ -130,36 +130,6 @@ export async function moveToStage(applicationId, targetStageId) {
       ),
     };
 
-  // For cv_review, enforce min_score using the application's composite_score
-  if (isCvReview) {
-    const { data: currentStageRecord } = await supabase
-      .from("recruitment_stages")
-      .select("min_score")
-      .eq("id", app.current_stage_id)
-      .maybeSingle();
-
-    const { data: appRecord } = await supabase
-      .from("applications")
-      // .select("composite_score")
-      .select("composite_score, cv_score")
-      .eq("id", applicationId)
-      .maybeSingle();
-
-    const minScore = currentStageRecord?.min_score ?? 0;
-
-    // const compositeScore = appRecord?.composite_score ?? null;
-    // cv_review stage uses cv_score primarily, composite_score as fallback
-    const compositeScore =
-      appRecord?.cv_score ?? appRecord?.composite_score ?? null;
-
-    if (compositeScore == null || compositeScore < minScore)
-      return {
-        error: new Error(
-          `Candidate score (${compositeScore ?? "none"}) is below the minimum required score (${minScore})`,
-        ),
-      };
-  }
-
   // Step 3: Check target stage isn't locked
   const { data: targetStage, error: stageError } = await supabase
     .from("recruitment_stages")
