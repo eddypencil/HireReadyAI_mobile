@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1032743179517-6qb2dhbokqurevu59snmi4qp73gh4f8k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hirereadyai.app",
+            "certificate_hash": "a6eeda64996e0635cf11fb3ee7e813a7e0f0528e"
+          }
+        },
+        {
           "client_id": "1032743179517-46et5gg0ou8oa0p18l4n39kegdbj94ht.apps.googleusercontent.com",
           "client_type": 3
         }
