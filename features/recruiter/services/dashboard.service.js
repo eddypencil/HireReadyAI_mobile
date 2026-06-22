@@ -25,7 +25,12 @@ export const fetchDashboardData = async (profileId) => {
         id,
         current_stage,
         applied_at,
-        interviews(id)
+        is_rejected,
+        interviews(id),
+        current_recruitment_stage:recruitment_stages!current_stage_id(
+          stage_type,
+          order_index
+        )
       )
     `,
     )

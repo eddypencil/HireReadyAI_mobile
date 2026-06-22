@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { fetchDashboardData } from "../services/dashboard.service";
-import { APPLICATION_STAGE } from "../../../shared/constants/enums";
 import { useUser } from "../../auth/context/user.context";
 import { useCompany } from "../../companies/pages/CompanyLayout";
 import { useRealtimeRecruiter } from "../../../shared/hooks/useRealtime";
@@ -38,7 +37,8 @@ export const useDashboardData = () => {
         const data = await fetchDashboardData(profile.id);
 
         if (data && data.length > 0) {
-          // Process jobs data
+          const getStageType = (app) => app.current_recruitment_stage?.stage_type;
+
           const processedJobs = data.map(job => {
             const apps = job.applications || [];
 
@@ -48,21 +48,20 @@ export const useDashboardData = () => {
             let shortlistedCount = 0;
 
             apps.forEach(app => {
-              // Not applied or screening means it's tested
-              if (
-                app.current_stage !== APPLICATION_STAGE.applied &&
-                app.current_stage !== APPLICATION_STAGE.screening
-              ) {
+              const stageType = getStageType(app);
+
+              // Past CV Review means it's tested
+              if (stageType && stageType !== 'applied' && stageType !== 'cv_review') {
                 testedCount++;
               }
 
-              // Waiting action = interviewed
-              if (app.current_stage === APPLICATION_STAGE.interviewed) {
+              // Waiting action = current stage is an interview type
+              if (['technical_interview', 'hr_interview', 'manager_interview', 'video_interview'].includes(stageType)) {
                 waitingActionCount++;
               }
 
-              // Shortlisted = short_listed
-              if (app.current_stage === APPLICATION_STAGE.shorListed) {
+              // Shortlisted
+              if (stageType === 'shortlist') {
                 shortlistedCount++;
               }
 
@@ -114,14 +113,14 @@ export const useDashboardData = () => {
             const apps = job.applications || [];
             totalApplicants += apps.length;
             apps.forEach(app => {
+              const stageType = getStageType(app);
               if (app.interviews) totalInterviewed++;
-              if (app.current_stage === APPLICATION_STAGE.interviewed) totalWaitingAction++;
-              if (app.current_stage === APPLICATION_STAGE.hired) totalAccepted++;
-              if (app.current_stage === APPLICATION_STAGE.shorListed) totalAccepted++; // Map shortlisted to accepted metric for stats
-              if (app.current_stage === APPLICATION_STAGE.rejected) totalRejected++;
+              if (['technical_interview', 'hr_interview', 'manager_interview', 'video_interview'].includes(stageType)) totalWaitingAction++;
+              if (stageType === 'offer' || stageType === 'shortlist') totalAccepted++;
+              if (app.is_rejected) totalRejected++;
 
-              if (app.current_stage !== APPLICATION_STAGE.applied) totalScreened++;
-              if (app.current_stage !== APPLICATION_STAGE.applied && app.current_stage !== APPLICATION_STAGE.screening) totalTested++;
+              if (stageType && stageType !== 'applied') totalScreened++;
+              if (stageType && stageType !== 'applied' && stageType !== 'cv_review') totalTested++;
 
               if (app.applied_at) {
                 const date = new Date(app.applied_at);
