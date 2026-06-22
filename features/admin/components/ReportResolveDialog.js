@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import {
-  View, Text, Modal, TouchableOpacity, TextInput, ScrollView, ActivityIndicator,
+  View, Text, Modal, TouchableOpacity, TextInput, ScrollView, ActivityIndicator, KeyboardAvoidingView, Platform,
 } from "react-native";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useUser } from "../../auth/context/user.context";
@@ -348,7 +348,7 @@ export default function ReportResolveDialog({ visible, onClose, onSubmit, report
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.6)", justifyContent: "center", padding: 16 }}>
-        <View style={{ backgroundColor: c.card, borderRadius: 16, maxHeight: "90%" }}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ backgroundColor: c.card, borderRadius: 16, maxHeight: "90%" }}>
           <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", padding: 16, borderBottomWidth: 1, borderBottomColor: c.border }}>
             <Text style={{ fontSize: 14, fontWeight: "700", color: c.foreground }}>
               {step === "form" ? "Resolution" : "Report Details"}
@@ -358,7 +358,7 @@ export default function ReportResolveDialog({ visible, onClose, onSubmit, report
             </TouchableOpacity>
           </View>
 
-          <ScrollView style={{ padding: 16 }}>
+          <ScrollView style={{ padding: 16 }} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
             {step === "detail" ? (
               <>
                 <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
@@ -480,7 +480,7 @@ export default function ReportResolveDialog({ visible, onClose, onSubmit, report
               </>
             )}
           </ScrollView>
-        </View>
+        </KeyboardAvoidingView>
       </View>
     </Modal>
   );

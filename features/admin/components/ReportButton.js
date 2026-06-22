@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {
-  View, Text, Modal, TouchableOpacity, TextInput, ActivityIndicator,
+  View, Text, Modal, TouchableOpacity, TextInput, ActivityIndicator, ScrollView, KeyboardAvoidingView, Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../shared/context/ThemeContext";
@@ -76,7 +76,7 @@ export default function ReportButton({
 
       <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
         <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.6)", justifyContent: "center", padding: 16 }}>
-          <View style={{ backgroundColor: c.card, borderRadius: 20, overflow: "hidden" }}>
+          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ backgroundColor: c.card, borderRadius: 20, overflow: "hidden", maxHeight: "90%" }}>
             <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: 16, borderBottomWidth: 1, borderBottomColor: c.border }}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
                 <Ionicons name="flag-outline" size={16} color={c.destructive} />
@@ -89,7 +89,7 @@ export default function ReportButton({
               </TouchableOpacity>
             </View>
 
-            <View style={{ padding: 16 }}>
+            <ScrollView style={{ padding: 16 }} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
               <Text style={{ fontSize: 11, fontWeight: "600", color: c.foreground, marginBottom: 4 }}>Subject</Text>
               <TextInput
                 value={subject}
@@ -144,8 +144,8 @@ export default function ReportButton({
                   </Text>
                 </TouchableOpacity>
               </View>
-            </View>
-          </View>
+            </ScrollView>
+          </KeyboardAvoidingView>
         </View>
       </Modal>
     </>

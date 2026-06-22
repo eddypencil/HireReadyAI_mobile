@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {
-  View, Text, Modal, TouchableOpacity, TextInput, ActivityIndicator,
+  View, Text, Modal, TouchableOpacity, TextInput, ActivityIndicator, ScrollView, KeyboardAvoidingView, Platform,
 } from "react-native";
 import { useTheme } from "../../../shared/context/ThemeContext";
 
@@ -45,7 +45,7 @@ export default function CompanyActionDialog({ visible, onClose, onSubmit, compan
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.6)", justifyContent: "center", padding: 16 }}>
-        <View style={{ backgroundColor: c.card, borderRadius: 20, maxHeight: "80%", overflow: "hidden" }}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ backgroundColor: c.card, borderRadius: 20, maxHeight: "90%", overflow: "hidden" }}>
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: 16, borderBottomWidth: 1, borderBottomColor: c.border }}>
             <Text style={{ fontSize: 14, fontWeight: "700", color: c.foreground }}>Company Action</Text>
             <TouchableOpacity onPress={onClose} style={{ width: 26, height: 26, borderRadius: 13, backgroundColor: c.muted, justifyContent: "center", alignItems: "center" }}>
@@ -53,7 +53,7 @@ export default function CompanyActionDialog({ visible, onClose, onSubmit, compan
             </TouchableOpacity>
           </View>
 
-          <View style={{ padding: 16 }}>
+          <ScrollView style={{ padding: 16 }} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
             <Text style={{ fontSize: 12, color: c["muted-foreground"], marginBottom: 12 }}>
               {company?.name || "Unknown company"}
             </Text>
@@ -102,8 +102,8 @@ export default function CompanyActionDialog({ visible, onClose, onSubmit, compan
               <Text style={{ fontSize: 12, fontWeight: "600", color: "#fff" }}>{submitting ? "Applying..." : "Apply"}</Text>
               </TouchableOpacity>
             </View>
-          </View>
-        </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </View>
     </Modal>
   );

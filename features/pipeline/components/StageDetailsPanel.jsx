@@ -10,7 +10,9 @@ import {
   FlatList,
   StyleSheet,
   ActivityIndicator,
-  Alert
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { STAGE_TYPE_OPTIONS } from "../constants/stageLibrary";
@@ -254,7 +256,8 @@ export default function StageDetailsPanel({ stage, onUpdate }) {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
         <View style={styles.header}>
           <Text style={styles.headerLabel}>{t("pipeline.stage_settings")}</Text>
           <View style={[styles.headerTitleRow, isRtl && styles.rowReverse]}>
@@ -492,6 +495,7 @@ export default function StageDetailsPanel({ stage, onUpdate }) {
         </View>
 
       </ScrollView>
+      </KeyboardAvoidingView>
 
       <View style={styles.saveFooter}>
         <TouchableOpacity

@@ -9,6 +9,8 @@ import {
   ScrollView,
   ActivityIndicator,
   StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
@@ -371,7 +373,7 @@ export default function AutoAdvanceModal({
         </View>
       ) : (
         <View style={styles.overlay}>
-          <View style={styles.container}>
+          <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
             <View style={styles.header}>
               <Text style={styles.headerTitle}>{t('recruiter.shortlist_advancement_title')}</Text>
               <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
@@ -379,7 +381,7 @@ export default function AutoAdvanceModal({
               </TouchableOpacity>
             </View>
 
-            <ScrollView style={styles.body}>
+            <ScrollView style={styles.body} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
               {/* Criteria Section */}
               <View style={styles.section}>
                 <View style={styles.labelRow}>
@@ -467,7 +469,7 @@ export default function AutoAdvanceModal({
                 <Text style={styles.runBtnText}>{t('recruiter.run_evaluation')}</Text>
               </TouchableOpacity>
             </View>
-          </View>
+          </KeyboardAvoidingView>
         </View>
       )}
     </Modal>

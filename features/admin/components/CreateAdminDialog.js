@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {
-  View, Text, Modal, TouchableOpacity, TextInput, ActivityIndicator,
+  View, Text, Modal, TouchableOpacity, TextInput, ActivityIndicator, ScrollView, KeyboardAvoidingView, Platform,
 } from "react-native";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { createAdminUser } from "../services/admin.service";
@@ -38,7 +38,8 @@ export default function CreateAdminDialog({ visible, onClose }) {
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.6)", justifyContent: "center", padding: 16 }}>
-        <View style={{ backgroundColor: c.card, borderRadius: 16, padding: 20 }}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ backgroundColor: c.card, borderRadius: 16, padding: 20, maxHeight: "90%" }}>
+          <ScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
           <Text style={{ fontSize: 16, fontWeight: "700", color: c.foreground, marginBottom: 16 }}>
             Create Admin
           </Text>
@@ -81,12 +82,14 @@ export default function CreateAdminDialog({ visible, onClose }) {
             </TouchableOpacity>
             <TouchableOpacity
               onPress={handleCreate}
-              disabled={submitting}
-              style={{ flex: 1, height: 44, borderRadius: 12, backgroundColor: c.primary, justifyContent: "center", alignItems: "center", opacity: submitting ? 0.6 : 1 }}
+              disabled={submitting || !email.trim() || !password.trim() || !fullName.trim()}
+              style={{ flex: 1, height: 44, borderRadius: 12, backgroundColor: c.primary, justifyContent: "center", alignItems: "center", opacity: (submitting || !email.trim() || !password.trim() || !fullName.trim()) ? 0.6 : 1 }}
             >
               {submitting ? <ActivityIndicator size="small" color="#fff" /> : <Text style={{ fontSize: 13, fontWeight: "600", color: "#fff" }}>Create</Text>}
             </TouchableOpacity>
           </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
         </View>
       </View>
     </Modal>

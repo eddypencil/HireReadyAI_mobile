@@ -8,6 +8,8 @@ import {
   Image,
   StyleSheet,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
@@ -337,7 +339,8 @@ const handleUpgrade = async () => {
   const hasCover = !!company?.cover_url;
   return (
     <>
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
       {/* Cover Image */}
       <View style={styles.coverWrap}>
         {uploading ? (
@@ -641,6 +644,7 @@ const handleUpgrade = async () => {
         </View>
       </View>
     </ScrollView>
+      </KeyboardAvoidingView>
       <PaymentSuccessModal
         visible={successVisible}
         onDismiss={() => setSuccessVisible(false)}

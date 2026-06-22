@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import {
-  View, Text, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, Alert,
+  View, Text, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, Alert, KeyboardAvoidingView, Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -105,9 +105,11 @@ export default function CompanySuspendedPage({ company, membershipPermission, on
 
   return (
     <View style={{ flex: 1, backgroundColor: c.background }}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView
         contentContainerStyle={{ padding: 24, paddingTop: insets.top + 24 }}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
       >
         <View style={{ width: 56, height: 56, borderRadius: 14, backgroundColor: `${c.destructive}20`, alignItems: "center", justifyContent: "center", marginBottom: 16 }}>
           <Ionicons name="shield-checkmark" size={28} color={c.destructive} />
@@ -310,6 +312,7 @@ export default function CompanySuspendedPage({ company, membershipPermission, on
           </View>
         )}
       </ScrollView>
+      </KeyboardAvoidingView>
     </View>
   );
 }
