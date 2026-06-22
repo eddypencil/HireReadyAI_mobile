@@ -146,7 +146,7 @@ export default function InterviewList({ applications }) {
   ).length;
   const countRejected = interviewProcesses.filter(
     (app) =>
-      app.is_rejected || app.current_stage === APPLICATION_STAGE.rejected,
+      app.is_rejected,
   ).length;
   const countOffer = interviewProcesses.filter(
     (app) =>
@@ -158,7 +158,7 @@ export default function InterviewList({ applications }) {
     if (activeTab === "all_interviews") return true;
     if (activeTab === "active") return ss?.status === "in_progress";
     if (activeTab === "completed") return ss?.status === "completed";
-    if (activeTab === "rejected") return app.current_stage === APPLICATION_STAGE.rejected;
+    if (activeTab === "rejected") return app.is_rejected;
     if (activeTab === "offer") return app.current_recruitment_stage?.stage_type === APPLICATION_STAGE.offer;
     return true;
   });

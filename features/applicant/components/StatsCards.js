@@ -1,5 +1,4 @@
 import { View, Text } from "react-native";
-import { APPLICATION_STAGE } from "../../../shared/constants/enums";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
 
@@ -11,9 +10,7 @@ const hasActiveInterviewStage = (app) => {
 };
 
 const isHired = (app) => {
-  if (app.current_recruitment_stage?.stage_type === "offer") return true;
-  if (app.current_stage === APPLICATION_STAGE.hired) return true;
-  return false;
+  return app.current_recruitment_stage?.stage_type === "offer";
 };
 
 const isRejected = (app) => {
@@ -21,7 +18,6 @@ const isRejected = (app) => {
   if (stages && Array.isArray(stages)) {
     if (stages.some((s) => s.status === "rejected")) return true;
   }
-  if (app.current_stage === APPLICATION_STAGE.rejected) return true;
   return false;
 };
 

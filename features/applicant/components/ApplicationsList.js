@@ -209,9 +209,11 @@ export default function ApplicationsList({ applications, onViewJob }) {
               const tokenKey = stageColorMap[type] || 'stage-final';
               cfg = stageStyle(c[tokenKey]);
             } else {
-              const stageVal = app.current_stage;
-              displayLabel = t(stageLabelMap[stageVal] || defaultLabelKey);
-              const tokenKey = stageColorMap[stageVal] || 'stage-final';
+              const stageType = app.current_recruitment_stage?.stage_type;
+              displayLabel = stageType
+                ? t(stageLabelMap[stageType] || defaultLabelKey)
+                : t(defaultLabelKey);
+              const tokenKey = stageColorMap[stageType] || 'stage-final';
               cfg = stageStyle(c[tokenKey]);
             }
 

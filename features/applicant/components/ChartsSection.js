@@ -36,7 +36,7 @@ function buildDonutSlices(data, cx, cy, r, c) {
   });
 }
 
-// -- Donut Chart — shows per-application status (not per-stage)
+// -- Donut Chart ï¿½ shows per-application status (not per-stage)
 function DonutChart({ applications }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
@@ -56,11 +56,9 @@ function DonutChart({ applications }) {
     const stages = app.application_stages;
     const isRejected =
       app.is_rejected ||
-      app.current_stage === 'rejected' ||
       (Array.isArray(stages) && stages.some(s => s.status === 'rejected'));
     const isOffer =
-      app.current_recruitment_stage?.stage_type === 'offer' ||
-      app.current_stage === 'hired';
+      app.current_recruitment_stage?.stage_type === 'offer';
 
     if (isRejected) {
       status = 'rejected';
@@ -143,7 +141,7 @@ function DonutChart({ applications }) {
   );
 }
 
-// -- Bar Chart — full width
+// -- Bar Chart ï¿½ full width
 function BarChart({ applications }) {
   const { theme } = useTheme();
   const { t, language } = useTranslation();
