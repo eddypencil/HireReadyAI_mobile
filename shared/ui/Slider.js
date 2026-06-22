@@ -3,7 +3,7 @@ import RNNSlider from "@react-native-community/slider";
 import { useTheme } from "../context/ThemeContext";
 import { spacing, borderRadius, fontSize, fontWeight } from "../../src/theme";
 
-export default function WeightSlider({ value, maxValue, onChange }) {
+export default function WeightSlider({ value, maxValue, onChange, disabled }) {
   const { theme } = useTheme();
   const c = theme.colors;
 
@@ -19,6 +19,7 @@ export default function WeightSlider({ value, maxValue, onChange }) {
         minimumTrackTintColor={c.primary}
         maximumTrackTintColor={c.border}
         thumbTintColor={c.card}
+        disabled={disabled}
       />
       <View style={styles.tickContainer}>
         {[0, 25, 50, 75, 100].map((pct) => {
@@ -28,8 +29,9 @@ export default function WeightSlider({ value, maxValue, onChange }) {
           return (
             <TouchableOpacity
               key={pct}
-              onPress={() => onChange(Math.round(tickVal * 100) / 100)}
+              onPress={() => !disabled && onChange(Math.round(tickVal * 100) / 100)}
               style={styles.tick}
+              disabled={disabled}
             >
               <View
                 style={[

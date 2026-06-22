@@ -418,6 +418,7 @@ export default function AutoAdvanceModal({
                 <Text style={styles.label}>{t('recruiter.min_score')}</Text>
                 <View style={styles.scoreRow}>
                   <Text style={styles.scoreValue}>{minScore}</Text>
+                  <View onStartShouldSetResponder={() => true} onResponderTerminationRequest={() => false}>
                   <Slider
                     style={styles.slider}
                     minimumValue={50}
@@ -429,6 +430,7 @@ export default function AutoAdvanceModal({
                     maximumTrackTintColor={c.border}
                     thumbTintColor={c.primary}
                   />
+                  </View>
                 </View>
                 <View style={styles.sliderLabels}>
                   <Text style={styles.sliderLabel}>50</Text>

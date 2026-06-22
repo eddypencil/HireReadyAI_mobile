@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {
-  View, Text, Modal, TouchableOpacity, TextInput, ScrollView, ActivityIndicator,
+  View, Text, Modal, TouchableOpacity, TextInput, ScrollView, ActivityIndicator, KeyboardAvoidingView, Platform,
 } from "react-native";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useTranslation } from "../../../shared/context/I18nContext";
@@ -47,7 +47,8 @@ export default function UserActionDialog({ visible, onClose, onSubmit, user }) {
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.6)", justifyContent: "center", padding: 16 }}>
-        <View style={{ backgroundColor: c.card, borderRadius: 16, padding: 20 }}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ backgroundColor: c.card, borderRadius: 16, padding: 20, maxHeight: "90%" }}>
+          <ScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
           <Text style={{ fontSize: 16, fontWeight: "700", color: c.foreground, marginBottom: 16 }}>
             User Action — {user?.full_name || "Unknown"}
           </Text>
@@ -144,7 +145,8 @@ export default function UserActionDialog({ visible, onClose, onSubmit, user }) {
               )}
             </TouchableOpacity>
           </View>
-        </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </View>
     </Modal>
   );
