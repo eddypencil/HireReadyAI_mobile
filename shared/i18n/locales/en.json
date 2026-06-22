@@ -33,7 +33,6 @@
     "no_account": "Don't have an account?",
     "create_one": "Create one",
     "or": "or",
-    "continue_google": "Continue with Google",
     "fill_fields": "Please fill in all fields.",
     "invalid_credentials": "Invalid email or password. Please try again."
   },
@@ -399,7 +398,7 @@
     "hybrid": "Hybrid",
     "location_selector": "Location",
     "salary_range": "Salary Range",
-    "salary_range_display": "Salary Range",
+    "salary_range_display": "{{min}} – {{max}} EGP",
     "salary_label": "Salary",
     "salary_confidential": "Confidential",
     "min_salary": "Min Salary",
@@ -890,15 +889,6 @@
     "complete": "All questions answered. Thank you!"
   },
 
-  "google_role_select": {
-    "title": "One last step",
-    "subtitle": "How will you be using HireReadyAI?",
-    "role_applicant": "Applicant",
-    "role_recruiter": "Recruiter",
-    "desc_applicant": "Browse and apply for jobs",
-    "desc_recruiter": "Post jobs and manage candidates",
-    "get_started": "Get Started"
-  },
   "pending_approval": {
     "title": "Pending Approval",
     "subtitle": "Your request to join {{company}} is awaiting approval.",
