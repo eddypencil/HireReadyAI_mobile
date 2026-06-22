@@ -13,6 +13,7 @@ import FormField from '../../../shared/ui/FormField';
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useTranslation } from '../../../shared/context/I18nContext';
 import LanguageSwitcher from '../../../shared/i18n/LanguageSwitcher';
+import SocialButton from '../../../shared/ui/SocialButton';
 import { USER_ROLE } from '../../../shared/constants/enums';
 import { useUser } from '../context/user.context';
 
@@ -27,7 +28,7 @@ export default function RegisterPage() {
   const { t } = useTranslation();
   const c = theme.colors;
   const navigation = useNavigation();
-  const { signUpUser } = useUser();
+  const { signUpUser, signInWithGoogleUser } = useUser();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -69,6 +70,18 @@ export default function RegisterPage() {
       });
     } catch (err) {
       setError(err.message || t('sign_up.generic_error'));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleGoogleSignIn() {
+    setError(null);
+    setLoading(true);
+    try {
+      await signInWithGoogleUser();
+    } catch (err) {
+      setError(err.message || t('sign_in.google_sign_in_failed'));
     } finally {
       setLoading(false);
     }
@@ -193,6 +206,19 @@ export default function RegisterPage() {
                 <Text style={s.buttonText}>{t('sign_up.create_account')}</Text>
               )}
             </TouchableOpacity>
+
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
+              <View style={{ flex: 1, height: 1, backgroundColor: c.border }} />
+              <Text style={{ marginHorizontal: 12, fontSize: 12, color: c['muted-foreground'] }}>{t('sign_in.or')}</Text>
+              <View style={{ flex: 1, height: 1, backgroundColor: c.border }} />
+            </View>
+
+            <SocialButton
+              provider="google"
+              onClick={handleGoogleSignIn}
+              loading={loading}
+              disabled={loading}
+            />
 
             <TouchableOpacity
               onPress={() => navigation.navigate('Login')}

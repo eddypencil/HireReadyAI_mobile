@@ -36,7 +36,7 @@ export default function CreateAdminDialog({ visible, onClose }) {
   }
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+  <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.6)", justifyContent: "center", padding: 16 }}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ backgroundColor: c.card, borderRadius: 16, padding: 20, maxHeight: "90%" }}>
           <ScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
@@ -90,7 +90,6 @@ export default function CreateAdminDialog({ visible, onClose }) {
           </View>
           </ScrollView>
         </KeyboardAvoidingView>
-        </View>
       </View>
     </Modal>
   );

@@ -34,7 +34,9 @@
     "create_one": "إنشاء حساب",
     "or": "أو",
     "fill_fields": "يرجى ملء جميع الحقول.",
-    "invalid_credentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة."
+    "invalid_credentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+    "continue_google": "المتابعة عبر Google",
+    "google_sign_in_failed": "فشل تسجيل الدخول عبر Google. حاول مرة أخرى."
   },
   "sign_up": {
     "title": "إنشاء حساب",
@@ -56,6 +58,15 @@
     "email_placeholder": "you@gmail.com",
     "password_placeholder": "8 أحرف على الأقل",
     "confirm_placeholder": "أعد كتابة كلمة المرور"
+  },
+  "google_role_select": {
+    "title": "اختر دورك",
+    "subtitle": "حدد الدور الذي يناسب حسابك",
+    "role_applicant": "مقدم طلب",
+    "desc_applicant": "تقدم للوظائف وتابع طلباتك.",
+    "role_recruiter": "مسؤول توظيف",
+    "desc_recruiter": "انشر الوظائف وأدر المرشحين.",
+    "get_started": "ابدأ"
   },
   "forgot_password": {
     "title": "نسيت كلمة المرور؟",

@@ -34,7 +34,9 @@
     "create_one": "Create one",
     "or": "or",
     "fill_fields": "Please fill in all fields.",
-    "invalid_credentials": "Invalid email or password. Please try again."
+    "invalid_credentials": "Invalid email or password. Please try again.",
+    "continue_google": "Continue with Google",
+    "google_sign_in_failed": "Google sign-in failed. Please try again."
   },
   "sign_up": {
     "title": "Create account",
@@ -56,6 +58,15 @@
     "email_placeholder": "you@gmail.com",
     "password_placeholder": "Min. 8 characters",
     "confirm_placeholder": "Repeat your password"
+  },
+  "google_role_select": {
+    "title": "Choose your role",
+    "subtitle": "Select the role that matches your account",
+    "role_applicant": "Applicant",
+    "desc_applicant": "Apply for jobs and manage your applications.",
+    "role_recruiter": "Recruiter",
+    "desc_recruiter": "Post jobs and manage candidates.",
+    "get_started": "Get Started"
   },
   "forgot_password": {
     "title": "Forgot password?",
